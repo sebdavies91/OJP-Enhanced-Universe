@@ -1479,6 +1479,7 @@ static void ShieldBoosterGive(gentity_t *ent, int amount)
 	{
 		ent->client->ps.stats[STAT_ARMOR] = ent->client->ps.stats[STAT_MAX_HEALTH];
 	}
+
 }
 
 
@@ -1700,7 +1701,7 @@ void Flamethrower_Fire( gentity_t *self )
 			VectorNormalize(pushDir);
 			VectorScale( pushDir, 150, traceEnt->client->ps.velocity );
 			//VectorCopy(pushDir,traceEnt->client->ps.velocity);
-		}
+		
 
 			if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
 					{
@@ -1724,13 +1725,13 @@ void Flamethrower_Fire( gentity_t *self )
 					damage =5;
 				}
 		}
-		if ( traceEnt->client )
-			{
+
+			
 				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
 				{
 					damage = 0;
 				}
-			}
+			
 
 	//			if (modPowerLevel != -1)
 				{
@@ -1784,8 +1785,7 @@ void Flamethrower_Fire( gentity_t *self )
 					}
 					//[ForceSys]
 					//don't do the electrical effect unless we didn't block with the saber.
-					if (traceEnt->client->burnTime < (level.time + BURN_TIME/2) && !(traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED])
-					)
+					if (traceEnt->client->burnTime < (level.time + BURN_TIME/2) && damage)
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
@@ -1801,8 +1801,14 @@ void Flamethrower_Fire( gentity_t *self )
 						Jedi_Decloak( traceEnt );
 						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
 					}		
+					if ( traceEnt->client->ps.powerups[PW_OVERLOADED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Overload_Off( traceEnt );
+						traceEnt->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
+					}
 				}
-	
+		}
 
 	}
 }
@@ -1902,7 +1908,8 @@ void Dioxisthrower_Fire( gentity_t *self )
 			continue;
 		}
 
-
+		if(traceEnt->client)
+		{
 
 		if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
 					{
@@ -1926,13 +1933,12 @@ void Dioxisthrower_Fire( gentity_t *self )
 					damage =5;
 				}
 		}
-		if ( traceEnt->client )
-			{
+
 				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
 				{
 					damage = 0;
 				}
-			}
+
 
 	//			if (modPowerLevel != -1)
 				{
@@ -1986,8 +1992,7 @@ void Dioxisthrower_Fire( gentity_t *self )
 					}
 					//[ForceSys]
 					//don't do the electrical effect unless we didn't block with the saber.
-					if (traceEnt->client->toxicTime < (level.time + TOXIC_TIME/2) &&  !(traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED])
-					)
+					if (traceEnt->client->toxicTime < (level.time + TOXIC_TIME/2) &&  damage)
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
@@ -1996,10 +2001,22 @@ void Dioxisthrower_Fire( gentity_t *self )
 
 					traceEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
 					traceEnt->client->ps.forceHandExtendTime = level.time + TOXIC_TIME/3;
+					}		
+					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Jedi_Decloak( traceEnt );
+						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
+					}		
+					if ( traceEnt->client->ps.powerups[PW_OVERLOADED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Overload_Off( traceEnt );
+						traceEnt->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
 					}
 		
 				}
-
+		}
 
 		
 
@@ -2101,7 +2118,8 @@ void Icethrower_Fire( gentity_t *self )
 		}
 
 
-
+		if(traceEnt->client)
+		{
 		if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
 					{
 						damage = 1;
@@ -2124,13 +2142,12 @@ void Icethrower_Fire( gentity_t *self )
 					damage =5;
 				}
 		}
-		if ( traceEnt->client )
-			{
+
 				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
 				{
 					damage = 0;
 				}
-			}
+
 
 	//			if (modPowerLevel != -1)
 				{
@@ -2184,8 +2201,7 @@ void Icethrower_Fire( gentity_t *self )
 					}
 					//[ForceSys]
 					//don't do the electrical effect unless we didn't block with the saber.
-					if (traceEnt->client->freezeTime < (level.time + FREEZE_TIME/2) &&  !(traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED])
-					)
+					if (traceEnt->client->freezeTime < (level.time + FREEZE_TIME/2) &&  damage)
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
@@ -2200,6 +2216,7 @@ void Icethrower_Fire( gentity_t *self )
 					traceEnt->client->ps.userInt1 |= LOCK_LEFT;	
 					traceEnt->client->viewLockTime = level.time + FREEZE_TIME/3;
 					traceEnt->client->ps.legsTimer = traceEnt->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
+
 					if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2)
 					{
 					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim3[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
@@ -2218,10 +2235,22 @@ void Icethrower_Fire( gentity_t *self )
 					}	
 
 					}
+					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Jedi_Decloak( traceEnt );
+						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
+					}		
+					if ( traceEnt->client->ps.powerups[PW_OVERLOADED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Overload_Off( traceEnt );
+						traceEnt->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
+					}
 		
 				}
 
-
+		}
 		
 
 	}
@@ -2358,7 +2387,8 @@ void Electroshocker_Fire( gentity_t *self )
 			continue;
 		}
 
-
+		if(traceEnt->client)
+		{
 
 		if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1)
 					{
@@ -2382,13 +2412,12 @@ void Electroshocker_Fire( gentity_t *self )
 					damage =5;
 				}
 		}
-		if ( traceEnt->client )
-			{
+
 				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
 				{
 					damage = 0;
 				}
-			}
+
 	//			if (modPowerLevel != -1)
 				{
 
@@ -2442,8 +2471,7 @@ void Electroshocker_Fire( gentity_t *self )
 					//[ForceSys]
 					//don't do the electrical effect unless we didn't block with the saber.
 					//don't do the electrical effect unless we didn't block with the saber.
-					if (traceEnt->client->ps.electrifyTime < (level.time + SHOCK_TIME/2) && !(traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED])
-					)
+					if (traceEnt->client->ps.electrifyTime < (level.time + SHOCK_TIME/2) && damage)
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
@@ -2454,10 +2482,16 @@ void Electroshocker_Fire( gentity_t *self )
 					{//disable cloak temporarily
 						Jedi_Decloak( traceEnt );
 						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
+					}		
+					if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Sphereshield_Off( traceEnt );
+						traceEnt->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
 					}	
 		
 				}
-		
+		}
 	}
 }
 
@@ -2555,7 +2589,8 @@ void Lasersupport_Fire( gentity_t *self )
 			continue;
 		}
 
-
+		if(traceEnt->client)
+		{
 
 		if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1)
 					{
@@ -2579,13 +2614,13 @@ void Lasersupport_Fire( gentity_t *self )
 					damage =5;
 				}
 		}
-		if ( traceEnt->client )
-			{
+
+
 				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
 				{
 					damage = 0;
 				}
-			}
+
 	//			if (modPowerLevel != -1)
 				{
 
@@ -2606,10 +2641,14 @@ void Lasersupport_Fire( gentity_t *self )
 
 					//[ForceSys]
 					//lightning also blasts the target back.
-				G_Throw(traceEnt, dir, 100);
+
 
 
 					//[/ForceSys]
+				}
+				if(damage)
+				{
+				G_Throw(traceEnt, dir, 100);					
 				}
 				if ( traceEnt->client )
 				{
@@ -2644,10 +2683,16 @@ void Lasersupport_Fire( gentity_t *self )
 					{//disable cloak temporarily
 						Jedi_Decloak( traceEnt );
 						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}	
+					}			
+					if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Sphereshield_Off( traceEnt );
+						traceEnt->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
+					}		
 		
 				}
-		
+		}
 	}
 }
 
@@ -2749,7 +2794,8 @@ void Orbitalstrike_Fire( gentity_t *self )
 			continue;
 		}
 
-
+		if(traceEnt->client)
+		{
 
 		if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1)
 					{
@@ -2773,13 +2819,12 @@ void Orbitalstrike_Fire( gentity_t *self )
 					damage =5;
 				}
 		}
-		if ( traceEnt->client )
-			{
+
 				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
 				{
 					damage = 0;
 				}
-			}
+
 	//			if (modPowerLevel != -1)
 				{
 
@@ -2800,11 +2845,11 @@ void Orbitalstrike_Fire( gentity_t *self )
 
 					//[ForceSys]
 					//lightning also blasts the target back.
-				if(!WalkCheck(traceEnt) 
+				if(((!WalkCheck(traceEnt) 
 					|| (WalkCheck(traceEnt) && traceEnt->client->ps.MISHAP_VARIABLE <= MISHAPLEVEL_HEAVY) 
 					|| BG_IsUsingHeavyWeap(&traceEnt->client->ps)
 					|| PM_SaberInBrokenParry(traceEnt->client->ps.saberMove)
-					|| traceEnt->client->ps.stats[STAT_DODGE] < DODGE_CRITICALLEVEL)
+					|| traceEnt->client->ps.stats[STAT_DODGE] < DODGE_CRITICALLEVEL)) && damage)
 					{
 						G_Knockdown(traceEnt, self, dir, 300, qtrue);
 					}
@@ -2844,10 +2889,16 @@ void Orbitalstrike_Fire( gentity_t *self )
 					{//disable cloak temporarily
 						Jedi_Decloak( traceEnt );
 						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}	
+					}		
+					if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] //&& !saberBlocked
+					)
+					{//disable cloak temporarily
+						Sphereshield_Off( traceEnt );
+						traceEnt->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
+					}			
 		
 				}
-		
+		}
 	}
 }
 
@@ -3645,7 +3696,7 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_TRANSPORTSHIPA] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "slave1", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "ravensclawvm", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_LIGHTVEHICLEB] == FORCE_LEVEL_1)
 		{
@@ -3724,9 +3775,18 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		{
 		VehicleMount = NPC_SpawnType( ent, "slave1_jango", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
-
-
-		
+	else if(ent->client->skillLevel[SK_LASERTURRETA] == FORCE_LEVEL_1)
+		{
+		VehicleMount = NPC_SpawnType( ent, "turbolaser_tower", va("player%iVehicleMount", ent->s.number), qtrue );
+		}
+	else if(ent->client->skillLevel[SK_LASERTURRETA] == FORCE_LEVEL_2)
+		{
+		VehicleMount = NPC_SpawnType( ent, "laserturret1", va("player%iVehicleMount", ent->s.number), qtrue );
+		}
+	else if(ent->client->skillLevel[SK_LASERTURRETA] == FORCE_LEVEL_3)
+		{
+		VehicleMount = NPC_SpawnType( ent, "laserturret2", va("player%iVehicleMount", ent->s.number), qtrue );
+		}		
 	else
 		{
 		VehicleMount = NPC_SpawnType( ent, "swoop_mp", va("player%iVehicleMount", ent->s.number), qtrue );
@@ -5336,17 +5396,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 //	VectorSet( ent->r.mins, -ITEM_RADIUS, -ITEM_RADIUS, -ITEM_RADIUS );
 //	VectorSet( ent->r.maxs, ITEM_RADIUS, ITEM_RADIUS, ITEM_RADIUS );
 
-	if (g_gametype.integer == GT_SIEGE)
-	{ //in siege remove all powerups
-		if (ent->item->giType == IT_POWERUP)
-		{
-			G_FreeEntity(ent);
-			return;
-		}
-	}
 
-	if (g_gametype.integer != GT_JEDIMASTER)
-	{
 		if (HasSetSaberOnly())
 		{
 			if (ent->item->giType == IT_AMMO)
@@ -5359,23 +5409,28 @@ void FinishSpawningItem( gentity_t *ent ) {
 			{
 				if (ent->item->giTag == HI_SEEKER  ||
 					ent->item->giTag == HI_SHIELD ||
-					ent->item->giTag == HI_SQUADTEAM||
-					ent->item->giTag == HI_SENTRY_GUN)
+					ent->item->giTag == HI_MEDPAC ||
+					ent->item->giTag == HI_SHIELDBOOSTER ||
+					ent->item->giTag == HI_BINOCULARS ||
+					ent->item->giTag == HI_SENTRY_GUN ||
+					ent->item->giTag == HI_JETPACK ||
+					ent->item->giTag == HI_SQUADTEAM ||
+					ent->item->giTag == HI_VEHICLEMOUNT ||
+					ent->item->giTag == HI_EWEB ||
+					ent->item->giTag == HI_CLOAK ||
+					ent->item->giTag == HI_FLAMETHROWER ||
+					ent->item->giTag == HI_ELECTROSHOCKER ||
+					ent->item->giTag == HI_SPHERESHIELD ||
+					ent->item->giTag == HI_OVERLOAD ||
+					ent->item->giTag == HI_GRAPPLE)
 				{
 					G_FreeEntity( ent );
 					return;
 				}
 			}
 		}
-	}
-	else
-	{ //no powerups in jedi master
-		if (ent->item->giType == IT_POWERUP)
-		{
-			G_FreeEntity(ent);
-			return;
-		}
-	}
+	
+
 
 	if (g_gametype.integer == GT_HOLOCRON)
 	{
@@ -5407,17 +5462,7 @@ void FinishSpawningItem( gentity_t *ent ) {
 		}
 	}
 
-	if (g_gametype.integer == GT_DUEL || g_gametype.integer == GT_POWERDUEL)
-	{
-		if ( ent->item->giType == IT_ARMOR ||
-			ent->item->giType == IT_HEALTH ||
-			(ent->item->giType == IT_HOLDABLE && (ent->item->giTag == HI_MEDPAC)) ||
-			(ent->item->giType == IT_HOLDABLE && (ent->item->giTag == HI_SHIELDBOOSTER)) )
-		{
-			G_FreeEntity(ent);
-			return;
-		}
-	}
+
 
 	if (g_gametype.integer != GT_CTF &&
 		g_gametype.integer != GT_CTY &&

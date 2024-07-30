@@ -2798,7 +2798,7 @@ int BotGetWeaponRange(bot_state_t *bs)
 	switch (bs->cur_ps.weapon)
 	{
 	case WP_STUN_BATON:
-		return BWEAPONRANGE_LONG;			   
+		return BWEAPONRANGE_MELEE;			   
 	case WP_MELEE:
 		return BWEAPONRANGE_MELEE;
 	case WP_SABER:
@@ -6848,7 +6848,7 @@ int BotUseInventoryItem(bot_state_t *bs)
 	
 	if (bs->cur_ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK))
 	{
-		if (bs->currentEnemy && bs->frame_Enemy_Vis && bs->runningToEscapeThreat)
+		if (bs->runningToEscapeThreat)
 		{
 			bs->cur_ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_JETPACK, IT_HOLDABLE);
 			goto wantuseitem;
@@ -6866,7 +6866,7 @@ int BotUseInventoryItem(bot_state_t *bs)
 	}
 	if (bs->cur_ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_GRAPPLE))
 	{
-		if (bs->currentEnemy && bs->frame_Enemy_Vis && bs->runningToEscapeThreat)
+		if (bs->runningToEscapeThreat)
 		{
 			bs->cur_ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_GRAPPLE, IT_HOLDABLE);
 			goto wantuseitem;
@@ -6892,7 +6892,7 @@ int BotUseInventoryItem(bot_state_t *bs)
 	}
 	if (bs->cur_ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SHIELDBOOSTER))
 	{
-		if (g_entities[bs->client].health <= 999)
+		if (g_entities[bs->client].client->ps.stats[STAT_ARMOR] <= 999)
 		{
 			bs->cur_ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_SHIELDBOOSTER, IT_HOLDABLE);
 			goto wantuseitem;
@@ -7406,7 +7406,9 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 	{
 		VectorSubtract(bs->currentEnemy->client->ps.origin, bs->eye, a_fo);
 		vectoangles(a_fo, a_fo);
-
+		
+		if(bs->cur_ps.fd.forceSide == FORCE_LIGHTSIDE || bs->cur_ps.fd.forceSide == FORCE_DARKSIDE)		
+		{
 		//do this above all things
 		if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PUSH)) && (bs->doForcePush > level.time || bs->cur_ps.fd.forceGripBeingGripped > level.time) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PUSH]][FP_PUSH] /*&& InFieldOfVision(bs->viewangles, 50, a_fo)*/)
 		{
@@ -7414,97 +7416,91 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			useTheForce = 1;
 			forceHostile = 1;
 		}
-			else if (bs->cur_ps.fd.forceSide == FORCE_DARKSIDE)
-			{ //try dark side powers
 			  //in order of priority top to bottom
-				if (g_entities[bs->entitynum].health <= 999 
-					&& (bs->cur_ps.fd.forcePowersKnown & (1 << FP_DRAIN)) && bs->frame_Enemy_Len < MAX_DRAIN_DISTANCE && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo)  )
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_DRAIN;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_LIGHTNING)) && bs->frame_Enemy_Len < FORCE_LIGHTNING_RADIUS && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_LIGHTNING;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TEAM_FORCE)) && bs->frame_Enemy_Len < FORCE_DESTRUCTION_RADIUS && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_TEAM_FORCE;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_RAGE)) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_RAGE]][FP_RAGE] && bs->currentEnemy && bs->frame_Enemy_Vis)
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_RAGE;
-					useTheForce = 1;
-					forceHostile = 0;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && (bs->cur_ps.fd.forcePowersActive & (1 << FP_GRIP)) && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{ //already gripping someone, so hold it
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && bs->frame_Enemy_Len < MAX_GRIP_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_GRIP]][FP_GRIP] && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-			}
-			else if (bs->cur_ps.fd.forceSide == FORCE_LIGHTSIDE)
-			{ //try light side powers
-				if (g_entities[bs->entitynum].health <= 999
+		else if (g_entities[bs->entitynum].health <= 999
 					&& bs->cur_ps.fd.forcePowersKnown & (1 << FP_HEAL) 
 					&& level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_HEAL]][FP_HEAL] )
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_HEAL;
-					useTheForce = 1;
-					forceHostile = 0;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TELEPATHY)) && bs->frame_Enemy_Len < MAX_TRICK_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_TELEPATHY]][FP_TELEPATHY] && InFieldOfVision(bs->viewangles, 50, a_fo) && !(bs->currentEnemy->client->ps.fd.forcePowersActive & (1 << FP_SEE)))
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_TELEPATHY;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TEAM_HEAL)) && bs->frame_Enemy_Len < MAX_STASIS_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_TEAM_HEAL]][FP_TEAM_HEAL] && InFieldOfVision(bs->viewangles, 50, a_fo) )
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_TEAM_HEAL;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PROTECT))  && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PROTECT]][FP_PROTECT] && bs->currentEnemy && bs->frame_Enemy_Vis)
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_PROTECT;
-					useTheForce = 1;
-					forceHostile = 0;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && bs->cur_ps.fd.forceGripCripple &&
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_HEAL;
+			useTheForce = 1;
+			forceHostile = 0;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TELEPATHY)) && bs->frame_Enemy_Len < MAX_TRICK_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_TELEPATHY]][FP_TELEPATHY] && InFieldOfVision(bs->viewangles, 50, a_fo) && !(bs->currentEnemy->client->ps.fd.forcePowersActive & (1 << FP_SEE)))
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_TELEPATHY;
+			useTheForce = 1;
+			forceHostile = 1;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TEAM_HEAL)) && bs->frame_Enemy_Len < MAX_STASIS_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_TEAM_HEAL]][FP_TEAM_HEAL] && InFieldOfVision(bs->viewangles, 50, a_fo) )
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_TEAM_HEAL;
+			useTheForce = 1;
+			forceHostile = 1;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PROTECT))  && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PROTECT]][FP_PROTECT] )
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_PROTECT;
+			useTheForce = 1;
+			forceHostile = 0;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && bs->cur_ps.fd.forceGripCripple &&
 					 level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_ABSORB]][FP_ABSORB])
-				{ //absorb to get out
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_ABSORB;
-					useTheForce = 1;
-					forceHostile = 0;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && bs->cur_ps.electrifyTime >= level.time &&
+		{ //absorb to get out
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_ABSORB;
+			useTheForce = 1;
+			forceHostile = 0;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && bs->cur_ps.electrifyTime >= level.time &&
 					 level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_ABSORB]][FP_ABSORB])
-				{ //absorb lightning
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_ABSORB;
-					useTheForce = 1;
-					forceHostile = 0;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_ABSORB]][FP_ABSORB]&& bs->currentEnemy && bs->frame_Enemy_Vis && bs->currentEnemy->client->ps.fd.forcePower > 25)
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_ABSORB;
-					useTheForce = 1;
-					forceHostile = 0;
-				}
-			}	
-
+		{ //absorb lightning
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_ABSORB;
+			useTheForce = 1;
+			forceHostile = 0;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_ABSORB]][FP_ABSORB] )
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_ABSORB;
+			useTheForce = 1;
+			forceHostile = 0;
+		}
+		else if (g_entities[bs->entitynum].health <= 999
+					&& (bs->cur_ps.fd.forcePowersKnown & (1 << FP_DRAIN)) && bs->frame_Enemy_Len < MAX_DRAIN_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_DRAIN]][FP_DRAIN] && InFieldOfVision(bs->viewangles, 50, a_fo)  )
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_DRAIN;
+			useTheForce = 1;
+			forceHostile = 1;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_LIGHTNING)) && bs->frame_Enemy_Len < FORCE_LIGHTNING_RADIUS && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_LIGHTNING]][FP_LIGHTNING] && InFieldOfVision(bs->viewangles, 50, a_fo))
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_LIGHTNING;
+			useTheForce = 1;
+			forceHostile = 1;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TEAM_FORCE)) && bs->frame_Enemy_Len < FORCE_DESTRUCTION_RADIUS && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_TEAM_FORCE]][FP_TEAM_FORCE] && InFieldOfVision(bs->viewangles, 50, a_fo))
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_TEAM_FORCE;
+			useTheForce = 1;
+			forceHostile = 1;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && (bs->cur_ps.fd.forcePowersActive & (1 << FP_GRIP)) && InFieldOfVision(bs->viewangles, 50, a_fo))
+		{ //already gripping someone, so hold it
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
+			useTheForce = 1;
+			forceHostile = 1;
+		}
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && bs->frame_Enemy_Len < MAX_GRIP_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_GRIP]][FP_GRIP] && InFieldOfVision(bs->viewangles, 50, a_fo))
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
+			useTheForce = 1;
+			forceHostile = 1;
+		}	
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_RAGE)) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_RAGE]][FP_RAGE] )
+		{
+			level.clients[bs->client].ps.fd.forcePowerSelected = FP_RAGE;
+			useTheForce = 1;
+			forceHostile = 0;
+		}
+		}
 		if (!useTheForce)
 		{ //try neutral powers
 			if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PUSH)) && bs->cur_ps.fd.forceGripBeingGripped > level.time && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PUSH]][FP_PUSH] && InFieldOfVision(bs->viewangles, 50, a_fo))
@@ -7525,7 +7521,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 				useTheForce = 1;
 				forceHostile = 0;
 			}
-			else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PULL)) && bs->frame_Enemy_Len < 256 && level.clients[bs->client].ps.fd.forcePower > 75 && InFieldOfVision(bs->viewangles, 50, a_fo))
+			else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PULL)) && bs->frame_Enemy_Len < 250 && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PULL]][FP_PULL] && InFieldOfVision(bs->viewangles, 50, a_fo))
 			{
 				level.clients[bs->client].ps.fd.forcePowerSelected = FP_PULL;
 				useTheForce = 1;
@@ -7536,13 +7532,13 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 
 	if (!useTheForce)
 	{ //try powers that we don't care if we have an enemy for
-		if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_HEAL)) && g_entities[bs->client].health < 50 && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_HEAL]][FP_HEAL] && bs->cur_ps.fd.forcePowerLevel[FP_HEAL] > FORCE_LEVEL_1)
+		if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_HEAL)) && g_entities[bs->client].health <=  999 && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_HEAL]][FP_HEAL] && bs->cur_ps.fd.forcePowerLevel[FP_HEAL] > FORCE_LEVEL_1)
 		{
 			level.clients[bs->client].ps.fd.forcePowerSelected = FP_HEAL;
 			useTheForce = 1;
 			forceHostile = 0;
 		}
-		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_HEAL)) && g_entities[bs->client].health < 50 && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_HEAL]][FP_HEAL] && !bs->currentEnemy && bs->isCamping > level.time)
+		else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_HEAL)) && g_entities[bs->client].health <=  999 && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_HEAL]][FP_HEAL] && !bs->currentEnemy && bs->isCamping > level.time)
 		{ //only meditate and heal if we're camping
 			level.clients[bs->client].ps.fd.forcePowerSelected = FP_HEAL;
 			useTheForce = 1;

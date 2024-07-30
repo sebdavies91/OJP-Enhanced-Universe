@@ -4106,11 +4106,11 @@ void DEMP2_AltRadiusDamage( gentity_t *ent )
 					Sphereshield_Off( gent );
 					gent->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
 				}
-				if ( gent->client->ps.powerups[PW_OVERLOADED] )
-				{//disable cloak temporarily
-					Overload_Off( gent );
-					gent->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-				}
+				//if ( gent->client->ps.powerups[PW_OVERLOADED] )
+				//{//disable cloak temporarily
+				//	Overload_Off( gent );
+				//	gent->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
+				//}
 			}
 		}
 	}
@@ -10684,7 +10684,81 @@ void WP_FireStunBaton( gentity_t *ent, qboolean alt_fire )
 	trace_t		tr;
 	vec3_t		mins, maxs, end;
 	vec3_t		muzzleStun;
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+	if(ent->client->leftPistol)
+	{
+	if (!ent->client)
+	{
+		VectorCopy(ent->r.currentOrigin, muzzleStun);
+		muzzleStun[2] += 8;
+	}
+	else
+	{
+		VectorCopy(ent->client->ps.origin, muzzleStun);
+		muzzleStun[2] += ent->client->ps.viewheight-6;
+	}
 
+	VectorMA(muzzleStun, 20.0f, forward, muzzleStun);
+	VectorMA(muzzleStun, -4.0f, vright, muzzleStun);
+
+	VectorMA( muzzleStun, STUN_BATON_RANGE, forward, end );
+
+	VectorSet( maxs, 6, 6, 6 );
+	VectorScale( maxs, -1, mins );
+
+	trap_Trace ( &tr, muzzleStun, mins, maxs, end, ent->s.number, MASK_SHOT );
+
+	if ( tr.entityNum >= ENTITYNUM_WORLD )
+	{
+		return;
+	}
+
+	tr_ent = &g_entities[tr.entityNum];
+
+	if (tr_ent && tr_ent->takedamage && tr_ent->client)
+	{ //see if either party is involved in a duel
+		if (tr_ent->client->ps.duelInProgress &&
+			tr_ent->client->ps.duelIndex != ent->s.number)
+		{
+			return;
+		}
+
+		if (ent->client &&
+			ent->client->ps.duelInProgress &&
+			ent->client->ps.duelIndex != tr_ent->s.number)
+		{
+			return;
+		}
+	}
+
+	if ( tr_ent && tr_ent->takedamage )
+	{
+		G_PlayEffect( EFFECT_STUNHIT, tr.endpos, tr.plane.normal );
+
+		G_Sound( tr_ent, CHAN_WEAPON, G_SoundIndex( va("sound/weapons/melee/punch%d", Q_irand(1, 4)) ) );
+		G_Damage( tr_ent, ent, ent, forward, tr.endpos, STUN_BATON_DAMAGE, (DAMAGE_NO_KNOCKBACK|DAMAGE_HALF_ABSORB), MOD_STUN_BATON );
+
+		if (tr_ent->client)
+		{ //if it's a player then use the shock effect
+			if ( tr_ent->client->NPC_class == CLASS_VEHICLE )
+			{//not on vehicles
+				if ( !tr_ent->m_pVehicle
+					|| tr_ent->m_pVehicle->m_pVehicleInfo->type == VH_ANIMAL 
+					|| tr_ent->m_pVehicle->m_pVehicleInfo->type == VH_FLIER )
+				{//can zap animals
+					tr_ent->client->ps.electrifyTime = level.time + Q_irand( 3000, 4000 );
+				}
+			}
+			else
+			{
+				tr_ent->client->ps.electrifyTime = level.time + 700;
+			}
+		}
+	}
+	}
+		else
+		{
 	if (!ent->client)
 	{
 		VectorCopy(ent->r.currentOrigin, muzzleStun);
@@ -10753,6 +10827,84 @@ void WP_FireStunBaton( gentity_t *ent, qboolean alt_fire )
 			}
 		}
 	}
+		}
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+	{
+	if (!ent->client)
+	{
+		VectorCopy(ent->r.currentOrigin, muzzleStun);
+		muzzleStun[2] += 8;
+	}
+	else
+	{
+		VectorCopy(ent->client->ps.origin, muzzleStun);
+		muzzleStun[2] += ent->client->ps.viewheight-6;
+	}
+
+	VectorMA(muzzleStun, 20.0f, forward, muzzleStun);
+	VectorMA(muzzleStun, 4.0f, vright, muzzleStun);
+
+	VectorMA( muzzleStun, STUN_BATON_RANGE, forward, end );
+
+	VectorSet( maxs, 6, 6, 6 );
+	VectorScale( maxs, -1, mins );
+
+	trap_Trace ( &tr, muzzleStun, mins, maxs, end, ent->s.number, MASK_SHOT );
+
+	if ( tr.entityNum >= ENTITYNUM_WORLD )
+	{
+		return;
+	}
+
+	tr_ent = &g_entities[tr.entityNum];
+
+	if (tr_ent && tr_ent->takedamage && tr_ent->client)
+	{ //see if either party is involved in a duel
+		if (tr_ent->client->ps.duelInProgress &&
+			tr_ent->client->ps.duelIndex != ent->s.number)
+		{
+			return;
+		}
+
+		if (ent->client &&
+			ent->client->ps.duelInProgress &&
+			ent->client->ps.duelIndex != tr_ent->s.number)
+		{
+			return;
+		}
+	}
+
+	if ( tr_ent && tr_ent->takedamage )
+	{
+		G_PlayEffect( EFFECT_STUNHIT, tr.endpos, tr.plane.normal );
+
+		G_Sound( tr_ent, CHAN_WEAPON, G_SoundIndex( va("sound/weapons/melee/punch%d", Q_irand(1, 4)) ) );
+		G_Damage( tr_ent, ent, ent, forward, tr.endpos, STUN_BATON_DAMAGE, (DAMAGE_NO_KNOCKBACK|DAMAGE_HALF_ABSORB), MOD_STUN_BATON );
+
+		if (tr_ent->client)
+		{ //if it's a player then use the shock effect
+			if ( tr_ent->client->NPC_class == CLASS_VEHICLE )
+			{//not on vehicles
+				if ( !tr_ent->m_pVehicle
+					|| tr_ent->m_pVehicle->m_pVehicleInfo->type == VH_ANIMAL 
+					|| tr_ent->m_pVehicle->m_pVehicleInfo->type == VH_FLIER )
+				{//can zap animals
+					tr_ent->client->ps.electrifyTime = level.time + Q_irand( 3000, 4000 );
+				}
+			}
+			else
+			{
+				tr_ent->client->ps.electrifyTime = level.time + 700;
+			}
+		}
+	}
+	}
+	
+
+
+
 }
 
 

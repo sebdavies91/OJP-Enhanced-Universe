@@ -63,6 +63,8 @@ static qhandle_t blueSaberGlowShader;
 static qhandle_t blueSaberCoreShader;
 static qhandle_t purpleSaberGlowShader;
 static qhandle_t purpleSaberCoreShader;
+static qhandle_t cyanSaberGlowShader;
+static qhandle_t cyanSaberCoreShader;
 
 //[RGBSabers]
 static qhandle_t rgbSaberCoreShader;
@@ -85,6 +87,8 @@ void UI_CacheSaberGlowGraphics( void )
 	blueSaberCoreShader			= trap_R_RegisterShaderNoMip( "gfx/effects/sabers/blue_line" );
 	purpleSaberGlowShader		= trap_R_RegisterShaderNoMip( "gfx/effects/sabers/purple_glow" );
 	purpleSaberCoreShader		= trap_R_RegisterShaderNoMip( "gfx/effects/sabers/purple_line" );
+	cyanSaberGlowShader		= trap_R_RegisterShaderNoMip( "gfx/effects/sabers/cyan_glow" );
+	cyanSaberCoreShader		= trap_R_RegisterShaderNoMip( "gfx/effects/sabers/cyan_line" );
 	//[RGBSabers]
 	rgbSaberGlowShader		= trap_R_RegisterShaderNoMip( "gfx/effects/sabers/rgb_glow" );
 	rgbSaberCoreShader		= trap_R_RegisterShaderNoMip( "gfx/effects/sabers/rgb_line" );
@@ -712,12 +716,17 @@ void UI_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, float
 		case SABER_BLUE:
 			glow = blueSaberGlowShader;
 			blade = blueSaberCoreShader;
-			VectorSet( rgb, 0.2f, 0.4f, 1.0f );
+			VectorSet( rgb, 0.2f, 0.2f, 1.0f );
 			break;
 		case SABER_PURPLE:
 			glow = purpleSaberGlowShader;
 			blade = purpleSaberCoreShader;
-			VectorSet( rgb, 0.9f, 0.2f, 1.0f );
+			VectorSet( rgb, 1.0f, 0.2f, 1.0f );
+			break;
+		case SABER_CYAN:
+			glow = cyanSaberGlowShader;
+			blade = cyanSaberCoreShader;
+			VectorSet( rgb, 0.2f, 1.0f, 1.0f );
 			break;
 //[RGBSabers]
 		case SABER_RGB:
@@ -853,7 +862,8 @@ char * SaberColorToString(saber_colors_t color)
 
 	if ( color == SABER_PURPLE)
 		return "purple";
-
+	if ( color == SABER_CYAN)
+		return "cyan";
 	//[RGBSabers]
 	if ( color == SABER_WHITE)
 		return "white";
@@ -900,6 +910,10 @@ saber_colors_t TranslateSaberColor( const char *name )
 	{
 		return SABER_PURPLE;
 	}
+	if ( !Q_stricmp( name, "cyan" ) ) 
+	{
+		return SABER_CYAN;
+	}
 	//[RGBSabers]
 	if ( !Q_stricmp( name, "rgb" ) ) 
 	{
@@ -924,7 +938,7 @@ saber_colors_t TranslateSaberColor( const char *name )
 	//[/RGBSabers]
 	if ( !Q_stricmp( name, "random" ) ) 
 	{
-		return ((saber_colors_t)(Q_irand( SABER_ORANGE, SABER_PURPLE )));
+		return ((saber_colors_t)(Q_irand( SABER_ORANGE, SABER_CYAN )));
 	}
 	return SABER_BLUE;
 }

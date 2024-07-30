@@ -88,101 +88,65 @@ int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] =
 		//NUM_FORCE_POWERS
 	},
 	{
-		60,//FP_HEAL,//instant //was 25, but that was way too little
-		30,//FP_LEVITATION,//hold/duration
-		//[ForceSys]
-		3,//FP_SPEED,//hold/duration
-		//50,//FP_SPEED,//duration
-		//[/ForceSys]
+		40,//FP_HEAL,//instant //was 25, but that was way too little
+		10,//FP_LEVITATION,//hold/duration
+		1,//FP_SPEED,//duration
 		20,//FP_PUSH,//hold/duration
 		20,//FP_PULL,//hold/duration
-		60,//FP_TELEPATHY,//instant
-		20,//FP_GRIP,//hold/duration
-		//[ForceSys]
-		20,//FP_LIGHTNING,//initial FP cost -- was 10
-		//1,//FP_LIGHTNING,//hold/duration
-		//[/ForceSys]
-		60,//FP_RAGE,//duration
-		3,//FP_PROTECT,//duration
-		60,//FP_ABSORB,//duration
-		60,//FP_TEAM_HEAL,//instant
-		60,//FP_TEAM_FORCE,//instant
-		//[ForceSys]
-		//drain now acts like lightning.
-		20,//FP_DRAIN, //initial FP cost
-		//20,//FP_DRAIN,//hold/duration
-		//[/ForceSys]
-		60,//FP_SEE,//duration
-		0,//FP_SABER_OFFENSE,
-		3,//FP_SABER_DEFENSE,
-		40//FP_SABERTHROW,
-		//NUM_FORCE_POWERS
-	},
-	{
-		40,//FP_HEAL,//instant
-		20,//FP_LEVITATION,//hold/duration
-		//[ForceSys]
-		2,//FP_SPEED,//hold/duration
-		//reduced the FP cost for pull/push
-		15,//FP_PUSH,//hold/duration
-		15,//FP_PULL,//hold/duration
-		//50,//FP_SPEED,//duration
-		//20,//FP_PUSH,//hold/duration
-		//20,//FP_PULL,//hold/duration
-		//[/ForceSys]
 		40,//FP_TELEPATHY,//instant
-		15,//FP_GRIP,//hold/duration
-		//[ForceSys]
-		15,//FP_LIGHTNING,//initial FP cost -- was 10
-		//1,//FP_LIGHTNING,//hold/duration
-		//[/ForceSys]
+		40,//FP_GRIP,//hold/duration
+		1,//FP_LIGHTNING,//hold/duration
 		40,//FP_RAGE,//duration
-		2,//FP_PROTECT,//duration
+		40,//FP_PROTECT,//duration
 		40,//FP_ABSORB,//duration
 		40,//FP_TEAM_HEAL,//instant
 		40,//FP_TEAM_FORCE,//instant
-		//[ForceSys]
-		//drain now acts like lightning.
-		15,//FP_DRAIN,//initial FP cost
-		//20,//FP_DRAIN,//hold/duration
-		//[/ForceSys]
-		40,//FP_SEE,//duration
+		1,//FP_DRAIN,//hold/duration
+		20,//FP_SEE,//duration
 		0,//FP_SABER_OFFENSE,
-		1,//FP_SABER_DEFENSE,
-		30//FP_SABERTHROW,
+		2,//FP_SABER_DEFENSE,
+		20//FP_SABERTHROW,
 		//NUM_FORCE_POWERS
 	},
 	{
-		10,//FP_HEAL,//instant //You get 5 points of health.. for 50 force points!
+		40,//FP_HEAL,//instant //was 25, but that was way too little
 		10,//FP_LEVITATION,//hold/duration
-		//[ForceSys]
 		1,//FP_SPEED,//duration
-		//reduced the FP cost for pull/push
-		10,//FP_PUSH,//hold/duration
-		10,//FP_PULL,//hold/duration
-		//50,//FP_SPEED,//duration
-		//20,//FP_PUSH,//hold/duration
-		//20,//FP_PULL,//hold/duration
-		//[/ForceSys]
-		20,//FP_TELEPATHY,//instant
-		10,//FP_GRIP,//hold/duration
-		//[ForceSys]
-		10,//FP_LIGHTNING,//initial FP cost -- Was 10
-		//1,//FP_LIGHTNING,//hold/duration
-		//[/ForceSys]
-		20,//FP_RAGE,//duration
-		1,//FP_PROTECT,//duration
-		20,//FP_ABSORB,//duration
-		20,//FP_TEAM_HEAL,//instant
-		20,//FP_TEAM_FORCE,//instant
-		//[ForceSys]
-		//drain now acts like lightning.
-		10,//FP_DRAIN,//initial FP cost
-		//20,//FP_DRAIN,//hold/duration
-		//[/ForceSys]
+		20,//FP_PUSH,//hold/duration
+		20,//FP_PULL,//hold/duration
+		40,//FP_TELEPATHY,//instant
+		40,//FP_GRIP,//hold/duration
+		1,//FP_LIGHTNING,//hold/duration
+		40,//FP_RAGE,//duration
+		40,//FP_PROTECT,//duration
+		40,//FP_ABSORB,//duration
+		40,//FP_TEAM_HEAL,//instant
+		40,//FP_TEAM_FORCE,//instant
+		1,//FP_DRAIN,//hold/duration
 		20,//FP_SEE,//duration
 		0,//FP_SABER_OFFENSE,
-		0,//FP_SABER_DEFENSE,
+		2,//FP_SABER_DEFENSE,
+		20//FP_SABERTHROW,
+		//NUM_FORCE_POWERS
+	},
+	{
+		40,//FP_HEAL,//instant //was 25, but that was way too little
+		10,//FP_LEVITATION,//hold/duration
+		1,//FP_SPEED,//duration
+		20,//FP_PUSH,//hold/duration
+		20,//FP_PULL,//hold/duration
+		40,//FP_TELEPATHY,//instant
+		40,//FP_GRIP,//hold/duration
+		1,//FP_LIGHTNING,//hold/duration
+		40,//FP_RAGE,//duration
+		40,//FP_PROTECT,//duration
+		40,//FP_ABSORB,//duration
+		40,//FP_TEAM_HEAL,//instant
+		40,//FP_TEAM_FORCE,//instant
+		1,//FP_DRAIN,//hold/duration
+		20,//FP_SEE,//duration
+		0,//FP_SABER_OFFENSE,
+		2,//FP_SABER_DEFENSE,
 		20//FP_SABERTHROW,
 		//NUM_FORCE_POWERS
 	}
@@ -7556,7 +7520,7 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags |= EF_DUAL_WEAPONS;
 	}
-	
+
 	
 	
 	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;
@@ -7621,6 +7585,7 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags2 |= EF2_NOALTFIRE;
 	}		
+
 	
 	pm->ps->eFlags &= ~EF_WP_OPTION_2;
 	pm->ps->eFlags &= ~EF_WP_OPTION_3;	
@@ -7903,6 +7868,9 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
+	
+
+	
 
 	
 	if(g_gametype.integer == GT_SIEGE)
@@ -8367,6 +8335,37 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 			{	
 					charging = qfalse;
 					altFire = qfalse;
+			}
+			else if(pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+/*			#ifdef QAGAME
+					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET]>=FORCE_LEVEL_2)
+#else
+					)
+#endif*/
+			{	
+					charging = qfalse;
+					altFire = qtrue;
+			}
+			else if(pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+/*			#ifdef QAGAME
+					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET]>=FORCE_LEVEL_2)
+#else
+					)
+#endif*/
+			{	
+					charging = qfalse;
+					altFire = qtrue;
+			}
+			else if(pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+/*			#ifdef QAGAME
+					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET]>=FORCE_LEVEL_2)
+#else
+					)
+#endif*/
+			{	
+					PM_RocketLock(2048,qfalse);
+					charging = qtrue;
+					altFire = qtrue;
 			}
 			else if( pm->cmd.buttons & BUTTON_ALT_ATTACK)
 /*			#ifdef QAGAME
@@ -10694,9 +10693,9 @@ static void PM_Weapon( void )
 	//[DualPistols]
 	if((pm->ps->eFlags & EF_DUAL_WEAPONS) && pm->ps->weapon == WP_BRYAR_PISTOL)
 		amount*=2;
-	if((pm->ps->eFlags & EF_DUAL_WEAPONS) && pm->ps->weapon == WP_BRYAR_OLD)
+	else if((pm->ps->eFlags & EF_DUAL_WEAPONS) && pm->ps->weapon == WP_BRYAR_OLD)
 		amount*=2;
-	if((pm->ps->eFlags & EF_DUAL_WEAPONS) && pm->ps->weapon == WP_STUN_BATON)
+	else if((pm->ps->eFlags & EF_DUAL_WEAPONS) && pm->ps->weapon == WP_STUN_BATON)
 		amount*=2;
 	//[/DualPistols]
 

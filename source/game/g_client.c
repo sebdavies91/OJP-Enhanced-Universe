@@ -5107,6 +5107,30 @@ void ClientSpawn(gentity_t *ent) {
 	{
 	ent->client->ps.eFlags |= EF_HI_OPTION_3;	
 	}		
+
+	if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_2 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_1 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_2 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;	
+	}	
 		//[/DualPistols]
 			if(client->skillLevel[SK_GRAPPLE])
 		{

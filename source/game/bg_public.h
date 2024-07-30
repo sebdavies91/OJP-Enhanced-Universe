@@ -71,7 +71,7 @@ typedef enum {
 #define	DODGE_MAX			250
 
 //The Fatigue (Force) Points to Dodge Points Ratio
-#define	DODGE_FATIGUE		5
+#define	DODGE_FATIGUE		1
 
 //The minimum damage level at which dodge works
 #define DODGE_MINDAM		20

@@ -1,0 +1,53 @@
+﻿  bg_misc.c
+  bg_saga.c
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\game\bg_saga.c(1068,21): warning C4456: declaration of 'i' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\game\bg_saga.c(819,6): message : see declaration of 'i'
+  bg_vehicleLoad.c
+  bg_weapons.c
+  q_math.c
+  q_shared.c
+  ui_atoms.c
+  ui_force.c
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_force.c(629,8): warning C4456: declaration of 'i' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_force.c(275,39): message : see declaration of 'i'
+  ui_gameinfo.c
+  ui_main.c
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(496,37): warning C4459: declaration of 'ui_siegeInfo' hides global declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_local.h(82,17): message : see declaration of 'ui_siegeInfo'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(523,37): warning C4459: declaration of 'ui_siegeInfo' hides global declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_local.h(82,17): message : see declaration of 'ui_siegeInfo'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(544,37): warning C4459: declaration of 'ui_siegeInfo' hides global declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_local.h(82,17): message : see declaration of 'ui_siegeInfo'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(5523,6): warning C4189: 'gameType': local variable is initialized but not referenced
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(5725,18): warning C4456: declaration of 'item' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(5707,13): message : see declaration of 'item'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(5734,18): warning C4456: declaration of 'item' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(5707,13): message : see declaration of 'item'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(6152,26): warning C4456: declaration of 'listPtr' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(6143,16): message : see declaration of 'listPtr'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(6605,31): warning C4456: declaration of 'name' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(6246,14): message : see declaration of 'name'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(6658,31): warning C4456: declaration of 'name' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(6246,14): message : see declaration of 'name'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(9255,11): warning C4456: declaration of 'i' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(9218,15): message : see declaration of 'i'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(9770,18): warning C4457: declaration of 'item' hides function parameter
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(9748,70): message : see declaration of 'item'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(9849,18): warning C4457: declaration of 'item' hides function parameter
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_main.c(9748,70): message : see declaration of 'item'
+  ui_saber.c
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_saber.c(802,8): warning C4456: declaration of 'i' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_saber.c(678,6): message : see declaration of 'i'
+  ui_shared.c
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(759,16): warning C4456: declaration of 'color' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(711,9): message : see declaration of 'color'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(5469,23): warning C4456: declaration of 'modelPtr' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(5458,14): message : see declaration of 'modelPtr'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6108,21): warning C4456: declaration of 'parent' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6099,14): message : see declaration of 'parent'
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6664,14): warning C4456: declaration of 'color' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6166,10): message : see declaration of 'color'
+  ui_syscalls.c
+  Generating Code...
+     Creating library .\../Debug/uix86.lib and object .\../Debug/uix86.exp
+  ui_vs2012.vcxproj -> C:\Users\sebda\OneDrive\Desktop\New folder (11)\OJP-Enhanced-Universe-master\ojpenhanced\uix86.dll

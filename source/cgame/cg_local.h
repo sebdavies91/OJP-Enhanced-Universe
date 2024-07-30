@@ -1254,9 +1254,11 @@ typedef struct {
 	qhandle_t	blueSaberCoreShader;
 	qhandle_t	purpleSaberGlowShader;
 	qhandle_t	purpleSaberCoreShader;
-
+	qhandle_t	cyanSaberGlowShader;
+	qhandle_t	cyanSaberCoreShader;
+	
 	//[RGBSabers]
-	qhandle_t	rgbSaberGlowShader;
+	qhandle_t	rgbSaberGlowShader; 
 	qhandle_t	rgbSaberCoreShader;
 	qhandle_t	rgbSaberCore2Shader;
 	qhandle_t	blackSaberGlowShader;
@@ -1280,6 +1282,7 @@ typedef struct {
 	qhandle_t greenOTGlowShader;			
 	qhandle_t blueOTGlowShader;			
 	qhandle_t purpleOTGlowShader;			
+	qhandle_t cyanOTGlowShader;
 
 	//Episode I Sabers
 	qhandle_t ep1SaberCoreShader;
@@ -1289,7 +1292,8 @@ typedef struct {
 	qhandle_t greenEp1GlowShader;			
 	qhandle_t blueEp1GlowShader;			
 	qhandle_t purpleEp1GlowShader;
-
+	qhandle_t cyanEp1GlowShader;
+	
 	//Episode II Sabers
 	qhandle_t ep2SaberCoreShader;
 	qhandle_t whiteIgniteFlare;
@@ -1300,6 +1304,7 @@ typedef struct {
 	qhandle_t greenEp2GlowShader;			
 	qhandle_t blueEp2GlowShader;			
 	qhandle_t purpleEp2GlowShader;
+	qhandle_t cyanEp2GlowShader;
 
 	//Episode III Sabers
 	qhandle_t ep3SaberCoreShader;
@@ -1308,6 +1313,7 @@ typedef struct {
 	qhandle_t redIgniteFlare;
 	qhandle_t greenIgniteFlare;
 	qhandle_t purpleIgniteFlare;
+	qhandle_t cyanIgniteFlare;	
 	qhandle_t blueIgniteFlare;
 	qhandle_t orangeIgniteFlare;
 	qhandle_t yellowIgniteFlare;
@@ -1316,7 +1322,8 @@ typedef struct {
 	qhandle_t yellowEp3GlowShader;			
 	qhandle_t greenEp3GlowShader;			
 	qhandle_t blueEp3GlowShader;			
-	qhandle_t purpleEp3GlowShader;			
+	qhandle_t purpleEp3GlowShader;		
+	qhandle_t cyanEp3GlowShader;		
 	//[Movie Sabers]
 
 	qhandle_t	saberBlurShader;
@@ -1552,6 +1559,9 @@ typedef struct {
 	qhandle_t invenIcons[HI_NUM_HOLDABLE];
 	qhandle_t invenIcons2[HI_NUM_HOLDABLE];
 	qhandle_t invenIcons3[HI_NUM_HOLDABLE];
+	qhandle_t invenIcons4[HI_NUM_HOLDABLE];
+	qhandle_t invenIcons5[HI_NUM_HOLDABLE];
+	qhandle_t invenIcons6[HI_NUM_HOLDABLE];		
 	//force power icons
 	qhandle_t forcePowerIcons[NUM_FORCE_POWERS];
 	qhandle_t forcePowerIcons2[NUM_FORCE_POWERS];

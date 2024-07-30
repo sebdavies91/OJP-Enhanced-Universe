@@ -1670,7 +1670,9 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.blueSaberCoreShader		= trap_R_RegisterShader( "gfx/effects/sabers/blue_line" );
 	cgs.media.purpleSaberGlowShader		= trap_R_RegisterShader( "gfx/effects/sabers/purple_glow" );
 	cgs.media.purpleSaberCoreShader		= trap_R_RegisterShader( "gfx/effects/sabers/purple_line" );
-
+	cgs.media.cyanSaberGlowShader		= trap_R_RegisterShader( "gfx/effects/sabers/cyan_glow" );
+	cgs.media.cyanSaberCoreShader		= trap_R_RegisterShader( "gfx/effects/sabers/cyan_line" );
+	
 	//[RGBSabers]
 	cgs.media.rgbSaberGlowShader		= trap_R_RegisterShader( "gfx/effects/sabers/rgb_glow" );
 	cgs.media.rgbSaberCoreShader		= trap_R_RegisterShader( "gfx/effects/sabers/rgb_line" );
@@ -1696,6 +1698,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.greenOTGlowShader			= trap_R_RegisterShader( "OTsabers/ot_greenGlow" );
 	cgs.media.blueOTGlowShader			= trap_R_RegisterShader( "OTsabers/ot_blueGlow" );
 	cgs.media.purpleOTGlowShader		= trap_R_RegisterShader( "OTsabers/ot_purpleGlow" );
+	cgs.media.cyanOTGlowShader		= trap_R_RegisterShader( "OTsabers/ot_cyanGlow" );
 
 	//Episode I Sabers
 	cgs.media.ep1SaberCoreShader		= trap_R_RegisterShader( "Ep1Sabers/saber_core" );
@@ -1705,6 +1708,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.greenEp1GlowShader		= trap_R_RegisterShader( "Ep1Sabers/green_glowa" );
 	cgs.media.blueEp1GlowShader			= trap_R_RegisterShader( "Ep1Sabers/blue_glowa" );
 	cgs.media.purpleEp1GlowShader		= trap_R_RegisterShader( "Ep1Sabers/purple_glowa" );
+	cgs.media.cyanEp1GlowShader		= trap_R_RegisterShader( "Ep1Sabers/cyan_glowa" );
 
 	//Episode II Sabers
 	cgs.media.ep2SaberCoreShader		= trap_R_RegisterShader( "Ep2Sabers/saber_core" );
@@ -1716,6 +1720,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.greenEp2GlowShader		= trap_R_RegisterShader( "Ep2Sabers/green_glowa" );
 	cgs.media.blueEp2GlowShader			= trap_R_RegisterShader( "Ep2Sabers/blue_glowa" );
 	cgs.media.purpleEp2GlowShader		= trap_R_RegisterShader( "Ep2Sabers/purple_glowa" );
+	cgs.media.cyanEp2GlowShader		= trap_R_RegisterShader( "Ep2Sabers/cyan_glowa" );
 
 	//Episode III Sabers
 	cgs.media.ep3SaberCoreShader		= trap_R_RegisterShader( "Ep3Sabers/saber_core" );
@@ -1724,6 +1729,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.redIgniteFlare			= trap_R_RegisterShader( "Ep3Sabers/red_ignite_flare" );
 	cgs.media.greenIgniteFlare			= trap_R_RegisterShader( "Ep3Sabers/green_ignite_flare" );
 	cgs.media.purpleIgniteFlare			= trap_R_RegisterShader( "Ep3Sabers/purple_ignite_flare" );
+	cgs.media.cyanIgniteFlare			= trap_R_RegisterShader( "Ep3Sabers/cyan_ignite_flare" );	
 	cgs.media.blueIgniteFlare			= trap_R_RegisterShader( "Ep3Sabers/blue_ignite_flare" );
 	cgs.media.orangeIgniteFlare			= trap_R_RegisterShader( "Ep3Sabers/orange_ignite_flare" );
 	cgs.media.yellowIgniteFlare			= trap_R_RegisterShader( "Ep3Sabers/yellow_ignite_flare" );
@@ -1733,6 +1739,7 @@ static void CG_RegisterSounds( void ) {
 	cgs.media.greenEp3GlowShader		= trap_R_RegisterShader( "Ep3Sabers/green_glowa" );
 	cgs.media.blueEp3GlowShader			= trap_R_RegisterShader( "Ep3Sabers/blue_glowa" );
 	cgs.media.purpleEp3GlowShader		= trap_R_RegisterShader( "Ep3Sabers/purple_glowa" );
+	cgs.media.cyanEp3GlowShader		= trap_R_RegisterShader( "Ep3Sabers/cyan_glowa" );
 	//[Movie Sabers]
 
 	cgs.media.saberBlurShader			= trap_R_RegisterShader( "gfx/effects/sabers/saberBlur" );
@@ -4206,12 +4213,12 @@ Ghoul2 Insert End
 				}
 				else if( i == WP_FLECHETTE)
 				{
-				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1.tga");
-				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1_na.tga");
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cr1.tga");
+				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cr1_na.tga");
 				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1.tga");
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1_na.tga");
-				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1.tga");
-				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1_na.tga");
+				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_acp.tga");
+				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_acp_na.tga");
 				}
 				else if( i == WP_CONCUSSION)
 				{
@@ -4219,13 +4226,13 @@ Ghoul2 Insert End
 				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_rotary_cannon_na.tga");
 				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_minigun.tga");
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_minigun_na.tga");
-				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_c_rifle.tga");
-				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_c_rifle_na.tga");
+				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lj50.tga");
+				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lj50_na.tga");
 				}
 				else if( i == WP_ROCKET_LAUNCHER)
 				{
-				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cw_launcher.tga");
-				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cw_launcher_na.tga");
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg.tga");
+				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg_na.tga");
 				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cw_launcher.tga");
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cw_launcher_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_e60r_launcher.tga");
@@ -4301,16 +4308,33 @@ Ghoul2 Insert End
 				{
 					cgs.media.invenIcons2[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_poison.tga");
 					cgs.media.invenIcons3[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_ice.tga");
+					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 				}
 				else if (bg_itemlist[i].giTag == HI_ELECTROSHOCKER)
 				{
 					cgs.media.invenIcons2[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_laser.tga");
 					cgs.media.invenIcons3[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_orbital.tga");
+					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+				}
+				else if (bg_itemlist[i].giTag == HI_SQUADTEAM)
+				{
+					cgs.media.invenIcons2[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_rebellion.tga");
+					cgs.media.invenIcons3[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_mercenaries.tga");
+					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_confederacy.tga");
+					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_republic.tga");
+					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_mandalorians.tga");
 				}
 				else
 				{
 					cgs.media.invenIcons2[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 					cgs.media.invenIcons3[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 				}
 			cgs.media.invenIcons[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);	
 			}
@@ -4318,6 +4342,9 @@ Ghoul2 Insert End
 			{
 				cgs.media.invenIcons2[bg_itemlist[i].giTag] = 0;
 				cgs.media.invenIcons3[bg_itemlist[i].giTag] = 0;
+				cgs.media.invenIcons4[bg_itemlist[i].giTag] = 0;
+				cgs.media.invenIcons5[bg_itemlist[i].giTag] = 0;
+				cgs.media.invenIcons6[bg_itemlist[i].giTag] = 0;
 				cgs.media.invenIcons[bg_itemlist[i].giTag] = 0;
 			}
 			

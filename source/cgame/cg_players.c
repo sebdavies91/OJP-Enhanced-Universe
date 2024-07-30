@@ -3084,21 +3084,13 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 					//CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
 					cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
 				}
-				else
-				{
-					cg_entities[clientNum].ghoul2weapon2 = NULL;
-				}
-				if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
+				else if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
 					(cg_entities[clientNum].currentState.weapon == WP_BRYAR_OLD))
 				{
 					//CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
 					cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
 				}
-				else
-				{
-					cg_entities[clientNum].ghoul2weapon2 = NULL;
-				}
-				if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
+				else if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
 					(cg_entities[clientNum].currentState.weapon == WP_STUN_BATON))
 				{
 					//CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
@@ -6851,10 +6843,13 @@ static void CG_RGBForSaberColor( saber_colors_t color, vec3_t rgb, int cnum, int
 			VectorSet( rgb, 0.2f, 1.0f, 0.2f );
 			break;
 		case SABER_BLUE:
-			VectorSet( rgb, 0.2f, 0.4f, 1.0f );
+			VectorSet( rgb, 0.2f, 0.2f, 1.0f );
 			break;
 		case SABER_PURPLE:
-			VectorSet( rgb, 0.9f, 0.2f, 1.0f );
+			VectorSet( rgb, 1.0f, 0.2f, 1.0f );
+			break;
+		case SABER_CYAN:
+			VectorSet( rgb, 0.2f, 1.0f, 1.0f );
 			break;
 //[RGBSabers]
 		case SABER_RGB:
@@ -7061,6 +7056,10 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, float
 		case SABER_PURPLE:
 			glow = cgs.media.purpleSaberGlowShader;
 			blade = cgs.media.purpleSaberCoreShader;
+			break;
+		case SABER_CYAN:
+			glow = cgs.media.cyanSaberGlowShader;
+			blade = cgs.media.cyanSaberCoreShader;
 			break;
 		//[RGBSabers]
 		case SABER_SCRIPTED:
@@ -7281,7 +7280,7 @@ void CG_DoPrequelSaber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, ve
 					blade = cgs.media.ep2SaberCoreShader;
 					ignite = cgs.media.whiteIgniteFlare;
 					rgb[0] = 255.0f;
-					rgb[1] = 200.0f;
+					rgb[1] = 255.0f;
 					rgb[2] = 0.0f;
 					break;
 				case 3:
@@ -7305,7 +7304,7 @@ void CG_DoPrequelSaber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, ve
 					glow = cgs.media.greenEp2GlowShader;					
 					blade = cgs.media.ep2SaberCoreShader;
 					ignite = cgs.media.whiteIgniteFlare;
-					rgb[0] = 63.0f;
+					rgb[0] = 0.0f;
 					rgb[1] = 255.0f;
 					rgb[2] = 0.0f;
 					break;
@@ -7330,7 +7329,7 @@ void CG_DoPrequelSaber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, ve
 					glow = cgs.media.purpleEp2GlowShader;
 					blade = cgs.media.ep2SaberCoreShader;
 					ignite = cgs.media.whiteIgniteFlare;
-					rgb[0] = 128.0f;
+					rgb[0] = 255.0f;
 					rgb[1] = 0.0f;
 					rgb[2] = 255.0f;
 					break;
@@ -7338,6 +7337,31 @@ void CG_DoPrequelSaber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, ve
 					glow = cgs.media.purpleEp3GlowShader;					
 					blade = cgs.media.ep3SaberCoreShader;
 					ignite = cgs.media.purpleIgniteFlare;
+					break;
+				default:
+					return;
+					break;
+			}
+			break;
+		case SABER_CYAN:			
+			switch( saberType )
+			{
+				case 1:
+					glow = cgs.media.cyanEp1GlowShader;
+					blade = cgs.media.ep1SaberCoreShader;
+					break;
+				case 2:
+					glow = cgs.media.cyanEp2GlowShader;
+					blade = cgs.media.ep2SaberCoreShader;
+					ignite = cgs.media.whiteIgniteFlare;
+					rgb[0] = 0.0f;
+					rgb[1] = 255.0f;
+					rgb[2] = 255.0f;
+					break;
+				case 3:
+					glow = cgs.media.cyanEp3GlowShader;					
+					blade = cgs.media.ep3SaberCoreShader;
+					ignite = cgs.media.cyanIgniteFlare;
 					break;
 				default:
 					return;
@@ -7861,6 +7885,9 @@ void CG_DoEp1Saber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, vec3_t
 		case SABER_PURPLE:
 			glow = cgs.media.purpleEp1GlowShader;
 			break;
+		case SABER_CYAN:
+			glow = cgs.media.cyanEp1GlowShader;
+			break;
                 //[RGBSabers]
 		case SABER_SCRIPTED:
 		case SABER_WHITE:
@@ -8337,19 +8364,25 @@ void CG_DoEp2Saber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, vec3_t
 		case SABER_YELLOW:
 			glow = cgs.media.yellowEp2GlowShader;
 			igniteRGB[0] = 255.0f;
-			igniteRGB[1] = 200.0f;
+			igniteRGB[1] = 255.0f;
 			igniteRGB[2] = 0.0f;
 			break;
 		case SABER_GREEN:
 			glow = cgs.media.greenEp2GlowShader;
-			igniteRGB[0] = 63.0f;
+			igniteRGB[0] = 0.0f;
 			igniteRGB[1] = 255.0f;
 			igniteRGB[2] = 0.0f;
 			break;
 		case SABER_PURPLE:
 			glow = cgs.media.purpleEp2GlowShader;
-			igniteRGB[0] = 128.0f;
+			igniteRGB[0] = 255.0f;
 			igniteRGB[1] = 0.0f;
+			igniteRGB[2] = 255.0f;
+			break;
+		case SABER_CYAN:
+			glow = cgs.media.cyanEp2GlowShader;
+			igniteRGB[0] = 0.0f;
+			igniteRGB[1] = 255.0f;
 			igniteRGB[2] = 255.0f;
 			break;
                 //[RGBSabers]
@@ -8880,6 +8913,10 @@ void CG_DoEp3Saber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, vec3_t
 			glow = cgs.media.purpleEp3GlowShader;
 			ignite = cgs.media.purpleIgniteFlare;
 			break;
+		case SABER_CYAN:
+			glow = cgs.media.cyanEp3GlowShader;
+			ignite = cgs.media.cyanIgniteFlare;
+			break;
                 //[RGBSabers]
 		case SABER_SCRIPTED:
 		case SABER_WHITE:
@@ -9401,6 +9438,9 @@ void CG_DoOTSaber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, vec3_t 
 		case SABER_PURPLE:
 			glow = cgs.media.purpleOTGlowShader;
 			break;
+		case SABER_CYAN:
+			glow = cgs.media.cyanOTGlowShader;
+			break;
                 //[RGBSabers]
 		case SABER_SCRIPTED:
 		case SABER_WHITE:
@@ -9892,6 +9932,9 @@ void CG_DoSFXSaber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, vec3_t
 			break;
 		case SABER_PURPLE:
 			glow = cgs.media.purpleSaberGlowShader;
+			break;
+		case SABER_CYAN:
+			glow = cgs.media.cyanSaberGlowShader;
 			break;
                 //[RGBSabers]
 		case SABER_SCRIPTED:
@@ -11265,7 +11308,7 @@ CheckTrail:
 								VectorSet( rgb1, 255.0f, 0.0f, 0.0f );
 								break;
 							case SABER_ORANGE:
-								VectorSet( rgb1, 255.0f, 64.0f, 0.0f );
+								VectorSet( rgb1, 255.0f, 128.0f, 0.0f );
 								break;
 							case SABER_YELLOW:
 								VectorSet( rgb1, 255.0f, 255.0f, 0.0f );
@@ -11274,10 +11317,13 @@ CheckTrail:
 								VectorSet( rgb1, 0.0f, 255.0f, 0.0f );
 								break;
 							case SABER_BLUE:
-								VectorSet( rgb1, 0.0f, 64.0f, 255.0f );
+								VectorSet( rgb1, 0.0f, 0.0f, 255.0f );
 								break;
 							case SABER_PURPLE:
-								VectorSet( rgb1, 220.0f, 0.0f, 255.0f );
+								VectorSet( rgb1, 255.0f, 0.0f, 255.0f );
+								break;
+							case SABER_CYAN:
+								VectorSet( rgb1, 0.0f, 255.0f, 255.0f );
 								break;
 							//[RGBSabers]
 							case SABER_RGB:
@@ -11527,7 +11573,7 @@ CheckTrail:
 									VectorSet( rgb1, 255.0f, 0.0f, 0.0f );
 									break;
 							case SABER_ORANGE:
-									VectorSet( rgb1, 255.0f, 64.0f, 0.0f );
+									VectorSet( rgb1, 255.0f, 128.0f, 0.0f );
 									break;
 							case SABER_YELLOW:
 									VectorSet( rgb1, 255.0f, 255.0f, 0.0f );
@@ -11536,10 +11582,13 @@ CheckTrail:
 									VectorSet( rgb1, 0.0f, 255.0f, 0.0f );
 									break;
 							case SABER_BLUE:
-									VectorSet( rgb1, 0.0f, 64.0f, 255.0f );
+									VectorSet( rgb1, 0.0f, 0.0f, 255.0f );
 									break;
 							case SABER_PURPLE:
-									VectorSet( rgb1, 220.0f, 0.0f, 255.0f );
+									VectorSet( rgb1, 255.0f, 0.0f, 255.0f );
+									break;
+							case SABER_CYAN:
+									VectorSet( rgb1, 0.0f, 255.0f, 255.0f );
 									break;
 							//[RGBSabers]
 							case SABER_RGB:
@@ -16569,14 +16618,10 @@ void CG_Player( centity_t *cent ) {
 			if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
 				(cent->currentState.weapon == WP_BRYAR_PISTOL))
 				cent->ghoul2weapon2 = CG_G2WeaponInstance2(cent, cent->currentState.weapon);
-			else
-				cent->ghoul2weapon2 = NULL;
-			if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
+			else if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
 				(cent->currentState.weapon == WP_BRYAR_OLD))
-				cent->ghoul2weapon2 = CG_G2WeaponInstance2(cent, cent->currentState.weapon);
-			else
-				cent->ghoul2weapon2 = NULL;   
-			if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
+				cent->ghoul2weapon2 = CG_G2WeaponInstance2(cent, cent->currentState.weapon); 
+			else if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
 				(cent->currentState.weapon == WP_STUN_BATON))
 				cent->ghoul2weapon2 = CG_G2WeaponInstance2(cent, cent->currentState.weapon);
 			else
@@ -17148,7 +17193,7 @@ SkipTrueView:
 		if (cent->bolt4 < cg.time)
 		{
 			cent->bolt4 = cg.time + 100;
-			trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/drain.wav") );
+			trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/sever.wav") );
 		}
 	}
 	else
@@ -17325,7 +17370,7 @@ SkipTrueView:
 			if (cent->bolt4 < cg.time)
 			{
 				cent->bolt4 = cg.time + 100;
-				trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/lightning.wav"));
+				trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/judgement.wav"));
 			}
 
 		}
@@ -17958,112 +18003,30 @@ SkipTrueView:
 																	  
 																																																								 
 			//use refractive effect
-			CG_ForceGraspEffect( efOrgR );
+//			CG_ForceGraspEffect( efOrgR );
    
 
 			//use refractive effect
-			CG_ForceGraspEffect( efOrgL );
+//			CG_ForceGraspEffect( efOrgL );
 
 			}
 			else if (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)
 			{
 			//use refractive effect
-			CG_ForceGraspEffect( efOrgL );
+//			CG_ForceGraspEffect( efOrgL );
 
 			}
 			}
 		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)
 			{
 			//use refractive effect
-			CG_ForceGraspEffect( efOrgL );
+//			CG_ForceGraspEffect( efOrgL );
 
 			}	
 			
 		
 
-			/*
-			//Render a scaled version of the model's hand with a n337 looking shader
-			{
-				const char *rotateBone;
-				char *limbName;
-				char *limbCapName;
-				vec3_t armAng;
-				refEntity_t regrip_arm;
-				float wv = sin( cg.time * 0.003f ) * 0.08f + 0.1f;
 
-				//rotateBone = "lradius";
-				rotateBone = "lradiusX";
-				limbName = "l_arm";
-				limbCapName = "l_arm_cap_torso";
-
-				if (cent->grip_arm && trap_G2_HaveWeGhoul2Models(cent->grip_arm))
-				{
-					trap_G2API_CleanGhoul2Models(&(cent->grip_arm));
-				}
-
-				memset( &regrip_arm, 0, sizeof(regrip_arm) );
-
-				VectorCopy(origBolt, efOrg);
-
-
-				//efOrg[2] += 8;
-				efOrg[2] -= 4;
-
-				VectorCopy(efOrg, regrip_arm.origin);
-				VectorCopy(regrip_arm.origin, regrip_arm.lightingOrigin);
-
-				//VectorCopy(cent->lerpAngles, armAng);
-				VectorAdd(vec3_origin, rootAngles, armAng);
-				//armAng[ROLL] = -90;
-				armAng[ROLL] = 0;
-				armAng[PITCH] = 0;
-				AnglesToAxis(armAng, regrip_arm.axis);
-				
-				trap_G2API_DuplicateGhoul2Instance(cent->ghoul2, &cent->grip_arm);
-
-				//remove all other models
-				if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->grip_arm), 1))
-				{ //weapon right
-					trap_G2API_RemoveGhoul2Model(&(cent->grip_arm), 1);
-				}
-				if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->grip_arm), 2))
-				{ //weapon left
-					trap_G2API_RemoveGhoul2Model(&(cent->grip_arm), 2);
-				}
-				if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->grip_arm), 3))
-				{ //jetpack
-					trap_G2API_RemoveGhoul2Model(&(cent->grip_arm), 3);
-				}
-
-				trap_G2API_SetRootSurface(cent->grip_arm, 0, limbName);
-				trap_G2API_SetNewOrigin(cent->grip_arm, trap_G2API_AddBolt(cent->grip_arm, 0, rotateBone));
-				trap_G2API_SetSurfaceOnOff(cent->grip_arm, limbCapName, 0);
-
-				regrip_arm.modelScale[0] = 1;//+(wv*6);
-				regrip_arm.modelScale[1] = 1;//+(wv*6);
-				regrip_arm.modelScale[2] = 1;//+(wv*6);
-				ScaleModelAxis(&regrip_arm);
-
-				regrip_arm.radius = 64;
-
-				regrip_arm.customShader = trap_R_RegisterShader( "gfx/misc/red_portashield" );
-				
-				regrip_arm.renderfx |= RF_RGB_TINT;
-				regrip_arm.shaderRGBA[0] = 255 - (wv*900);
-				if (regrip_arm.shaderRGBA[0] < 30)
-				{
-					regrip_arm.shaderRGBA[0] = 30;
-				}
-				if (regrip_arm.shaderRGBA[0] > 255)
-				{
-					regrip_arm.shaderRGBA[0] = 255;
-				}
-				regrip_arm.shaderRGBA[1] = regrip_arm.shaderRGBA[2] = regrip_arm.shaderRGBA[0];
-				
-				regrip_arm.ghoul2 = cent->grip_arm;
-				trap_R_AddRefEntityToScene( &regrip_arm );
-			}
-			*/
 			}
 			else
 		{
@@ -18086,112 +18049,30 @@ SkipTrueView:
 																	  
 																																																								 
 			//use refractive effect
-			CG_ForceGripEffect( efOrgR );
+//			CG_ForceGripEffect( efOrgR );
    
 
 			//use refractive effect
-			CG_ForceGripEffect( efOrgL );
+//			CG_ForceGripEffect( efOrgL );
 
 			}
 			else if (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)
 			{
 			//use refractive effect
-			CG_ForceGripEffect( efOrgL );
+//			CG_ForceGripEffect( efOrgL );
 
 			}
 			}
 		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)
 			{
 			//use refractive effect
-			CG_ForceGripEffect( efOrgL );
+//			CG_ForceGripEffect( efOrgL );
 
 			}	
 			
 		
 
-			/*
-			//Render a scaled version of the model's hand with a n337 looking shader
-			{
-				const char *rotateBone;
-				char *limbName;
-				char *limbCapName;
-				vec3_t armAng;
-				refEntity_t regrip_arm;
-				float wv = sin( cg.time * 0.003f ) * 0.08f + 0.1f;
 
-				//rotateBone = "lradius";
-				rotateBone = "lradiusX";
-				limbName = "l_arm";
-				limbCapName = "l_arm_cap_torso";
-
-				if (cent->grip_arm && trap_G2_HaveWeGhoul2Models(cent->grip_arm))
-				{
-					trap_G2API_CleanGhoul2Models(&(cent->grip_arm));
-				}
-
-				memset( &regrip_arm, 0, sizeof(regrip_arm) );
-
-				VectorCopy(origBolt, efOrg);
-
-
-				//efOrg[2] += 8;
-				efOrg[2] -= 4;
-
-				VectorCopy(efOrg, regrip_arm.origin);
-				VectorCopy(regrip_arm.origin, regrip_arm.lightingOrigin);
-
-				//VectorCopy(cent->lerpAngles, armAng);
-				VectorAdd(vec3_origin, rootAngles, armAng);
-				//armAng[ROLL] = -90;
-				armAng[ROLL] = 0;
-				armAng[PITCH] = 0;
-				AnglesToAxis(armAng, regrip_arm.axis);
-				
-				trap_G2API_DuplicateGhoul2Instance(cent->ghoul2, &cent->grip_arm);
-
-				//remove all other models
-				if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->grip_arm), 1))
-				{ //weapon right
-					trap_G2API_RemoveGhoul2Model(&(cent->grip_arm), 1);
-				}
-				if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->grip_arm), 2))
-				{ //weapon left
-					trap_G2API_RemoveGhoul2Model(&(cent->grip_arm), 2);
-				}
-				if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->grip_arm), 3))
-				{ //jetpack
-					trap_G2API_RemoveGhoul2Model(&(cent->grip_arm), 3);
-				}
-
-				trap_G2API_SetRootSurface(cent->grip_arm, 0, limbName);
-				trap_G2API_SetNewOrigin(cent->grip_arm, trap_G2API_AddBolt(cent->grip_arm, 0, rotateBone));
-				trap_G2API_SetSurfaceOnOff(cent->grip_arm, limbCapName, 0);
-
-				regrip_arm.modelScale[0] = 1;//+(wv*6);
-				regrip_arm.modelScale[1] = 1;//+(wv*6);
-				regrip_arm.modelScale[2] = 1;//+(wv*6);
-				ScaleModelAxis(&regrip_arm);
-
-				regrip_arm.radius = 64;
-
-				regrip_arm.customShader = trap_R_RegisterShader( "gfx/misc/red_portashield" );
-				
-				regrip_arm.renderfx |= RF_RGB_TINT;
-				regrip_arm.shaderRGBA[0] = 255 - (wv*900);
-				if (regrip_arm.shaderRGBA[0] < 30)
-				{
-					regrip_arm.shaderRGBA[0] = 30;
-				}
-				if (regrip_arm.shaderRGBA[0] > 255)
-				{
-					regrip_arm.shaderRGBA[0] = 255;
-				}
-				regrip_arm.shaderRGBA[1] = regrip_arm.shaderRGBA[2] = regrip_arm.shaderRGBA[0];
-				
-				regrip_arm.ghoul2 = cent->grip_arm;
-				trap_R_AddRefEntityToScene( &regrip_arm );
-			}
-			*/
 		}			
 		}
 
@@ -19895,10 +19776,10 @@ stillDoSaber:
 		if((cent->currentState.eFlags & EF_DUAL_WEAPONS) 
 			&& cent->currentState.weapon == WP_BRYAR_PISTOL)
 			CG_AddPlayerWeapon(&legs,NULL,cent,ci->team,rootAngles,qtrue,qtrue);
-		if((cent->currentState.eFlags & EF_DUAL_WEAPONS) 
+		else if((cent->currentState.eFlags & EF_DUAL_WEAPONS) 
 			&& cent->currentState.weapon == WP_BRYAR_OLD)
 			CG_AddPlayerWeapon(&legs,NULL,cent,ci->team,rootAngles,qtrue,qtrue);
-		if((cent->currentState.eFlags & EF_DUAL_WEAPONS) 
+		else if((cent->currentState.eFlags & EF_DUAL_WEAPONS) 
 			&& cent->currentState.weapon == WP_STUN_BATON)
 			CG_AddPlayerWeapon(&legs,NULL,cent,ci->team,rootAngles,qtrue,qtrue);
 	}

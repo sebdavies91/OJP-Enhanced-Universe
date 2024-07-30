@@ -300,9 +300,13 @@ saber_colors_t TranslateSaberColor( const char *name )
 	{
 		return SABER_PURPLE;
 	}
+	if ( !Q_stricmp( name, "cyan" ) ) 
+	{
+		return SABER_CYAN;
+	}
 	if ( !Q_stricmp( name, "random" ) ) 
 	{
-		return ((saber_colors_t)(Q_irand( SABER_ORANGE, SABER_PURPLE )));
+		return ((saber_colors_t)(Q_irand( SABER_ORANGE, SABER_CYAN )));
 	}
 	return SABER_BLUE;
 }

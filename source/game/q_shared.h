@@ -513,6 +513,7 @@ typedef enum
 	SABER_GREEN,
 	SABER_BLUE,
 	SABER_PURPLE,
+	SABER_CYAN,
 	//[RGBSabers]
 	SABER_WHITE,
 	SABER_BLACK,
@@ -574,10 +575,10 @@ typedef enum
 	SK_DUALSTYLE,	//Dual lightsaber style
 	SK_STAFFSTYLE,	//Staff lightsaber style
 	//[/StanceSelection]
-	SK_REPEATERUPGRADE,//[Repeater]
+	SK_LASERTURRETA, 
 	SK_FLECHETTE,//[Flechette]
-	SK_BLASTERRATEOFFIREUPGRADE,//[BlasterRateOfFire]
-		SK_TRIPMINE,			//trip mine
+	SK_LASERTURRETB, 
+	SK_TRIPMINE,			//trip mine
 	SK_DEMP2,			//Concussion Rifle
 	SK_CONCUSSION,			//Concussion Rifle
 	SK_OLD,			//old blaster pistol

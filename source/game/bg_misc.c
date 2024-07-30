@@ -237,9 +237,9 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	{	0,	10,	0,	0	},	//SK_DUALSTYLE,	//Dual lightsaber style
 	{	0,	10,	0,	0	},	//SK_STAFFSTYLE,	//Staff lightsaber style
 	//[/StanceSelection]
-	{	0,	10,	0,	0	},  //SK_REPEATERUPGRADE //Repeater Upgrade
+	{	0,	1,	1,	1	},  //SK_LASERTURRETA 
 	{	0,	7,  8,  10	},  //SK_FLECHETTE //Flechette
-	{	0,	10,	0,	0	},	//SK_BLASTERRATEOFFIREUPGRADE
+	{	0,	1,	1,	1	},	//SK_LASERTURRETB 
 	{	0,	6,  8,	10	},	//SK_TRIPMINE		
 	{	0,	3,	6,	10	},	//SK_DEMP2	
 	{	0,	8,	8,	10	},	//SK_CONCUSSION	
@@ -1069,8 +1069,8 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	if (final_Side != FORCE_LIGHTSIDE &&
 		final_Side != FORCE_DARKSIDE)
 	{ //Not a valid side. You will be dark. Because I said so. (this is something that should never actually happen unless you purposely feed in an invalid config)
-		final_Side = FORCE_DARKSIDE;
-		maintainsValidity = qfalse;
+		final_Side = FORCE_LIGHTSIDE;
+		//maintainsValidity = qfalse;
 	}
 
 	if (teamForce)
@@ -1444,6 +1444,19 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 		final_Powers[NUM_FORCE_POWERS+SK_GREENSTYLE]=0;
 		final_Powers[NUM_FORCE_POWERS+SK_DUALSTYLE]=0;
 		final_Powers[NUM_FORCE_POWERS+SK_STAFFSTYLE]=0;
+		
+		final_Powers[NUM_FORCE_POWERS+SK_PUSHA]=0;
+		final_Powers[NUM_FORCE_POWERS+SK_PULLA]=0;	
+		final_Powers[NUM_FORCE_POWERS+SK_HEALA]=0;
+		final_Powers[NUM_FORCE_POWERS+SK_PROTECTA]=0;
+		final_Powers[NUM_FORCE_POWERS+SK_ABSORBA]=0;		
+		final_Powers[NUM_FORCE_POWERS+SK_TELEPATHYA]=0;	
+		final_Powers[NUM_FORCE_POWERS+SK_STASISA]=0;	
+		final_Powers[NUM_FORCE_POWERS+SK_GRIPA]=0;
+		final_Powers[NUM_FORCE_POWERS+SK_LIGHTNINGA]=0;
+		final_Powers[NUM_FORCE_POWERS+SK_DRAINA]=0;		
+		final_Powers[NUM_FORCE_POWERS+SK_RAGEA]=0;	
+		final_Powers[NUM_FORCE_POWERS+SK_DESTRUCTIONA]=0;				
 		//[/StanceSelection]
 	}
 	//[/ExpSys]

@@ -1,0 +1,28 @@
+﻿cl : command line warning D9035: option 'Gm' has been deprecated and will be removed in a future release
+  ui_syscalls.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  ui_shared.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  ui_saber.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  ui_main.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  ui_gameinfo.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  ui_force.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  ui_atoms.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  q_shared.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  q_math.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  bg_weapons.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  bg_vehicleLoad.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  bg_saga.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  bg_misc.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\q_shared.h(247,1): fatal error C1189: #error:  "Architecture not supported"
+  Generating Code...

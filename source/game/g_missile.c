@@ -906,40 +906,41 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			}
 			else if ( other && other->client && other->client->ps.powerups[PW_CLOAKED] )
 			{
-				Jedi_Decloak( other );
-				if ( ent->methodOfDeath == MOD_DEMP2_ALT )
-				{//direct hit with alt disables cloak forever
-					//permanently disable the saboteur's cloak
-					other->client->cloakToggleTime = Q3_INFINITE;
-				}
-				else
+
+				//if ( ent->methodOfDeath == MOD_DEMP2_ALT )
+				//{//direct hit with alt disables cloak forever
+				//	//permanently disable the saboteur's cloak
+				//	other->client->cloakToggleTime = Q3_INFINITE;
+				//}
+				if (ent->methodOfDeath == MOD_DEMP2_ALT || ent->methodOfDeath == MOD_DEMP2 || ent->methodOfDeath == MOD_INCINERATOR || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_DIOXIS || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_FREEZER || ent->methodOfDeath == MOD_FREEZER_EXPLOSION || ent->methodOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)
 				{//temp disable
+					Jedi_Decloak( other );
 					other->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
 				}
 			}
 			else if ( other && other->client && other->client->ps.powerups[PW_SPHERESHIELDED] )
 			{
-				Sphereshield_Off( other );
-				if ( ent->methodOfDeath == MOD_DEMP2_ALT )
-				{//direct hit with alt disables cloak forever
-					//permanently disable the saboteur's cloak
-					other->client->cloakToggleTime = Q3_INFINITE;
-				}
-				else
+				//if ( ent->methodOfDeath == MOD_DEMP2_ALT )
+				//{//direct hit with alt disables cloak forever
+				//	//permanently disable the saboteur's cloak
+				//	other->client->sphereshieldToggleTime = Q3_INFINITE;
+				//}
+				if (ent->methodOfDeath == MOD_DEMP2_ALT  || ent->methodOfDeath == MOD_DEMP2 )
 				{//temp disable
+					Sphereshield_Off( other );
 					other->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
 				}
 			}
 			else if ( other && other->client && other->client->ps.powerups[PW_OVERLOADED] )
 			{
-				Overload_Off( other );
-				if ( ent->methodOfDeath == MOD_DEMP2_ALT )
-				{//direct hit with alt disables cloak forever
-					//permanently disable the saboteur's cloak
-					other->client->cloakToggleTime = Q3_INFINITE;
-				}
-				else
+				//if ( ent->methodOfDeath == MOD_DEMP2_ALT )
+				//{//direct hit with alt disables cloak forever
+				//	//permanently disable the saboteur's cloak
+				//	//other->client->overloadToggleTime = Q3_INFINITE;
+				//}
+				if (ent->methodOfDeath == MOD_INCINERATOR || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_DIOXIS || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_FREEZER || ent->methodOfDeath == MOD_FREEZER_EXPLOSION || ent->methodOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)
 				{//temp disable
+					Overload_Off( other );
 					other->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
 				}
 			}

@@ -87,7 +87,7 @@ int OJP_PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en);
 #define BOTAI_CAPTUREDISTANCE 10
 
 //distance at which the bot will move out of the way of an ally.
-#define BLOCKALLIESDISTANCE 50
+#define BLOCKALLIESDISTANCE 100
 
 //targets must be inside this distance for the bot to attempt to blow up det packs.
 #define DETPACK_DETDISTANCE 500
@@ -102,7 +102,7 @@ int OJP_PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en);
 int MinimumAttackDistance[WP_NUM_WEAPONS] = 
 {
 	0, //WP_NONE,
-	0, //WP_STUN_BATON,
+	30, //WP_STUN_BATON,
 	30, //WP_MELEE,
 	60, //WP_SABER,
 	0, //WP_BRYAR_PISTOL,
@@ -127,7 +127,7 @@ int MinimumAttackDistance[WP_NUM_WEAPONS] =
 int MaximumAttackDistance[WP_NUM_WEAPONS] = 
 {
 	9999, //WP_NONE,
-	9999, //WP_STUN_BATON,
+	100, //WP_STUN_BATON,
 	100, //WP_MELEE,
 	160, //WP_SABER,
 	9999, //WP_BRYAR_PISTOL,
@@ -152,7 +152,7 @@ int MaximumAttackDistance[WP_NUM_WEAPONS] =
 int IdealAttackDistance[WP_NUM_WEAPONS] = 
 {
 	0, //WP_NONE,
-	1000, //WP_STUN_BATON,
+	40, //WP_STUN_BATON,
 	40, //WP_MELEE,
 	80, //WP_SABER,
 	1000, //WP_BRYAR_PISTOL,

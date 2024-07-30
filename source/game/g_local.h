@@ -1573,8 +1573,8 @@ void Weapon_HookFree (gentity_t *ent);
 //[DodgeSys]
 #define DISRUPTOR_MAX_CHARGE (g_gametype.integer == GT_SIEGE ? 200 : 60) //max charge on disruptor's alt fire.
 
-#define DODGE_BOLTBLOCK			2.5	//standard DP cost to block a missile bolt
-#define DODGE_BOWCASTERBLOCK	3
+#define DODGE_BOLTBLOCK			10	//standard DP cost to block a missile bolt
+#define DODGE_BOWCASTERBLOCK	15
 
 //[BryarSecondary]
 #define BRYAR_PISTOL_ALT_DPDAMAGE			DODGE_BOLTBLOCK			//minimum DP damage of bryar secondary

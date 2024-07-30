@@ -273,10 +273,7 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot, qbool
 					sess->sessionTeam = TEAM_FREE;
 				}
 				break;
-			case GT_DUEL:
-			//temporary fix
-				g_teamAutoJoin.integer = 1;
-			//temporary fix	  
+			case GT_DUEL:	  
 				// if the game is full, go into a waiting mode
 				if ( level.numNonSpectatorClients >= 2 ) {
 					sess->sessionTeam = TEAM_SPECTATOR;

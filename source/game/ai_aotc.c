@@ -3688,6 +3688,7 @@ void AOTC_StandardBotAI(bot_state_t *bs, float thinktime)
 		else
 		*/
 		//[/NewGameTypes][EnhancedImpliment]
+		if(bs->cur_ps.fd.forceSide == FORCE_LIGHTSIDE || bs->cur_ps.fd.forceSide == FORCE_DARKSIDE)
 		{
 			//do this above all things
 			if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PUSH)) && (bs->doForcePush > level.time || bs->cur_ps.fd.forceGripBeingGripped > level.time) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PUSH]][FP_PUSH] /*&& InFieldOfVision(bs->viewangles, 50, a_fo)*/)
@@ -3696,55 +3697,7 @@ void AOTC_StandardBotAI(bot_state_t *bs, float thinktime)
 				useTheForce = 1;
 				forceHostile = 1;
 			}
-					else if (bs->cur_ps.fd.forceSide == FORCE_DARKSIDE)
-			{ //try dark side powers
-			  //in order of priority top to bottom
-				if (g_entities[bs->entitynum].health <= 999
-					&& (bs->cur_ps.fd.forcePowersKnown & (1 << FP_DRAIN)) && bs->frame_Enemy_Len < MAX_DRAIN_DISTANCE && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo) )
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_DRAIN;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_LIGHTNING)) && bs->frame_Enemy_Len < FORCE_LIGHTNING_RADIUS && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_LIGHTNING;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TEAM_FORCE)) && bs->frame_Enemy_Len < FORCE_DESTRUCTION_RADIUS && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_TEAM_FORCE;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_RAGE))  && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_RAGE]][FP_RAGE]&& bs->currentEnemy && bs->frame_Enemy_Vis)
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_RAGE;
-					useTheForce = 1;
-					forceHostile = 0;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && (bs->cur_ps.fd.forcePowersActive & (1 << FP_GRIP)) && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{ //already gripping someone, so hold it
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && bs->frame_Enemy_Len < MAX_GRIP_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_GRIP]][FP_GRIP] && InFieldOfVision(bs->viewangles, 50, a_fo))
-				{
-					level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
-					useTheForce = 1;
-					forceHostile = 1;
-				}
-
-
-
-
-			}
-			else if (bs->cur_ps.fd.forceSide == FORCE_LIGHTSIDE)
-			{ //try light side powers
-				if (g_entities[bs->entitynum].health <= 999
-					&& bs->cur_ps.fd.forcePowersKnown & (1 << FP_HEAL) 
+				else if (g_entities[bs->entitynum].health <=  999 && bs->cur_ps.fd.forcePowersKnown & (1 << FP_HEAL) 
 					&& level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_HEAL]][FP_HEAL] )
 				{
 					level.clients[bs->client].ps.fd.forcePowerSelected = FP_HEAL;
@@ -3763,7 +3716,7 @@ void AOTC_StandardBotAI(bot_state_t *bs, float thinktime)
 					useTheForce = 1;
 					forceHostile = 1;
 				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PROTECT))  && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PROTECT]][FP_PROTECT] && bs->currentEnemy && bs->frame_Enemy_Vis)
+				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PROTECT))  && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PROTECT]][FP_PROTECT] )
 				{
 					level.clients[bs->client].ps.fd.forcePowerSelected = FP_PROTECT;
 					useTheForce = 1;
@@ -3783,14 +3736,55 @@ void AOTC_StandardBotAI(bot_state_t *bs, float thinktime)
 					useTheForce = 1;
 					forceHostile = 0;
 				}
-				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_ABSORB]][FP_ABSORB] && bs->currentEnemy && bs->frame_Enemy_Vis && bs->currentEnemy->client->ps.fd.forcePower > 25)
+				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_ABSORB)) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_ABSORB]][FP_ABSORB] )
 				{
 					level.clients[bs->client].ps.fd.forcePowerSelected = FP_ABSORB;
 					useTheForce = 1;
 					forceHostile = 0;
 				}
+			  //in order of priority top to bottom
 
-			}	
+			else if (g_entities[bs->entitynum].health <=  999 && (bs->cur_ps.fd.forcePowersKnown & (1 << FP_DRAIN)) && bs->frame_Enemy_Len < MAX_DRAIN_DISTANCE && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo) )
+				{
+					level.clients[bs->client].ps.fd.forcePowerSelected = FP_DRAIN;
+					useTheForce = 1;
+					forceHostile = 1;
+				}
+				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_LIGHTNING)) && bs->frame_Enemy_Len < FORCE_LIGHTNING_RADIUS && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo))
+				{
+					level.clients[bs->client].ps.fd.forcePowerSelected = FP_LIGHTNING;
+					useTheForce = 1;
+					forceHostile = 1;
+				}
+				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_TEAM_FORCE)) && bs->frame_Enemy_Len < FORCE_DESTRUCTION_RADIUS && level.clients[bs->client].ps.fd.forcePower > 50 && InFieldOfVision(bs->viewangles, 50, a_fo))
+				{
+					level.clients[bs->client].ps.fd.forcePowerSelected = FP_TEAM_FORCE;
+					useTheForce = 1;
+					forceHostile = 1;
+				}
+				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && (bs->cur_ps.fd.forcePowersActive & (1 << FP_GRIP)) && InFieldOfVision(bs->viewangles, 50, a_fo))
+				{ //already gripping someone, so hold it
+					level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
+					useTheForce = 1;
+					forceHostile = 1;
+				}
+				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_GRIP)) && bs->frame_Enemy_Len < MAX_GRIP_DISTANCE && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_GRIP]][FP_GRIP] && InFieldOfVision(bs->viewangles, 50, a_fo))
+				{
+					level.clients[bs->client].ps.fd.forcePowerSelected = FP_GRIP;
+					useTheForce = 1;
+					forceHostile = 1;
+				}
+				else if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_RAGE))  && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_RAGE]][FP_RAGE])
+				{
+					level.clients[bs->client].ps.fd.forcePowerSelected = FP_RAGE;
+					useTheForce = 1;
+					forceHostile = 0;
+				}
+
+
+
+
+			
 		}
 
 		if (!useTheForce)

@@ -2375,11 +2375,23 @@ void CG_DrawInvenSelect( void )
 
 	// Current Center Icon
 	height = bigIconSize * cg.iconHUDPercent;
-	if ((cgs.media.invenIcons[cg.itemSelect] || cgs.media.invenIcons2[cg.itemSelect] || cgs.media.invenIcons3[cg.itemSelect]) && BG_IsItemSelectable(&cg.predictedPlayerState, cg.itemSelect))
+	if ((cgs.media.invenIcons[cg.itemSelect] || cgs.media.invenIcons2[cg.itemSelect] || cgs.media.invenIcons3[cg.itemSelect]  || cgs.media.invenIcons4[cg.itemSelect]  || cgs.media.invenIcons5[cg.itemSelect]  || cgs.media.invenIcons6[cg.itemSelect]) && BG_IsItemSelectable(&cg.predictedPlayerState, cg.itemSelect))
 	{
 		int itemNdex;
 		trap_R_SetColor(NULL);
-		if(cg.snap->ps.eFlags & EF_HI_OPTION_2)
+		if(cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons6[cg.itemSelect] );
+		}
+		else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons5[cg.itemSelect] );
+		}
+		else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3)
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons4[cg.itemSelect] );
+		}
+		else if(cg.snap->ps.eFlags & EF_HI_OPTION_2)
 		{
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons2[cg.itemSelect] );
 		}

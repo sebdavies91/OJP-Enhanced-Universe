@@ -1,0 +1,140 @@
+﻿  AnimalNPC.c
+  bg_g2_utils.c
+  bg_misc.c
+  bg_panimate.c
+  bg_pmove.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(2842,23): warning C4456: declaration of 'allowFlips' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(2453,11): message : see declaration of 'allowFlips'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(9284,12): warning C4456: declaration of 'weap' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(9241,6): message : see declaration of 'weap'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(11822,38): warning C4459: declaration of 'pm' hides global declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(30,11): message : see declaration of 'pm'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(13632,14): warning C4456: declaration of 'dif' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(13350,16): message : see declaration of 'dif'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(13827,13): warning C4456: declaration of 'aLen' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(13789,7): message : see declaration of 'aLen'
+  bg_saber.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_saber.c(1400,16): warning C4457: declaration of 'strength' hides function parameter
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_saber.c(1292,70): message : see declaration of 'strength'
+  bg_saberLoad.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_saberLoad.c(467,15): warning C4456: declaration of 'styleNum' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_saberLoad.c(380,23): message : see declaration of 'styleNum'
+  bg_saga.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_saga.c(1068,21): warning C4456: declaration of 'i' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_saga.c(819,6): message : see declaration of 'i'
+  bg_slidemove.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_slidemove.c(197,24): warning C4456: declaration of 'hitEnt' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_slidemove.c(188,16): message : see declaration of 'hitEnt'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_slidemove.c(225,25): warning C4456: declaration of 'hitEnt' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_slidemove.c(197,17): message : see declaration of 'hitEnt'
+  bg_vehicleLoad.c
+  bg_weapons.c
+  cg_camera.c
+  cg_consolecmds.c
+  cg_draw.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(1909,23): warning C4456: declaration of 'focusItem' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(1826,13): message : see declaration of 'focusItem'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(2521,24): warning C4456: declaration of 'targetVeh' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(2487,13): message : see declaration of 'targetVeh'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(3951,21): warning C4456: declaration of 'color' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(3857,11): message : see declaration of 'color'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(4333,17): warning C4456: declaration of 'color' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_draw.c(3857,11): message : see declaration of 'color'
+  cg_drawtools.c
+  cg_effects.c
+  cg_ents.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(905,156): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(905,123): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 5
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(906,73): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(906,39): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 6
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(906,134): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(906,100): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 9
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(912,58): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(912,54): warning C4024: 'BG_EvaluateTrajectory': different types for formal and actual parameter 3
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(914,34): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(914,25): warning C4024: 'CG_TestLine': different types for formal and actual parameter 1
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(914,40): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(914,36): warning C4024: 'CG_TestLine': different types for formal and actual parameter 2
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2662,156): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2662,123): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 5
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2663,73): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2663,39): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 6
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2663,134): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2663,100): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 9
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2669,58): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2669,54): warning C4024: 'BG_EvaluateTrajectory': different types for formal and actual parameter 3
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2671,34): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2671,25): warning C4024: 'CG_TestLine': different types for formal and actual parameter 1
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2671,40): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_ents.c(2671,36): warning C4024: 'CG_TestLine': different types for formal and actual parameter 2
+  cg_event.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_event.c(2930,21): warning C4456: declaration of 'ci' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_event.c(1625,16): message : see declaration of 'ci'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_event.c(3919,21): warning C4456: declaration of 'ci' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_event.c(1625,16): message : see declaration of 'ci'
+  cg_holster.c
+  cg_info.c
+  Generating Code...
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\game\bg_pmove.c(9306): warning C4706: assignment within conditional expression
+  Compiling...
+  cg_light.c
+  cg_localents.c
+  cg_main.c
+  cg_marks.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_marks.c(806,14): warning C4457: declaration of 'alpha' hides function parameter
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_marks.c(436,63): message : see declaration of 'alpha'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_marks.c(865,14): warning C4456: declaration of 'width' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_marks.c(441,9): message : see declaration of 'width'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_marks.c(865,22): warning C4456: declaration of 'height' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_marks.c(442,9): message : see declaration of 'height'
+  cg_newDraw.c
+  cg_players.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(7086,13): warning C4456: declaration of 'rgb' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(7026,9): message : see declaration of 'rgb'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(10407,10): warning C4456: declaration of 'i' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(10346,9): message : see declaration of 'i'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(14181,16): warning C4456: declaration of 'up' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(14045,20): message : see declaration of 'up'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(18307,8): warning C4189: 'brightness': local variable is initialized but not referenced
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(18338,8): warning C4189: 'brightness': local variable is initialized but not referenced
+  cg_playerstate.c
+  cg_predict.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_predict.c(91,8): warning C4456: declaration of 'i' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_predict.c(47,9): message : see declaration of 'i'
+  cg_saga.c
+  cg_scoreboard.c
+  cg_servercmds.c
+  cg_snapshot.c
+  cg_strap.c
+  cg_syscalls.c
+  cg_turret.c
+  cg_view.c
+  cg_weaponinit.c
+  cg_weapons.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_weapons.c(1400,20): warning C4456: declaration of 'flash' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_weapons.c(412,14): message : see declaration of 'flash'
+  FighterNPC.c
+  fx_blaster.c
+  Generating Code...
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\cgame\cg_players.c(11698): warning C4703: potentially uninitialized local pointer variable 'saberTrail' used
+  Compiling...
+  fx_bowcaster.c
+  fx_bryarpistol.c
+  fx_demp2.c
+  fx_disruptor.c
+  fx_flechette.c
+  fx_force.c
+  fx_heavyrepeater.c
+  fx_rocketlauncher.c
+  q_math.c
+  q_shared.c
+  SpeederNPC.c
+  ui_shared.c
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6108,21): warning C4456: declaration of 'parent' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6099,14): message : see declaration of 'parent'
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6664,14): warning C4456: declaration of 'color' hides previous local declaration
+C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\source\ui\ui_shared.c(6166,10): message : see declaration of 'color'
+  WalkerNPC.c
+  Generating Code...
+     Creating library .\../Final/cgamex86.lib and object .\../Final/cgamex86.exp
+  JK2_cgame.vcxproj -> C:\Users\sebda\OneDrive\Desktop\OJP-Enhanced-Universe-master\ojpenhanced\cgamex86.dll

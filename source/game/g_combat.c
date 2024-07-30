@@ -5687,7 +5687,39 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			&& targ->client->ps.fd.forceGripEntityNum == attacker->client->ps.clientNum)
 			WP_ForcePowerStop(targ,FP_GRIP);
 	}
+	
+	if (targ && targ->client && targ->client->ps.powerups[PW_SPHERESHIELDED] ) 
+	{
+			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
+			{
+				
+			}
 
+			else
+			{
+			return;
+			}
+	}
+
+	if ( !(dflags & DAMAGE_NO_PROTECTION) ) 
+	{ 
+		
+		if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)))
+		{
+
+			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
+			{
+				
+			}
+
+			else
+			{
+			return;
+			}
+		}
+		
+	}
+	
 	if (mod == MOD_DEMP2 && targ && targ->inuse && targ->client)
 	{
 		int	ELECTROCUTION_TIME = 2500;
@@ -6039,54 +6071,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			damage *= 1.5;				
 			}
 		}
-	if (targ && targ->client && targ->client->ps.powerups[PW_SPHERESHIELDED] ) 
-	{
-		if(targ->client->skillLevel[SK_SPHERESHIELD] == FORCE_LEVEL_3)
-		{
-			return;
-		}
-		else if(targ->client->skillLevel[SK_SPHERESHIELD] == FORCE_LEVEL_2)
-		{
-			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
-			{
-				
-			}
-			else
-			{
-			return;
-			}
-		}
-		else
-		{
-			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
-			{
-				
-			}
-			else
-			{
-			return;
-			}
-		}
-	}
 
-	if ( !(dflags & DAMAGE_NO_PROTECTION) ) 
-	{ 
-		
-		if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)))
-		{
-
-			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
-			{
-				
-			}
-
-			else
-			{
-			return;
-			}
-		}
-		
-	}
 
 
 

@@ -4210,6 +4210,9 @@ int WPDEBUG_SaberColor( saber_colors_t saberColor )
 		case SABER_PURPLE:
 			return 0x00ff00ff;
 			break;
+		case SABER_CYAN:
+			return 0x00ffff00;
+			break;
 		default:
 			return 0x00ffffff;//white
 			break;

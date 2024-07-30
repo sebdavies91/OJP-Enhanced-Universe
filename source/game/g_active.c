@@ -2393,22 +2393,22 @@ void Reload(gentity_t *ent)
 		return;
 	}
 
-	if(ent->client->ps.weapon == WP_REPEATER && ent->client->skillLevel[SK_REPEATERUPGRADE] >= FORCE_LEVEL_0)
-	{
-		int i;
-		for(i=0;i<4;i++)
-		{
-		ent->bullets[ent->client->ps.weapon]--;
-		ent->client->ps.ammo[weaponData[ent->client->ps.weapon].ammoIndex]++;
-		ent->bulletsToReload--;
-		if(ent->bullets[ent->client->ps.weapon] < 1)
-		return;
-		if(ent->client->ps.ammo[weaponData[ent->client->ps.weapon].ammoIndex] >= ClipSize(weaponData[ent->client->ps.weapon].ammoIndex,ent))
-			return;
-		}
-	ent->reloadTime = level.time + ReloadTime(ent);
-	}
-	else if(ent->client->ps.weapon == WP_REPEATER)
+//	if(ent->client->ps.weapon == WP_REPEATER && ent->client->skillLevel[SK_REPEATERUPGRADE] >= FORCE_LEVEL_0)
+//	{
+//		int i;
+//		for(i=0;i<4;i++)
+//		{
+//		ent->bullets[ent->client->ps.weapon]--;
+//		ent->client->ps.ammo[weaponData[ent->client->ps.weapon].ammoIndex]++;
+//		ent->bulletsToReload--;
+//		if(ent->bullets[ent->client->ps.weapon] < 1)
+//		return;
+//		if(ent->client->ps.ammo[weaponData[ent->client->ps.weapon].ammoIndex] >= ClipSize(weaponData[ent->client->ps.weapon].ammoIndex,ent))
+//			return;
+//		}
+//	ent->reloadTime = level.time + ReloadTime(ent);
+//	}
+	if(ent->client->ps.weapon == WP_REPEATER)
 	{
 		int i;
 		for(i=0; i<3; i++)

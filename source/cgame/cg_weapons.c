@@ -1758,7 +1758,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         	CG_AddPlayerWeapon( &hand, ps, &cg_entities[cg.predictedPlayerState.clientNum], ps->persistant[PERS_TEAM], angles, qfalse, qtrue );
 
 	}
-	if((ps->eFlags & EF_DUAL_WEAPONS) && ps->weapon == WP_BRYAR_OLD)
+	else if((ps->eFlags & EF_DUAL_WEAPONS) && ps->weapon == WP_BRYAR_OLD)
 	{
 		memset (&hand, 0, sizeof(hand));
         
@@ -1814,7 +1814,7 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         	CG_AddPlayerWeapon( &hand, ps, &cg_entities[cg.predictedPlayerState.clientNum], ps->persistant[PERS_TEAM], angles, qfalse, qtrue );
 
   	}
-		if((ps->eFlags & EF_DUAL_WEAPONS) && ps->weapon == WP_STUN_BATON)
+	else if((ps->eFlags & EF_DUAL_WEAPONS) && ps->weapon == WP_STUN_BATON)
 	{
 		memset (&hand, 0, sizeof(hand));
         
@@ -5012,12 +5012,12 @@ void CG_CopyG2WeaponInstance(centity_t *cent, int weaponNum, void *toGhoul2)
 				{
 					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance2(cent, weaponNum/*-1*/), 0, toGhoul2, 2);
 				}
-				if ( (cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
+				else if ( (cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
 					(cent->currentState.weapon == WP_BRYAR_OLD) )
 				{
 					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance2(cent, weaponNum/*-1*/), 0, toGhoul2, 2);
 				}
-				if ( (cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
+				else if ( (cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
 					(cent->currentState.weapon == WP_STUN_BATON) )
 				{
 					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance2(cent, weaponNum/*-1*/), 0, toGhoul2, 2);
@@ -5110,20 +5110,12 @@ void CG_CheckPlayerG2Weapons(playerState_t *ps, centity_t *cent)
 		{
 			cent->ghoul2weapon2 = CG_G2WeaponInstance2(cent, ps->weapon);
 		}
-		else
-		{
-			cent->ghoul2weapon2 = NULL;
-		}
-		if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
+		else if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
 			(ps->weapon == WP_BRYAR_OLD))
 		{
 			cent->ghoul2weapon2 = CG_G2WeaponInstance2(cent, ps->weapon);
 		}
-		else
-		{
-			cent->ghoul2weapon2 = NULL;
-		}	
-		if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
+		else if ((cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
 			(ps->weapon == WP_STUN_BATON))
 		{
 			cent->ghoul2weapon2 = CG_G2WeaponInstance2(cent, ps->weapon);

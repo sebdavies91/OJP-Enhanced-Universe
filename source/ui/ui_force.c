@@ -60,6 +60,7 @@ void UI_InitForceShaders(void)
 	uiSaberColorShaders[SABER_GREEN]	= trap_R_RegisterShaderNoMip("menu/art/saber_green");
 	uiSaberColorShaders[SABER_BLUE]		= trap_R_RegisterShaderNoMip("menu/art/saber_blue");
 	uiSaberColorShaders[SABER_PURPLE]	= trap_R_RegisterShaderNoMip("menu/art/saber_purple");
+	uiSaberColorShaders[SABER_CYAN]	= trap_R_RegisterShaderNoMip("menu/art/saber_cyan");
 }
 
 
@@ -412,6 +413,21 @@ void UpdateForceUsed()
 			//[/StanceSelection]
 			uiRank[FP_SABERTHROW].uiForcePowersRank=0;
 			uiRank[FP_SABER_DEFENSE].uiForcePowersRank=0;
+
+
+			uiRank[NUM_FORCE_POWERS+SK_PUSHA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_PULLA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_HEALA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_PROTECTA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_ABSORBA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_TELEPATHYA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_STASISA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_GRIPA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_LIGHTNINGA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_DRAINA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_RAGEA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_DESTRUCTIONA].uiForcePowersRank=0;
+			
 			if (menu  )
 			{
 				Menu_ShowItemByName(menu, "setfp_saberattack", qfalse);
@@ -444,7 +460,6 @@ void UpdateForceUsed()
 		//if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank<1)
 		{
 			Menu_ShowItemByName(menu, "setfp_saberattack", qtrue);
-			Menu_ShowItemByName(menu2, "setfp_saberattack", qtrue);
 			//[/ExpSys]
 			//[StanceSelection]
 			uiRank[NUM_FORCE_POWERS+SK_BLUESTYLE].uiForcePowersRank=0;
@@ -590,34 +605,34 @@ void UpdateForceUsed()
 	*/
 
 	//[Repeater]
-	if(uiRank[NUM_FORCE_POWERS+SK_REPEATER].uiForcePowersRank < FORCE_LEVEL_3)
-	{
-		uiRank[NUM_FORCE_POWERS+SK_REPEATERUPGRADE].uiForcePowersRank = 0;
-		menu = Menus_FindByName("ingame_playergunnery");
-		if(menu)
-		Menu_ShowItemByName(menu, "repeaterupgrade", qfalse);
-	}
-	else
-	{
-		menu = Menus_FindByName("ingame_playergunnery");
-		if(menu)
-		Menu_ShowItemByName(menu, "repeaterupgrade", qtrue);
-	}
+//	if(uiRank[NUM_FORCE_POWERS+SK_REPEATER].uiForcePowersRank < FORCE_LEVEL_3)
+//	{
+//		uiRank[NUM_FORCE_POWERS+SK_REPEATERUPGRADE].uiForcePowersRank = 0;
+//		menu = Menus_FindByName("ingame_playergunnery");
+//		if(menu)
+//		Menu_ShowItemByName(menu, "repeaterupgrade", qfalse);
+//	}
+//	else
+//	{
+//		menu = Menus_FindByName("ingame_playergunnery");
+//		if(menu)
+//		Menu_ShowItemByName(menu, "repeaterupgrade", qtrue);
+//	}
 	//[/Repeater]
 	//[BlasterRateOfFireUpgrade]
-	if(uiRank[NUM_FORCE_POWERS+SK_BLASTER].uiForcePowersRank < FORCE_LEVEL_3)
-	{
-		uiRank[NUM_FORCE_POWERS+SK_BLASTERRATEOFFIREUPGRADE].uiForcePowersRank = 0;
-		menu = Menus_FindByName("ingame_playergunnery");
-		if(menu)
-		Menu_ShowItemByName(menu, "blasterrateoffire", qfalse);
-	}
-	else
-	{
-		menu = Menus_FindByName("ingame_playergunnery");
-		if(menu)
-		Menu_ShowItemByName(menu, "blasterrateoffire", qtrue);
-	}
+//	if(uiRank[NUM_FORCE_POWERS+SK_BLASTER].uiForcePowersRank < FORCE_LEVEL_3)
+//	{
+//		uiRank[NUM_FORCE_POWERS+SK_BLASTERRATEOFFIREUPGRADE].uiForcePowersRank = 0;
+//		menu = Menus_FindByName("ingame_playergunnery");
+//		if(menu)
+//		Menu_ShowItemByName(menu, "blasterrateoffire", qfalse);
+//	}
+//	else
+//	{
+//		menu = Menus_FindByName("ingame_playergunnery");
+//		if(menu)
+//		Menu_ShowItemByName(menu, "blasterrateoffire", qtrue);
+//	}
 	//[/BlasterRateOfFireUpgrade]
 
 	//[ExpSys]
@@ -642,8 +657,6 @@ void UpdateForceUsed()
 		}
 		if(menu2 )
 		{
-			
-			Menu_ShowItemByName(menu, "notforcesensitive", qtrue);
 			Menu_ShowItemByName(menu2, "darkpowers", qfalse);
 			Menu_ShowItemByName(menu2, "lightpowers", qfalse);
 			
@@ -661,7 +674,6 @@ void UpdateForceUsed()
 		}
 		if( menu2 )
 		{
-			Menu_ShowItemByName(menu, "notforcesensitive", qfalse);
 			Menu_ShowItemByName(menu2, "darkpowers", qtrue);
 			Menu_ShowItemByName(menu2, "lightpowers", qtrue);
 
@@ -892,17 +904,17 @@ void UI_ReadLegalForce(void)
 	}
 
 	//clear out the existing powers
-	while (c < NUM_FORCE_POWERS)
-	{
-		uiRank[c].uiForcePowersRank = 0;
-		c++;
-	}
-	uiForceUsed = 0;
+//	while (c < NUM_FORCE_POWERS)
+//	{
+//		uiRank[c].uiForcePowersRank = 0;
+//		c++;
+//	}
+//	uiForceUsed = 0;
 	//[ExpSys]
-	uiForceAvailable = uiMaxRank;
+//	uiForceAvailable = uiMaxRank;
 	//uiForceAvailable = forceMasteryPoints[uiForceRank];
 	//[/ExpSys]
-	gTouchedForce = qtrue;
+//	gTouchedForce = qtrue;
 
 	//[ExpSys]
 	for (c=0; fcfString[i] && c < NUM_TOTAL_SKILLS;c++,i++)
@@ -1666,8 +1678,8 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	}
 
 	//clear out the existing powers
-	while (c < NUM_FORCE_POWERS)
-	{
+//	while (c < NUM_FORCE_POWERS)
+//	{
 		/*
 		if (c==FP_LEVITATION)
 		{
@@ -1687,15 +1699,15 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 		}
 		*/
 		//rww - don't need to do these checks. Just trust whatever the saber config says.
-		uiRank[c].uiForcePowersRank = 0;
-		c++;
-	}
-	uiForceUsed = 0;
+//		uiRank[c].uiForcePowersRank = 0;
+//		c++;
+//	}
+//	uiForceUsed = 0;
 	//[ExpSys]
-	uiForceAvailable = uiMaxRank;
+//	uiForceAvailable = uiMaxRank;
 	//uiForceAvailable = forceMasteryPoints[uiForceRank];
 	//[/ExpSys]
-	gTouchedForce = qtrue;
+//	gTouchedForce = qtrue;
 
 	for (c=0;fcfBuffer[i]&&c<NUM_FORCE_POWERS;c++,i++)
 	{

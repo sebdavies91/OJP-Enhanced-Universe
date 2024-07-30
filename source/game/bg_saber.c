@@ -5152,8 +5152,15 @@ int Fatigue_SaberAttack( playerState_t * ps )
 		return 2*FATIGUE_SABERATTACK;
 	}
 	*/
-
-	return FATIGUE_SABERATTACK;
+			if (ps->fd.forcePowersActive & (1 << FP_RAGE))
+			{
+				return FATIGUE_SABERATTACK/2;	
+			}
+			else
+			{
+				return FATIGUE_SABERATTACK;
+			}
+	
 }
 
 
