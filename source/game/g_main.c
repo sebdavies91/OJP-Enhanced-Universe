@@ -586,7 +586,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &tier_storyinfo, "tier_storyinfo", "0", CVAR_ARCHIVE, 0, qfalse  },
 	{ &tiers_complete, "tiers_complete", "", CVAR_ARCHIVE, 0, qfalse  },
 	//[/CoOp]
-	{ &g_knockback, "g_knockback", "150", 0, 0, qtrue  },
+	{ &g_knockback, "g_knockback", "175", 0, 0, qtrue  },
 	{ &g_quadfactor, "g_quadfactor", "3", 0, 0, qtrue  },
 	{ &g_weaponRespawn, "g_weaponrespawn", "5", 0, 0, qtrue  },
 	{ &g_weaponTeamRespawn, "g_weaponTeamRespawn", "5", 0, 0, qtrue },
@@ -822,7 +822,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &m_grapple_shoot_speed, "grapple_shootspeed", "900", CVAR_ARCHIVE, 0 , qtrue }, //// grapple speed 
 	{ &m_enable_grapple, "enable_grapple", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &hookChangeProtectTime, "hookFloodTime", "0", CVAR_ARCHIVE, 0 , qtrue },
-	{ &g_allowDropSaber,		 "g_allowDropSaber",		"1", CVAR_INTERNAL, 0, qtrue },	
+	{ &g_allowDropSaber,		 "g_allowDropSaber",		"0", CVAR_INTERNAL, 0, qtrue },	
 };
 
 // bk001129 - made static to avoid aliasing

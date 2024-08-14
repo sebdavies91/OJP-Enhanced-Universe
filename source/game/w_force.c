@@ -625,7 +625,7 @@ void WP_InitForcePowers( gentity_t *ent )
 		//[/ExpSys]
 		{ //the client's rank is too high for the server and has been autocapped, so tell them
 			//temporary fix adding GT_DUEL to avoid error 
-			if (g_gametype.integer != GT_HOLOCRON  && g_gametype.integer != GT_DUEL)
+			if (g_gametype.integer != GT_HOLOCRON  && g_gametype.integer != GT_DUEL && g_gametype.integer != GT_POWERDUEL)
 			{
 			//temporary fix
 #ifdef EVENT_FORCE_RANK
@@ -684,7 +684,7 @@ void WP_InitForcePowers( gentity_t *ent )
 
 		if (warnClientLimit)
 		{ //the server has one or more force powers disabled and the client is using them in his config
-			//trap_SendServerCommand(ent-g_entities, va("print \"The server has one or more force powers that you have chosen disabled.\nYou will not be able to use the disable force power(s) while playing on this server.\n\""));
+			trap_SendServerCommand(ent-g_entities, va("print \"The server has one or more force powers that you have chosen disabled.\nYou will not be able to use the disable force power(s) while playing on this server.\n\""));
 		}
 	}
 
@@ -11341,6 +11341,9 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	
 	
 	self->client->ps.eFlags &= ~EF_FP_OPTION_2;
+	self->client->ps.eFlags &= ~EF_HI_OPTION_2;	
+	self->client->ps.eFlags &= ~EF_HI_OPTION_3;	
+	
 	if (self->client->ps.fd.forcePowerSelected == FP_PUSH && self->client->skillLevel[SK_PUSHA] == FORCE_LEVEL_2 && self->client->ps.fd.forcePowerLevel[FP_PUSH] >= FORCE_LEVEL_1)
 	{
 	self->client->ps.eFlags |= EF_FP_OPTION_2;
@@ -11393,9 +11396,8 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 
 
-	self->client->ps.eFlags &= ~EF_HI_OPTION_2;	
-	self->client->ps.eFlags &= ~EF_HI_OPTION_3;	
-	if(bg_itemlist[self->client->ps.stats[STAT_HOLDABLE_ITEM]].giTag == HI_FLAMETHROWER && self->client->skillLevel[SK_FLAMETHROWERA] == FORCE_LEVEL_2 && self->client->skillLevel[SK_FLAMETHROWER] >= FORCE_LEVEL_1)
+
+	else if(bg_itemlist[self->client->ps.stats[STAT_HOLDABLE_ITEM]].giTag == HI_FLAMETHROWER && self->client->skillLevel[SK_FLAMETHROWERA] == FORCE_LEVEL_2 && self->client->skillLevel[SK_FLAMETHROWER] >= FORCE_LEVEL_1)
 	{
 	self->client->ps.eFlags |= EF_HI_OPTION_2;	
 	}
@@ -11435,7 +11437,12 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	self->client->ps.eFlags |= EF_HI_OPTION_3;	
 	self->client->ps.eFlags |= EF_FP_OPTION_2;
 	}	 
-	
+	else
+	{
+	self->client->ps.eFlags &= ~EF_FP_OPTION_2;
+	self->client->ps.eFlags &= ~EF_HI_OPTION_2;	
+	self->client->ps.eFlags &= ~EF_HI_OPTION_3;			
+	}
 	//if(self->client->ps.powerups[PW_SPHERESHIELDED])
 	//{
 	//	G_Sound(self, CHAN_WEAPON, G_SoundIndex("sound/ambience/cairn/cairn_assembly.wav"));

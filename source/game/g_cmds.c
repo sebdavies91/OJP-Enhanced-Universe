@@ -2654,14 +2654,14 @@ void Cmd_CallVote_f( gentity_t *ent ) {
 		return;
 	}
 
-	if (g_gametype.integer != GT_DUEL &&
-		g_gametype.integer != GT_POWERDUEL)
-	{
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStringEdString("MP_SVGAME", "NOSPECVOTE")) );
-			return;
-		}
-	}
+//	if (g_gametype.integer != GT_DUEL &&
+//		g_gametype.integer != GT_POWERDUEL)
+//	{
+//		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+//			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStringEdString("MP_SVGAME", "NOSPECVOTE")) );
+//			return;
+//		}
+//	}
 
 	// make sure it is a valid command to vote on
 	trap_Argv( 1, arg1, sizeof( arg1 ) );
@@ -2914,14 +2914,14 @@ void Cmd_Vote_f( gentity_t *ent ) {
 		trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStringEdString("MP_SVGAME", "VOTEALREADY")) );
 		return;
 	}
-	if (g_gametype.integer != GT_DUEL &&
-		g_gametype.integer != GT_POWERDUEL)
-	{
-		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
-			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStringEdString("MP_SVGAME", "NOVOTEASSPEC")) );
-			return;
-		}
-	}
+//	if (g_gametype.integer != GT_DUEL &&
+//		g_gametype.integer != GT_POWERDUEL)
+//	{
+//		if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR ) {
+//			trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStringEdString("MP_SVGAME", "NOVOTEASSPEC")) );
+//			return;
+//		}
+//	}
 
 	trap_SendServerCommand( ent-g_entities, va("print \"%s\n\"", G_GetStringEdString("MP_SVGAME", "PLVOTECAST")) );
 

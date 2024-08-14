@@ -9106,11 +9106,11 @@ static void CG_Draw2D( void ) {
 		CG_DrawActivePowers();
 	}
 
-	if (cg.snap->ps.jetpackFuel <= 250)
+	if (cg.snap->ps.jetpackFuel <= 250 && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
 	{ //draw it as long as it isn't full
         CG_DrawJetpackFuel();        
 	}
-	if (cg.snap->ps.cloakFuel <= 250)
+	if (cg.snap->ps.cloakFuel <= 250 && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
 	{ //draw it as long as it isn't full
 		CG_DrawCloakFuel();
 	}

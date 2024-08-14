@@ -19069,7 +19069,7 @@ stillDoSaber:
 					if ( ci->saber[l].numBlades > 2 )
 					{//add a single glow for the saber based on all the blade colors combined
 						//[RGBSabers]
-						CG_DoSaberLight( &ci->saber[l], cent->currentState.clientNum, l );
+						CG_DoSaberLight( &ci->saber[l], cent->currentState.clientNum, 1 );
 						//[/RGBSabers]
 					}
 

@@ -7464,6 +7464,7 @@ void PM_BeginWeaponChange( int weapon ) {
 		gentity_t *ent = &g_entities[pm->ps->clientNum];
 		pm->ps->stats[STAT_AMMOPOOL] = ent->client->ps.stats[STAT_AMMOPOOL] = ent->bullets[pm->ps->weapon];
 	}
+
 #endif
 //[Reload]
 
@@ -7520,7 +7521,10 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags |= EF_DUAL_WEAPONS;
 	}
-
+	else
+	{
+	pm->ps->eFlags &= ~EF_DUAL_WEAPONS;		
+	}
 	
 	
 	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;
@@ -7585,7 +7589,10 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags2 |= EF2_NOALTFIRE;
 	}		
-
+	else
+	{
+	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;		
+	}
 	
 	pm->ps->eFlags &= ~EF_WP_OPTION_2;
 	pm->ps->eFlags &= ~EF_WP_OPTION_3;	
@@ -7867,7 +7874,12 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
-
+	else
+	{
+	pm->ps->eFlags &= ~EF_WP_OPTION_2;
+	pm->ps->eFlags &= ~EF_WP_OPTION_3;	
+	pm->ps->eFlags &= ~EF_WP_OPTION_4;		
+	}
 	
 
 	
