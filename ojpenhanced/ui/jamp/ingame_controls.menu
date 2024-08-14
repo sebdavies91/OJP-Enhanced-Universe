@@ -9,12 +9,12 @@
 		visible					0
 		fullscreen				0
 		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
-		rect					45 45 570 400
+		rect					0 45 640 440
 		focusColor				0 0.4 0.8 1							// Focus color for text and items
 		style					1
 		border					1
-		descX					305
-		descY					360
+		descX					380
+		descY					400
 		descScale				1
 		descColor				0 0.4 0.8 1					// Focus color for text and items
 		descAlignment				ITEM_ALIGN_CENTER		
@@ -60,7 +60,7 @@
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 570 400
+			rect				0 0 640 440
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
@@ -74,7 +74,7 @@
 			name				playerconfigtitle
 			style				WINDOW_STYLE_FILLED
 			text				@MENUS_CONFIGURE_CONTROLS
-			rect				1 1 570 28
+			rect				0 0 640 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			2
@@ -96,7 +96,7 @@
 			text				@MENUS_MOVEMENT
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 43 170 30
+			rect				5 75 170 30 
 			font				3
 			textscale			0.8
 			textalignx			170
@@ -142,7 +142,7 @@
 			text				@MENUS_INTERACTION
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 73 170 30
+			rect				5 105 170 30
 			font				3
 			textscale			0.8
 			textalignx			170
@@ -188,7 +188,7 @@
 			text				@MENUS_WEAPONS
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 103 170 30
+			rect				5 135 170 30
 			font				3
 			textscale			0.8
 			textalignx			170
@@ -234,7 +234,7 @@
 			text				@MENUS_FORCE_POWERS_1
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 133 170 30
+			rect				5 165 170 30
 			font				3
 			textscale			0.8
 			textalignx			170
@@ -279,7 +279,7 @@
 			text				@MENUS_FORCE_POWERS_2
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 163 170 30
+			rect				5 195 170 30
 			font				3
 			textscale			0.8
 			textalignx			170
@@ -325,7 +325,7 @@
 			text				@MENUS_MOUSE_JOYSTICK
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 193 170 30
+			rect				5 225 170 30
 			font				3
 			textscale			0.8
 			textalignx			170
@@ -371,7 +371,7 @@
 			text				@MENUS_OTHER
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 223 170 30
+			rect				5 255 170 30
 			font				3
 			textscale			0.8
 			textalignx			170
@@ -414,7 +414,7 @@
 			name				setup_background
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				210 41 320 280	
+			rect				195 45 360 330	
 			backcolor			0 0 0 .6
 			forecolor			1 1 1 1
 			border				1
@@ -436,7 +436,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_WALK_FORWARD
 			cvar				"+forward"
-			rect				220 61 300 20
+			rect				220 75 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -469,7 +469,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_BACKPEDAL
 			cvar				"+back"
-			rect				220 81 300 20
+			rect				220 95 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -501,7 +501,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_TURN_LEFT
 			cvar				"+left"
-			rect				220 101 300 20
+			rect				220 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -533,7 +533,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_TURN_RIGHT
 			cvar				"+right"
-			rect				220 121 300 20
+			rect				220 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -565,7 +565,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_RUN_WALK
 			cvar				"+speed"
-			rect				220 141 300 20
+			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -597,7 +597,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_STEP_LEFT
 			cvar				"+moveleft"
-			rect				220 161 300 20
+			rect				220 175 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -629,7 +629,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_STEP_RIGHT
 			cvar				"+moveright"
-			rect				220 181 300 20
+			rect				220 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -661,7 +661,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_SIDESTEP
 			cvar				"+strafe"
-			rect				220 201 300 20
+			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -693,7 +693,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_UP_JUMP
 			cvar				"+moveup"
-			rect				220 221 300 20
+			rect				220 235 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -725,7 +725,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_DOWN_CROUCH
 			cvar				"+movedown"
-			rect				220 241 300 20
+			rect				220 255 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151 
 			textaligny			0
@@ -762,7 +762,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_ATTACK
 			cvar				"+attack"
-			rect				220 61 300 20
+			rect				220 75 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -794,7 +794,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_ALT_ATTACK
 			cvar				"+altattack"
-			rect				220 81 300 20
+			rect				220 95 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -826,7 +826,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_LIGHTSABER_STYLE
 			cvar				"saberAttackCycle"
-			rect				220 101 300 20
+			rect				220 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -858,7 +858,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_USE
 			cvar				"+use"
-			rect				220 121 300 20
+			rect				220 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -890,7 +890,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_USE_HELD_ITEM
 			cvar				"+button2"
-			rect				220 141 300 20
+			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -922,7 +922,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_INV_NEXT
 			cvar				"invnext"
-			rect				220 161 300 20
+			rect				220 175 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -954,7 +954,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_INV_PREV
 			cvar				"invprev"
-			rect				220 181 300 20
+			rect				220 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -985,7 +985,7 @@
 			type				ITEM_TYPE_BIND
 			text				@OJP_MENUS_QUICK_PARRY_HOLDBUTTON
 			cvar				"+button14"
-			rect				220 201 300 20
+			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1016,7 +1016,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_LOOK_UP
 			cvar				"+lookup"
-			rect				220 221 300 20
+			rect				220 235 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1049,7 +1049,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_LOOK_DOWN
 			cvar				"+lookdown"
-			rect				220 241 300 20
+			rect				220 255 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1081,7 +1081,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_MOUSE_LOOK
 			cvar				"+mlook"
-			rect				220 261 300 20
+			rect				220 275 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1113,7 +1113,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_CENTER_VIEW
 			cvar				"centerview"
-			rect				220 281 300 20
+			rect				220 295 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1152,7 +1152,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_MELEE_LIGHTSABER
 			cvar				"weapon 1"
-			rect				220 41 300 20
+			rect				220 75 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1182,7 +1182,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_PISTOL
 			cvar				"weapon 2"
-			rect				220 61 300 20
+			rect				220 95 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1212,7 +1212,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_RIFLE
 			cvar				"weapon 3"
-			rect				220 81 300 20
+			rect				220 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1242,7 +1242,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_DISRUPTOR_RIFLE
 			cvar				"weapon 4"
-			rect				220 101 300 20
+			rect				220 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1273,7 +1273,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_BOWCASTER
 			cvar				"weapon 5"
-			rect				220 121 300 20
+			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1304,7 +1304,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_HEAVY_REPEATER
 			cvar				"weapon 6"
-			rect				220 141 300 20
+			rect				220 175 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1334,7 +1334,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_DEMP_2
 			cvar				"weapon 7"
-			rect				220 161 300 20
+			rect				220 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1365,7 +1365,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FLECHETTE
 			cvar				"weapon 8"
-			rect				220 181 300 20
+			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1396,7 +1396,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_CONC_RIFLE_SETUP
 			cvar				"weapon 13"
-			rect				220 201 300 20
+			rect				220 235 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1427,7 +1427,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_MERR_SONN
 			cvar				"weapon 9"
-			rect				220 221 300 20
+			rect				220 255 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1458,7 +1458,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_THROWABLE_WEAPONS
 			cvar				"weapon 10"
-			rect				220 241 300 20
+			rect				220 275 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1490,7 +1490,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_NEXT_WEAPON
 			cvar				"weapnext"
-			rect				220 261 300 20
+			rect				220 295 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1522,7 +1522,7 @@
 			type				ITEM_TYPE_BIND
 			text				@MENUS_PREVIOUS_WEAPON
 			cvar				"weapprev"
-			rect				220 281 300 20
+			rect				220 315 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1554,7 +1554,7 @@ itemDef
 			text			
 @OJP_MENUS_THERMAL_DETONATOR_THROW
 			cvar				"+button13"
-			rect				220 301 300 20
+			rect				220 335 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1590,7 +1590,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_PUSH
 			cvar				"force_throw"
-			rect				220 61 300 20
+			rect				220 75 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1622,7 +1622,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_PULL
 			cvar				"force_pull"
-			rect				220 81 300 20
+			rect				220 95 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1654,7 +1654,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_SPEED
 			cvar				"force_speed"
-			rect				220 101 300 20
+			rect				220 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1686,7 +1686,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_SIGHT
 			cvar				"force_seeing"
-			rect				220 121 300 20
+			rect				220 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1718,7 +1718,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@OJP_MENUS_FORCE_SABERTHROW
 			cvar				"+button12"
-			rect				220 141 300 20
+			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1750,7 +1750,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_USE_FORCE_POWER
 			cvar				"+useforce"
-			rect				220 161 300 20
+			rect				220 175 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1782,7 +1782,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_NEXT
 			cvar				"forcenext"
-			rect				220 181 300 20
+			rect				220 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1814,7 +1814,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_PREVIOUS
 			cvar				"forceprev"
-			rect				220 201 300 20
+			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1850,7 +1850,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_PROTECT
 			cvar				"force_protect"
-			rect				220 61 300 20
+			rect				220 75 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1880,7 +1880,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_ABSORB
 			cvar				"force_absorb"
-			rect				220 81 300 20
+			rect				220 95 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1910,7 +1910,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_HEAL
 			cvar				"force_heal"
-			rect				220 101 300 20
+			rect				220 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1940,7 +1940,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_HEAL_OTHER
 			cvar				"force_healother"
-			rect				220 121 300 20
+			rect				220 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -1970,7 +1970,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_MINDTRICK
 			cvar				"force_distract"
-			rect				220 141 300 20
+			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2000,7 +2000,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_GRIP
 			cvar				"+force_grip"
-			rect				220 161 300 20
+			rect				220 175 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2030,7 +2030,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_DRAIN
 			cvar				"+force_drain"
-			rect				220 181 300 20
+			rect				220 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2060,7 +2060,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FORCE_LIGHTNING
 			cvar				"+force_lightning"
-			rect				220 201 300 20
+			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2090,7 +2090,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_RAGE
 			cvar				"force_rage"
-			rect				220 221 300 20
+			rect				220 235 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2120,7 +2120,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_TEAM_POWER
 			cvar				"force_forcepowerother"
-			rect				220 241 300 20
+			rect				220 255 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2156,7 +2156,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_FREE_LOOK
 			cvar				"cl_freelook"
-			rect				220 61 300 20
+			rect				220 75 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2187,7 +2187,7 @@ itemDef
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_SENSITIVITY
 			cvarfloat			"sensitivity" 5 2 30
-			rect				220 81 300 20
+			rect				220 95 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2217,7 +2217,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_INVERT_PITCH
 			cvar				"ui_mousePitch"
-			rect				220 101 300 20
+			rect				220 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2248,7 +2248,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_SMOOTH_MOUSE
 			cvar				"m_filter"
-			rect				220 121 300 20
+			rect				220 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2282,7 +2282,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_FORCE_FEEDBACK
 			cvar				"use_ff"
-			rect				220 141 300 20
+			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2313,7 +2313,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_ENABLE_JOYSTICK
 			cvar				"in_joystick"
-			rect				220 181 300 20
+			rect				220 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2345,7 +2345,7 @@ itemDef
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_JOYSTICK_THRESHOLD
 			cvarfloat			"joy_threshold" .15 .05 .75
-			rect				220 201 300 20
+			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2375,7 +2375,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_X_AXIS_AS_BUTTONS
 			cvar				"joy_xbutton"
-			rect				220 221 300 20
+			rect				220 235 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2406,7 +2406,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_Y_AXIS_AS_BUTTONS
 			cvar				"joy_ybutton"
-			rect				220 241 300 20
+			rect				220 255 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2442,7 +2442,7 @@ itemDef
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_ALWAYS_RUN
 			cvar				"cl_run"
-			rect				220 41 300 20
+			rect				220 75 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2479,7 +2479,7 @@ itemDef
 				@MENUS_BEST_SAFE_WEAPON 	1 
 				@MENUS_ALWAYS_BEST_WEAPON 	2
 			}
-			rect				220 61 300 20
+			rect				220 95 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2510,7 +2510,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_CHAT
 			cvar				"messagemode"
-			rect				220 81 300 20
+			rect				220 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2540,7 +2540,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_TEAM_CHAT
 			cvar				"messagemode2"
-			rect				220 101 300 20
+			rect				220 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2570,7 +2570,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_VC_CONTROLS
 			cvar				"voicechat"
-			rect				220 121 300 20
+			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2600,7 +2600,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_AUTOMAP
 			cvar				"automap_toggle"
-			rect				220 141 300 20
+			rect				220 175 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2630,7 +2630,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_SHOW_SCORES
 			cvar				"+scores"
-			rect				220 161 300 20
+			rect				220 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2660,7 +2660,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_SABER_CHALLENGE
 			cvar				"engage_duel"
-			rect				220 181 300 20
+			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2690,7 +2690,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_3RD_PERSON
 			cvar				"cg_thirdperson !"
-			rect				220 201 300 20
+			rect				220 235 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2720,7 +2720,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_TAUNT
 			cvar				"taunt"
-			rect				220 221 300 20
+			rect				220 255 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2750,7 +2750,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_BOW
 			cvar				"bow"
-			rect				220 241 300 20
+			rect				220 275 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2780,7 +2780,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_MEDITATE
 			cvar				"meditate"
-			rect				220 261 300 20
+			rect				220 295 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2810,7 +2810,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_FLOURISH
 			cvar				"flourish"
-			rect				220 281 300 20
+			rect				220 315 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0
@@ -2840,7 +2840,7 @@ itemDef
 			type				ITEM_TYPE_BIND
 			text				@MENUS_GLOAT
 			cvar				"gloat"
-			rect				220 301 300 20
+			rect				220 335 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			151
 			textaligny			0

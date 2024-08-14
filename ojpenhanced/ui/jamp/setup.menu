@@ -50,11 +50,11 @@
 			open				mainMenu
 		}
 
-//----------------------------------------------------------------------------------------------
-//
-//	MENU BACKGROUND
-//
-//----------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------
+		//
+		//	MENU BACKGROUND
+		//
+		//----------------------------------------------------------------------------------------------
 		itemDef 
 		{
 			name				really_background
@@ -104,7 +104,7 @@
 			name				bgpic
 			style				WINDOW_STYLE_SHADER
 			rect				23 98 594 324
-			background			"ojp/menu/4"
+			background			"ojp/menu/1"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -119,6 +119,7 @@
 			visible				1
 			decoration
 		}
+
 	
 		itemDef 
 		{
@@ -316,20 +317,6 @@
 
 		itemDef 
 		{
-			name				ojplogo
-			group				none
-			style				WINDOW_STYLE_SHADER
-			rect				220 0 200 90
-			background			"ojp/menu/ojplogo"
-			forecolor			1 1 1 1
-			visible				1
-			decoration
-		}
-
-
-
-		itemDef 
-		{
 			name				left_frame
 			group				lf_fr
 			style				WINDOW_STYLE_SHADER
@@ -347,6 +334,17 @@
 			style				WINDOW_STYLE_SHADER
 			rect				320 50 320 160
 			background			"gfx/menus/menu_boxes_right"	
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+		itemDef 
+		{
+			name				ojplogo
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				220 0 200 90
+			background			"ojp/menu/ojplogo"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -664,7 +662,7 @@
 			name				video1button_glow
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				80 185 180 24
+			rect				80 200 180 24
 			background			"gfx/menus/menu_blendbox2"	// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -678,7 +676,7 @@
 			text				@MENUS_VIDEO
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				80 185 170 24
+			rect				80 200 170 24
 			font				3
 			textscale			0.9
 			textalignx			160
@@ -724,7 +722,7 @@
 			name				video2button_glow
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				80 209 180 24
+			rect				80 225 180 24
 			background			"gfx/menus/menu_blendbox2"	// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -737,7 +735,7 @@
 			text				@MENUS_MORE_VIDEO
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				80 209 170 24
+			rect				80 225 170 24
 			font				3
 			textscale			0.9
 			textalignx			160
@@ -781,7 +779,7 @@
 			name				soundbutton_glow
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				80 233 180 24
+			rect				80 250 180 24
 			background			"gfx/menus/menu_blendbox2"	// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -794,7 +792,7 @@
 			text				@MENUS_SOUND
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				80 233 170 24
+			rect				80 250 170 24
 			font				3
 			textscale			0.9
 			textalignx			160
@@ -842,7 +840,7 @@
 			name				gameoptionsbutton_glow
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				80 257 180 24
+			rect				80 275 180 24
 			background			"gfx/menus/menu_blendbox2"	// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -855,7 +853,7 @@
 			text				@MENUS_OPTIONS
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				80 257 170 24
+			rect				80 275 170 24
 			font				3
 			textscale			0.9
 			textalignx			160
@@ -900,7 +898,7 @@
 			name				modsbutton_glow
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				80 281 180 24
+			rect				80 300 180 24
 			background			"gfx/menus/menu_blendbox2"	// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -913,7 +911,7 @@
 			text				@MENUS_MODS
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				80 281 170 24
+			rect				80 300 170 24
 			font				3
 			textscale			0.9
 			textalignx			160
@@ -959,7 +957,7 @@
 			name				advancedbutton_glow
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				80 305 180 24
+			rect				80 325 180 24
 			background			"gfx/menus/menu_blendbox2"	// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -972,7 +970,7 @@
 			text				@OJP_MENUS_ADVANCED
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				80 305 170 24
+			rect				80 325 170 24
 			font				3
 			textscale			0.9
 			textalignx			160
@@ -1018,7 +1016,7 @@
 			group				highlights
 			style				WINDOW_STYLE_SHADER
 			//[UITweaks]
-			rect				80 329 180 24
+			rect				80 350 180 24
 			//rect				80 305 180 24
 			//[UITweaks]
 			background			"gfx/menus/menu_blendbox2"	// Frame around button
@@ -1035,7 +1033,7 @@
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			//[UITweaks]
-			rect				80 329 170 24
+			rect				80 350 170 24
 			//rect				80 305 170 24
 			//[/UITweaks]
 			font				3
@@ -1082,7 +1080,7 @@
 			name				setup_background
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				260 185 340 225	
+			rect				260 185 340 235	
 			backcolor			0 0 .6 .5
 			forecolor			1 1 1 1
 			border				1
@@ -1100,7 +1098,7 @@
 			name				highlight1
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 190 340 14
+			rect				260 200 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1112,7 +1110,7 @@
 			name				highlight2
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 204 340 14
+			rect				260 215 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1124,7 +1122,7 @@
 			name				highlight3
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 218 340 14
+			rect				260 230 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1136,7 +1134,7 @@
 			name				highlight4
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 232 340 14
+			rect				260 245 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1148,7 +1146,7 @@
 			name				highlight5
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 246 340 14
+			rect				260 260 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1160,7 +1158,7 @@
 			name				highlight6
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 260 340 14
+			rect				260 275 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1172,7 +1170,7 @@
 			name				highlight7
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 274 340 14
+			rect				260 290 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1184,7 +1182,7 @@
 			name				highlight8
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 288 340 14
+			rect				260 305 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1196,7 +1194,7 @@
 			name				highlight9
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 302 340 14
+			rect				260 320 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1208,7 +1206,7 @@
 			name				highlight10
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 316 340 14
+			rect				260 335 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1220,7 +1218,7 @@
 			name				highlight11
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 330 340 14
+			rect				260 350 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1232,7 +1230,7 @@
 			name				highlight12
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 344 340 14
+			rect				260 365 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1244,7 +1242,7 @@
 			name				highlight13
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 358 340 14
+			rect				260 380 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1256,7 +1254,7 @@
 			name				highlight14
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 372 340 14
+			rect				260 395 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1268,7 +1266,7 @@
 			name				highlight15
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 386 340 14
+			rect				260 410 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1280,7 +1278,7 @@
 			name				highlight16
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 289 340 14
+			rect				260 425 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1292,7 +1290,7 @@
 			name				highlight17
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 303 340 14
+			rect				260 440 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1304,7 +1302,7 @@
 			name				highlight18
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 317 340 14
+			rect				260 455 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1316,7 +1314,7 @@
 			name				highlight19
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 331 340 14
+			rect				260 470 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1328,7 +1326,7 @@
 			name				highlight20
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 345 340 14
+			rect				260 485 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1340,7 +1338,7 @@
 			name				highlight21
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 363 340 14
+			rect				260 500 340 14
 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible			0
@@ -1360,7 +1358,7 @@
 			group 			video
 			text			@MENUS_VIDEO_QUALITY
 	   		type 			ITEM_TYPE_MULTI	
-			rect			260 188 340 14
+			rect			260 200 340 14
 	   		textalign		ITEM_ALIGN_RIGHT
 			textalignx		174
 			textaligny		0
@@ -1408,7 +1406,7 @@
 			text				@MENUS_VIDEO_MODE
 			cvarFloatList			{  @MENUS_640_X_480 3 @MENUS_800_X_600 4  @MENUS_1024_X_768 6 @MENUS_1152_X_864 7  @MENUS_1280_X_1024 8  @MENUS_1600_X_1200 9  @MENUS_2048_X_1536 10 @MENUS_2400_X_600 12 }
 			cvar				"ui_r_mode"
-			rect				260 216 340 14
+			rect				260 230 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1441,7 +1439,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_COLOR_DEPTH
-			rect				260 230 340 14
+			rect				260 245 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1477,7 +1475,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_FULL_SCREEN
-			rect				260 244 340 14
+			rect				260 260 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1512,7 +1510,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_GEOMETRIC_DETAIL
-			rect				260 258 340 14
+			rect				260 275 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1548,7 +1546,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_TEXTURE_DETAIL
-			rect				260 272 340 14
+			rect				260 290 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1583,7 +1581,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_TEXTURE_QUALITY
-			rect				260 286 340 14
+			rect				260 305 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1618,7 +1616,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_TEXTURE_FILTER
-			rect				260 300 340 14
+			rect				260 320 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1653,7 +1651,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_DETAILED_SHADERS
-			rect				260 314 340 14
+			rect				260 335 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1695,7 +1693,7 @@
 				@MENUS_OFF 	0 
 				@MENUS_ON 	1 
 			}
-			rect				260 328 340 14
+			rect				260 350 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1727,8 +1725,8 @@
 			//group				video_obsolete
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_COMPRESSED_TEXTURES
-			rect				260 342 340 14
-			//rect				260 328 340 14
+			rect				260 365 340 14
+			//rect				260 365 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1820,7 +1818,7 @@
 			name				vidrestart_background
 			group				vidrestart
 			style				WINDOW_STYLE_SHADER
-			rect				260 185 342 227
+			rect				260 185 342 235
 			background			"gfx/menus/menu_boxred"					// Frame
 			forecolor			1 1 1 1
 			visible			0
@@ -1967,7 +1965,7 @@
 			name				gamma_text
 			group				video2
 			style				WINDOW_STYLE_SHADER
-			rect				280 198 280 36
+			rect				280 200 280 36
 			background			"gfx/menus/greyscale"					// greyscale
 			forecolor			1 1 1 1
 			visible			0
@@ -1987,7 +1985,7 @@
 			textaligny			0
 			font 				4
 			textscale 			1
-			rect				260 234 340 20
+			rect				260 235 340 20
 			textalign			ITEM_ALIGN_CENTER
 			forecolor			.549 .854 1 1
 			visible				0
@@ -2001,7 +1999,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_VIDEO_BRIGHTNESS
 			cvarfloat			"r_gamma" 1 .5 3
-			rect				260 272 340 14
+			rect				260 275 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2016,11 +2014,11 @@
 			}
 			mouseenter 
 			{ 
-				show			highlight7
+				show			highlight6
 			}
 			mouseexit 
 			{ 
-				hide			highlight7
+				hide			highlight6
 			} 
 		}
 
@@ -2039,7 +2037,7 @@
 				@MENUS_SHADOWS_VOLUMETRIC	2
 				"Projected"			3
 			}
-			rect				260 289 340 14
+			rect				260 305 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2053,11 +2051,11 @@
 			}
 			mouseenter 
 			{ 
-				show			highlight16
+				show			highlight8
 			}
 			mouseexit 
 			{ 
-				hide			highlight16
+				hide			highlight8
 			}  
 		}
 		
@@ -2073,7 +2071,7 @@
 				@MENUS_OFF 	0 
 				@MENUS_ON 	1 
 			}
-			rect				260 303 340 14
+			rect				260 320 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2088,11 +2086,11 @@
 			}
 			mouseenter 
 			{ 
-				show			highlight17
+				show			highlight9
 			}
 			mouseexit 
 			{ 
-				hide			highlight17
+				hide			highlight9
 			} 
 		}
 
@@ -2108,7 +2106,7 @@
 				@MENUS_OFF 	0 
 				@MENUS_ON 	1 
 			}
-			rect				260 317 340 14
+			rect				260 335 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2123,11 +2121,11 @@
 			}
 			mouseenter 
 			{ 
-				show			highlight18
+				show			highlight10
 			}
 			mouseexit 
 			{ 
-				hide			highlight18
+				hide			highlight10
 			} 
 		}
 
@@ -2143,7 +2141,7 @@
 				@MENUS_OFF 	0 
 				@MENUS_ON 	1 
 			}
-			rect				260 331 340 14
+			rect				260 350 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2158,11 +2156,11 @@
 			}
 			mouseenter 
 			{ 
-				show			highlight19
+				show			highlight11
 			}
 			mouseexit 
 			{ 
-				hide			highlight19
+				hide			highlight11
 			} 
 		}
 
@@ -2178,7 +2176,7 @@
 				@MENUS_OFF 	0 
 				@MENUS_ON 	1 
 			}
-			rect				260 345 340 14
+			rect				260 365 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2193,11 +2191,11 @@
 			}
 			mouseenter 
 			{ 
-				show			highlight20
+				show			highlight13
 			}
 			mouseexit 
 			{ 
-				hide			highlight20
+				hide			highlight13
 			} 
 		}
 
@@ -2210,7 +2208,7 @@
 			cvarTest			r_ext_texture_filter_anisotropic_avail
 			disableCvar			{ 0 }     
 			cvarfloat				r_ext_texture_filter_anisotropic 1 .5 16
-			rect				260 363 340 14
+			rect				260 385 340 14
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2225,11 +2223,11 @@
 			}
 			mouseenter 
 			{ 
-				show			highlight21
+				show			highlight13
 			}
 			mouseexit 
 			{ 
-				hide			highlight21
+				hide			highlight13
 			} 
 		}
 
@@ -2238,7 +2236,7 @@
 			name				advancedvideobutton_glow
 			group				highlights
 			style				WINDOW_STYLE_SHADER
-			rect				260 384 340 14
+			rect				260 400 340 14
 			background			"gfx/menus/menu_buttonback"			// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -2251,7 +2249,7 @@
 			group				video2
       		type					ITEM_TYPE_BUTTON
 			text				@MENUS_SHOW_DRIVER_INFO
-			rect				260 384 340 14
+			rect				260 400 340 14
 			textalign			ITEM_ALIGN_CENTER
 			textalignx			170
 			textaligny			0
@@ -2289,7 +2287,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_EFFECTS_VOLUME
 			cvarfloat			"s_volume" 0 0 1
-			rect				260 188 340 14
+			rect				260 200 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2320,7 +2318,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_MUSIC_VOLUME
 			cvarfloat			"s_musicvolume" 0 0 1
-			rect				260 216 340 14
+			rect				260 230 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2351,7 +2349,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_VOICE_VOLUME
 			cvarfloat			"s_volumeVoice" 0 0 1
-			rect				260 244 340 14
+			rect				260 260 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2387,7 +2385,7 @@
 				@MENUS_LOW 	11  
 				@MENUS_HIGH 	22 
 			}
-			rect				260 272 340 14
+			rect				260 290 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2426,7 +2424,7 @@
 				@MENUS_ON 	1 
 			}
 			text				@MENUS_EAX
-			rect				260 300 340 14
+			rect				260 305 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2443,11 +2441,11 @@
 
 			mouseenter 
 			{ 
-				show			highlight9
+				show			highlight8
 			}
 			mouseexit 
 			{ 
-				hide			highlight9
+				hide			highlight8
 			} 
 		}
 
@@ -2456,7 +2454,7 @@
 			name				eax_icon
 			group				sound
 			style				WINDOW_STYLE_SHADER
-			rect				380 320 128 64
+			rect				380 325 128 64
 			background			"gfx/menus/eax"
 			forecolor			1 1 1 1
 			visible				1
@@ -2492,7 +2490,7 @@
 			}
 			//cvarFloatList			{  @MENUS_OFF 0 @MENUS_ON 1 }
 			//[/UITweaks]
-			rect				260 188 340 14
+			rect				260 200 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2527,7 +2525,7 @@
 			text				@MENUS_IDENTIFY_TARGET
 			cvar				cg_drawCrosshairNames
 			cvarFloatList			{  @MENUS_OFF 0 @MENUS_ON 1 }
-			rect				260 202 340 14
+			rect				260 215 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2564,7 +2562,7 @@
 				@OJP_MENUS_NORMAL		24
 				@OJP_MENUS_LARGE		36
 			}
-			rect				260 216 340 14
+			rect				260 230 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2596,7 +2594,7 @@
 			text				@MENUS_FORCE_PLAYER_MODELS
 			cvar				"cg_forceModel"
 			cvarFloatList			{  @MENUS_OFF 0 @MENUS_ON 1 }
-			rect				260 216 340 14
+			rect				260 245 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2629,7 +2627,7 @@
 			text				@MENUS_DEFER_PLAYER_MODELS
 			cvar				"cg_deferPlayers"
 			cvarFloatList			{  @MENUS_OFF 0 @MENUS_ON 1 }
-			rect				260 230 340 14
+			rect				260 245 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2665,7 +2663,7 @@
 				@MENUS_NO	0
 				@MENUS_YES	1
 			}
-			rect				260 244 340 14
+			rect				260 260 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2696,7 +2694,7 @@
 			text				@MENUS_SIMPLE_ITEMS
 			cvar				"cg_simpleItems"
 			cvarFloatList			{  @MENUS_OFF 0 @MENUS_ON 1 }
-			rect				260 258 340 14
+			rect				260 275 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2727,7 +2725,7 @@
 			text				@MENUS_TEAM_OVERLAY
 			cvar				"cg_drawTeamOverlay"
 			cvarFloatList			{  @MENUS_OFF 0 @MENUS_ON 1 }
-			rect				260 272 340 14
+			rect				260 290 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2769,7 +2767,7 @@
 			{
 				"0"
 			}
-			rect				260 286 340 14
+			rect				260 305 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2813,7 +2811,7 @@
 			{
 				"0"
 			}
-			rect				260 286 340 14
+			rect				260 305 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2852,7 +2850,7 @@
 				@MENUS_OFF	 	0
 				@MENUS_ON 		1
 			}
-			rect				260 300 340 14
+			rect				260 320 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2889,7 +2887,7 @@
 				@MENUS_SOUNDS_AND_EFFECTS	2
 				@MENUS_SOUNDS_EFFECTS_GRAPHICS	3
 			}
-			rect				260 314 340 14
+			rect				260 335 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2920,7 +2918,7 @@
 			cvar				"se_language"
 			feeder				40
 			cvarStrList			feeder
-			rect				260 328 340 14
+			rect				260 350 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2957,7 +2955,7 @@
 				Deutsch   deutsch
 				"Español"   espanol
 			}
-			rect				260 342 340 14
+			rect				260 365 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -2990,7 +2988,7 @@
 			text				@MENUS_FORCE_PLAYER_MODELS
 			cvar				"cg_forceModel"
 			cvarFloatList			{  @MENUS_OFF 0 @MENUS_ON 1 }
-			rect				260 356 340 14
+			rect				260 380 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -3058,7 +3056,7 @@
 		{
 			name				serverinfo
 			group				mods
-			rect				270 196 320 176
+			rect				270 200 320 176
 			type				ITEM_TYPE_LISTBOX
 			style				WINDOW_STYLE_FILLED
 			elementwidth		120
@@ -3083,7 +3081,7 @@
 		{
 			name				loadmod_button
 			style				WINDOW_STYLE_SHADER
-			rect				260 384 340 24 
+			rect				260 390 340 24 
 			background			"gfx/menus/menu_buttonback"			// Frame around button
 			forecolor			1 1 1 1
 			visible				0
@@ -3098,7 +3096,7 @@
 			descText			@MENUS_LOAD_CHOSEN_MOD
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				260 384 340 14 
+			rect				260 390 340 14 
 			textalign			ITEM_ALIGN_CENTER
 			textalignx			170
 			textaligny			-2
@@ -3133,7 +3131,7 @@
 			name				vidrestart_background
 			group				defaults
 			style				WINDOW_STYLE_SHADER
-			rect				260 185 342 227				
+			rect				260 185 342 235				
 			background			"gfx/menus/menu_boxred"					// Frame
 			forecolor			1 1 1 1
 			visible				0
@@ -3314,7 +3312,7 @@
 				@MENUS_OFF		0
 				@MENUS_ON	 	1
 			}
-			rect				260 188 340 14
+			rect				260 200 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -3329,7 +3327,7 @@
 			mouseenter 
 			{ 
 				show			button_glow
-				setitemrect		button_glow	260 186 340 20
+				setitemrect		button_glow	260 200 340 20
 			}
 			mouseexit 
 			{ 
@@ -3350,7 +3348,7 @@
 				@MENUS_OFF		0
 				@MENUS_ON	 	1
 			}
-			rect				260 202 340 14
+			rect				260 215 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -3365,7 +3363,7 @@
 			mouseenter 
 			{ 
 				show			button_glow
-				setitemrect		button_glow	260 200 340 20
+				setitemrect		button_glow	260 215 340 20
 			}
 			mouseexit 
 			{ 
@@ -3393,7 +3391,7 @@
 				OT	 	5
 			}
 		//[/Movie Sabers]
-			rect				260 216 340 14
+			rect				260 230 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -3408,7 +3406,7 @@
 			mouseenter 
 			{ 
 				show			button_glow
-				setitemrect		button_glow	260 214 340 20
+				setitemrect		button_glow	260 230 340 20
 			}
 			mouseexit 
 			{ 
@@ -3431,7 +3429,7 @@
 				@OJP_MENUS_TEAMRGBSABERSPLAYER	 	1
 				@OJP_MENUS_TEAMRGBSABERSALL	 		2
 			}
-			rect				260 230 340 14
+			rect				260 245 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -3446,7 +3444,7 @@
 			mouseenter 
 			{ 
 				show			button_glow
-				setitemrect		button_glow	260 230 340 20
+				setitemrect		button_glow	260 245 340 20
 			}
 			mouseexit 
 			{ 
@@ -3470,7 +3468,7 @@
 				@OJP_MENUS_HOLSTEREDWEAPONSPLAYER	 	1
 				@OJP_MENUS_HOLSTEREDWEAPONSALL	 	2
 			}
-			rect				260 244 340 14
+			rect				260 260 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -3485,7 +3483,7 @@
 			mouseenter 
 			{ 
 				show			button_glow
-				setitemrect		button_glow	260 244 340 20
+				setitemrect		button_glow	260 260 340 20
 			}
 			mouseexit 
 			{ 
@@ -3509,7 +3507,7 @@
 				@OJP_MENUS_TRUEINVERTSABERINVERT 		1
 				@OJP_MENUS_TRUEINVERTSABERALWAYSTHIRDPERSON	2
 			}
-			rect				260 258 340 14
+			rect				260 275 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -3524,7 +3522,7 @@
 			mouseenter 
 			{ 
 				show			button_glow
-				setitemrect		button_glow	260 258 340 20
+				setitemrect		button_glow	260 275 340 20
 			}
 			mouseexit 
 			{ 
@@ -3550,9 +3548,9 @@
 				@OJP_MENUS_TRUEGUNSVIEW3D	1
 				
 			}
-			rect				260 272 340 14
+			rect				260 290 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
-			textalignx			165
+			textalignx			174
 			textaligny			0
 			font 				4
 			textscale 			1
@@ -3564,9 +3562,12 @@
 			}
 			mouseenter 
 			{ 
+				show			button_glow
+				setitemrect		button_glow	260 290 340 20
 			}
 			mouseexit 
 			{ 
+				hide			button_glow
 			}
 		}
 		//[/True Guns]

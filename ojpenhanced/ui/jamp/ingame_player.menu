@@ -33,7 +33,7 @@
 		focusColor					0 0.4 0.8 1				// Focus color for text and items
 		style						1
 		border						1
-		descX						383
+		descX						380
 		descY						422
 		descScale					1
 		descColor					0 0.4 0.8 1
@@ -76,7 +76,7 @@
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				10 0 100 400
+			rect				0 0 120 400
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
@@ -90,7 +90,7 @@
 			name				background2
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				120 0 510 400
+			rect				125 0 520 400
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
@@ -104,7 +104,7 @@
 			name				background3
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				10 405 620 25
+			rect				0 405 640 30
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
@@ -123,7 +123,7 @@
 			name				playerconfigtitle
 			style				WINDOW_STYLE_FILLED
 			text				@MENUS_PROFILE_LOWER
-			rect				11 1 100 25
+			rect				0 0 120 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			48
 			textaligny			0
@@ -799,7 +799,7 @@
 			group				startpage
 			style				WINDOW_STYLE_FILLED
 			text				@MENUS_PLAYER_CONFIGURATION
-			rect				121 1 510 25
+			rect				125 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -819,7 +819,7 @@
 			group				startpage
 			style				WINDOW_STYLE_EMPTY	
 			text				"Please choose an option from the right."
-			rect				130 45 0 0
+			rect				260 45 0 0
 			textalign			ITEM_ALIGN_LEFT
 			textalignx			0
 			textaligny			0
@@ -843,7 +843,7 @@
 			style				WINDOW_STYLE_EMPTY	
 			text				@MENUS_POINTS_REMAINING
 			ownerdraw			UI_FORCE_POINTS
-			rect				299 250 150 32
+			rect				305 250 150 32
 			textalign			ITEM_ALIGN_LEFT
 			textalignx			5
 			textaligny			5
@@ -868,7 +868,7 @@
 			group				name
 			style				WINDOW_STYLE_FILLED
 			text				"General"
-			rect				120 1 510 25
+			rect				125 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -893,8 +893,8 @@
 			text 				@MENUS_NAME1
 			cvar 				"ui_Name"
 			maxchars 			35
-			rect 				140 75 300 20
-			textalign			ITEM_ALIGN_LEFT		
+			rect 				300 75 300 20
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx 			0
 			textaligny 			0
 			font				2
@@ -923,8 +923,8 @@
 			name 				charactertitle
 			group				character
 			style				WINDOW_STYLE_FILLED
-			text				"Character"
-			rect				121 1 510 25
+			text				"Choose Your Character"
+			rect				125 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -942,8 +942,8 @@
 		{
 			name				descbackground
 			group				character
-			style				WINDOW_STYLE_FILLED
-			rect				121 380 510 20
+			style				0
+			rect				5 390 520 20
 			backcolor			0 0 0 1
 			forecolor			1 1 1 1
 			border				0
@@ -957,8 +957,8 @@
 			style				0	
 			text				@MENUS_TEAM_COLOR
 			ownerdraw			UI_SKIN_COLOR
-			rect				130 30 160 20
-			textalign			ITEM_ALIGN_LEFT
+			rect				340 45 160 20
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			outlinecolor		1 .5 .5 .5
@@ -984,48 +984,14 @@
 			}
 		}
 
-		// Skin/Team Color Chooser
-		itemDef 
-		{
-			name				setcolor
-			group				character
-			style				0	
-			text				@MENUS_TEAM_COLOR
-			ownerdraw			UI_SKIN_COLOR
-			rect				130 30 160 20
-			textalign			ITEM_ALIGN_LEFT
-			textalignx			0
-			textaligny			0
-			outlinecolor		1 .5 .5 .5
-			backcolor			0 0 0 0
-			font				2
-			textscale			.7
-			forecolor			0.8 0.8 0.8 1
-			border				0
-			bordercolor			0 0 0 0
-			descText			@MENUS_CHOOSE_THE_COLOR_FOR
-			cvarTest			"ui_about_gametype"
-			showCvar 
-			{ 
-			//	"6" ;
-			//	"7" ;
-			//	"8" ;
-			//	"9"
-			}
-			visible				1 
-			decoration
-			action 
-			{ 
-				play			"sound/interface/button1"
-			}
-		}
+
 		
 		// Scroll box with portraits.
 		itemDef 
 		{
 			name 				headlist
 			group				character
-			rect 				130 45 468 258			
+			rect 				145 75 468 258			
 			type 				ITEM_TYPE_LISTBOX
 			style 				WINDOW_STYLE_FILLED
 			elementwidth 		64
@@ -1061,10 +1027,10 @@
 			descText			@MENUS_CUSTOMPLAYER_DESC
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				290 322 160 15
+			rect				560 342 160 15
 			font				2
 			textscale			0.8
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textstyle			3
 			forecolor			1 1 1 1
 			visible				1
@@ -1092,8 +1058,8 @@
 			group				character
 			style				0	
 			text				"Special Character"
-			rect				140 345 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				300 345 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			forecolor			1 1 1 1
@@ -1113,8 +1079,8 @@
 			group				character
 			style				0	
 			text				@MENUS_1_2_3
-			rect				165 345 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				250 345 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			forecolor			1 1 1 1
@@ -1134,8 +1100,8 @@
 			group					character
 			style					0	
 			text					"Mark-1 / Droideka:"
-			rect					140 360 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					300 360 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1156,8 +1122,8 @@
 			group					character
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SPECIALCHARACTER
-			rect					165 360 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					200 360 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        

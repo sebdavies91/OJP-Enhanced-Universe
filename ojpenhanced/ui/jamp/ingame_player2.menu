@@ -12,11 +12,11 @@
 		visible						0
 		fullscreen					0
 //		outOfBoundsClick										// this closes the window if it gets a click out of the rectangle
-		rect						120 40 510 400
+		rect						0 45 570 400
 		focusColor					0 0.4 0.8 1				// Focus color for text and items
 		style						1
 		border						1
-		descX						383
+		descX						380
 		descY						422
 		descScale					1
 		descColor					0 0.4 0.8 1
@@ -42,10 +42,9 @@
 		itemDef
 		{
 			name 				charactertitle
-			group				custom
 			style				WINDOW_STYLE_FILLED
-			text				@MENUS_CUSTOM_CHARACTER
-			rect				1 1 510 25
+			text				"Choose your customized character"
+			rect				125 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -62,9 +61,8 @@
 		itemDef
 		{
 			name				descbackground
-			group				custom
-			style				WINDOW_STYLE_FILLED
-			rect				1 380 510 20
+			style				0
+			rect				5 390 520 20
 			backcolor			0 0 0 1
 			forecolor			1 1 1 1
 			border				0
@@ -77,7 +75,7 @@
 			name				character
 			group				models
 			type 				ITEM_TYPE_MODEL
-			rect				320 100 200 225
+			rect				420 100 200 225
 			model_g2anim 		"BOTH_WALK1"
 			asset_model			"ui_char_model"
 			model_angle			180
@@ -101,10 +99,10 @@
 			group				none
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				10 30 140 24
+			rect				300 45 140 24
 			forecolor			1 1 1 1
 			text				@MENUS_SPECIES
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			textstyle			0
@@ -122,11 +120,11 @@
 			descText			@MENUS_CHOOSE_SPECIES
 			type				ITEM_TYPE_MULTI
 			style				WINDOW_STYLE_EMPTY
-			rect				106 30 150 16
+			rect				315 45 150 16
 			font				2
 			textscale			.7
 			textaligny			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textstyle			0
 			textalignx			0
 			backcolor			0 0 0 0
@@ -164,7 +162,7 @@
 			bordersize			1
 			backcolor			0 0 0 .6
 			bordercolor			0 0 0 1
-			rect				10 100 288 50
+			rect				145 100 288 50
 			visible				1
 			action 
 			{
@@ -182,11 +180,11 @@
 			descText			"Preset Color Menu."
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				12 84 70 16
+			rect				300 75 70 16
 			font				2
 			textscale			.7
 			textaligny			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textstyle			0
 			textalignx			0
 			backcolor			0 0 0 0
@@ -212,11 +210,11 @@
 			descText			"RGB Colors Menu."
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				100 84 70 16
+			rect				350 75 70 16
 			font				2
 			textscale			.7
 			textaligny			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textstyle			0
 			textalignx			0
 			backcolor			0 0 0 0
@@ -243,7 +241,7 @@
 			text				"Red: "
 			cvarint				"ui_char_color_red" 50 0 255
 			//[/INTSLIDER]
-			rect				0 104 175 18
+			rect				235 104 175 18
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			70
 			textaligny			0
@@ -269,7 +267,7 @@
 			text				"Green: "
 			cvarint				"ui_char_color_green" 50 0 255
 			//[/INTSLIDER]
-			rect				0 124 175 18
+			rect				235 124 175 18
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			70
 			textaligny			0
@@ -295,7 +293,7 @@
 			text				"Blue: "
 			cvarint				"ui_char_color_blue" 50 0 255
 			//[/INTSLIDER]
-			rect				0 144 175 18
+			rect				235 144 175 18
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			70
 			textaligny			0
@@ -323,11 +321,11 @@
 			descText			@MENUS_SELECT_HEAD
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 199 90 16
+			rect				235 199 90 16
 			font				2
 			textscale			.7
 			textaligny			-5
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textstyle			0
 			textalignx			0
 			backcolor			0 0 0 0
@@ -352,11 +350,11 @@
 			descText			@MENUS_SELECT_TORSO
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				110 199 90 16
+			rect				325 199 90 16
 			font				2
 			textscale			.7
 			textaligny			-5
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textstyle			0
 			textalignx			0
 			backcolor			0 0 0 0
@@ -387,11 +385,11 @@
 			descText			@MENUS_SELECT_LEGS
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				200 199 90 16
+			rect				415 199 90 16
 			font				2
 			textscale			.7
 			textaligny			-5
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			textstyle			0
 			textalignx			0
 			backcolor			0 0 0 0
@@ -407,7 +405,7 @@
 			}
 		}
 		
-		//////////////////////
+		////////////////////// 
 		//LISTBOXES
 		//////////////////////
 		itemDef
@@ -426,7 +424,7 @@
 			backcolor			0 0 0 .6
 			bordercolor			0 0 0 1
 			forecolor			-1			//use playercolor
-			rect				10 214 292 93
+			rect				145 214 292 93
 			visible				1
 			action
 			{
@@ -451,7 +449,7 @@
 			backcolor			0 0 0 .6
 			bordercolor			0 0 0 1
 			forecolor			-1			//use playercolor
-			rect				10 214 292 93
+			rect				145 214 292 93
 			visible				0
 			action
 			{
@@ -476,7 +474,7 @@
 			backcolor			0 0 0 .6
 			bordercolor			0 0 0 1
 			forecolor			-1			//use playercolor
-			rect				10 214 292 93
+			rect				145 214 292 93
 			visible				0
 			action
 			{
@@ -496,7 +494,7 @@
 			text				@MENUS_APPLY
 			type				1
 			style				WINDOW_STYLE_EMPTY
-			rect				200 350 110 32
+			rect				370 350 110 32
 			textalign			ITEM_ALIGN_CENTER
 			textalignx			55
 			textaligny			0

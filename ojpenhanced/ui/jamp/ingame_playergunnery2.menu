@@ -17,7 +17,7 @@
 		focusColor					0 0.4 0.8 1								// Focus color for text and items
 		style						1
 		border						1
-		descX						383
+		descX						380
 		descY						422
 		descScale					1
 		descColor					0 0.4 0.8 1
@@ -46,7 +46,7 @@
 			name 				gunnery2title
 			style				WINDOW_STYLE_FILLED
 			text				"Choose your heavy weapons"
-			rect				1 1 510 25
+			rect				5 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -63,8 +63,8 @@
 		itemDef
 		{
 			name				descbackground
-			style				WINDOW_STYLE_FILLED
-			rect				1 380 510 20
+			style				0
+			rect				5 390 520 20
 			backcolor			0 0 0 1
 			forecolor			1 1 1 1
 			border				0
@@ -79,8 +79,8 @@
 			style				WINDOW_STYLE_EMPTY	
 			text				@MENUS_POINTS_REMAINING
 			ownerdraw			UI_FORCE_POINTS
-			rect				10 45 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			font				2
@@ -106,8 +106,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Sniper Rifles"
-			rect				20 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -127,8 +127,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -149,8 +149,8 @@
 			group					gunpowers
 			style					0	
 			text					"Sniper Rifle:"
-			rect					20 90 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -171,8 +171,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DISRUPTOR   
-			rect					75 90 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -205,8 +205,8 @@
 			group					gunpowers
 			style					0	
 			text					"DXR-6 / Cycler / DLT-20A:"
-			rect					20 105 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -228,8 +228,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DISRUPTORA
-			rect					75 105 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -263,8 +263,8 @@
 			group					gunpowers
 			style					0	
 			text					"E-5s / .. / ..:"
-			rect					20 120 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -285,8 +285,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DISRUPTORB
-			rect					75 120 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -322,8 +322,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Repeater Rifles"
-			rect				270 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				430 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -343,8 +343,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				315 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				380 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -364,8 +364,8 @@
 			group					gunpowers
 			style					0	
 			text					"Repeater Rifle:"
-			rect					270 90 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -386,8 +386,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_REPEATER
-			rect					315 90 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -419,8 +419,8 @@
 			group					gunpowers
 			style					0	
 			text					"TL-50 / DLT-18 / DC-15A:"
-			rect					270 105 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -443,8 +443,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_REPEATERA
-			rect					315 105 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -478,8 +478,8 @@
 			group					gunpowers
 			style					0	
 			text					"T-21 / .. / ..:"
-			rect					270 120 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -500,8 +500,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_REPEATERB
-			rect					315 120 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -538,8 +538,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Blaster/Flechette Shotguns"
-			rect				20 165 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 165 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -559,8 +559,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 165 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 165 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -580,8 +580,8 @@
 			group					gunpowers
 			style					0	
 			text					"Blaster/Flechette Shotgun:"
-			rect					20 180 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -602,8 +602,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_FLECHETTE  
-			rect					75 180 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -636,8 +636,8 @@
 			group					gunpowers
 			style					0	
 			text					"FC-1 / CR-1 / DBA:"
-			rect					20 195 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -660,8 +660,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_FLECHETTEA
-			rect					75 195 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -695,8 +695,8 @@
 			group					gunpowers
 			style					0	
 			text					"ACP / .. / ..:"
-			rect					20 210 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -717,8 +717,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_FLECHETTEB
-			rect					75 210 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -755,8 +755,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Conc/Rotary Cannons"
-			rect				270 165 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				430 165 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -776,8 +776,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				315 165 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				380 165 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -798,8 +798,8 @@
 			group					gunpowers
 			style					0	
 			text					"Conc/Rotary Cannon:"
-			rect					270 180 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -820,8 +820,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_CONCUSSION
-			rect					315 180 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -853,8 +853,8 @@
 			group					gunpowers
 			style					0	
 			text					"Stouker / Z-6 / Z-12:"
-			rect					270 195 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 195 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -876,8 +876,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_CONCUSSIONA
-			rect					315 195 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -911,8 +911,8 @@
 			group					gunpowers
 			style					0	
 			text					"LJ-70 / .. / ..:"
-			rect					270 210 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 210 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -933,8 +933,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_CONCUSSIONB
-			rect					315 210 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -967,8 +967,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Rocket/Grenade Launchers"
-			rect				20 255 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 255 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -988,8 +988,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 255 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 255 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			forecolor				.2 1 .2 1
@@ -1009,8 +1009,8 @@
 			group					gunpowers
 			style					0	
 			text					"Rocket/Grenade Launcher:"
-			rect					20 270 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 270 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1031,8 +1031,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_ROCKETS
-			rect					75 270 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 270 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -1064,8 +1064,8 @@
 			group					gunpowers
 			style					0	
 			text					"PLX-2M / PMG / PLX-1:"
-			rect					20 285 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 285 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1088,8 +1088,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_ROCKETSA
-			rect					75 285 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 285 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -1125,8 +1125,8 @@
 			group					gunpowers
 			style					0	
 			text					"E-60R / .. / ..:"
-			rect					20 300 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 300 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1147,8 +1147,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_ROCKETSB
-			rect					75 300 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 300 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        

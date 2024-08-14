@@ -4,28 +4,82 @@
 	menuDef 
 	{
 		name					"ingame_leave"
-		visible					1
+		visible					0
 		fullScreen				0
 		outOfBoundsClick							// this closes the window if it gets a click out of the rectangle
-		rect					474 45 156 100
+		rect					0 45 640 440
 		focusColor				0 0.4 0.8 1
+		style					1
+		border					1
+        descX						380
+		descY						400
+		descScale					1
+		descColor				1 1 1 1					// Focus color for text and items
+		descAlignment				ITEM_ALIGN_CENTER	
 		onOpen 
 		{ 
 			show				grpMenu ; 
 			hide				grpConfirm 
 		}
 
-		// Overall window backdrop
+	// Overall window backdrop
 		itemDef 
 		{
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 156 100
+			rect				0 0 640 440
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
 			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Exit"
+			rect				0 0 640 25
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			255
+			textaligny			2
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 1
+			font				3
+			textscale			0.9
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
 			visible				1
 			decoration
 		}
@@ -44,7 +98,7 @@
 			group				grpMenu
 			style				2	
 			type				1
-			rect				2 5 152 30
+			rect				295 75 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -74,7 +128,7 @@
 			text				@MENUS_RESTART_MATCH
 			style				2	
 			type				1
-			rect				2 35 152 30
+			rect				295 105 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -109,7 +163,7 @@
 			type				1
 			text				@MENUS_QUIT_PROGRAM
 			style				2	
-			rect				2 65 152 30
+			rect				295 135 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76
 			textaligny			0
@@ -143,7 +197,7 @@
 			text				@MENUS_GO_TO_MAIN_MENU
 			group				grpConfirm
 			style				2	
-			rect				2 5 152 30
+			rect				295 75 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -162,7 +216,7 @@
 			group				grpConfirm
 			type				1
 			style				0
-			rect				2 35 152 30
+			rect				295 105 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -190,7 +244,7 @@
 			group				grpConfirm
 			type				1
 			style				0
-			rect				2 65 152 30
+			rect				295 135 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -225,7 +279,7 @@
 			text				@MENUS_MATCH
 			group				grpConfirm
 			style				2	
-			rect				2 5 152 30
+			rect				295 75 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -242,7 +296,7 @@
 			text				@MENUS_YES
 			group				grpConfirm
 			type				1
-			rect				2 35 152 30
+			rect				295 105 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -271,7 +325,7 @@
 			text				@MENUS_NO
 			group				grpConfirm
 			type				1
-			rect				2 65 152 30
+			rect				295 135 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -304,7 +358,7 @@
 			text				@MENUS_PROGRAM
 			group				grpConfirm
 			style				2	
-			rect				2 5 152 30
+			rect				295 75 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -321,7 +375,7 @@
 			text				@MENUS_YES
 			group				grpConfirm
 			type				1
-			rect				2 35 152 30
+			rect				295 105 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76 
 			textaligny			0
@@ -348,7 +402,7 @@
 			text				@MENUS_NO
 			group				grpConfirm
 			type				1
-			rect				2 65 152 30
+			rect				295 135 152 30
 			textalign			ITEM_ALIGN_CENTER	
 			textalignx			76
 			textaligny			0

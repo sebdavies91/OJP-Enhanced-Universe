@@ -11,12 +11,12 @@
 		visible					0
 		fullscreen				0
 		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
-		rect					45 45 570 400
+		rect					0 45 640 440
 		focusColor				0 0.4 0.8 1								// Focus color for text and items
 		style					1
 		border					1
-		descX					305
-		descY					347
+		descX					380
+		descY					400
 		descScale				1
 		descColor				0 0.4 0.8 1					// Focus color for text and items
 		descAlignment				ITEM_ALIGN_CENTER		
@@ -59,7 +59,7 @@
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 570 400
+			rect				0 0 640 440
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
@@ -72,7 +72,7 @@
 			name				playerconfigtitle
 			style				WINDOW_STYLE_FILLED
 			text				@MENUS_SETUP
-			rect				1 1 570 28
+			rect				0 0 640 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			2
@@ -84,7 +84,7 @@
 			border				0
 			bordercolor			0 0 0 0
 			visible				1 
-		}
+		} 
 
 		// video1 button
 		itemDef 
@@ -94,9 +94,9 @@
 			text				@MENUS_VIDEO
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 43 170 30
+			rect				5 75 170 30
 			font				3
-			textscale			0.9
+			textscale			0.8
 			textalignx			170
 			textaligny			5
 			textstyle			3
@@ -144,9 +144,9 @@
 			text				@MENUS_MORE_VIDEO
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 73 170 30
+			rect				5 105 170 30
 			font				3
-			textscale			0.9
+			textscale			0.8
 			textalignx			170
 			textaligny			5
 			textalign			ITEM_ALIGN_RIGHT
@@ -192,9 +192,9 @@
 			text				@MENUS_SOUND
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 103 170 30
+			rect				5 135 170 30
 			font				3
-			textscale			0.9
+			textscale			0.8
 			textalignx			170
 			textaligny			5
 			textalign			ITEM_ALIGN_RIGHT
@@ -240,9 +240,9 @@
 			text				@MENUS_OPTIONS
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 133 170 30
+			rect				5 165 170 30
 			font				3
-			textscale			0.9
+			textscale			0.8
 			textalignx			170
 			textaligny			5
 			textalign			ITEM_ALIGN_RIGHT
@@ -290,9 +290,9 @@
 			text				@OJP_MENUS_ADVANCED
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				20 163 170 30
+			rect				5 195 170 30
 			font				3
-			textscale			0.9
+			textscale			0.8
 			textalignx			170
 			textaligny			5
 			textalign			ITEM_ALIGN_RIGHT
@@ -331,7 +331,7 @@
 		{
 			name				modsbutton_glow
 			style				WINDOW_STYLE_SHADER
-			rect				20 163 185 30
+			rect				5 195 185 30
 			background			"gfx/menus/menu_blendbox2"			// Frame around button
 			forecolor			1 1 1 1
 			visible			0
@@ -349,11 +349,11 @@
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			//[UITweaks]
-			rect				20 193 170 30
-			//rect				20 163 170 30
+			rect				5 225 170 30
+			//rect				5 225 170 30
 			//[/UITweaks]
 			font				3
-			textscale			0.9
+			textscale			0.8
 			textalignx			170
 			textaligny			5
 			textalign			ITEM_ALIGN_RIGHT
@@ -396,7 +396,7 @@
 			name				setup_background
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				210 41 350 250	
+			rect				195 45 360 330	
 			backcolor			0 0 0 .6
 			forecolor			1 1 1 1
 			border				1
@@ -417,7 +417,7 @@
 			group 			video
 			text			@MENUS_VIDEO_QUALITY
 	   		type 			ITEM_TYPE_MULTI	
-			rect			220 41 300 20
+			rect			206 75 300 20
 	   		textalign		ITEM_ALIGN_RIGHT
 			textalignx		165
 			textaligny		0
@@ -463,7 +463,7 @@
 			cvarFloatList		{  @MENUS_640_X_480 3 @MENUS_800_X_600 4  @MENUS_1024_X_768 6 @MENUS_1152_X_864 7  @MENUS_1280_X_1024 8  @MENUS_1600_X_1200 9  @MENUS_2048_X_1536 10 @MENUS_2400_X_600 12 }
 			cvar				"ui_r_mode"
 
-			rect				220 83 300 20
+			rect				206 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -495,7 +495,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_COLOR_DEPTH
-			rect				220 103 300 20
+			rect				206 135 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -531,7 +531,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_FULL_SCREEN
-			rect				220 123 300 20
+			rect				206 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -566,7 +566,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_GEOMETRIC_DETAIL
-			rect				220 143 300 20
+			rect				206 175 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -601,7 +601,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_TEXTURE_DETAIL
-			rect				220 163 300 20
+			rect				206 195 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -635,7 +635,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_TEXTURE_QUALITY
-			rect				220 183 300 20
+			rect				206 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -669,7 +669,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_TEXTURE_FILTER
-			rect				220 203 300 20
+			rect				206 235 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -703,7 +703,7 @@
 			group				video
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_DETAILED_SHADERS
-			rect				220 223 300 20
+			rect				206 255 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -743,7 +743,7 @@
 				@MENUS_OFF 0  
 				@MENUS_ON 1 
 			}
-			rect				220 243 300 20
+			rect				206 275 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -777,8 +777,8 @@
 			type				ITEM_TYPE_MULTI
 			text				@MENUS_COMPRESSED_TEXTURES
 			//[UITweaks]
-			rect 				220 63 300 20
-			//rect				220 243 300 20
+			rect 				206 95 300 20
+			//rect				206 95 300 20
 			//[/UITweaks]
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
@@ -820,7 +820,7 @@
 			text				@MENUS_APPLY_CHANGES
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				260 260 200 30
+			rect				260 295 200 30
 			font				4
 			textscale			1
 			textalignx			100
@@ -858,7 +858,7 @@
 			name				vidrestart_background
 			group				vidrestart
 			style				WINDOW_STYLE_SHADER
-			rect				210 41 302 252	
+			rect				206 41 302 252	
 			background			"gfx/menus/menu_boxred"					// Frame
 			forecolor			1 1 1 1
 			visible			0
@@ -871,7 +871,7 @@
 			group				vidrestart
 			text				@MENUS_THIS_WILL_APPLY_VIDEO
 			text2				@MENUS_AND_RETURNTO_GAME
-			rect				210 100 300 20
+			rect				206 100 300 20
 			textalign			ITEM_ALIGN_CENTER
 			text2aligny			18
 			textalignx			150
@@ -887,7 +887,7 @@
 			name				vidrestart_text2
 			group				vidrestart
 			text				@MENUS_VID_RESTART3
-			rect				210 160 256 20
+			rect				206 160 256 20
 			textalign			ITEM_ALIGN_CENTER
 			textalignx			150
 			font				2
@@ -980,7 +980,7 @@
 			name				gamma_text
 			group				video2
 			style				WINDOW_STYLE_SHADER
-			rect				260 63 260 36
+			rect				250 75 260 36
 			background			"gfx/menus/greyscale"					// greyscale
 			forecolor			1 1 1 1
 			visible			0
@@ -1001,7 +1001,7 @@
 			textaligny			0
 			font 				4
 			textscale 			1
-			rect				220 103 256 20
+			rect				197 115 256 20
 			textalign			ITEM_ALIGN_CENTER
 			forecolor			0.7 0.7 0.7 1
 			visible			0
@@ -1016,7 +1016,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_VIDEO_BRIGHTNESS
 			cvarfloat			"r_gamma" 1 .5 3
-			rect				220 141 300 20
+			rect				197 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1055,7 +1055,7 @@
 				@MENUS_SHADOWS_VOLUMETRIC	2
 				"Projected"			3
 			}
-			rect				220 161 300 14
+			rect				197 175 300 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1087,7 +1087,7 @@
 				@MENUS_OFF 0  
 				@MENUS_ON 1 
 			}
-			rect				220 181 300 14
+			rect				197 195 300 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1122,7 +1122,7 @@
 				@MENUS_OFF 	0 
 				@MENUS_ON 	1 
 			}
-			rect				220 201 340 14
+			rect				197 215 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1155,7 +1155,7 @@
 				@MENUS_OFF 	0 
 				@MENUS_ON 	1 
 			}
-			rect				220 221 340 14
+			rect				197 235 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1188,7 +1188,7 @@
 				@MENUS_OFF 0  
 				@MENUS_ON 1 
 			}
-			rect				220 241 300 14
+			rect				197 255 300 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1220,7 +1220,7 @@
 			cvarTest			r_ext_texture_filter_anisotropic_avail
 			disableCvar			{ 0 }     
 			cvarfloat				r_ext_texture_filter_anisotropic 1 .5 16
-			rect				220 261 300 20
+			rect				197 275 300 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -1257,7 +1257,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_EFFECTS_VOLUME
 			cvarfloat			"s_volume" 0 0 1
-			rect				220 61 300 20
+			rect				206 75 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			120
 			textaligny			0
@@ -1287,7 +1287,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_MUSIC_VOLUME
 			cvarfloat			"s_musicvolume" 0 0 1
-			rect				220 81 300 20
+			rect				206 95 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			120
 			textaligny			0
@@ -1317,7 +1317,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				@MENUS_VOICE_VOLUME
 			cvarfloat			"s_volumeVoice" 0 0 1
-			rect				220 101 300 20
+			rect				206 115 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			120
 			textaligny			0
@@ -1348,7 +1348,7 @@
 			text				@MENUS_SOUND_QUALITY
 			cvar				"s_khz"
 			cvarFloatList		{ @MENUS_LOW 11  @MENUS_HIGH 22 }
-			rect				220 141 300 20
+			rect				206 155 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1380,7 +1380,7 @@
 			cvar				"s_UseOpenAL"
 			cvarFloatList		{  @MENUS_OFF 0 @MENUS_ON 1 }
 			text				@MENUS_EAX
-			rect				220 181 300 20
+			rect				206 195 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			120
 			textaligny			0
@@ -1408,7 +1408,7 @@
 			name				eax_icon
 			group				sound
 			style				WINDOW_STYLE_SHADER
-			rect				297 201 128 64
+			rect				297 215 128 64
 			background			"gfx/menus/eax"
 			forecolor			1 1 1 1
 			visible				1
@@ -1444,7 +1444,7 @@
 				//@MENUS_ON 1 
 				//[/UITweaks]
 			}
-			rect				220 41 300 20
+			rect				206 75 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1484,7 +1484,7 @@
 				@MENUS_OFF 0  
 				@MENUS_ON 1 
 			}
-			rect				220 61 300 20
+			rect				206 95 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1521,7 +1521,7 @@
 				@OJP_MENUS_NORMAL			24
 				@OJP_MENUS_LARGE			36
 			}
-			rect				220 81 300 20
+			rect				206 115 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1555,7 +1555,7 @@
 				@MENUS_OFF				0
 				@MENUS_ON					1
 			}
-			rect				220 81 300 20
+			rect				206 115 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1591,7 +1591,7 @@
 				@MENUS_OFF				0
 				@MENUS_ON					1
 			}
-			rect				220 101 300 20
+			rect				206 135 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1625,7 +1625,7 @@
 				@MENUS_NO				0
 				@MENUS_YES			1
 			}
-			rect				220 121 300 20
+			rect				206 155 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1659,7 +1659,7 @@
 				@MENUS_OFF		0
 				@MENUS_ON			1
 			}
-			rect				220 141 300 20
+			rect				206 175 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1693,7 +1693,7 @@
 				@MENUS_OFF		0
 				@MENUS_ON			1
 			}
-			rect				220 161 300 20
+			rect				206 195 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1734,7 +1734,7 @@
 			{
 				"0"
 			}
-			rect				220 181 300 20
+			rect				206 215 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1776,7 +1776,7 @@
 			{
 				"0"
 			}
-			rect				220 181 300 20
+			rect				206 215 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1815,7 +1815,7 @@
 				@MENUS_SOUNDS_AND_EFFECTS	2
 				@MENUS_SOUNDS_EFFECTS_GRAPHICS	3
 			}
-			rect				220 201 300 20
+			rect				206 235 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1844,7 +1844,7 @@
 			cvar				"se_language"
 			feeder				40
 			cvarStrList			feeder
-			rect				220 221 300 20
+			rect				206 255 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1881,7 +1881,7 @@
 				Deutsch   			deutsch
 				"Español" 			espanol
 			}
-			rect				220 241 300 20
+			rect				206 275 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1917,7 +1917,7 @@
 				@MENUS_OFF				0
 				@MENUS_ON				1
 			}
-			rect				220 261 300 20
+			rect				206 295 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1948,7 +1948,7 @@
 			text				@MENUS_SET_LANGUAGE
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				365 261 120 32 
+			rect				365 275 120 32 
 			font				2
 			textscale			1        
 			textalign			ITEM_ALIGN_CENTER
@@ -1985,7 +1985,7 @@
 			name				vidrestart_background
 			group				defaults
 			style				WINDOW_STYLE_SHADER
-			rect				210 41 352 252		
+			rect				206 41 352 252		
 			background			"gfx/menus/menu_boxred"					// Frame
 			forecolor			1 1 1 1
 			visible			0
@@ -1997,7 +1997,7 @@
 			name				options
 			group				defaults
 			text				@MENUS_WARNING
-			rect				210 61 352 20
+			rect				200 75 360 20
 			font				2
 			textscale			1    
 			textalign			ITEM_ALIGN_CENTER
@@ -2012,7 +2012,7 @@
 			name				options
 			group				defaults
 			text				@MENUS_THIS_WILL_SET_ALL_GAME
-			rect				210 101 352 20
+			rect				200 115 360 20
 			text2aligny			20
 			font				2
 			textscale			.9
@@ -2028,7 +2028,7 @@
 			name				options
 			group				defaults
 			text				@MENUS_TO_THEIR_FACTORY_SETTINGS
-			rect				210 131 352 20
+			rect				190 140 360 20
 			text2aligny			20
 			font				2
 			textscale			.9
@@ -2044,7 +2044,7 @@
 			name				options
 			group				defaults
 			text				@MENUS_VID_RESTART3
-			rect				215 191 352 20
+			rect				190 195 360 20
 			font				2
 			textscale			1    
 			textalign			ITEM_ALIGN_CENTER
@@ -2063,7 +2063,7 @@
 			text				@MENUS_YES
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				430 241 120 32 
+			rect				420 245 120 32 
 			font				2
 			textscale			1
 			textalign			ITEM_ALIGN_CENTER
@@ -2098,7 +2098,7 @@
 			text				@MENUS_NO
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				220 241 120 32 
+			rect				206 245 120 32 
 			font				2
 			textscale			1
 			textalign			ITEM_ALIGN_CENTER
@@ -2143,7 +2143,7 @@
 				"@MENUS_OFF"	0
 				"@MENUS_ON"	 	1
 			}
-			rect				220 41 300 20
+			rect				206 75 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -2176,7 +2176,7 @@
 				"@MENUS_OFF"	0
 				"@MENUS_ON"	 	1
 			}
-			rect				220 61 300 20
+			rect				206 95 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -2211,7 +2211,7 @@
 				@MENUS_OFF		0
                 @MENUS_ON		1
 			}
-			rect				220 81 300 20
+			rect				206 115 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -2247,7 +2247,7 @@
 				@OJP_MENUS_TEAMRGBSABERSPLAYER	 	1
 				@OJP_MENUS_TEAMRGBSABERSALL	 	2
 			}
-			rect				220 101 300 20
+			rect				206 135 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -2283,7 +2283,7 @@
 				@OJP_MENUS_HOLSTEREDWEAPONSPLAYER	 	1
 				@OJP_MENUS_HOLSTEREDWEAPONSALL		 	2
 			}
-			rect				220 121 300 20
+			rect				206 155 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -2319,7 +2319,7 @@
 				@OJP_MENUS_TRUEINVERTSABERINVERT 			1
 				@OJP_MENUS_TRUEINVERTSABERALWAYSTHIRDPERSON		2
 			}
-			rect				220 141 300 20
+			rect				206 175 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -2359,7 +2359,7 @@
 				SFX	 	4
 				OT	 	5
 			}
-			rect				220 161 300 20
+			rect				206 195 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -2396,7 +2396,7 @@
 				@OJP_MENUS_TRUEGUNSVIEW3D	1
 				
 			}
-			rect				220 181 300 20
+			rect				206 215 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0

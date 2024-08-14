@@ -9,10 +9,15 @@
 		visible					0
 		fullscreen				0
 		outOfBoundsClick							// this closes the window if it gets a click out of the rectangle
-		rect					45 45 180 260
+		rect					0 45 640 440
 		focusColor				0 0.4 0.8 1
 		style					1
 		border					1
+        descX						380
+		descY						400
+		descScale					1
+		descColor				1 1 1 1					// Focus color for text and items
+		descAlignment				ITEM_ALIGN_CENTER	
 		onESC
 		{
 				hide			att_grp
@@ -48,13 +53,13 @@
 			show			main
 		}
 
-		// Overall window backdrop
+	// Overall window backdrop
 		itemDef 
 		{
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 180 260
+			rect				0 0 640 440
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
@@ -65,21 +70,52 @@
 
 		itemDef 
 		{
-			name				title
-			rect				1 1 180 28
+			name				playerconfigtitle
 			style				WINDOW_STYLE_FILLED
-			type				4
-			text				@MENUS_VC_TITLE			
+			text				"Voice Chat"
+			rect				0 0 640 25
 			textalign			ITEM_ALIGN_CENTER		
-			textalignx			90
-			textaligny			2    
-			font				3
-			textscale			.9
+			textalignx			255
+			textaligny			2
+			outlinecolor		1 .5 .5 .5
 			backcolor			0 0 0 1
+			font				3
+			textscale			0.9
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
 			forecolor			1 1 1 1
 			visible				1
 			decoration
 		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+
 
 //-----------------------------------
 //
@@ -93,7 +129,7 @@
 		{
 			name				attack
 			group				main
-			rect				10 45 160 20	
+			rect				335 75 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_ATT
 			textalign			ITEM_ALIGN_LEFT	
@@ -125,7 +161,7 @@
 		{
 			name				defend
 			group				main
-			rect				10 75 160 20	
+			rect				335 105 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_DEF
 			textalign			ITEM_ALIGN_LEFT		
@@ -156,7 +192,7 @@
 		{
 			name				request
 			group				main
-			rect				10 105 160 20	
+			rect				335 135 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REQ
 			textalign			ITEM_ALIGN_LEFT		
@@ -187,7 +223,7 @@
 		{
 			name				reply
 			group				main
-			rect				10 135 160 20	
+			rect				335 165 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REPLY
 			textalign			ITEM_ALIGN_LEFT		
@@ -218,7 +254,7 @@
 		{
 			name				spot
 			group				main
-			rect				10 165 160 20	
+			rect				335 195 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_SPOT
 			textalign			ITEM_ALIGN_LEFT		
@@ -249,7 +285,7 @@
 		{
 			name				tactics
 			group				main
-			rect				10 195 160 20
+			rect				335 225 160 20
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_TACTIC
 			textalign			ITEM_ALIGN_LEFT		
@@ -280,10 +316,10 @@
 		{
 			name				cancel
 			group				none
-			rect				10 235 160 20
+			rect				315 305 160 20
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_CANCEL
-			textalign			ITEM_ALIGN_CENTER		
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			80
 			textaligny			-2    
 			font				2
@@ -312,7 +348,7 @@
 		{
 			name				title
 			group				att_grp
-			rect				0 25 180 26
+			rect				305 75 180 26
 			style				WINDOW_STYLE_EMPTY
 			type				4
 			text				@MENUS_ATTACK_TITLE
@@ -330,7 +366,7 @@
 		{
 			name				att_01
 			group				att_grp
-			rect				10 45 160 20	
+			rect				305 95 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_ATT_PRIMARY
 			textalign			ITEM_ALIGN_LEFT		
@@ -355,7 +391,7 @@
 		{
 			name				att_02
 			group				att_grp
-			rect				10 75 160 20	
+			rect				305 125 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_ATT_SECONDARY
 			textalign			ITEM_ALIGN_LEFT		
@@ -380,7 +416,7 @@
 		{
 			name				att_03
 			group				att_grp
-			rect				10 105 160 20	
+			rect				305 155 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_ATT_POSITION
 			textalign			ITEM_ALIGN_LEFT		
@@ -410,7 +446,7 @@
 		{
 			name				title
 			group				def_grp
-			rect				0 25 180 26
+			rect				305 75 180 26
 			style				WINDOW_STYLE_EMPTY
 			type				4
 			text				@MENUS_DEFEND_TITLE
@@ -428,7 +464,7 @@
 		{
 			name				def_01
 			group				def_grp
-			rect				10 45 160 20	
+			rect				305 95 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_DEF_PRIMARY
 			textalign			ITEM_ALIGN_LEFT		
@@ -453,7 +489,7 @@
 		{
 			name				def_02
 			group				def_grp
-			rect				10 75 160 20	
+			rect				305 125 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_DEF_SECONDARY
 			textalign			ITEM_ALIGN_LEFT		
@@ -478,7 +514,7 @@
 		{
 			name				def_03
 			group				def_grp
-			rect				10 105 160 20	
+			rect				305 155 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_DEF_POSITION
 			textalign			ITEM_ALIGN_LEFT		
@@ -503,7 +539,7 @@
 		{
 			name				def_04
 			group				def_grp
-			rect				10 135 160 20	
+			rect				305 185 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_DEF_GUNS
 			textalign			ITEM_ALIGN_LEFT		
@@ -533,7 +569,7 @@
 		{
 			name				title
 			group				req_grp
-			rect				0 25 180 26
+			rect				305 75 180 26
 			style				WINDOW_STYLE_EMPTY
 			type				4
 			text				@MENUS_REQUEST_TITLE
@@ -551,7 +587,7 @@
 		{
 			name				req_01
 			group				req_grp
-			rect				10 45 160 20	
+			rect				305 95 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REQ_ASSIST
 			textalign			ITEM_ALIGN_LEFT		
@@ -576,7 +612,7 @@
 		{
 			name				req_02
 			group				req_grp
-			rect				10 75 160 20	
+			rect				305 125 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REQ_MEDIC
 			textalign			ITEM_ALIGN_LEFT		
@@ -601,7 +637,7 @@
 		{
 			name				req_03
 			group				req_grp
-			rect				10 105 160 20	
+			rect				305 155 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REQ_SUPPLY
 			textalign			ITEM_ALIGN_LEFT		
@@ -626,7 +662,7 @@
 		{
 			name				req_04
 			group				req_grp
-			rect				10 135 160 20	
+			rect				305 185 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REQ_TECH
 			textalign			ITEM_ALIGN_LEFT		
@@ -651,7 +687,7 @@
 		{
 			name				req_05
 			group				req_grp
-			rect				10 165 160 20	
+			rect				305 215 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REQ_HVY
 			textalign			ITEM_ALIGN_LEFT		
@@ -676,7 +712,7 @@
 		{
 			name				req_06
 			group				req_grp
-			rect				10 195 160 20	
+			rect				305 245 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REQ_DEMO
 			textalign			ITEM_ALIGN_LEFT		
@@ -706,7 +742,7 @@
 		{
 			name				title
 			group				rep_grp
-			rect				0 25 180 26
+			rect				305 75 180 26
 			style				WINDOW_STYLE_EMPTY
 			type				4
 			text				@MENUS_REPLY_TITLE
@@ -724,7 +760,7 @@
 		{
 			name				rep_01
 			group				rep_grp
-			rect				10 45 160 20	
+			rect				305 95 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REPLY_YES
 			textalign			ITEM_ALIGN_LEFT		
@@ -749,7 +785,7 @@
 		{
 			name				rep_02
 			group				rep_grp
-			rect				10 75 160 20	
+			rect				305 125 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REPLY_NO
 			textalign			ITEM_ALIGN_LEFT		
@@ -774,7 +810,7 @@
 		{
 			name				rep_03
 			group				rep_grp
-			rect				10 105 160 20	
+			rect				305 155 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REPLY_COMING
 			textalign			ITEM_ALIGN_LEFT		
@@ -799,7 +835,7 @@
 		{
 			name				rep_04
 			group				rep_grp
-			rect				10 135 160 20	
+			rect				305 185 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REPLY_GO
 			textalign			ITEM_ALIGN_LEFT		
@@ -824,7 +860,7 @@
 		{
 			name				rep_05
 			group				rep_grp
-			rect				10 165 160 20	
+			rect				305 215 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_REPLY_STAY
 			textalign			ITEM_ALIGN_LEFT		
@@ -854,7 +890,7 @@
 		{
 			name				title
 			group				spot_grp
-			rect				0 25 180 26
+			rect				305 75 180 26
 			style				WINDOW_STYLE_EMPTY
 			type				4
 			text				@MENUS_SPOTTED_TITLE
@@ -872,7 +908,7 @@
 		{
 			name				spot_01
 			group				spot_grp
-			rect				10 45 160 20	
+			rect				305 95 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_SPOT_DEF
 			textalign			ITEM_ALIGN_LEFT		
@@ -897,7 +933,7 @@
 		{
 			name				spot_02
 			group				spot_grp
-			rect				10 75 160 20	
+			rect				305 125 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_SPOT_TROOP
 			textalign			ITEM_ALIGN_LEFT		
@@ -922,7 +958,7 @@
 		{
 			name				spot_03
 			group				spot_grp
-			rect				10 105 160 20	
+			rect				305 155 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_SPOT_SNIPER
 			textalign			ITEM_ALIGN_LEFT		
@@ -947,7 +983,7 @@
 		{
 			name				spot_04
 			group				spot_grp
-			rect				10 135 160 20	
+			rect				305 185 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_SPOT_EMPLACED
 			textalign			ITEM_ALIGN_LEFT		
@@ -977,7 +1013,7 @@
 		{
 			name				title
 			group				tac_grp
-			rect				0 25 180 26
+			rect				305 75 180 26
 			style				WINDOW_STYLE_EMPTY
 			type				4
 			text				@MENUS_TACTICS_TITLE
@@ -995,7 +1031,7 @@
 		{
 			name				tac_01
 			group				tac_grp
-			rect				10 45 160 20	
+			rect				305 95 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_TAC_COVER
 			textalign			ITEM_ALIGN_LEFT		
@@ -1020,7 +1056,7 @@
 		{
 			name				tac_02
 			group				tac_grp
-			rect				10 75 160 20	
+			rect				305 125 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_TAC_HOLD
 			textalign			ITEM_ALIGN_LEFT		
@@ -1045,7 +1081,7 @@
 		{
 			name				tac_03
 			group				tac_grp
-			rect				10 105 160 20	
+			rect				305 155 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_TAC_FOLLOW
 			textalign			ITEM_ALIGN_LEFT		
@@ -1070,7 +1106,7 @@
 		{
 			name				tac_04
 			group				tac_grp
-			rect				10 135 160 20	
+			rect				305 185 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_TAC_FALLBACK
 			textalign			ITEM_ALIGN_LEFT		
@@ -1095,7 +1131,7 @@
 		{
 			name				tac_05
 			group				tac_grp
-			rect				10 165 160 20	
+			rect				305 215 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_TAC_TOGETHER
 			textalign			ITEM_ALIGN_LEFT		
@@ -1120,7 +1156,7 @@
 		{
 			name				tac_06
 			group				tac_grp
-			rect				10 195 160 20	
+			rect				305 245 160 20	
 			type				ITEM_TYPE_BUTTON
 			text				@MENUS_VC_TAC_SPLIT
 			textalign			ITEM_ALIGN_LEFT		

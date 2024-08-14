@@ -10,7 +10,7 @@
 		focusColor					0 0.4 0.8 1				// Focus color for text and items
 		style						1
 		border						1
-		descX						383
+		descX						380
 		descY						422
 		descScale					1
 		descColor					0 0.4 0.8 1					// Focus color for text and items
@@ -58,7 +58,7 @@
 			name 				sabertitle
 			style				WINDOW_STYLE_FILLED
 			text				"Choose Your Lightsaber"
-			rect				1 1 510 25
+			rect				5 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -75,8 +75,8 @@
 		itemDef
 		{
 			name				descbackground
-			style				WINDOW_STYLE_FILLED
-			rect				1 380 510 20
+			style				0
+			rect				5 390 520 20
 			backcolor			0 0 0 1
 			forecolor			1 1 1 1
 			border				0
@@ -93,7 +93,7 @@
 			text				@MENUS_SABER_TYPE
 			descText			@MENUS_SABER_TYPE_DESC
 			style				WINDOW_STYLE_EMPTY
-			rect				10 30 100 24
+			rect				50 30 100 24
 			font				2
 			textscale			.7
 			textstyle			0
@@ -114,7 +114,7 @@
 			descText			@MENUS_SINGLESABER_DESC
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				100 31 100 15
+			rect				150 31 100 15
 			font				4
 			textscale			1
 			textstyle			0
@@ -150,7 +150,7 @@
 			descText			@MENUS_DUALSABERS_DESC
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				210 31 100 15
+			rect				250 31 100 15
 			font				4
 			textscale			1
 			textstyle			0
@@ -186,7 +186,7 @@
 			descText			@MENUS_SABERSTAFF_DESC
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
-			rect				300 31 100 15
+			rect				350 31 100 15
 			font				4
 			textscale			1
 			textstyle			0
@@ -848,7 +848,7 @@
 			group				sabericons
 			style				WINDOW_STYLE_EMPTY
 //			rect				190 60 270 50
-			rect				230 60 270 50
+			rect				200 60 300 50
 			border				1
 			bordercolor			0 0 0 1
 			visible				1
@@ -881,7 +881,7 @@
 			group				sabericons
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
-			rect				240 80 24 24
+			rect				215 80 24 24
 			background			"gfx/menus/saber_icon_blue"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
@@ -912,7 +912,7 @@
 			group				sabericons
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
-			rect				265 80 24 24
+			rect				240 80 24 24
 			background			"gfx/menus/saber_icon_green"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
@@ -936,14 +936,76 @@
 				setcvar 		ui_saber_color  "green"
 			}
 		}
+		
+		itemDef 
+		{
+			name				yellowicon
+			group				sabericons
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				265 80 24 24
+			background			"gfx/menus/saber_icon_yellow"
+			forecolor			.75 .75 .75 1
+			descText			@MENUS_BLADE_COLOR_DESC
+			border				1
+			bordersize			1
+			bordercolor			0 0 0 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		yellowicon forecolor 1 1 1 1
+				setitemcolor		yellowicon bordercolor 0 0.4 0.8 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		yellowicon forecolor .75 .75 .75 1
+				setitemcolor		yellowicon bordercolor 0 0 0 1
+			}	  	  
+			action 
+			{
+				play			"sound/interface/choose_blade.wav"
+				setcvar 		ui_saber_color	 "yellow"
+			}
+		}
 
+		itemDef 
+		{
+			name				purpleicon
+			group				sabericons
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				290 80 24 24
+			background			"gfx/menus/saber_icon_purple"
+			forecolor			.75 .75 .75 1
+			descText			@MENUS_BLADE_COLOR_DESC
+			border				1
+			bordersize			1
+			bordercolor			0 0 0 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		purpleicon forecolor 1 1 1 1
+				setitemcolor		purpleicon bordercolor 0 0.4 0.8 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		purpleicon forecolor .75 .75 .75 1
+				setitemcolor		purpleicon bordercolor 0 0 0 1
+			}	  	  
+			action 
+			{
+				play			"sound/interface/choose_blade.wav"
+				setcvar 		ui_saber_color   "purple"
+			}
+		}
+				
 		itemDef 
 		{
 			name				orangeicon
 			group				sabericons
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
-			rect				290 80 24 24
+			rect				315 80 24 24
 			background			"gfx/menus/saber_icon_orange"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
@@ -970,43 +1032,12 @@
 
 		itemDef 
 		{
-			name				purpleicon
-			group				sabericons
-			style				WINDOW_STYLE_SHADER
-			type				ITEM_TYPE_BUTTON
-			rect				315 80 24 24
-			background			"gfx/menus/saber_icon_purple"
-			forecolor			.75 .75 .75 1
-			descText			@MENUS_BLADE_COLOR_DESC
-			border				1
-			bordersize			1
-			bordercolor			0 0 0 1
-			visible			1
-			mouseEnter 
-			{ 
-				setitemcolor		purpleicon forecolor 1 1 1 1
-				setitemcolor		purpleicon bordercolor 0 0.4 0.8 1
-			}
-			mouseExit 
-			{ 
-				setitemcolor		purpleicon forecolor .75 .75 .75 1
-				setitemcolor		purpleicon bordercolor 0 0 0 1
-			}	  	  
-			action 
-			{
-				play			"sound/interface/choose_blade.wav"
-				setcvar 		ui_saber_color   "purple"
-			}
-		}
-
-		itemDef 
-		{
-			name				yellowicon
+			name				cyanicon
 			group				sabericons
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
 			rect				340 80 24 24
-			background			"gfx/menus/saber_icon_yellow"
+			background			"gfx/menus/saber_icon_cyan"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
 			border				1
@@ -1015,20 +1046,25 @@
 			visible			1
 			mouseEnter 
 			{ 
-				setitemcolor		yellowicon forecolor 1 1 1 1
-				setitemcolor		yellowicon bordercolor 0 0.4 0.8 1
+				setitemcolor		cyanicon forecolor 1 1 1 1
+				setitemcolor		cyanicon bordercolor 0 0.4 0.8 1
 			}
 			mouseExit 
 			{ 
-				setitemcolor		yellowicon forecolor .75 .75 .75 1
-				setitemcolor		yellowicon bordercolor 0 0 0 1
+				setitemcolor		cyanicon forecolor .75 .75 .75 1
+				setitemcolor		cyanicon bordercolor 0 0 0 1
 			}	  	  
 			action 
 			{
 				play			"sound/interface/choose_blade.wav"
-				setcvar 		ui_saber_color	 "yellow"
+				setcvar 		ui_saber_color   "cyan"
 			}
-		}
+		}	
+
+
+
+		
+
 
 		itemDef 
 		{
@@ -1190,7 +1226,7 @@
 			name				bladecolorborder2
 			group				sabericons2
 			style				WINDOW_STYLE_EMPTY
-			rect				230 120 270 50
+			rect				200 120 300 50
 			border				1
 			bordercolor			0 0 0 1
 			visible				1
@@ -1226,7 +1262,7 @@
 			group				sabericons2
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
-			rect				240 140 24 24
+			rect				215 140 24 24
 			background			"gfx/menus/saber_icon_blue"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
@@ -1259,7 +1295,7 @@
 			group				sabericons2
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
-			rect				265 140 24 24
+			rect				240 140 24 24
 			background			"gfx/menus/saber_icon_green"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
@@ -1286,13 +1322,80 @@
 			}
 		}
 
+
+		itemDef 
+		{
+			name				yellowicon2
+			group				sabericons2
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				265 140 24 24
+			background			"gfx/menus/saber_icon_yellow"
+			forecolor			.75 .75 .75 1
+			descText			@MENUS_BLADE_COLOR_DESC
+			border				1
+			bordersize			1
+			bordercolor			0 0 0 1
+			visible				1
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			mouseEnter 
+			{ 
+				setitemcolor		yellowicon2 forecolor 1 1 1 1
+				setitemcolor		yellowicon2 bordercolor 0 0.4 0.8 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		yellowicon2 forecolor .75 .75 .75 1
+				setitemcolor		yellowicon2 bordercolor 0 0 0 1
+			}	  	  
+			action 
+			{
+				play			"sound/interface/choose_blade.wav"
+				setcvar 		ui_saber2_color	 "yellow"
+			}
+		}
+		
+		itemDef 
+		{
+			name				purpleicon2
+			group				sabericons2
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				290 140 24 24
+			background			"gfx/menus/saber_icon_purple"
+			forecolor			.75 .75 .75 1
+			descText			@MENUS_BLADE_COLOR_DESC
+			border				1
+			bordersize			1
+			bordercolor			0 0 0 1
+			visible				1
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			mouseEnter 
+			{ 
+				setitemcolor		purpleicon2 forecolor 1 1 1 1
+				setitemcolor		purpleicon2 bordercolor 0 0.4 0.8 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		purpleicon2 forecolor .75 .75 .75 1
+				setitemcolor		purpleicon2 bordercolor 0 0 0 1
+			}	  	  
+			action 
+			{
+				play			"sound/interface/choose_blade.wav"
+				setcvar 		ui_saber2_color   "purple"
+			}
+		}
+		
 		itemDef 
 		{
 			name				orangeicon2
 			group				sabericons2
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
-			rect				290 140 24 24
+			rect				315 140 24 24
 			background			"gfx/menus/saber_icon_orange"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
@@ -1319,47 +1422,16 @@
 			}
 		}
 
-		itemDef 
-		{
-			name				purpleicon2
-			group				sabericons2
-			style				WINDOW_STYLE_SHADER
-			type				ITEM_TYPE_BUTTON
-			rect				315 140 24 24
-			background			"gfx/menus/saber_icon_purple"
-			forecolor			.75 .75 .75 1
-			descText			@MENUS_BLADE_COLOR_DESC
-			border				1
-			bordersize			1
-			bordercolor			0 0 0 1
-			visible				1
-			cvarTest			ui_saber_type
-			hideCvar			{ "single"; "staff" }
-			mouseEnter 
-			{ 
-				setitemcolor		purpleicon2 forecolor 1 1 1 1
-				setitemcolor		purpleicon2 bordercolor 0 0.4 0.8 1
-			}
-			mouseExit 
-			{ 
-				setitemcolor		purpleicon2 forecolor .75 .75 .75 1
-				setitemcolor		purpleicon2 bordercolor 0 0 0 1
-			}	  	  
-			action 
-			{
-				play			"sound/interface/choose_blade.wav"
-				setcvar 		ui_saber2_color   "purple"
-			}
-		}
 
+		
 		itemDef 
 		{
-			name				yellowicon2
+			name				cyanicon2
 			group				sabericons2
 			style				WINDOW_STYLE_SHADER
 			type				ITEM_TYPE_BUTTON
 			rect				340 140 24 24
-			background			"gfx/menus/saber_icon_yellow"
+			background			"gfx/menus/saber_icon_cyan"
 			forecolor			.75 .75 .75 1
 			descText			@MENUS_BLADE_COLOR_DESC
 			border				1
@@ -1370,20 +1442,22 @@
 			hideCvar			{ "single"; "staff" }
 			mouseEnter 
 			{ 
-				setitemcolor		yellowicon2 forecolor 1 1 1 1
-				setitemcolor		yellowicon2 bordercolor 0 0.4 0.8 1
+				setitemcolor		cyanicon2 forecolor 1 1 1 1
+				setitemcolor		cyanicon2 bordercolor 0 0.4 0.8 1
 			}
 			mouseExit 
 			{ 
-				setitemcolor		yellowicon2 forecolor .75 .75 .75 1
-				setitemcolor		yellowicon2 bordercolor 0 0 0 1
+				setitemcolor		cyanicon2 forecolor .75 .75 .75 1
+				setitemcolor		cyanicon2 bordercolor 0 0 0 1
 			}	  	  
 			action 
 			{
 				play			"sound/interface/choose_blade.wav"
-				setcvar 		ui_saber2_color	 "yellow"
+				setcvar 		ui_saber2_color   "cyan"
 			}
 		}
+		
+
 
 		itemDef 
 		{
@@ -1395,7 +1469,7 @@
 			background			"gfx/menus/saber_icon_red"
 			descText			@MENUS_BLADE_COLOR_DESC
 			forecolor			.75 .75 .75 1
-			border				1
+			border				1 
 			bordersize			1
 			bordercolor			0 0 0 1
 			visible				1
@@ -1564,7 +1638,7 @@
 			name				saber
 			group				models
 			type 				ITEM_TYPE_MODEL
-			rect				0 -10 430 430
+			rect				0 0 430 430
 			asset_model			"models/weapons2/saber_reborn/saber_w.glm"
 			isSaber				1
 			model_angle			180

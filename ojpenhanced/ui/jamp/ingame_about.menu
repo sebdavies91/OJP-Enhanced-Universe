@@ -9,31 +9,81 @@
 		visible					0     
 		fullscreen				0     
 		outOfBoundsClick							// this closes the window if it gets a click out of the rectangle     
-		rect					10 45 380 280     
+		rect					0 45 640 440   
 		focusColor				0 0.4 0.8 1     
 		style					1     
 		border					1     
-
-
-		// Overall window backdrop
-		itemDef      
+            descX						380
+		descY						400
+		descScale					1
+		descColor				1 1 1 1					// Focus color for text and items
+		descAlignment				ITEM_ALIGN_CENTER	
+	// Overall window backdrop
+		itemDef 
 		{
-			name				background_pic 
-			group				none     
-			style				WINDOW_STYLE_FILLED     
-			rect				0 0 380 280     
-			border				1     
-			bordercolor			0 0 0 1     
-			backcolor			0.1 0.1 0.1 0.5     
-			forecolor			1 1 1 1     
-			visible				1     
-			decoration     
-		}     
+			name				background_pic
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 440
+			border				1
+			bordercolor			0 0 0 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"About"
+			rect				0 0 640 25
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			255
+			textaligny			2
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 1
+			font				3
+			textscale			0.9
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
+			visible				1
+			decoration
+		}
 
 		itemDef      
 		{
 			name				about     
-			rect				10 20 360 20     
+			rect				220 75 360 20     
 			style				WINDOW_STYLE_FILLED	     
 			type				4     
 			text				@MENUS_HOST_NAME     
@@ -53,7 +103,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 40 360 20     
+			rect				220 95 360 20     
 			style				0	     
 			type				4     
 			text				@MENUS_ADDRESS     
@@ -72,7 +122,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 60 360 20     
+			rect				220 115 360 20     
 			type				4     
 			style				0	     
 			text				@MENUS_MAP_NAME     
@@ -91,7 +141,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 80 360 20     
+			rect				220 135 360 20     
 			style				0     
 			//type 4
 			textalign			ITEM_ALIGN_RIGHT	     
@@ -126,7 +176,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 100 360 20     
+			rect				220 155 360 20     
 			type				4     
 			style				0	     
 			text				@MENUS_MAXIMUM_PLAYERS     
@@ -145,7 +195,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 120 360 20     
+			rect				220 175 360 20     
 			type				4     
 			style				0	     
 			text				@MENUS_TIME_LIMIT     
@@ -164,7 +214,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 140 360 20     
+			rect				220 195 360 20     
 			type				4     
 			style				0	     
 			text				@MENUS_FRAG_LIMIT     
@@ -194,7 +244,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 140 360 20     
+			rect				220 195 360 20     
 			type				4     
 			style				0	     
 			text				@MENUS_CAPTURE_LIMIT      
@@ -219,7 +269,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 160 360 20     
+			rect				220 195 360 20     
 			type				4     
 			style				0	     
 			text				@MENUS_DUEL_LIMIT     
@@ -244,7 +294,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 180 360 20     
+			rect				220 215 360 20     
 			type				4     
 			maxPaintChars			4     
 			style				0	     
@@ -263,7 +313,7 @@
 		itemDef      
 		{
 			name				about     
-			rect				10 200 360 20     
+			rect				220 235 360 20     
 			type				4     
 			style				0	     
 			text				@MENUS_VERSION     

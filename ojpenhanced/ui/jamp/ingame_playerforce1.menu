@@ -20,7 +20,7 @@
 		focusColor					0 0.4 0.8 1								// Focus color for text and items
 		style						1
 		border						1
-		descX						383
+		descX						380
 		descY						422
 		descScale					1
 		descColor					0 0.4 0.8 1
@@ -49,7 +49,7 @@
 			name 				forcetitle
 			style				WINDOW_STYLE_FILLED
 			text				"Choose Your Force"
-			rect				1 1 510 25
+			rect				5 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -66,8 +66,8 @@
 		itemDef
 		{
 			name				descbackground
-			style				WINDOW_STYLE_FILLED
-			rect				1 380 510 20
+			style				0
+			rect				5 390 520 20
 			backcolor			0 0 0 1
 			forecolor			1 1 1 1
 			border				0
@@ -82,8 +82,8 @@
 			style				WINDOW_STYLE_EMPTY	
 			text				@MENUS_FORCE_MASTERY
 			ownerdraw			UI_FORCE_RANK
-			rect				10 30 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				205 30 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			font				2
@@ -95,15 +95,15 @@
 		}
 		
 		// Force points remaining
-		itemDef 
+		itemDef  
 		{
 			name				siderank
 			group				"playersettingforcegroup"
 			style				WINDOW_STYLE_EMPTY	
 			text				@MENUS_POINTS_REMAINING
 			ownerdraw			UI_FORCE_POINTS
-			rect				10 45 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			font				2
@@ -128,8 +128,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Basic Powers"
-			rect				20 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -149,8 +149,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 75 175 15
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			font					4
@@ -214,8 +214,8 @@
 			style					0	
 			text					@MENUS_FORCE_JUMP
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					20 90 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -239,8 +239,8 @@
 			//[/ExpSys]
 			style					0	
 			ownerdraw				UI_FORCE_RANK_LEVITATION
-			rect					75 90 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -277,8 +277,8 @@
 			style					0	
 			text					@MENUS_FORCE_SPEED
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					20 105 110 15
-			textalign				ITEM_ALIGN_LEFT
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT
 			textalignx				0
 			textaligny				0
 			font					4
@@ -302,8 +302,8 @@
 			//[/ExpSys]
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SPEED
-			rect					75 105 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -336,8 +336,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					@MENUS_FORCE_SIGHT
-			rect					20 120 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -358,8 +358,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SEE
-			rect					75 120 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -393,8 +393,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Kinetic Powers"
-			rect				270 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				430 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -414,8 +414,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				315 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				380 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			font					4
@@ -439,8 +439,8 @@
 			style					0	
 			text					"Repulsion Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					270 90 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					430 90 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -464,8 +464,8 @@
 			//[/ExpSys]
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PUSH
-			rect					315 90 175 15
-			textalign				ITEM_ALIGN_LEFT
+			rect					330 90 175 15
+			textalign				ITEM_ALIGN_RIGHT
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -497,8 +497,8 @@
 			group					neutralpowers
 			style					0	
 			text					"Push / Explode / ..:"
-			rect					270 105 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -519,8 +519,8 @@
 			group					neutralpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PUSHA
-			rect					315 105 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -557,8 +557,8 @@
 			style					0	
 			text					"Attraction Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					270 120 110 15 
-			textalign				ITEM_ALIGN_LEFT	
+			rect					430 120 110 15 
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -582,8 +582,8 @@
 			//[/ExpSys]
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PULL
-			rect					315 120 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -617,8 +617,8 @@
 			group					neutralpowers
 			style					0	
 			text					"Pull / Implode / ..:"
-			rect					270 135 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					430 135 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -639,8 +639,8 @@
 			group					neutralpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PULLA
-			rect					315 135 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 135 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -677,8 +677,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Lightsaber Skills"
-			rect				20 165 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 165 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -698,8 +698,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 165 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 165 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			font					4
@@ -721,7 +721,7 @@
 			text				@MENUS_NO_LIGHTSABER
 			type				1
 			style				0	
-			rect				75 255 0 0
+			rect				80 255 0 0
 			textalign			ITEM_ALIGN_CENTER	 	
 			textalignx			65
 			textaligny			0
@@ -748,7 +748,7 @@
 			//[/StanceSelection]
 			type					1
 			style					0	
-			rect					75 270 0 0
+			rect					80 270 0 0
 			textalign				ITEM_ALIGN_CENTER		
 			textalignx				65
 			outlinecolor			1 .5 .5 .5
@@ -787,8 +787,8 @@
 			//text					@MENUS_SABER_ATTACK
 			//[/StanceSelection]
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					20 180 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -809,8 +809,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SABERATTACK
-			rect					75 180 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -847,8 +847,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Fast/Soresu:"
-			rect					20 195 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -869,8 +869,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_BLUESTYLE
-			rect					75 195 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -904,8 +904,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Strong/Djem-So:"
-			rect					20 210 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -926,8 +926,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_REDSTYLE
-			rect					75 210 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -961,8 +961,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Fast-Medium/Makashi:"
-			rect					20 225 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 225 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -983,8 +983,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_GREENSTYLE
-			rect					75 225 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 225 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -1018,8 +1018,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Medium-Strong/Juyo:"
-			rect					20 240 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 240 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1040,8 +1040,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PURPLESTYLE
-			rect					75 240 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 240 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -1075,8 +1075,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					@OJP_MENUS_SKILL_DUALSTYLE
-			rect					20 255 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 255 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1097,8 +1097,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DUALSTYLE
-			rect					75 255 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 255 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -1132,8 +1132,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					@OJP_MENUS_SKILL_STAFFSTYLE
-			rect					20 270 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 270 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1154,8 +1154,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_STAFFSTYLE
-			rect					75 270 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 270 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -1191,8 +1191,8 @@
 			style					0	
 			text					@MENUS_SABER_DEFEND
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					20 285 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 285 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1213,8 +1213,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SABERDEFEND
-			rect					75 285 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 285 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -1248,8 +1248,8 @@
 			style					0	
 			text					@MENUS_SABER_THROW
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					20 300 110 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					180 300 110 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1270,8 +1270,8 @@
 			group					"playersettingforcegroup"
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SABERTHROW
-			rect					75 300 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 300 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        

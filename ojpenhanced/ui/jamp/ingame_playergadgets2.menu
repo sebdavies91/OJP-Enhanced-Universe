@@ -17,7 +17,7 @@
 		focusColor					0 0.4 0.8 1								// Focus color for text and items
 		style						1
 		border						1
-		descX						383
+		descX						380
 		descY						422
 		descScale					1
 		descColor					0 0.4 0.8 1
@@ -46,7 +46,7 @@
 			name 				gadgets2title
 			style				WINDOW_STYLE_FILLED
 			text				"Choose your other items"
-			rect				1 1 510 25
+			rect				5 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -63,8 +63,8 @@
 		itemDef
 		{
 			name				descbackground
-			style				WINDOW_STYLE_FILLED
-			rect				1 380 510 20
+			style				0
+			rect				5 390 520 20
 			backcolor			0 0 0 1
 			forecolor			1 1 1 1
 			border				0
@@ -79,8 +79,8 @@
 			style				WINDOW_STYLE_EMPTY	
 			text				@MENUS_POINTS_REMAINING
 			ownerdraw			UI_FORCE_POINTS
-			rect				10 45 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			font				2
@@ -110,8 +110,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Jetpacks"
-			rect				20 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 						forecolor				.2 1 .2 1
@@ -131,8 +131,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 						forecolor				.2 1 .2 1
@@ -152,8 +152,8 @@
 			group					gunpowers
 			style					0	
 			text					"Jetpack:"
-			rect					20 90 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -174,8 +174,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_JETPACK
-			rect					75 90 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -209,8 +209,8 @@
 			group					gunpowers
 			style					0	
 			text					"Z-6M / Z-6B / RT Space:"
-			rect					20 105 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -233,8 +233,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_JETPACKA
-			rect					75 105 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -267,8 +267,8 @@
 			group					gunpowers
 			style					0	
 			text					"JT-12M / JT-12W / RB:"
-			rect					20 120 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -288,8 +288,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_JETPACKB
-			rect					75 120 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -323,8 +323,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Backpack Rockets"
-			rect				20 165 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 165 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 						forecolor				.2 1 .2 1
@@ -344,8 +344,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 165 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 165 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 						forecolor				.2 1 .2 1
@@ -366,8 +366,8 @@
 			group					gunpowers
 			style					0	
 			text					"Backpack Rocket:"
-			rect					20 180 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -387,8 +387,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_BACKPACKROCKET
-			rect					75 180 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -420,9 +420,9 @@
 			name					setsk_BACKPACKROCKETA
 			group					gunpowers
 			style					0	
-			text					"Thermal / Incinerary / Conc:"
-			rect					20 195 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			text					"Thermal / Flame / Conc:"
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -442,8 +442,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_BACKPACKROCKETA
-			rect					75 195 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -452,7 +452,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Thermal Rocket / Incinerary Rocket / Concussion Rocket"
+			descText				"Thermal Rocket / Flame Rocket / Concussion Rocket"
 			visible					1 
 			action 
 			{ 
@@ -476,8 +476,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Squad Teams"
-			rect				270 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				430 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 						forecolor				.2 1 .2 1
@@ -497,8 +497,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				315 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				380 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 						forecolor				.2 1 .2 1
@@ -521,8 +521,8 @@
 			group					gunpowers
 			style					0	
 			text					"Squad Team:"
-			rect					270 90 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -542,8 +542,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SQUADTEAM
-			rect					315 90 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -576,8 +576,8 @@
 			group					gunpowers
 			style					0	
 			text					"EMP / REB / MERC:"
-			rect					270 105 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -599,8 +599,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SQUADTEAMA
-			rect					315 105 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
@@ -634,8 +634,8 @@
 			group					gunpowers
 			style					0	
 			text					"CIS / REP / MAN:"
-			rect					270 120 110 15
-			textalign				ITEM_ALIGN_LEFT												
+			rect					430 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -655,8 +655,8 @@
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_SQUADTEAMB
-			rect					315 120 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					330 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        

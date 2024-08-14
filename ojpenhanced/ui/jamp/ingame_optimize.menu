@@ -8,12 +8,12 @@
 		visible					0
 		fullscreen				0
 		outOfBoundsClick							// this closes the window if it gets a click out of the rectangle
-		rect					45 45 570 400
+		rect					0 45 640 440
 		focusColor				0 0.4 0.8 1
 		style					1
 		border					1
-            descX						320
-		descY						330
+            descX						380
+		descY						400
 		descScale					1
 		descColor				1 1 1 1					// Focus color for text and items
 		descAlignment				ITEM_ALIGN_CENTER		
@@ -23,7 +23,7 @@
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 570 400
+			rect				0 0 640 440
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
@@ -37,10 +37,10 @@
 			name				playerconfigtitle
 			style				WINDOW_STYLE_FILLED
 			text				"Optimize"
-			rect				1 1 570 28
+			rect				0 0 640 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
-			textaligny			2
+			textaligny			2 
 			outlinecolor		1 .5 .5 .5
 			backcolor			0 0 0 1
 			font				3
@@ -51,25 +51,35 @@
 			visible				1 
 		}
 
-	itemDef 
+		
+/*		itemDef 
 		{
-			name				configselect
-			style				WINDOW_STYLE_EMPTY
-			text				"Choose a Profile"
-			rect				310 20 250 28
-			textalign			ITEM_ALIGN_CENTER		
-			textalignx			0
-			textaligny			0
-			outlinecolor			1 .5 .5 .5
-			backcolor			0 0 0 0
-			font			      4
-			textscale			1
-			forecolor		1 1 1 1
-			border				0
-			bordercolor			0 0 0 0
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			1 1 1 1
 			visible				1
-                  descText "Select a profile below that best matches matches the server ping"
+			decoration
 		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+
 
 
       	itemDef 
@@ -79,8 +89,8 @@
 			type				ITEM_TYPE_SLIDER
 			text				"Server MaxRate"
 			cvarfloat			"sv_maxrate" 4000 0 25000
-			rect				-125 185 340 14
-	   		textalign			ITEM_ALIGN_CENTER
+			rect				190 165 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
 			font 				4
@@ -111,9 +121,9 @@
 			type				ITEM_TYPE_SLIDER
 			text			      "FPS Rate"	
 			cvarfloat			"com_maxfps" 85 5 250
-			rect				235 140 340 14
-	   		textalign			ITEM_ALIGN_CENTER
-			textalignx			175
+			rect				190 135 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
 			textaligny			0
 			font 				4
 			textscale 			1
@@ -143,14 +153,14 @@
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				340 275 135 14 
+			rect				300 255 375 14 
 			text				"Default"
 			descText			"Sets all optimization settings back to the JA defaults"
 			font 				4
 			textscale 			1
 			forecolor			.615 .615 .956 1
 			textalignx			60
-			textalign			ITEM_ALIGN_CENTER
+			textalign			ITEM_ALIGN_RIGHT
 			visible			1  	  
 			mouseEnter 
 			{ 
@@ -193,8 +203,8 @@
                         Low 1  
 				High 2 
 			}
-			rect           -5 230 300 14
-	   	      textalign			 ITEM_ALIGN_CENTER
+			rect           200 225 340 14
+	   	      textalign			 ITEM_ALIGN_RIGHT
 			textalignx		 165
 			textaligny     -2
 			font 				4
@@ -233,7 +243,7 @@
                         On 1  
 				 
 			}
-			rect           289 230 150 14
+			rect           200 240 340 14
 	   	      textalign			 ITEM_ALIGN_RIGHT
 			textalignx		 165
 			textaligny     -2
@@ -269,9 +279,9 @@
 			type				ITEM_TYPE_SLIDER
 			text				"Max Packets"
 			cvarfloat			"cl_maxpackets" 30 0 200
-			rect				70 95 340 14
-	   		textalign			ITEM_ALIGN_CENTER
-			textalignx			170
+			rect				190 75 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
 			textaligny			0
 			font 				4
 			textscale 			1
@@ -301,9 +311,9 @@
 			type				ITEM_TYPE_SLIDER
 			text				"Snaps"
 			cvarfloat			"snaps" 20 0 100
-			rect				-105 140 340 14
-	   		textalign			ITEM_ALIGN_CENTER
-			textalignx			177
+			rect				190 105 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
 			textaligny			0
 			font 				4
 			textscale 			1
@@ -333,7 +343,7 @@
 			type				ITEM_TYPE_SLIDER
 			text				"Timenudge"	
 			cvarfloat			"cl_timenudge" 0 -50 20
-			rect				 265 185 340 14
+			rect				 190 195 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -365,13 +375,13 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				30 50 125 14 
+			rect				500 225 125 14 
 			text				ULTRAFAST 
 			descText			"Select if you are playing on a local LAN or superfast connection"   
 			font				4
 			textscale			1
 			textalignx			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			forecolor			0 0 1 1
 			visible			1
             	  
@@ -404,13 +414,13 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				150 50 75 14 
+			rect				500 240 75 14 
 			text				FAST 
 			descText			"Select if you have a fast ping 30-60"
 			font				4
 			textscale			1
 			textalignx			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			forecolor			.5 .5 1 1
 
 			visible			1
@@ -444,13 +454,13 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				240 50 125 14 
+			rect				500 255 125 14 
 			text				AVERAGE
 			descText			"Select if your ping is 50-100"
 			font				4
 			textscale			1
 			textalignx			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			forecolor			.656 0 .656 1
 			visible			1  	
                  	mouseEnter 
@@ -483,13 +493,13 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				380 50 75 14 
+			rect				500 270 75 14 
 			text				SLOW
 			descText			defa
 			font				4
 			textscale			1
 			textalignx			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			forecolor			.656 0 0 1
 			visible			1
                   desctext                "Select if your ping is between 100-150"  	  
@@ -523,13 +533,13 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				500 50 125 14 
+			rect				500 285 125 14 
 			text				SLOWER
 			descText			"Select if your ping is 150+"
 			font				4
 			textscale			1
 			textalignx			0
-			textalign			ITEM_ALIGN_LEFT
+			textalign			ITEM_ALIGN_RIGHT
 			forecolor			1 0 0 1
 			visible			1  	  
 			mouseEnter 

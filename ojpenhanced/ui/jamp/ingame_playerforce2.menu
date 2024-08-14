@@ -20,7 +20,7 @@
 		focusColor					0 0.4 0.8 1								// Focus color for text and items
 		style						1
 		border						1
-		descX						383
+		descX						380
 		descY						422
 		descScale					1
 		descColor					0 0.4 0.8 1
@@ -49,7 +49,7 @@
 			name 				forcetitle
 			style				WINDOW_STYLE_FILLED
 			text				"Choose Your Other Force"
-			rect				1 1 510 25
+			rect				5 0 520 25
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
@@ -66,8 +66,8 @@
 		itemDef
 		{
 			name				descbackground
-			style				WINDOW_STYLE_FILLED
-			rect				1 380 510 20
+			style				0
+			rect				5 390 520 20
 			backcolor			0 0 0 1
 			forecolor			1 1 1 1
 			border				0
@@ -82,8 +82,8 @@
 			style				WINDOW_STYLE_EMPTY	
 			text				@MENUS_FORCE_MASTERY
 			ownerdraw			UI_FORCE_RANK
-			rect				10 30 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				205 30 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			font				2
@@ -102,8 +102,8 @@
 			style				WINDOW_STYLE_EMPTY	
 			text				@MENUS_POINTS_REMAINING
 			ownerdraw			UI_FORCE_POINTS
-			rect				10 45 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			0
 			textaligny			0
 			font				2
@@ -147,7 +147,7 @@
 			name				notforcesensitive
 			group				"playersettinggroup"
 			style				0
-			rect				230 248 175 34
+			rect				220 248 175 34
 			forecolor			1 1 1 1
 			decoration
 			descText			@OJP_MENUS_DESC_NOTFORCESENSITIVE
@@ -166,8 +166,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Miscellaneous Powers"
-			rect				20 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -187,8 +187,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			font					4
@@ -209,8 +209,8 @@
 			style					0	
 			text					"Recovery Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					20 90 175 15
-			textalign				ITEM_ALIGN_LEFT
+			rect					180 90 175 15
+			textalign				ITEM_ALIGN_RIGHT
 			textalignx				0
 			textaligny				0
 			font					4
@@ -231,9 +231,9 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_HEAL
-			rect					75 90 175 15
+			rect					80 90 175 15
 					 
-				textalign				ITEM_ALIGN_LEFT		
+				textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -266,8 +266,8 @@
 			group					lightpowers
 			style					0	
 			text					"Heal / Midich. Manip. / ..:"
-			rect					20 105 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -288,8 +288,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_HEALA
-			rect					75 105 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -322,8 +322,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Status Powers"
-			rect				20 150 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 150 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -343,8 +343,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 150 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 150 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			font					4
@@ -364,8 +364,8 @@
 			group					lightpowers
 			style					0	
 			text					"Force Immunity Power:"
-			rect					20 165 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					180 165 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -386,8 +386,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_ABSORB
-			rect					75 165 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 165 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -421,8 +421,8 @@
 			group					lightpowers
 			style					0	
 			text					"Absorb / Dissipate / ..:"
-			rect					20 180 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -443,8 +443,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_ABSORBA
-			rect					75 180 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -478,8 +478,8 @@
 			group					lightpowers
 			style					0	
 			text					"Damage Immunity Power:"
-			rect					20 195 110 15
-			textalign				ITEM_ALIGN_LEFT
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT
 			textalignx				0
 			textaligny				0
 			font					4
@@ -500,8 +500,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PROTECT
-			rect					75 195 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 					font					4
@@ -535,8 +535,8 @@
 			group					lightpowers
 			style					0	
 			text					"Protect / Barrier / .."
-			rect					20 210 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -557,8 +557,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PROTECTA
-			rect					75 210 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -591,8 +591,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Influence Powers"
-			rect				20 255 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				180 255 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -612,8 +612,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				75 255 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				130 255 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			font					4
@@ -633,8 +633,8 @@
 			group					lightpowers
 			style					0	
 			text					"Telepathy Power:"
-			rect					20 270 110 15
-			textalign				ITEM_ALIGN_LEFT
+			rect					180 270 110 15
+			textalign				ITEM_ALIGN_RIGHT
 			textalignx				0
 			textaligny				0
 			font					4
@@ -655,8 +655,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_TELEPATHY
-			rect					75 270 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 270 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -690,8 +690,8 @@
 			group					lightpowers
 			style					0	
 			text					"Confusion / Corruption / ..:"
-			rect					20 285 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			rect					180 285 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -712,8 +712,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_TELEPATHYA
-			rect					75 285 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 285 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -749,8 +749,8 @@
 			style					0	
 			text					"Incapacitation Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					20 300 175 15
-			textalign				ITEM_ALIGN_LEFT
+			rect					180 300 175 15
+			textalign				ITEM_ALIGN_RIGHT
 			textalignx				0
 			textaligny				0
 			font					4
@@ -771,9 +771,9 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_TEAM_HEAL
-			rect					75 300 175 15
+			rect					80 300 175 15
 					 
-				textalign				ITEM_ALIGN_LEFT		
+				textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -806,9 +806,9 @@
 			name					setsk_stasisa
 			group					lightpowers
 			style					0	
-			text					"Stasis / DeathSight / ..:"
-			rect					20 315 110 15
-			textalign				ITEM_ALIGN_LEFT	
+			text					"Stasis / Curse / ..:"
+			rect					180 315 110 15
+			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
 			font					4
@@ -829,8 +829,8 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_STASISA
-			rect					75 315 175 15
-			textalign				ITEM_ALIGN_LEFT		
+			rect					80 315 175 15
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -840,7 +840,7 @@
 			forecolor				0.5 0.5 1 1
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Force Stasis / Force Death Sight / .."
+			descText				"Force Stasis / Force Curse / .."
 			visible				1 
 			action 
 			{ 
@@ -868,8 +868,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Telekinetic Powers"
-			rect				270 75 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				430 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -889,8 +889,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				315 75 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				380 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			outlinecolor		1 .5 .5 .5
@@ -914,10 +914,10 @@
 			text					"Telekinesis Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
 			//[ForceSys]
-			rect					270 90 110 15
-			//rect					230 223 110 15
+			rect					430 90 110 15
+			//rect					220 223 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -939,10 +939,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_GRIP
 			//[ForceSys]
-			rect					315 90 175 15
-			//rect					230 223 175 15
+			rect					330 90 175 15
+			//rect					220 223 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT		
+			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 				font					4
@@ -976,11 +976,11 @@
 			style					0	
 			text					"Grip / Grasp / ..:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 105 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 105 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1002,10 +1002,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_GRIPA
 			//[ForceSys]
-			rect					315 105 175 15
-			//rect					230 257 175 15
+			rect					330 105 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1039,8 +1039,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Energy Powers"
-			rect				270 150 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				430 150 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -1060,8 +1060,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				315 150 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				380 150 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			outlinecolor		1 .5 .5 .5
@@ -1084,10 +1084,10 @@
 			text					"Electricity Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
 			//[ForceSys]
-			rect					270 165 110 15
-			//rect					230 257 110 15
+			rect					430 165 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1109,10 +1109,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_LIGHTNING
 			//[ForceSys]
-			rect					315 165 175 15
-			//rect					230 257 175 15
+			rect					330 165 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1146,11 +1146,11 @@
 			style					0	
 			text					"Lightning / Judgement / ..:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 180 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 180 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1172,10 +1172,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_LIGHTNINGA
 			//[ForceSys]
-			rect					315 180 175 15
-			//rect					230 257 175 15
+			rect					330 180 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1209,11 +1209,11 @@
 			style					0	
 			text					"Consumption Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 195 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 195 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1235,10 +1235,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DRAIN
 			//[ForceSys]
-			rect					315 195 175 15
-			//rect					230 257 175 15
+			rect					330 195 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1272,11 +1272,11 @@
 			style					0	
 			text					"Drain / Sever / ..:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 210 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 210 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1298,10 +1298,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DRAINA
 			//[ForceSys]
-			rect					315 210 175 15
-			//rect					230 257 175 15
+			rect					330 210 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1335,8 +1335,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Other Status & Energy Powers"
-			rect				270 255 0 0
-			textalign			ITEM_ALIGN_LEFT		
+			rect				430 255 0 0
+			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
@@ -1356,8 +1356,8 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				315 255 0 0
-			textalign			ITEM_ALIGN_LEFT
+			rect				380 255 0 0
+			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			outlinecolor		1 .5 .5 .5
@@ -1379,11 +1379,11 @@
 			style					0	
 			text					"Enhancement Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 270 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 270 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1405,10 +1405,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_RAGE
 			//[ForceSys]
-			rect					315 270 175 15
-			//rect					230 257 175 15
+			rect					330 270 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1442,11 +1442,11 @@
 			style					0	
 			text					"Rage / Extreme / ..:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 285 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 285 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1468,10 +1468,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_RAGEA
 			//[ForceSys]
-			rect					315 285 175 15
-			//rect					230 257 175 15
+			rect					330 285 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1505,11 +1505,11 @@
 			style					0	
 			text					"Focus Power:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 300 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 300 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1531,10 +1531,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_TEAM_FORCE
 			//[ForceSys]
-			rect					315 300 175 15
-			//rect					230 257 175 15
+			rect					330 300 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4
@@ -1568,11 +1568,11 @@
 			style					0	
 			text					"Destruction / Burst / ..:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			//[ForceSys]			270 255 175 15
-			rect					270 315 110 15
-			//rect					230 257 110 15
+			//[ForceSys]			430 255 175 15
+			rect					430 315 110 15
+			//rect					220 257 110 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT												
+			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
 			textaligny				0
 			font					4
@@ -1594,10 +1594,10 @@
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DESTRUCTIONA
 			//[ForceSys]
-			rect					315 315 175 15
-			//rect					230 257 175 15
+			rect					330 315 175 15
+			//rect					220 257 175 15
 			//[/ForceSys]
-			textalign				ITEM_ALIGN_LEFT										
+			textalign				ITEM_ALIGN_RIGHT										
 			textalignx				115
 			textaligny				-5
 			font					4

@@ -7,22 +7,74 @@
 		visible					0
 		fullscreen				0
 		outOfBoundsClick						// this closes the window if it gets a click out of the rectangle
-		rect					430 45 80 68
+		rect					0 45 640 440
 		focusColor				0 0.4 0.8 1
 		style					1
 		border					1
+        descX						380
+		descY						400
+		descScale					1
+		descColor				1 1 1 1					// Focus color for text and items
+		descAlignment				ITEM_ALIGN_CENTER	
 
-		// Overall window backdrop
+	// Overall window backdrop
 		itemDef 
 		{
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 80 68
+			rect				0 0 640 440
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
 			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Vote"
+			rect				0 0 640 25
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			255
+			textaligny			2
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 1
+			font				3
+			textscale			0.9
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
 			visible				1
 			decoration
 		}
@@ -34,7 +86,7 @@
 			text				@MENUS_YES
 			type				1
 			style				2	
-			rect				2 4 76 30   
+			rect				335 75 76 30   
 			textalign			ITEM_ALIGN_CENTER
 			textalignx			38
 			textaligny			0     
@@ -62,7 +114,7 @@
 			text				@MENUS_NO
 			type				1
 			style				2	
-			rect				2 34 76 30   
+			rect				335 105 76 30   
 			textalign			ITEM_ALIGN_CENTER
 			textalignx			38
 			textaligny			0     
@@ -87,3 +139,4 @@
 }
 //[/NewMenus]
 
+ 

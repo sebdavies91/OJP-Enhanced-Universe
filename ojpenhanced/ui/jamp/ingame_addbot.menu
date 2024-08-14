@@ -9,23 +9,74 @@
 		visible					0
 		fullscreen				0
 		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
-		rect					45 45 240 128
+		rect					0 45 640 440
 		disableColor				.5 .5 .5 1 
 		focusColor				0 0.4 0.8 1							// Focus color for text and items
 		style					1
 		border					1
-
-		// Overall window backdrop
+            descX						380
+		descY						400
+		descScale					1
+		descColor				1 1 1 1					// Focus color for text and items
+		descAlignment				ITEM_ALIGN_CENTER	
+	// Overall window backdrop
 		itemDef 
 		{
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 300 128
+			rect				0 0 640 440
 			border				1
 			bordercolor			0 0 0 1
 			backcolor			0.1 0.1 0.1 0.5
 			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Add Bot"
+			rect				0 0 640 25
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			255
+			textaligny			2
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 1
+			font				3
+			textscale			0.9
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
 			visible				1
 			decoration
 		}
@@ -38,8 +89,8 @@
 			text				@MENUS_NAME1
 			ownerdraw			UI_BOTNAME
 //[TABBot]
-			rect				2 4 236 20 
-			//rect				2 4 236 30 
+			rect				290 75 236 20 
+			//rect				290 75 236 30 
 //[TABBot]
 			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			80
@@ -64,10 +115,10 @@
 			text				@MENUS_TEAM
 			ownerdraw			UI_REDBLUE
 //[TABBot]
-			rect				2 24 236 20 
-			//rect				2 34 236 30 
+			rect				290 95 236 20 
+			//rect				290 95 236 30 
 //[/TABBot]
-			textalign			ITEM_ALIGN_RIGHT		
+			textalign			ITEM_ALIGN_RIGHT	
 			textalignx			80
 			textaligny			0    
 			font				2
@@ -100,10 +151,10 @@
 			text				@MENUS_SKILL1
 			ownerdraw			UI_BOTSKILL
 //[TABBot]
-			rect				2 44 236 20 
-			//rect				2 64 236 30 
+			rect				290 115 236 20 
+			//rect				290 115 236 30 
 //[/TABBot]
-			textalign			ITEM_ALIGN_RIGHT		
+			textalign			ITEM_ALIGN_RIGHT	
 			textalignx			80
 			textaligny			0    
 			font				2
@@ -137,7 +188,7 @@
 //[/AotCAI]
 
 			}
-			rect				2 64 236 20
+			rect				290 135 236 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			80
 			textaligny			0
@@ -164,12 +215,12 @@
 			type				1
 			style				WINDOW_STYLE_EMPTY
 
-			rect				20 94 200 30 
+			rect				285 175 200 30 
 			textalignx			80
 			textaligny			2
 			font				2
 			textscale			0.7
-			textalign			ITEM_ALIGN_CENTER
+			textalign			ITEM_ALIGN_RIGHT
 			forecolor			0.8 0.8 0.8 1
 			visible				1
 			action 

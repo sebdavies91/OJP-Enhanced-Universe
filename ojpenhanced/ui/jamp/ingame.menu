@@ -58,7 +58,7 @@
 			name				background_pic
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 640 48
+			rect				0 0 640 45
 			backcolor			0.1 0.1 0.1 0.5
 			border				1
 			bordercolor			0 0 0 1
@@ -188,7 +188,7 @@
 			text				@MENUS_VOICE_CHAT			
 			type				1
 			style				WINDOW_STYLE_FILLED
-			rect				330 20 80 20
+			rect				165 20 70 20
 			font				2
 			textscale			.8
 			textstyle			3
@@ -508,7 +508,7 @@
 			text				"Optimize"
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				250 20 75 20
+			rect				330 20 80 20
 			font			      2
 			textscale			.8
 			textstyle		      3
@@ -551,7 +551,7 @@
 			text				"View"
 			type			      1
 			style				WINDOW_STYLE_FILLED
-			rect				165 20 70 20
+			rect				250 20 75 20
 			font			      2
 			textscale			.8
 			textstyle	            3
