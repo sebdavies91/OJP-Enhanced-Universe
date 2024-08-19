@@ -95,6 +95,8 @@ int weaponFromMOD[MOD_MAX] =
 	WP_NONE,	//MOD_DIOXIS_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	WP_NONE,	//MOD_FREEZER_EXPLOSION,	//death by player's seeker droid.	
 	WP_NONE,	//MOD_FREEZER_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	WP_NONE,	//MOD_ION_EXPLOSION,	//death by player's seeker droid.	
+	WP_NONE,	//MOD_ION_EXPLOSION_SPLASH,	//death by player's seeker droid.
 };
 
 char *weaponNameFromIndex[WP_NUM_WEAPONS] = 
@@ -1143,6 +1145,8 @@ qboolean CalculateDemolitionist(gentity_t *ent, int *kills)
 		nKills += G_WeaponLogKills[i][MOD_DIOXIS_EXPLOSION_SPLASH];
 		nKills += G_WeaponLogKills[i][MOD_FREEZER_EXPLOSION];
 		nKills += G_WeaponLogKills[i][MOD_FREEZER_EXPLOSION_SPLASH];
+		nKills += G_WeaponLogKills[i][MOD_ION_EXPLOSION];
+		nKills += G_WeaponLogKills[i][MOD_ION_EXPLOSION_SPLASH];
 		// if this guy didn't get two explosive kills per minute, reject him right now
 		if ( ((float)nKills)/((float)(playTime)) < 2.0 )
 		{

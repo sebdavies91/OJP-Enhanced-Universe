@@ -6982,8 +6982,8 @@ gentity_t *WP_FireThermalDetonator4( gentity_t *ent, qboolean altFire )
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_THERMAL;
 	bolt->s.eFlags |= EF_WP_OPTION_4;
-	bolt->methodOfDeath = MOD_DEMP2_ALT;
-	bolt->splashMethodOfDeath = MOD_DEMP2;
+	bolt->methodOfDeath = MOD_ION_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_ION_EXPLOSION_SPLASH;
 
 	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
@@ -7051,8 +7051,8 @@ gentity_t *WP_FireThermalDetonator4( gentity_t *ent, qboolean altFire )
 	bolt2->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt2->s.weapon = WP_THERMAL;
 	bolt2->s.eFlags |= EF_WP_OPTION_4;
-	bolt2->methodOfDeath = MOD_DEMP2_ALT;
-	bolt2->splashMethodOfDeath = MOD_DEMP2;
+	bolt2->methodOfDeath = MOD_ION_EXPLOSION;
+	bolt2->splashMethodOfDeath = MOD_ION_EXPLOSION_SPLASH;
 
 	bolt2->s.pos.trTime = level.time;		// move a bit on the very first frame
 	VectorCopy( start, bolt2->s.pos.trBase );
@@ -7138,8 +7138,8 @@ gentity_t *WP_FireThermalDetonator4( gentity_t *ent, qboolean altFire )
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_THERMAL;
 	bolt->s.eFlags |= EF_WP_OPTION_4;
-	bolt->methodOfDeath = MOD_DEMP2_ALT;
-	bolt->splashMethodOfDeath = MOD_DEMP2;
+	bolt->methodOfDeath = MOD_ION_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_ION_EXPLOSION_SPLASH;
 
 	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
 	VectorCopy(start, bolt->s.pos.trBase);
@@ -7633,8 +7633,8 @@ void CreateLaserTrap( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	else if (owner->client && owner->client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && owner->client->skillLevel[SK_TRIPMINEB] == FORCE_LEVEL_1)
 	{
 		laserTrap->s.eFlags |= EF_WP_OPTION_4;
-		laserTrap->methodOfDeath = MOD_DEMP2_ALT;
-		laserTrap->splashMethodOfDeath = MOD_DEMP2;
+		laserTrap->methodOfDeath = MOD_ION_EXPLOSION;
+		laserTrap->splashMethodOfDeath = MOD_ION_EXPLOSION_SPLASH;
 	}
 	else
 	{
@@ -8144,8 +8144,8 @@ void CreateLaserTrap4( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	
 	
 	laserTrap->s.eFlags |= EF_WP_OPTION_4;
-	laserTrap->methodOfDeath = MOD_DEMP2_ALT;
-	laserTrap->splashMethodOfDeath = MOD_DEMP2;
+	laserTrap->methodOfDeath = MOD_ION_EXPLOSION;
+	laserTrap->splashMethodOfDeath = MOD_ION_EXPLOSION_SPLASH;
 	
 
 
@@ -8369,7 +8369,7 @@ void charge_stick (gentity_t *self, gentity_t *other, trace_t *trace)
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_DEMP2 );
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_ION_EXPLOSION_SPLASH );
 	}
 	else
 	{
@@ -8457,7 +8457,7 @@ void DetPackBlow(gentity_t *self)
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_DEMP2 );
+		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_ION_EXPLOSION_SPLASH );
 	}
 	else
 	{
@@ -8475,7 +8475,7 @@ void DetPackBlow(gentity_t *self)
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_DEMP2 );
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_ION_EXPLOSION_SPLASH );
 	}
 	else
 	{
@@ -9131,8 +9131,8 @@ void drop_charge4 (gentity_t *self, vec3_t start, vec3_t dir)
 
 	
 	bolt->s.eFlags |= EF_WP_OPTION_4;
-	bolt->methodOfDeath = MOD_DEMP2_ALT;
-	bolt->splashMethodOfDeath = MOD_DEMP2;
+	bolt->methodOfDeath = MOD_ION_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_ION_EXPLOSION_SPLASH;
 	
 
 	

@@ -80,7 +80,7 @@ void NPC_Sentry_Pain(gentity_t *self, gentity_t *attacker, int damage)
 
 	NPC_Pain( self, attacker, damage );
 
-	if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT )
+	if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH)
 	{
 		self->NPC->burstCount = 0;
 		TIMER_Set( self, "attackDelay", Q_irand( 9000, 12000) );

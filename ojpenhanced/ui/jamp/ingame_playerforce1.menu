@@ -172,7 +172,7 @@
 			text				@OJP_MENUS_NOTFORCESENSITIVE
 			type				1
 			style				0	
-			rect				43 115 0 0
+			rect				70 105 0 0
 			textalign			ITEM_ALIGN_CENTER	 	
 			textalignx			65
 			textaligny			0

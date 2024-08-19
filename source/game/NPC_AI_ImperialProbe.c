@@ -436,7 +436,7 @@ void NPC_Probe_Pain(gentity_t *self, gentity_t *attacker, int damage)
 	
 	VectorCopy( self->NPC->lastPathAngles, self->s.angles );
 
-	if ( self->health < 30 || mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT ) // demp2 always messes them up real good
+	if ( self->health < 30 || mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH) // demp2 always messes them up real good
 	{
 		vec3_t endPos;
 		trace_t	trace;
@@ -444,7 +444,7 @@ void NPC_Probe_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		VectorSet( endPos, self->r.currentOrigin[0], self->r.currentOrigin[1], self->r.currentOrigin[2] - 128 );
 		trap_Trace( &trace, self->r.currentOrigin, NULL, NULL, endPos, self->s.number, MASK_SOLID );
 
-		if ( trace.fraction == 1.0f || mod == MOD_DEMP2 ) // demp2 always does this
+		if ( trace.fraction == 1.0f || mod == MOD_DEMP2 || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH) // demp2 always does this
 		{
 			/*
 			if (self->client->clientInfo.headModel != 0)
@@ -462,7 +462,7 @@ void NPC_Probe_Pain(gentity_t *self, gentity_t *attacker, int damage)
 			}
 			*/
 			
-			if ( (mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT) && other )
+			if ( (mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH) && other )
 			{
 				vec3_t dir;
 

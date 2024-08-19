@@ -1155,6 +1155,8 @@ char	*modNames[MOD_MAX] = {
 	"MOD_DIOXIS_EXPLOSION_SPLASH",
 	"MOD_FREEZER_EXPLOSION",
 	"MOD_FREEZER_EXPLOSION_SPLASH",
+	"MOD_ION_EXPLOSION",
+	"MOD_ION_EXPLOSION_SPLASH",
 };
 
 
@@ -3575,14 +3577,14 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 			//[FullDismemberment]
 			//weapon dismemberment so saber isn't the only one :)
-			if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_TURBLAST) || (meansOfDeath == MOD_FLECHETTE) || (meansOfDeath == MOD_FLECHETTE_ALT_SPLASH) || (meansOfDeath == MOD_CONC_ALT) || (meansOfDeath == MOD_THERMAL_SPLASH) || (meansOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH)|| (meansOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH) || (meansOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)|| (meansOfDeath == MOD_TRIP_MINE_SPLASH) || (meansOfDeath == MOD_TIMED_MINE_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_CRUSH) || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
+			if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_TURBLAST) || (meansOfDeath == MOD_FLECHETTE) || (meansOfDeath == MOD_FLECHETTE_ALT_SPLASH) || (meansOfDeath == MOD_CONC_ALT) || (meansOfDeath == MOD_THERMAL_SPLASH) || (meansOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH)|| (meansOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH) || (meansOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)  || (meansOfDeath == MOD_ION_EXPLOSION_SPLASH) || (meansOfDeath == MOD_TRIP_MINE_SPLASH) || (meansOfDeath == MOD_TIMED_MINE_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_CRUSH) || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
 			//if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
 			{ //update the anim on the actual skeleton (so bolt point will reflect the correct position) and then check for dismem
 				G_UpdateClientAnims(self, 1.0f);
 				G_CheckForDismemberment(self, attacker, self->pos1, damage, anim, qfalse);
 			}
 			//GIBBING!!! making use of g_checkforblowing up - Wahoo
-			if (meansOfDeath == MOD_ROCKET || (meansOfDeath == MOD_ROCKET_SPLASH) || (meansOfDeath == MOD_ROCKET_HOMING) || (meansOfDeath == MOD_ROCKET_HOMING_SPLASH) || (meansOfDeath == MOD_THERMAL) || (meansOfDeath == MOD_INCINERATOR_EXPLOSION) || (meansOfDeath == MOD_DIOXIS_EXPLOSION) || (meansOfDeath == MOD_FREEZER_EXPLOSION) || (meansOfDeath == MOD_DET_PACK_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_TRIGGER_HURT) || (meansOfDeath == MOD_LAVA))
+			if (meansOfDeath == MOD_ROCKET || (meansOfDeath == MOD_ROCKET_SPLASH) || (meansOfDeath == MOD_ROCKET_HOMING) || (meansOfDeath == MOD_ROCKET_HOMING_SPLASH) || (meansOfDeath == MOD_THERMAL) || (meansOfDeath == MOD_INCINERATOR_EXPLOSION) || (meansOfDeath == MOD_DIOXIS_EXPLOSION) || (meansOfDeath == MOD_FREEZER_EXPLOSION) || (meansOfDeath == MOD_ION_EXPLOSION) || (meansOfDeath == MOD_DET_PACK_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_TRIGGER_HURT) || (meansOfDeath == MOD_LAVA))
 			{
 				G_UpdateClientAnims(self, 1.0f);
 				G_CheckForblowingup(self, attacker, self->pos1, damage, anim, qfalse);
@@ -5873,6 +5875,17 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 	}
+	if ((mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH) && targ && targ->inuse && targ->client)
+	{
+		int	ELECTROCUTION_TIME = 2500;
+		if ( targ->client->ps.electrifyTime < (level.time + ELECTROCUTION_TIME/2))
+		{//electrocution effect
+			{//don't do this to fighters
+				targ->client->ps.electrifyTime = level.time + ELECTROCUTION_TIME;
+			}
+		}
+	}
+	
 	if (g_gametype.integer == GT_SIEGE &&
 		!gSiegeRoundBegun)
 	{ //nothing can be damaged til the round starts.
@@ -5999,7 +6012,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			mod != MOD_DIOXIS_EXPLOSION &&
 			mod != MOD_DIOXIS_EXPLOSION_SPLASH &&
 			mod != MOD_FREEZER_EXPLOSION &&
-			mod != MOD_FREEZER_EXPLOSION_SPLASH )
+			mod != MOD_FREEZER_EXPLOSION_SPLASH &&
+			mod != MOD_ION_EXPLOSION &&
+			mod != MOD_ION_EXPLOSION_SPLASH )
 		{
 			if ( mod != MOD_MELEE || !G_HeavyMelee( attacker ) )
 			{ //let classes with heavy melee ability damage heavy wpn dmg doors with fists
@@ -6297,6 +6312,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_DIOXIS_EXPLOSION_SPLASH:
 			case MOD_FREEZER_EXPLOSION:
 			case MOD_FREEZER_EXPLOSION_SPLASH:
+			case MOD_ION_EXPLOSION:
+			case MOD_ION_EXPLOSION_SPLASH:
 				damage *= 1.00;
 				break;
 			}
@@ -6734,7 +6751,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	//[CoOp]
 	//ported from SP.
-	if(targ->NPC && client && (mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT))
+	if(targ->NPC && client && (mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH))
 	{//NPCs get stunned by demps
 		if(	client->NPC_class == CLASS_SABER_DROID ||
 			client->NPC_class == CLASS_ASSASSIN_DROID ||
@@ -6753,7 +6770,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 	//[/CoOp]
 
-	if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT )
+	if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH )
 	{//FIXME: screw with non-animal vehicles, too?
 		if ( client )
 		{
@@ -6977,7 +6994,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if (take) 
 	{
 		if (targ->client && targ->s.number < MAX_CLIENTS &&
-			(mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT))
+			(mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH))
 		{ //uh.. shock them or something. what the hell, I don't know.
             if (targ->client->ps.weaponTime <= 0)
 			{ //yeah, we were supposed to be beta a week ago, I don't feel like

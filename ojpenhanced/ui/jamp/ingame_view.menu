@@ -87,9 +87,9 @@
 			name				ThirdPersonRange
 			group				video2
 			type				ITEM_TYPE_SLIDER
-			text				ThirdPersonRange
+			text				"Third Person Range:"
 			cvarfloat			"cg_thirdPersonRange" 1 -200 200
-			rect				190 105 340 14
+			rect				190 95 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -119,9 +119,9 @@
 			name				ThirdPersonPitch
 			group				video2
 			type				ITEM_TYPE_SLIDER
-			text				Pitchoffset	
+			text				"Pitch Off Set:"	
 			cvarfloat			"cg_thirdPersonPitchOffset" -125 -125 125
-			rect				190 135 340 14
+			rect				190 115 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -153,8 +153,8 @@
 			group				none
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON 
-			rect				300 255 375 14 
-			text				"Default" 
+			rect				305 240 375 14 
+			text				"Default:" 
 			descText			defa
 			font				4
 			textscale			1
@@ -191,7 +191,7 @@
 			name				Fov
 			group				video3
 			type				ITEM_TYPE_SLIDER
-			text				Fov
+			text				"Fov:"
 			cvarfloat			"cg_fov" 1 0 100
 			rect				190 75 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -223,9 +223,9 @@
 			name				ThirdPersonVert
 			group				video3
 			type				ITEM_TYPE_SLIDER
-			text				Vertoffset	
+			text				"Vert Off Set:"	
 			cvarfloat			"cg_thirdPersonVertOffSet"	1 -52 100
-			rect				190 165 340 14
+			rect				190 135 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -255,9 +255,9 @@
 			name				thirdpersonangle
 			group				video2
 			type				ITEM_TYPE_SLIDER
-			text				Personangle	
+			text				"Person Angle:"	
 			cvarfloat			"cg_thirdPersonAngle" -180 -180 180
-			rect				190 195 340 14
+			rect				190 155 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0

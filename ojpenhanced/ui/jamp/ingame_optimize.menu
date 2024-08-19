@@ -87,9 +87,9 @@
 			name				servermaxrate
 			group				optimize
 			type				ITEM_TYPE_SLIDER
-			text				"Server MaxRate"
+			text				"Server Max Rate:"
 			cvarfloat			"sv_maxrate" 4000 0 25000
-			rect				190 165 340 14
+			rect				190 135 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -119,9 +119,9 @@
 			name				fpsrate
 			group				optimize
 			type				ITEM_TYPE_SLIDER
-			text			      "FPS Rate"	
+			text			      "FPS Rate:"	
 			cvarfloat			"com_maxfps" 85 5 250
-			rect				190 135 340 14
+			rect				190 115 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -153,8 +153,8 @@
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				300 255 375 14 
-			text				"Default"
+			rect				305 240 375 14 
+			text				"Default:"
 			descText			"Sets all optimization settings back to the JA defaults"
 			font 				4
 			textscale 			1
@@ -203,7 +203,7 @@
                         Low 1  
 				High 2 
 			}
-			rect           200 225 340 14
+			rect           200 175 340 14
 	   	      textalign			 ITEM_ALIGN_RIGHT
 			textalignx		 165
 			textaligny     -2
@@ -243,7 +243,7 @@
                         On 1  
 				 
 			}
-			rect           200 240 340 14
+			rect           200 195 340 14
 	   	      textalign			 ITEM_ALIGN_RIGHT
 			textalignx		 165
 			textaligny     -2
@@ -277,7 +277,7 @@
 			name				maxpackets
 			group				optimize
 			type				ITEM_TYPE_SLIDER
-			text				"Max Packets"
+			text				"Max Packets:"
 			cvarfloat			"cl_maxpackets" 30 0 200
 			rect				190 75 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -309,9 +309,9 @@
 			name				snaps
 			group				optimize
 			type				ITEM_TYPE_SLIDER
-			text				"Snaps"
+			text				"Snaps:"
 			cvarfloat			"snaps" 20 0 100
-			rect				190 105 340 14
+			rect				190 95 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -341,9 +341,9 @@
 			name				timenudge
 			group				optimize
 			type				ITEM_TYPE_SLIDER
-			text				"Timenudge"	
+			text				"Time Nudge:"	
 			cvarfloat			"cl_timenudge" 0 -50 20
-			rect				 190 195 340 14
+			rect				 190 155 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			174
 			textaligny			0
@@ -375,7 +375,7 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				500 225 125 14 
+			rect				500 175 125 14 
 			text				ULTRAFAST 
 			descText			"Select if you are playing on a local LAN or superfast connection"   
 			font				4
@@ -414,7 +414,7 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				500 240 75 14 
+			rect				500 190 75 14 
 			text				FAST 
 			descText			"Select if you have a fast ping 30-60"
 			font				4
@@ -454,7 +454,7 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				500 255 125 14 
+			rect				500 205 125 14 
 			text				AVERAGE
 			descText			"Select if your ping is 50-100"
 			font				4
@@ -493,7 +493,7 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				500 270 75 14 
+			rect				500 220 75 14 
 			text				SLOW
 			descText			defa
 			font				4
@@ -533,7 +533,7 @@ itemDef
 			group				optimize
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				500 285 125 14 
+			rect				500 235 125 14 
 			text				SLOWER
 			descText			"Select if your ping is 150+"
 			font				4

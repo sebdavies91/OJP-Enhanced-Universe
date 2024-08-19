@@ -485,7 +485,9 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->methodOfDeath != MOD_DIOXIS_EXPLOSION &&
 			ent->methodOfDeath != MOD_DIOXIS_EXPLOSION_SPLASH &&
 			ent->methodOfDeath != MOD_FREEZER_EXPLOSION &&
-			ent->methodOfDeath != MOD_FREEZER_EXPLOSION_SPLASH)
+			ent->methodOfDeath != MOD_FREEZER_EXPLOSION_SPLASH &&
+			ent->methodOfDeath != MOD_ION_EXPLOSION &&
+			ent->methodOfDeath != MOD_ION_EXPLOSION_SPLASH)
 			//[/Asteroids]
 		{
 			vec3_t fwd;
@@ -912,7 +914,7 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				//	//permanently disable the saboteur's cloak
 				//	other->client->cloakToggleTime = Q3_INFINITE;
 				//}
-				if (ent->methodOfDeath == MOD_DEMP2_ALT || ent->methodOfDeath == MOD_DEMP2 || ent->methodOfDeath == MOD_INCINERATOR || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_DIOXIS || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_FREEZER || ent->methodOfDeath == MOD_FREEZER_EXPLOSION || ent->methodOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)
+				if (ent->methodOfDeath == MOD_DEMP2_ALT || ent->methodOfDeath == MOD_DEMP2 || ent->methodOfDeath == MOD_ION_EXPLOSION || ent->methodOfDeath == MOD_ION_EXPLOSION_SPLASH  || ent->methodOfDeath == MOD_INCINERATOR || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_DIOXIS || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_FREEZER || ent->methodOfDeath == MOD_FREEZER_EXPLOSION || ent->methodOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)
 				{//temp disable
 					Jedi_Decloak( other );
 					other->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
@@ -925,7 +927,7 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				//	//permanently disable the saboteur's cloak
 				//	other->client->sphereshieldToggleTime = Q3_INFINITE;
 				//}
-				if (ent->methodOfDeath == MOD_DEMP2_ALT  || ent->methodOfDeath == MOD_DEMP2 )
+				if (ent->methodOfDeath == MOD_DEMP2_ALT  || ent->methodOfDeath == MOD_DEMP2 || ent->methodOfDeath == MOD_ION_EXPLOSION || ent->methodOfDeath == MOD_ION_EXPLOSION_SPLASH )
 				{//temp disable
 					Sphereshield_Off( other );
 					other->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );

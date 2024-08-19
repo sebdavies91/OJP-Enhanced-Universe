@@ -1383,6 +1383,8 @@ typedef enum {
 	MOD_DIOXIS_EXPLOSION_SPLASH,
 	MOD_FREEZER_EXPLOSION,
 	MOD_FREEZER_EXPLOSION_SPLASH,
+	MOD_ION_EXPLOSION,
+	MOD_ION_EXPLOSION_SPLASH,
 	//[/SeekerItemNPC]
 	//AURELIO: when/if you put this back in, remember to make a case for it in all the other places where
 	//mod's are checked. Also, it probably isn't the most elegant solution for what you want - just add

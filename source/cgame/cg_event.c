@@ -668,14 +668,34 @@ clientkilled:
 			message = "KILLED_INCINERATOR";
 			vehMessage = qtrue;
 			break;
+		case MOD_INCINERATOR_EXPLOSION:
+		case MOD_INCINERATOR_EXPLOSION_SPLASH:		
+			message = "KILLED_INCINERATOR_EXPLOSION";
+			vehMessage = qtrue;
+			break;			
 		case MOD_DIOXIS:
 			message = "KILLED_DIOXIS";
 			vehMessage = qtrue;
 			break;
+		case MOD_DIOXIS_EXPLOSION:
+		case MOD_DIOXIS_EXPLOSION_SPLASH:		
+			message = "KILLED_DIOXIS_EXPLOSION";
+			vehMessage = qtrue;
+			break;	
 		case MOD_FREEZER:
 			message = "KILLED_FREEZER";
 			vehMessage = qtrue;
 			break;
+		case MOD_FREEZER_EXPLOSION:
+		case MOD_FREEZER_EXPLOSION_SPLASH:		
+			message = "KILLED_FREEZER_EXPLOSION";
+			vehMessage = qtrue;
+			break;
+		case MOD_ION_EXPLOSION:
+		case MOD_ION_EXPLOSION_SPLASH:		
+			message = "KILLED_FREEZER_EXPLOSION";
+			vehMessage = qtrue;
+			break;	
 		default:
 			message = "KILLED_GENERIC";
 			break;

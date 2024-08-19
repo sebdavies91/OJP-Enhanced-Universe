@@ -291,11 +291,11 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		pain_chance = NPC_GetPainChance( self, damage );
 
 		// Put it in pain
-		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || random() < pain_chance )	// Spin around in pain? Demp2 always does this
+		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH || random() < pain_chance )	// Spin around in pain? Demp2 always does this
 		{
 			// Health is between 0-30 or was hit by a DEMP2 so pop his head
 			if ( !self->s.m_iVehicleNum
-				&& ( self->health < 30 || mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT ) )
+				&& ( self->health < 30 || mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH ) )
 			{
 				if (!(self->spawnflags & 2))	// Doesn't have to ALWAYSDIE
 				{
@@ -350,7 +350,7 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 	}
 	else if (self->client->NPC_class == CLASS_MOUSE)
 	{
-		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT )
+		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH)
 		{
 			self->NPC->localState = LSTATE_SPINNING;
 			//self->s.powerups |= ( 1 << PW_SHOCKED );
@@ -369,11 +369,11 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 
 		pain_chance = NPC_GetPainChance( self, damage );
 
-		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || random() < pain_chance )	// Spin around in pain? Demp2 always does this
+		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH || random() < pain_chance )	// Spin around in pain? Demp2 always does this
 		{
 			// Health is between 0-30 or was hit by a DEMP2 so pop his head
 			if ( !self->s.m_iVehicleNum
-				&& ( self->health < 30 || mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT ) )
+				&& ( self->health < 30 || mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH) )
 			{
 				if (!(self->spawnflags & 2))	// Doesn't have to ALWAYSDIE
 				{
@@ -426,7 +426,7 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 			}
 		} 
 	}
-	else if ( self->client->NPC_class == CLASS_INTERROGATOR && ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT ) && other )
+	else if ( self->client->NPC_class == CLASS_INTERROGATOR && ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH) && other )
 	{
 		vec3_t dir;
 

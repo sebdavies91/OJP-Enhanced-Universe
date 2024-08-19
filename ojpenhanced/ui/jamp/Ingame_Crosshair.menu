@@ -397,7 +397,7 @@
 			name				Crosshairsize
 			group				video2
 			type				ITEM_TYPE_SLIDER
-			text				CrosshairSize
+			text				"Crosshair Size:"
 			cvarfloat			"cg_crosshairsize" 10 10 400
 			rect				150 225 340 14
 	   		textalign			ITEM_ALIGN_CENTER
@@ -432,8 +432,8 @@
 			group				none
 			style				WINDOW_STYLE_EMPTY
 			type				ITEM_TYPE_BUTTON
-			rect				300 255 340 14
-			text				"Default" 
+			rect				305 240 340 14
+			text				"Default:" 
 			descText			defa
 			font				4
 			textscale			1

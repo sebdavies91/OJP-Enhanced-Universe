@@ -31,7 +31,7 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_client.c
   g_cmds.c
   g_combat.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5668,8): warning C4101: 'max': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5670,8): warning C4101: 'max': unreferenced local variable
   g_crash.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_crash.c(281,59): warning C4113: 'BOOL (__stdcall *)(LPSTR,DWORD,PVOID)' differs in parameter lists from 'PSYM_ENUMMODULES_CALLBACK'
   g_dynmusic.c
@@ -73,9 +73,9 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5875,8): warning C4101: 'rTime': unreferenced local variable
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10567,6): warning C4101: 'count': unreferenced local variable
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6660): warning C4715: 'WP_FireThermalDetonator2': not all control paths return a value
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6908): warning C4715: 'WP_FireThermalDetonator3': not all control paths return a value
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(7156): warning C4715: 'WP_FireThermalDetonator4': not all control paths return a value
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6660): warning C4715: 'WP_FireThermalDetonator2': not all control paths return a value
   Compiling...
   NPC.c
   NPC_AI_AssassinDroid.c
