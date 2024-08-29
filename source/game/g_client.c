@@ -3958,8 +3958,7 @@ void ClientSpawn(gentity_t *ent) {
 	
 
 	
-	if( g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)
-	{
+
 		if(client->skillLevel[SK_JETPACK] == FORCE_LEVEL_3 || client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3 )
 		{
 			client->ps.jetpackFuel = 250;
@@ -3972,17 +3971,17 @@ void ClientSpawn(gentity_t *ent) {
 		{
 			client->ps.jetpackFuel = 100;
 		}
+		else if (client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK) || client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_FLAMETHROWER))
+		{	
+			client->ps.jetpackFuel = 100;			
+		}
 		else
 		{
 			client->ps.jetpackFuel = 0;
 		}
-	}
-	else		
-	{
-		client->ps.jetpackFuel = 100;
-	}
-	if( g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)
-	{
+
+
+
 		if(client->skillLevel[SK_CLOAK] == FORCE_LEVEL_3 || client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3 || client->skillLevel[SK_SPHERESHIELD] == FORCE_LEVEL_3 || client->skillLevel[SK_OVERLOAD] == FORCE_LEVEL_3)
 		{
 			client->ps.cloakFuel = 250;
@@ -3995,15 +3994,15 @@ void ClientSpawn(gentity_t *ent) {
 		{
 			client->ps.cloakFuel = 100;
 		}	
+		else if (client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_CLOAK) || client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_ELECTROSHOCKER) || client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SPHERESHIELD) || client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_OVERLOAD))
+		{	
+			client->ps.cloakFuel = 100;			
+		}
 		else
 		{
 			client->ps.cloakFuel = 0;
 		}
-	}
-	else		
-	{
-		client->ps.cloakFuel = 100;
-	}
+
 	//spawn with 100
 	//client->ps.jetpackFuel = 100;
 	//client->ps.cloakFuel = 100;
@@ -4114,6 +4113,12 @@ void ClientSpawn(gentity_t *ent) {
 		wDisable = g_weaponDisable.integer;
 	}
 
+
+	int iDisable = 0;
+	iDisable = g_itemDisable.integer;
+	
+	
+	
 	//[MELEE]
 	//Give everyone fists as long as they aren't disabled.
 	if (!wDisable || !(wDisable & (1 << WP_MELEE)))
@@ -4595,9 +4600,18 @@ void ClientSpawn(gentity_t *ent) {
 	{ //use class-specified inventory
 		client->ps.stats[STAT_HOLDABLE_ITEMS] = bgSiegeClasses[client->siegeClass].invenItems;
 		client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
-		ent->client->ps.fd.forcePower=100;
-		ent->client->ps.fd.forcePowerMax=100;
-		client->ps.stats[STAT_MAX_DODGE] = 100;								 
+			if (client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
+			{ //recharge cloak
+			ent->client->ps.fd.forcePower=100;
+			ent->client->ps.fd.forcePowerMax=100;
+			client->ps.stats[STAT_MAX_DODGE] = 100;
+			}
+			else 
+			{
+			ent->client->ps.fd.forcePower=25;
+			ent->client->ps.fd.forcePowerMax=25;
+			client->ps.stats[STAT_MAX_DODGE] = 25;
+			}							 
 	}
 	else
 	{
@@ -4607,37 +4621,59 @@ void ClientSpawn(gentity_t *ent) {
 		
 		if(client->skillLevel[SK_JETPACK])
 		{//player has jetpack
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_JETPACK);
+			if (!iDisable || !(iDisable & (1 << HI_JETPACK)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_JETPACK);
+			}
+
 		}
 
 		if(client->skillLevel[SK_FORCEFIELD])
 		{//give the player the force field item
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SHIELD);
+			if (!iDisable || !(iDisable & (1 << HI_SHIELD)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SHIELD);
+			}
 		}
 
 		if(client->skillLevel[SK_CLOAK])
 		{//give the player the cloaking device
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_CLOAK);
+			if (!iDisable || !(iDisable & (1 << HI_CLOAK)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_CLOAK);
+			}
 		}
 		if(client->skillLevel[SK_SPHERESHIELD])
 		{//give the player the cloaking device
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SPHERESHIELD);
+			if (!iDisable || !(iDisable & (1 << HI_SPHERESHIELD)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SPHERESHIELD);
+			}
 		}
 		if(client->skillLevel[SK_OVERLOAD])
 		{//give the player the cloaking device
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_OVERLOAD);
+			if (!iDisable || !(iDisable & (1 << HI_OVERLOAD)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_OVERLOAD);
+			}
 		}
 		//gain squadteam		
 		if(client->skillLevel[SK_SQUADTEAM])
 			{
+			if (!iDisable || !(iDisable & (1 << HI_SQUADTEAM)))
+			{
 				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SQUADTEAM);
+			}
 									   
 										 
 			}
 		//gain vehiclemount		
 		if(client->skillLevel[SK_VEHICLEMOUNT])
 			{
+			if (!iDisable || !(iDisable & (1 << HI_VEHICLEMOUNT)))
+			{
 				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_VEHICLEMOUNT);
+			}
 									   
 										 
 			}
@@ -4664,8 +4700,7 @@ void ClientSpawn(gentity_t *ent) {
 
 		}
 		
-		if( g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)
-		{	
+	
 			if(client->ps.fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_3)
 			{
 			ent->client->ps.fd.forcePower=250;
@@ -4685,56 +4720,78 @@ void ClientSpawn(gentity_t *ent) {
 			ent->client->ps.fd.forcePowerMax=100;
 			client->ps.stats[STAT_MAX_DODGE] = 100;
 			}
+			else if (client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
+			{ //recharge cloak
+			ent->client->ps.fd.forcePower=100;
+			ent->client->ps.fd.forcePowerMax=100;
+			client->ps.stats[STAT_MAX_DODGE] = 100;
+			}
 			else 
 			{
 			ent->client->ps.fd.forcePower=25;
 			ent->client->ps.fd.forcePowerMax=25;
 			client->ps.stats[STAT_MAX_DODGE] = 25;
 			}
-		}
-		else
-		{
-		ent->client->ps.fd.forcePower=100;
-		ent->client->ps.fd.forcePowerMax=100;
-		client->ps.stats[STAT_MAX_DODGE] = 100;
-		}
+
+
 
 						   
 		
 
 		if(client->skillLevel[SK_BACTA])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_MEDPAC);
+			if (!iDisable || !(iDisable & (1 << HI_MEDPAC)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_MEDPAC);
+			}
 		}
 
 		if(client->skillLevel[SK_REPAIR])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SHIELDBOOSTER);
+			if (!iDisable || !(iDisable & (1 << HI_SHIELDBOOSTER)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SHIELDBOOSTER);
+			}
 		}		
 		//gain flamethrower
 		if(client->skillLevel[SK_FLAMETHROWER])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_FLAMETHROWER);
+			if (!iDisable || !(iDisable & (1 << HI_FLAMETHROWER)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_FLAMETHROWER);
+			}
 		}
 
 		if(client->skillLevel[SK_SEEKER])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SEEKER);
+			if (!iDisable || !(iDisable & (1 << HI_SEEKER)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SEEKER);
+			}
 		}
 
 		if(client->skillLevel[SK_SENTRY])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SENTRY_GUN);
+			if (!iDisable || !(iDisable & (1 << HI_SENTRY_GUN)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_SENTRY_GUN);
+			}
 		}
 	//gain EWEB
 		if(client->skillLevel[SK_EWEB])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_EWEB);
+			if (!iDisable || !(iDisable & (1 << HI_EWEB)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_EWEB);
+			}
 		}
 	//gain BINOCULARS
 		if(client->skillLevel[SK_BINOCULARS])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_BINOCULARS);
+			if (!iDisable || !(iDisable & (1 << HI_BINOCULARS)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_BINOCULARS);
+			}
 		}
 
 
@@ -4742,7 +4799,10 @@ void ClientSpawn(gentity_t *ent) {
 				//gain electroshocker
 		if(client->skillLevel[SK_ELECTROSHOCKER])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_ELECTROSHOCKER);
+			if (!iDisable || !(iDisable & (1 << HI_ELECTROSHOCKER)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_ELECTROSHOCKER);
+			}
 		}
 		//client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 		//[/ExpSys]
@@ -5134,7 +5194,10 @@ void ClientSpawn(gentity_t *ent) {
 		//[/DualPistols]
 			if(client->skillLevel[SK_GRAPPLE])
 		{
-			client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_GRAPPLE);
+			if (!iDisable || !(iDisable & (1 << HI_GRAPPLE)))
+			{
+				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_GRAPPLE);
+			}
 		}								
 	}
 	if (g_gametype.integer == GT_SIEGE &&

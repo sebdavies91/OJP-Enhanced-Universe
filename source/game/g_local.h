@@ -1993,6 +1993,7 @@ extern  vmCvar_t	g_mishapRegenTime;
 extern	vmCvar_t	g_spawnInvulnerability;
 extern	vmCvar_t	g_forcePowerDisable;
 extern	vmCvar_t	g_weaponDisable;
+extern	vmCvar_t	g_itemDisable;
 
 extern	vmCvar_t	g_allowDuelSuicide;
 extern	vmCvar_t	g_fraglimitVoteCorrection;

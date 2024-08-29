@@ -319,7 +319,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleA
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Backpack Rockets"
@@ -340,7 +340,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2A
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -472,7 +472,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleB
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Squad Teams"
@@ -493,7 +493,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2B
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3

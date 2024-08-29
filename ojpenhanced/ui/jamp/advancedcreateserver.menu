@@ -128,41 +128,74 @@
       			decoration 
 		}
 
-//---------------------------------
-// FRIENDLY FIRE
-//---------------------------------
 
+//--------------------------------
+// FORCE POWER DISABLE
+//--------------------------------
 		itemDef 
 		{
-			name				settingsButton1
+			name				settingsButton5
 			style				WINDOW_STYLE_SHADER
 			rect 				5 55 280 20 
-			background			"gfx/menus/menu_blendbox"	
+			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
 		}
 
+		//[MOREFORCEOPTIONS]
+		itemDef
+		{	
+			name				options
+			group				grpOptions
+      			type				ITEM_TYPE_MULTI
+			text				@OJP_MENUS_DISABLEFORCEPOWERS
+			descText			@OJP_MENUS_DISABLEFORCEPOWERS_DESC
+			cvar				"g_forcePowerDisable"
+			cvarFloatList		
+			{ 
+				@OJP_MENUS_DISABLEFORCEPOWERS_ALLON		0
+				@OJP_MENUS_DISABLEFORCEPOWERS_ALLOFF		262143
+				@OJP_MENUS_DISABLEFORCEPOWERS_JUMPONLY		262141
+				@OJP_MENUS_DISABLEFORCEPOWERS_NEUTRALSONLY	16353
+				
+			}
+			rect				5 55 280 20 
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			165
+			textaligny			0
+			font				4
+			textscale			1
+			forecolor			1 1 1 1
+			visible				1
+			action 
+			{
+				play 			"sound/interface/button1.wav" 
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton5 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton5 
+			}
+		}				  	  
+
+		/*
 		itemDef 
 		{
-			name				normal
-			group				grpsettings
+			name				options
+			group				grpOptions
 			type				ITEM_TYPE_YESNO
-			text				@MENUS_FRIENDLY_FIRE
-			descText			@MENUS_WHEN_ON_IT_MEANS_TEAMMATES
-			cvar				"g_friendlyfire"
+			text				@MENUS_DISABLE_FORCE
+			descText			@MENUS_DISABLE_FORCE_INFO
+			cvar				"g_forcePowerDisable"
 			cvarTest			"ui_netGameType"
-			showCvar
+			hideCvar
 			{ 
-			//[OLDGAMETYPES]
-				"2" ;
-				"4" ;
-				"5" ;
-				"6" ;
-				"7" ;
-				"8"		
-			//	"3" ;
-			//[/OLDGAMETYPES]
+				"1" ;
+				"2" 
 			}     
 			rect				5 55 280 20 
 			textalign			ITEM_ALIGN_RIGHT
@@ -174,17 +207,66 @@
 			visible				1  
 			action 
 			{ 
+				uiScript		forcePowersDisable ;
 				play 			"sound/interface/button1.wav" 
 			}
 			mouseEnter 
-			{ 	
-				show 			settingsButton1 
+			{ 
+				show 			settingsButton5 
 			}
 			mouseExit 
-			{ 
-				hide 			settingsButton1 
+			{ 	
+				hide 			settingsButton5 
 			}
 		}
+		
+
+// FORCE POWERS setting in Duel/Power Duel
+		itemDef 
+		{
+			name				options
+			group				grpOptions
+			type				ITEM_TYPE_MULTI
+			text				@MENUS_FORCE_POWERS_TITLE
+			descText			@MENUS_FORCE_POWERS_TITLE_DESC
+			cvar				"g_forcePowerDisable"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+				"1" ;
+				"2"
+			}     
+			cvar				"ui_dualforcepower"
+			cvarFloatList	
+			{ 
+				@MENUS_YES	0 
+				@MENUS_NO	1 
+				@MENUS_LIMITED	2 
+			}
+			rect				5 55 280 20 
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			165
+			textaligny			0
+			font				4
+			textscale			1
+			forecolor			1 1 1 1
+			visible				1  
+			action 
+			{ 
+				uiScript		dualForcePowers ;
+				play 			"sound/interface/button1.wav" 
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton5 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton5 
+			}
+		}
+		*/
+		//[/MOREFORCEOPTIONS]
 
 //------------------------
 // LIGHTSABER ONLY
@@ -315,8 +397,7 @@
 			hideCvar
 			{ 
 				"1" ;
-				"2" ;
-				"4" ;
+				"2"
 			}     
 			action		
 			{ 
@@ -371,6 +452,107 @@
 		*/
 		//[/MOREWEAPOPTIONS]
 
+
+
+//--------------------------------
+// ITEM DISABLE
+//--------------------------------
+
+		itemDef 
+		{
+			name				settingsButton4
+			style				WINDOW_STYLE_SHADER
+			rect 				5 95 280 20 
+			background			"gfx/menus/menu_blendbox"			
+			forecolor			1 1 1 1
+			visible				0
+			decoration
+		}
+
+		//[MOREFORCEOPTIONS]
+		itemDef
+		{	
+			name				options
+			group				grpOptions
+      			type				ITEM_TYPE_MULTI
+			text				@OJP_MENUS_ITEMDISABLE
+			descText			@OJP_MENUS_ITEMDISABLE_DESC
+			cvar				"g_itemDisable"
+			cvarFloatList		
+			{ 
+				@OJP_MENUS_ITEMDISABLE_ALLON		0
+				@OJP_MENUS_ITEMDISABLE_ALLOFF		177776
+				@OJP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKS		177777
+				@OJP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKSVEHICLES	266664
+				@OJP_MENUS_ITEMDISABLE_NOVEHICLES	266665
+				
+			}
+			rect				5 95 280 20 
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			165
+			textaligny			0
+			font				4
+			textscale			1
+			forecolor			1 1 1 1
+			visible				1
+			action 
+			{
+				play 			"sound/interface/button1.wav" 
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton4 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton4 
+			}
+		}
+
+
+//--------------------------------
+// SABERLOCKING
+//--------------------------------
+		itemDef 
+		{
+			name				settingsButton7
+			style				WINDOW_STYLE_SHADER
+			rect 				5 115 280 20 
+			background			"gfx/menus/menu_blendbox"			
+			forecolor			1 1 1 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_SABERLOCKING
+			descText			@MENUS_SABERLOCKING_DESC
+			cvar				"g_saberLocking"
+			rect				5 115 280 20
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			165
+			textaligny			0
+			font				4
+			textscale			1
+			forecolor			1 1 1 1
+			visible				1 
+			action 
+			{ 
+				play 			"sound/interface/button1.wav" 
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton7
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton7
+			}
+		}
 //--------------------------
 // ALLOW PRIVATE DUEL
 //--------------------------
@@ -378,7 +560,7 @@
 		{
 			name				settingsButton3
 			style				WINDOW_STYLE_SHADER
-			rect 				5 95 280 20 
+			rect 				5 135 280 20 
 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible			0
@@ -400,10 +582,13 @@
 				"0" ;
 				"1" ;
 				"5" ;
+				"6" ;
+				"8" ;
+				"9"
 			//	"3"
 			//[/OLDGAMETYPES]
 			}     
-			rect				5 95 280 20 
+			rect				5 135 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -425,174 +610,43 @@
 			}
 		}
 
-//--------------------------------
-// FORCE MASTERY LEVEL
-//--------------------------------
+//---------------------------------
+// FRIENDLY FIRE
+//---------------------------------
 
-		//itemDef 
-		//{
-		//	name				settingsButton4
-		//	style				WINDOW_STYLE_SHADER
-		//	rect 				5 115 280 20 
-		//	background			"gfx/menus/menu_blendbox"		//	
-		//	forecolor			1 1 1 1
-		//	visible			0
-		//	decoration
-		//}
-
-//		itemDef 
-//		{
-//			name				normal
-//			group				grpsettings
-//			text				@MENUS_FORCE_MASTERY
-//			descText			@MENUS_FORCE_MASTERY_INFO
-//			ownerdraw			UI_FORCE_MASTERY_SET
-//			cvarTest			"ui_netGameType"
-//			hideCvar
-//			{ 
-		//[OLDGAMETYPES]
-//				"6"
-		//		"4"
-		//[/OLDGAMETYPES]
-//			}     
-//			rect				5 115 280 20 
-//			textalign			ITEM_ALIGN_RIGHT
-//			textalignx			165
-//			textaligny			0
-//			font				4
-//			textscale			1
-//			forecolor			1 1 1 1
-//			visible				1  
-//			action 
-//			{ 
-//				play 		//	"sound/interface/button1.wav" 
-//			}
-//			mouseEnter 
-//			{ 
-//				show 			settingsButton4
-//			}
-//			mouseExit 
-//			{ 
-//				hide 			settingsButton4 
-//			}
-//		}
-
-//--------------------------------
-// FORCE POWER DISABLE
-//--------------------------------
 		itemDef 
 		{
-			name				settingsButton5
+			name				settingsButton1
 			style				WINDOW_STYLE_SHADER
-			rect 				5 115 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				5 155 280 20 
+			background			"gfx/menus/menu_blendbox"	
 			forecolor			1 1 1 1
 			visible				0
 			decoration
 		}
 
-		//[MOREFORCEOPTIONS]
-		itemDef
-		{	
-			name				options
-			group				grpOptions
-      			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_DISABLEFORCEPOWERS
-			descText			@OJP_MENUS_DISABLEFORCEPOWERS_DESC
-			cvar				"g_forcePowerDisable"
-			cvarFloatList		
-			{ 
-				@OJP_MENUS_DISABLEFORCEPOWERS_ALLON		0
-				@OJP_MENUS_DISABLEFORCEPOWERS_ALLOFF		262143
-				@OJP_MENUS_DISABLEFORCEPOWERS_JUMPONLY		262141
-				@OJP_MENUS_DISABLEFORCEPOWERS_NEUTRALSONLY	16353
-				
-			}
-			rect				5 115 280 20 
-			textalign			ITEM_ALIGN_RIGHT
-			textalignx			165
-			textaligny			0
-			font				4
-			textscale			1
-			forecolor			1 1 1 1
-			visible				1
-			action 
-			{
-				play 			"sound/interface/button1.wav" 
-			}
-			mouseEnter 
-			{ 
-				show 			settingsButton5 
-			}
-			mouseExit 
-			{ 	
-				hide 			settingsButton5 
-			}
-		}				  	  
-
-		/*
 		itemDef 
 		{
-			name				options
-			group				grpOptions
+			name				normal
+			group				grpsettings
 			type				ITEM_TYPE_YESNO
-			text				@MENUS_DISABLE_FORCE
-			descText			@MENUS_DISABLE_FORCE_INFO
-			cvar				"g_forcePowerDisable"
-			cvarTest			"ui_netGameType"
-			hideCvar
-			{ 
-				"1" ;
-				"2" ;
-				"4"
-			}     
-			rect				5 115 280 20 
-			textalign			ITEM_ALIGN_RIGHT
-			textalignx			165
-			textaligny			0
-			font				4
-			textscale			1
-			forecolor			1 1 1 1
-			visible				1  
-			action 
-			{ 
-				uiScript		forcePowersDisable ;
-				play 			"sound/interface/button1.wav" 
-			}
-			mouseEnter 
-			{ 
-				show 			settingsButton5 
-			}
-			mouseExit 
-			{ 	
-				hide 			settingsButton5 
-			}
-		}
-		
-
-// FORCE POWERS setting in Duel/Power Duel
-		itemDef 
-		{
-			name				options
-			group				grpOptions
-			type				ITEM_TYPE_MULTI
-			text				@MENUS_FORCE_POWERS_TITLE
-			descText			@MENUS_FORCE_POWERS_TITLE_DESC
-			cvar				"g_forcePowerDisable"
+			text				@MENUS_FRIENDLY_FIRE
+			descText			@MENUS_WHEN_ON_IT_MEANS_TEAMMATES
+			cvar				"g_friendlyfire"
 			cvarTest			"ui_netGameType"
 			showCvar
 			{ 
-				"1" ;
-				"2"
+			//[OLDGAMETYPES]
+				"4" ;
+				"5" ;
+				"6" ;
+				"7" ;
+				"8"	;
+				"9"
+			//	"3" ;
+			//[/OLDGAMETYPES]
 			}     
-			cvar				"ui_dualforcepower"
-			cvarFloatList	
-			{ 
-				@MENUS_YES	0 
-				@MENUS_NO	1 
-				@MENUS_LIMITED	2 
-			}
-			rect				5 115 280 20 
+			rect				5 155 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -602,65 +656,17 @@
 			visible				1  
 			action 
 			{ 
-				uiScript		dualForcePowers ;
 				play 			"sound/interface/button1.wav" 
 			}
 			mouseEnter 
-			{ 
-				show 			settingsButton5 
+			{ 	
+				show 			settingsButton1 
 			}
 			mouseExit 
-			{ 	
-				hide 			settingsButton5 
-			}
-		}
-		*/
-		//[/MOREFORCEOPTIONS]
-
-//--------------------------------
-// SABERLOCKING
-//--------------------------------
-		itemDef 
-		{
-			name				settingsButton7
-			style				WINDOW_STYLE_SHADER
-			rect 				5 135 280 20 
-			background			"gfx/menus/menu_blendbox"			
-			forecolor			1 1 1 1
-			visible				0
-			decoration
-		}
-
-		itemDef 
-		{
-			name				expert
-			group				grpsettings
-			type				ITEM_TYPE_YESNO
-			text				@MENUS_SABERLOCKING
-			descText			@MENUS_SABERLOCKING_DESC
-			cvar				"g_saberLocking"
-			rect				5 135 280 20
-			textalign			ITEM_ALIGN_RIGHT
-			textalignx			165
-			textaligny			2
-			font				4
-			textscale			1
-			forecolor			1 1 1 1
-			visible				1 
-			action 
 			{ 
-				play 			"sound/interface/button1.wav" 
-			}
-			mouseEnter 
-			{ 
-				show 			settingsButton7
-			}
-			mouseExit 
-			{ 	
-				hide 			settingsButton7
+				hide 			settingsButton1 
 			}
 		}
-
 //---------------------------------
 //
 // ADVANCED GAME RULES
@@ -708,7 +714,7 @@
 			rect				5 225 280 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
-			textaligny			2
+			textaligny			0
 			font				4
 			textscale			1
 			forecolor			1 1 1 1
@@ -771,7 +777,7 @@
 			}
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
-			textaligny			2
+			textaligny			0
 			font				4
 			textscale			1
 			forecolor			1 1 1 1
@@ -803,7 +809,7 @@
 			rect				5 265 280 20
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
-			textaligny			2
+			textaligny			0
 			font				4
 			textscale			1
 			forecolor			1 1 1 1
@@ -940,8 +946,9 @@
 			{ 		
 			//[OLDGAMETYPES]
 				"5" ;
-				"7" ;
+				"6" ;
 				"8" ;
+				"9" ;
 			//	"3" ;
 			//	"5"
 			//[/OLDGAMETYPES]
@@ -1151,7 +1158,7 @@
 			cvar				"g_password"
 			rect				285 115 280 20 
 			textalign			ITEM_ALIGN_RIGHT
-			textalignx			130
+			textalignx			165
 			textaligny			0
 			font				4
 			textscale			1

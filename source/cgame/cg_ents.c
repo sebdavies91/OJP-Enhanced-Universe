@@ -884,7 +884,7 @@ static void CG_General( centity_t *cent ) {
 	}
 	//serenity grapplemod
 	s1 = &cent->currentState;
-	if (cent->currentState.weapon == WP_MELEE && cg.snap->ps.pm_flags & PMF_GRAPPLE_PULL )
+	if ( s1->weapon == WP_MELEE && pm->cmd.buttons & BUTTON_GRAPPLE )
 	{
 
             int clientNum =
@@ -2642,7 +2642,7 @@ static void CG_Missile( centity_t *cent ) {
 	}
 
 	//serenity GRAPPLEMOD
-	if (s1->weapon == WP_MELEE && cg.snap->ps.pm_flags & PMF_GRAPPLE_PULL)
+	if (s1->weapon == WP_MELEE && pm->cmd.buttons & BUTTON_GRAPPLE)
 	{
             int clientNum =
                 (cent->currentState.otherEntityNum == cg.snap->ps.clientNum) ? cg.predictedPlayerState.clientNum : cent->currentState.otherEntityNum;

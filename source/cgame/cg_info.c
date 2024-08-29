@@ -446,6 +446,38 @@ void CG_DrawInformation( void ) {
 		}
 		//[/MOREWEAPOPTIONS]
 
+			value = atoi( Info_ValueForKey( info, "g_itemDisable" ) );
+
+		if ( value == HI_ALLDISABLED )
+		{
+			UI_DrawProportionalString( 320, y, "No Items",
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+			y += iPropHeight;
+		}
+		else if ( value == HI_GRAPPLEHOOKJETPACKS )
+		{
+			UI_DrawProportionalString( 320, y, "Grapple & Jetpacks",
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+			y += iPropHeight;
+		}
+		else if ( value == HI_GRAPPLEHOOKJETPACKSVEHICLES )
+		{
+			UI_DrawProportionalString( 320, y, "Grapple, Jetpack & Vehicles",
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+			y += iPropHeight;
+		}
+		else if ( value == HI_NOVEHICLES )
+		{
+			UI_DrawProportionalString( 320, y, "No Vehicles",
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+			y += iPropHeight;
+		}
+		else if ( value )
+		{
+			UI_DrawProportionalString( 320, y, "Custom Item Setup",
+			UI_CENTER|UI_INFOFONT|UI_DROPSHADOW, colorWhite );
+			y += iPropHeight;
+		}
 		//[VARIOUSMENU]
 		//Moved this up to be under the Force Mastery Level.
 		/*

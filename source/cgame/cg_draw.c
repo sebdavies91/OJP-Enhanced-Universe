@@ -1381,13 +1381,20 @@ void CG_DrawDodge( menuDef_t *menuHUD )
 	{
 		percent = 0.1f;
 	}
-	if (cgs.gametype != GT_SIEGE  && cgs.gametype != GT_HOLOCRON)
-	{
+
 	if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_1)
 	{
-		percent = 0.0f;
+		if(cg.snap->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
+		{
+			
+		}
+		else
+		{
+		percent = 0.0f;			
+		}
+
 	}		
-	}
+	
 	//now draw the part to show how much health there is in the color specified
 	CG_FillRect(DPBAR_X, DPBAR_Y+(DPBAR_H-percent), DPBAR_W, DPBAR_H-(DPBAR_H-percent), aColor);
 
@@ -1504,47 +1511,12 @@ void CG_DrawDodge( menuDef_t *menuHUD )
 
 	if (focusItem)
 	{
+	
 		
-		
-	if (cgs.gametype != GT_SIEGE  && cgs.gametype != GT_HOLOCRON)
-	{
+
 	if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
 		{
-		if ( cg.snap->ps.stats[STAT_DODGE] > 0)
-			{
-			trap_R_SetColor( focusItem->window.foreColor );	
-			CG_DrawNumField (
-			focusItem->window.rect.x, 
-			focusItem->window.rect.y, 
-			3, 
-			cg.snap->ps.stats[STAT_DODGE],
-			focusItem->window.rect.w, 
-			focusItem->window.rect.h, 
-			NUM_FONT_SMALL,
-			qfalse);
-			}
-	
-		}
-	else
-		{
-		if ( cg.snap->ps.stats[STAT_DODGE] > 0)
-			{
-			trap_R_SetColor( focusItem->window.foreColor );	
-			CG_DrawNumField (
-			focusItem->window.rect.x, 
-			focusItem->window.rect.y, 
-			3, 
-			cg.snap->ps.stats[STAT_DODGE]*0,
-			focusItem->window.rect.w, 
-			focusItem->window.rect.h, 
-			NUM_FONT_SMALL,
-			qfalse);
-			}
-	
-		}
-	}
-	else
-	{
+			
 
 		if ( cg.snap->ps.stats[STAT_DODGE] > 0)
 			{
@@ -1560,7 +1532,44 @@ void CG_DrawDodge( menuDef_t *menuHUD )
 			qfalse);
 			}
 	
-	}	
+		}
+	else
+		{
+		if(cg.snap->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
+		{
+		if ( cg.snap->ps.stats[STAT_DODGE] > 0)
+			{
+			trap_R_SetColor( focusItem->window.foreColor );	
+			CG_DrawNumField (
+			focusItem->window.rect.x, 
+			focusItem->window.rect.y, 
+			3, 
+			cg.snap->ps.stats[STAT_DODGE],
+			focusItem->window.rect.w, 
+			focusItem->window.rect.h, 
+			NUM_FONT_SMALL,
+			qfalse);
+			}			
+		}
+		else
+		{
+		if ( cg.snap->ps.stats[STAT_DODGE] > 0)
+			{
+			trap_R_SetColor( focusItem->window.foreColor );	
+			CG_DrawNumField (
+			focusItem->window.rect.x, 
+			focusItem->window.rect.y, 
+			3, 
+			cg.snap->ps.stats[STAT_DODGE]*0,
+			focusItem->window.rect.w, 
+			focusItem->window.rect.h, 
+			NUM_FONT_SMALL,
+			qfalse);
+			}		
+		}
+
+	
+		}
 	
 	
 	}
@@ -1627,13 +1636,18 @@ void CG_DrawForcePower( menuDef_t *menuHUD )
 	{
 		percent = 0.1f;
 	}
-	if (cgs.gametype != GT_SIEGE  && cgs.gametype != GT_HOLOCRON)
-	{
+
 	if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_1)
 	{
-		percent = 0.0f;
+		if(cg.snap->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
+		{
+			
+		}
+		else
+		{
+		percent = 0.0f;			
+		}
 	}		
-	}
 	//now draw the part to show how much health there is in the color specified
 	CG_FillRect(FPBAR_X, FPBAR_Y+(FPBAR_H-percent), FPBAR_W, FPBAR_H-(FPBAR_H-percent), aColor);
 
@@ -1754,8 +1768,7 @@ void CG_DrawForcePower( menuDef_t *menuHUD )
 	focusItem = Menu_FindItemByName(menuHUD, "forceamount");
 	if (focusItem)
 		{
-	if (cgs.gametype != GT_SIEGE  && cgs.gametype != GT_HOLOCRON)
-	{
+
 	if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
 		{
 		if ( cg.snap->ps.fd.forcePower > 0)
@@ -1775,25 +1788,8 @@ void CG_DrawForcePower( menuDef_t *menuHUD )
 		}
 	else
 		{
-		if ( cg.snap->ps.fd.forcePower > 0)
-			{
-			trap_R_SetColor( focusItem->window.foreColor );	
-			CG_DrawNumField (
-			focusItem->window.rect.x, 
-			focusItem->window.rect.y, 
-			3, 
-			cg.snap->ps.fd.forcePower*0,
-			focusItem->window.rect.w, 
-			focusItem->window.rect.h, 
-			NUM_FONT_SMALL,
-			qfalse);
-			}
-	
-		}
-	}
-	else
-	{
-
+		if(cg.snap->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
+		{
 		if ( cg.snap->ps.fd.forcePower > 0)
 			{
 			trap_R_SetColor( focusItem->window.foreColor );	
@@ -1806,9 +1802,26 @@ void CG_DrawForcePower( menuDef_t *menuHUD )
 			focusItem->window.rect.h, 
 			NUM_FONT_SMALL,
 			qfalse);
-			}
+			}			
+		}
+		else
+		{
+		if ( cg.snap->ps.fd.forcePower > 0)
+			{
+			trap_R_SetColor( focusItem->window.foreColor );	
+			CG_DrawNumField (
+			focusItem->window.rect.x, 
+			focusItem->window.rect.y, 
+			3, 
+			cg.snap->ps.fd.forcePower*0,
+			focusItem->window.rect.w, 
+			focusItem->window.rect.h, 
+			NUM_FONT_SMALL,
+			qfalse);
+			}		
+		}			
 	
-	}	
+		}
 	
 	
 	}

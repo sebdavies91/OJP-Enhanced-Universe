@@ -3358,12 +3358,61 @@ void ClientThink_real( gentity_t *ent ) {
 				playerDuelShield = g_playerDuelShield.integer;
 
 				// Make sure we have a valid value:
-				if( playerDuelShield > 100 )
-					playerDuelShield = 100;
+				if( playerDuelShield >= 0 )
+				{
+		if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_3)
+		{
+			playerDuelShield = 999;
+		ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
+		}
+		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_2)
+		{
+			playerDuelShield = 500;
+		ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
 
+		}
+		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_1)
+		{
+			playerDuelShield = 250;
+		ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
+		}
+		else 
+		{
+
+		playerDuelShield = 100;
+		ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
+
+			
+		}	
+				}
 				if( playerDuelShield >= 0){
-					ent->client->ps.stats[STAT_HEALTH] = ent->health = 100; // defaults to 100.
-					ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
+		if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_3)
+		{
+			ent->client->ps.stats[STAT_HEALTH] = ent->health = 999; // defaults to 100.
+		}
+		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_2)
+		{
+			ent->client->ps.stats[STAT_HEALTH] = ent->health = 500; // defaults to 100.
+
+		}
+		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_1)
+		{
+			ent->client->ps.stats[STAT_HEALTH] = ent->health = 250; // defaults to 100.
+		}
+		else 
+		{
+
+			ent->client->ps.stats[STAT_HEALTH] = ent->health = 100; // defaults to 100.
+
+			
+		}						
+					
+					
+					
+					
+					
+
+
 				}
 				//[/DuelSys]
 			}
@@ -3420,30 +3469,33 @@ void ClientThink_real( gentity_t *ent ) {
 
 				// Make sure we have a valid value:
 				
-				if( playerDuelShield > 100 )
+				if( playerDuelShield >= 0 )
 					{
 		if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_3)
 		{
 			playerDuelShield = 999;
+		duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
 		}
 		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_2)
 		{
 			playerDuelShield = 500;
+		duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
 
 		}
 		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_1)
 		{
 			playerDuelShield = 250;
+		duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
 		}
 		else 
 		{
 
 		playerDuelShield = 100;
-
+		duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
 			
 		}	
 					
-					}
+				}
 				if( playerDuelShield >= 0 ){
 		if(client->skillLevel[SK_HEALTH] == FORCE_LEVEL_3)
 		{
@@ -3465,7 +3517,7 @@ void ClientThink_real( gentity_t *ent ) {
 			
 			
 		}	
-					duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
+					
 				}
 				//[/DuelSys]
 			}
@@ -3524,9 +3576,33 @@ void ClientThink_real( gentity_t *ent ) {
 				playerDuelShield = g_playerDuelShield.integer;
 
 				// Make sure we have a valid value:
-				if( playerDuelShield > 100 )
-					playerDuelShield = 100;
+				if( playerDuelShield >= 0 )
+				{
+		if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_3)
+		{
+			playerDuelShield = 999;
 
+		}
+		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_2)
+		{
+			playerDuelShield = 500;
+
+
+		}
+		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_1)
+		{
+			playerDuelShield = 250;
+
+		}
+		else 
+		{
+
+		playerDuelShield = 100;
+
+
+			
+		}	
+				}
 				if( playerDuelShield >= 0 ){ // MJN - New style HP/Shields:
 					ent->client->ps.stats[STAT_HEALTH] = ent->health = ent->client->savedHP;
 					ent->client->ps.stats[STAT_ARMOR] = ent->client->savedArmor;

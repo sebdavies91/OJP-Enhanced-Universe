@@ -3650,7 +3650,7 @@ static void ForceBurstDamage (gentity_t* ent)
 	vec3_t	start;
 	vec3_t	dir;
 	int		damage	= 50;
-	float	vel = 3000.0;
+	float	vel = 2000.0;
 	gentity_t *missile;
 
 	//hold us still for a bit
@@ -3718,7 +3718,7 @@ static void ForceDestructionDamage (gentity_t* ent)
 	vec3_t	start;
 	vec3_t	dir;
 	int		damage	= 50;
-	float	vel = 3000.0;
+	float	vel = 2000.0;
 	gentity_t *missile;
 
 	//hold us still for a bit

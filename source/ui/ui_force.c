@@ -360,11 +360,36 @@ void UpdateForceUsed()
 	menu = Menus_FindByName("ingame_playerforce1");
 	menu2 = Menus_FindByName("ingame_playerforce2");
 	// Set the cost of the saberattack according to whether its free.
-	if (ui_freeSaber.integer)
+	
+	char info[MAX_INFO_VALUE];
+	int wDisable = 0;
+	int	gametype = 0;
+	
+	gametype = atoi(Info_ValueForKey(info, "g_gametype"));	
+	
+	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+
+	if (gametype == GT_DUEL || gametype == GT_POWERDUEL)
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
+	}
+	else
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_weaponDisable"));
+	}	
+	
+	
+	
+	
+	if (ui_freeSaber.integer && wDisable == WP_SABERSONLY)
 	{	// Make saber free
-		bgForcePowerCost[FP_SABER_OFFENSE][FORCE_LEVEL_1] = 0;
-		bgForcePowerCost[FP_SABER_DEFENSE][FORCE_LEVEL_1] = 0;
+//		bgForcePowerCost[FP_SABER_OFFENSE][FORCE_LEVEL_1] = 0;
+//		bgForcePowerCost[FP_SABER_DEFENSE][FORCE_LEVEL_1] = 0;
 		// Make sure that we have one freebie in saber if applicable.
+		
+
+
+			
 		if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank<1)
 		{
 			uiRank[FP_SABER_OFFENSE].uiForcePowersRank=1;
@@ -373,13 +398,23 @@ void UpdateForceUsed()
 		{
 			uiRank[FP_SABER_DEFENSE].uiForcePowersRank=1;
 		}
+
 		if (menu)
 		{
-			Menu_ShowItemByName(menu, "setFP_SABER_DEFENSE", qtrue);
-			Menu_ShowItemByName(menu, "setfp_saberthrow", qtrue);
-			Menu_ShowItemByName(menu, "effectentry", qtrue);
-			Menu_ShowItemByName(menu, "effectfield", qtrue);
-			Menu_ShowItemByName(menu, "nosaber", qfalse);
+				Menu_ShowItemByName(menu, "setfp_saberattack", qtrue);
+				Menu_ShowItemByName(menu, "setfp_saberdefend", qtrue);
+				Menu_ShowItemByName(menu, "setfp_bluestyle", qtrue); // soresu
+				Menu_ShowItemByName(menu, "setfp_redstyle", qtrue);//djem so
+				Menu_ShowItemByName(menu, "setfp_greenstyle", qtrue);//makashi
+				Menu_ShowItemByName(menu, "setfp_purplestyle", qtrue);//juyo
+				Menu_ShowItemByName(menu, "setfp_dualstyle", qtrue);//Dual
+				Menu_ShowItemByName(menu, "setfp_staffstyle", qtrue);//Staff
+
+
+				Menu_ShowItemByName(menu, "setfp_saberthrow", qtrue);
+				Menu_ShowItemByName(menu, "effectentry", qtrue);
+				Menu_ShowItemByName(menu, "effectfield", qtrue);
+				Menu_ShowItemByName(menu, "nosaber", qfalse);
 			
 
 		}
@@ -414,19 +449,6 @@ void UpdateForceUsed()
 			uiRank[FP_SABERTHROW].uiForcePowersRank=0;
 			uiRank[FP_SABER_DEFENSE].uiForcePowersRank=0;
 
-
-			uiRank[NUM_FORCE_POWERS+SK_PUSHA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_PULLA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_HEALA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_PROTECTA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_ABSORBA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_TELEPATHYA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_STASISA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_GRIPA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_LIGHTNINGA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_DRAINA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_RAGEA].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_DESTRUCTIONA].uiForcePowersRank=0;
 			
 			if (menu  )
 			{
@@ -503,23 +525,12 @@ void UpdateForceUsed()
 			if (menu  )
 			{
 				Menu_ShowItemByName(menu, "setfp_saberdefend", qtrue);
-				if(uiForceRank >= 10)
-					Menu_ShowItemByName(menu, "setfp_bluestyle", qtrue); // soresu
-
-				if(uiForceRank >= 30)
-					Menu_ShowItemByName(menu, "setfp_redstyle", qtrue);//djem so
-
-				if(uiForceRank >= 20)
-					Menu_ShowItemByName(menu, "setfp_greenstyle", qtrue);//makashi
-
-				if(uiForceRank >= 60)
-					Menu_ShowItemByName(menu, "setfp_purplestyle", qtrue);//juyo
-				
-				if(uiForceRank >= 40)
-					Menu_ShowItemByName(menu, "setfp_dualstyle", qtrue);//Dual
-
-				if(uiForceRank >= 50)
-					Menu_ShowItemByName(menu, "setfp_staffstyle", qtrue);//Staff
+				Menu_ShowItemByName(menu, "setfp_bluestyle", qtrue); // soresu
+				Menu_ShowItemByName(menu, "setfp_redstyle", qtrue);//djem so
+				Menu_ShowItemByName(menu, "setfp_greenstyle", qtrue);//makashi
+				Menu_ShowItemByName(menu, "setfp_purplestyle", qtrue);//juyo
+				Menu_ShowItemByName(menu, "setfp_dualstyle", qtrue);//Dual
+				Menu_ShowItemByName(menu, "setfp_staffstyle", qtrue);//Staff
 
 
 				Menu_ShowItemByName(menu, "setfp_saberthrow", qtrue);
@@ -535,7 +546,11 @@ void UpdateForceUsed()
 
 
 			}
+			
+			
 		}
+		
+
 	}
 
 	for(i=0;i<NUM_FORCE_POWERS;i++)
@@ -597,6 +612,7 @@ void UpdateForceUsed()
 		
 	}
 
+
 	/*
 	if(uiRank[NUM_FORCE_POWERS+SK_JETPACK].uiForcePowersRank >= FORCE_LEVEL_1)
 	{
@@ -646,7 +662,19 @@ void UpdateForceUsed()
 		{
 			uiRank[i].uiForcePowersRank = 0;
 		}
-
+			uiRank[NUM_FORCE_POWERS+SK_PUSHA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_PULLA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_HEALA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_PROTECTA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_ABSORBA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_TELEPATHYA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_STASISA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_GRIPA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_LIGHTNINGA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_DRAINA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_RAGEA].uiForcePowersRank=0;
+			uiRank[NUM_FORCE_POWERS+SK_DESTRUCTIONA].uiForcePowersRank=0;
+		
 		if(menu )
 		{
 			Menu_ShowItemByName(menu, "notforcesensitive", qtrue);
@@ -680,7 +708,1629 @@ void UpdateForceUsed()
 		}
 
 	}
-	menu = Menus_FindByName("ingame_playergunnery1");
+	
+	
+	
+	
+	if(uiRank[FP_PUSH].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_PUSHA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pusha", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pusha", qtrue);
+	}
+
+	if(uiRank[FP_PULL].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_PULLA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pulla", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pulla", qtrue);
+	}
+	
+	
+	if(uiRank[FP_HEAL].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_HEALA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_heala", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_heala", qtrue);
+	}
+	
+	if(uiRank[FP_ABSORB].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_ABSORBA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_absorba", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_absorba", qtrue);
+	}	
+	
+	if(uiRank[FP_PROTECT].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_PROTECTA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_protecta", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_protecta", qtrue);
+	}		
+	
+	if(uiRank[FP_TELEPATHY].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_TELEPATHYA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_telepathya", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_telepathya", qtrue);
+	}	
+
+	if(uiRank[FP_TEAM_HEAL].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_STASISA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_stasisa", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_stasisa", qtrue);
+	}
+
+	if(uiRank[FP_GRIP].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_GRIPA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_gripa", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_gripa", qtrue);
+	}	
+	
+	if(uiRank[FP_LIGHTNING].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_LIGHTNINGA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_lightninga", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_lightninga", qtrue);
+	}
+	
+	if(uiRank[FP_DRAIN].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DRAINA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_draina", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_draina", qtrue);
+	}
+	
+	if(uiRank[FP_RAGE].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_RAGEA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_ragea", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_ragea", qtrue);
+	}
+	
+	if(uiRank[FP_TEAM_FORCE].uiForcePowersRank<FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DESTRUCTIONA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_destructiona", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_destructiona", qtrue);
+	}					
+
+
+
+
+
+
+
+
+
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_OLD].uiForcePowersRank < FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_OLDA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_olda", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_olda", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_OLD].uiForcePowersRank < FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_OLDB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_oldb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_oldb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_PISTOL].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_PISTOLA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pistola", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pistola", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_PISTOL].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_PISTOLB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pistolb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pistolb", qtrue);
+	}
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_BLASTER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BLASTERA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_blastera", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_blastera", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_BLASTER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BLASTERB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_blasterb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_blasterb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_BOWCASTER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BOWCASTERA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bowcastera", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bowcastera", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_BOWCASTER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BOWCASTERB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bowcasterb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bowcasterb", qtrue);
+	}
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_DEMP2].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DEMP2A].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_demp2a", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_demp2a", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_DEMP2].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DEMP2B].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_demp2b", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_demp2b", qtrue);
+	}
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_WRIST].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_WRISTA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_wrista", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_wrista", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_WRIST].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_WRISTB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_wristb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_wristb", qtrue);
+	}	
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_DISRUPTOR].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DISRUPTORA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_disruptora", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_disruptora", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_DISRUPTOR].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DISRUPTORB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_disruptorb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_disruptorb", qtrue);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_REPEATER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_REPEATERA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_repeatera", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_repeatera", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_REPEATER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_REPEATERB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_repeaterb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_repeaterb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_FLECHETTE].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_FLECHETTEA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flechettea", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flechettea", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_FLECHETTE].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_FLECHETTEB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flechetteb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flechetteb", qtrue);
+	}	
+
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_CONCUSSION].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_CONCUSSIONA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_concussiona", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_concussiona", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_CONCUSSION].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_CONCUSSIONB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_concussionb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_concussionb", qtrue);
+	}	
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_ROCKET].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_ROCKETA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_rocketa", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_rocketa", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_ROCKET].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_ROCKETB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_rocketb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_rocketb", qtrue);
+	}	
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_THERMAL].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_THERMALA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_thermala", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_thermala", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_THERMAL].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_THERMALB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_thermalb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_thermalb", qtrue);
+	}	
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_TRIPMINE].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_TRIPMINEA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_tripminea", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_tripminea", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_TRIPMINE].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_TRIPMINEB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_tripmineb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_tripmineb", qtrue);
+	}	
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_DETPACK].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DETPACKA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_detpacka", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_detpacka", qtrue);
+	}
+
+	if(uiRank[NUM_FORCE_POWERS+SK_DETPACK].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_DETPACKB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_detpackb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_detpackb", qtrue);
+	}	
+
+
+
+
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_FLAMETHROWER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_FLAMETHROWERA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flamethrowera", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flamethrowera", qtrue);
+	}
+	
+		
+		
+		
+		
+		
+		
+		
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_ELECTROSHOCKER].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_ELECTROSHOCKERA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_electroshockera", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_electroshockera", qtrue);
+	}
+
+
+
+
+
+
+
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_JETPACK].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_JETPACKA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_jetpacka", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_jetpacka", qtrue);
+	}
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_JETPACK].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_JETPACKB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_jetpackb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_jetpackb", qtrue);
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_SQUADTEAM].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_SQUADTEAMA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_squadteama", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_squadteama", qtrue);
+	}
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_SQUADTEAM].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_SQUADTEAMB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_squadteamb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_squadteamb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_BACKPACKROCKET].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BACKPACKROCKETA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_backpackrocketa", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_backpackrocketa", qtrue);
+	}
+	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_LIGHTVEHICLEA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_lightvehiclea", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_lightvehiclea", qtrue);
+	}	
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_LIGHTVEHICLEB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_lightvehicleb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_lightvehicleb", qtrue);
+	}		
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_MEDIUMVEHICLEA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_mediumvehiclea", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_mediumvehiclea", qtrue);
+	}	
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_MEDIUMVEHICLEB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_mediumvehicleb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_mediumvehicleb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_HEAVYVEHICLEA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_heavyvehiclea", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_heavyvehiclea", qtrue);
+	}	
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_HEAVYVEHICLEB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_heavyvehicleb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_heavyvehicleb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_FIGHTERSHIPA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_fightershipa", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_fightershipa", qtrue);
+	}	
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_FIGHTERSHIPB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_fightershipb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_fightershipb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BOMBERSHIPA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bombershipa", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bombershipa", qtrue);
+	}	
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BOMBERSHIPB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bombershipb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bombershipb", qtrue);
+	}	
+	
+	
+	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_TRANSPORTSHIPA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_transportshipa", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_transportshipa", qtrue);
+	}	
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_TRANSPORTSHIPB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_transportshipb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_transportshipb", qtrue);
+	}	
+	
+	
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_LASERTURRETA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_laserturreta", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_laserturreta", qtrue);
+	}	
+
+
+	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_LASERTURRETB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_laserturretb", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_laserturretb", qtrue);
+	}		
+
+
+
+
+
+
+
+
+
+	
+
+	if ( wDisable == WP_MELEESABERS || wDisable == WP_SABERSONLY || wDisable == WP_MELEEONLY  || wDisable == WP_ALLDISABLED)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_OLD].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_old", qfalse);		
+
+	
+		uiRank[NUM_FORCE_POWERS+SK_PISTOL].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_pistol", qfalse);	
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_BLASTER].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_blaster", qfalse);	
+
+
+		uiRank[NUM_FORCE_POWERS+SK_BOWCASTER].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bowcaster", qfalse);
+
+
+		uiRank[NUM_FORCE_POWERS+SK_DEMP2].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_demp2", qfalse);	
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_WRIST].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_wrist", qfalse);
+	
+
+
+
+
+		uiRank[NUM_FORCE_POWERS+SK_DISRUPTOR].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_disruptor", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_REPEATER].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_repeater", qfalse);
+
+
+		uiRank[NUM_FORCE_POWERS+SK_FLECHETTE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flechette", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_CONCUSSION].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_concussion", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_ROCKET].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_rocket", qfalse);
+	
+	
+	
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_THERMAL].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_thermal", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_TRIPMINE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_tripmine", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_DETPACK].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_detpack", qfalse);
+	
+	
+	
+	
+	
+		menu = Menus_FindByName("ingame_playergunnery1");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleC", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2C", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleD", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2D", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleE", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2E", qfalse);
+		}
+
+		menu = Menus_FindByName("ingame_playergunnery2");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleC", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2C", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleD", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2D", qfalse);
+		}
+
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		}	
+	}
+	else if (wDisable == WP_NOEXPLOS)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_THERMAL].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_thermal", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_TRIPMINE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_tripmine", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_DETPACK].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_detpack", qfalse);		
+
+
+
+
+		menu = Menus_FindByName("ingame_playergunnery3");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		}		
+	}
+	
+	
+	if (wDisable == WP_MELEEONLY || wDisable == WP_ALLDISABLED)	
+	{
+		uiRank[FP_SABER_OFFENSE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_saberattack", qfalse);			
+
+
+
+		uiRank[NUM_FORCE_POWERS+SK_BLUESTYLE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_bluestyle", qfalse);		
+	
+
+
+		uiRank[NUM_FORCE_POWERS+SK_REDSTYLE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_redstyle", qfalse);	
+
+
+		uiRank[NUM_FORCE_POWERS+SK_PURPLESTYLE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_purplestyle", qfalse);	
+
+	
+
+		uiRank[NUM_FORCE_POWERS+SK_GREENSTYLE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_greenstyle", qfalse);	
+	
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_DUALSTYLE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_dualstyle", qfalse);	
+
+
+
+
+		uiRank[NUM_FORCE_POWERS+SK_STAFFSTYLE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_staffstyle", qfalse);	
+
+
+	
+		uiRank[FP_SABER_DEFENSE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_saberdefend", qfalse);		
+
+
+
+		uiRank[FP_SABERTHROW].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_saberthrow", qfalse);	
+
+
+
+
+
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		}	
+	}
+	
+	
+
+	int fDisable = 0;
+
+	
+	
+
+	{
+		fDisable = atoi(Info_ValueForKey(info, "g_forcePowerDisable"));
+	}	
+
+	if (fDisable == FP_NEUTRALSONLY || fDisable == FP_JUMPONLY  || fDisable == FP_ALLDISABLED)	
+	{
+		uiRank[FP_HEAL].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_healself", qfalse);		
+	
+	
+		uiRank[FP_ABSORB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_absorb", qfalse);	
+	
+	
+		uiRank[FP_PROTECT].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_protect", qfalse);	
+	
+	
+		uiRank[FP_TELEPATHY].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_mindtrick", qfalse);
+
+		uiRank[FP_TEAM_HEAL].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_team_heal", qfalse);	
+	
+		uiRank[FP_GRIP].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_grip", qfalse);	
+	
+		uiRank[FP_LIGHTNING].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_lightning", qfalse);	
+	
+		uiRank[FP_DRAIN].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_drain", qfalse);	
+	
+		uiRank[FP_RAGE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_rage", qfalse);	
+	
+		uiRank[FP_TEAM_FORCE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_team_force", qfalse);	
+	
+	
+	
+	
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleC", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2C", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleD", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2D", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleE", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2E", qfalse);
+		}
+
+
+	}
+ 
+ 
+	if(fDisable == FP_JUMPONLY  || fDisable == FP_ALLDISABLED)
+	{
+		uiRank[FP_SEE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if (menu)
+			Menu_ShowItemByName(menu, "setfp_see", qfalse);
+
+		uiRank[FP_SPEED].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_speed", qfalse);	
+
+		uiRank[FP_PUSH].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_push", qfalse);		
+	
+	
+		uiRank[FP_PULL].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setfp_pull", qfalse);	
+	
+	
+		menu = Menus_FindByName("ingame_playerforce1");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		}
+
+
+		
+	}
+	
+	
+	if(fDisable == FP_ALLDISABLED)
+	{
+
+		uiRank[FP_LEVITATION].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce1");
+		if (menu)
+			Menu_ShowItemByName(menu, "setfp_levitation", qfalse);
+	}
+
+
+
+
+
+	int iDisable = 0;
+
+	
+	iDisable = atoi(Info_ValueForKey(info, "g_itemDisable"));
+			
+	if(iDisable == HI_GRAPPLEHOOKJETPACKSVEHICLES || iDisable == HI_GRAPPLEHOOKJETPACKS || iDisable == HI_ALLDISABLED)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_BACTA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_bacta", qfalse);	
+	
+
+		uiRank[NUM_FORCE_POWERS+SK_REPAIR].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_repair", qfalse);	
+
+
+		uiRank[NUM_FORCE_POWERS+SK_BINOCULARS].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_binoculars", qfalse);		
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_FORCEFIELD].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_forcefield", qfalse);	
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_SEEKER].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_seeker", qfalse);	
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_SENTRY].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_sentry", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_EWEB].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_eweb", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_FLAMETHROWER].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_flamethrower", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_ELECTROSHOCKER].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_electroshocker", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_CLOAK].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_cloak", qfalse);
+	
+
+		uiRank[NUM_FORCE_POWERS+SK_SPHERESHIELD].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_sphereshield", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_OVERLOAD].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_overload", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_SQUADTEAM].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_squadteam", qfalse);
+	
+	
+		uiRank[NUM_FORCE_POWERS+SK_BACKPACKROCKET].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_backpackrocket", qfalse);
+
+
+
+	
+	
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleC", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2C", qfalse);
+		}
+		
+		
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitleA", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2A", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitleB", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2B", qfalse);
+		}
+	}
+	else if (iDisable == HI_NOVEHICLES)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_vehiclemount", qfalse);	
+
+
+
+
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		}	
+	}
+	
+	if( iDisable == HI_GRAPPLEHOOKJETPACKS || iDisable == HI_ALLDISABLED)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_vehiclemount", qfalse);		
+
+
+
+
+		menu = Menus_FindByName("ingame_playervehicles");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		}			
+	}
+	
+	if(iDisable == HI_ALLDISABLED)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_GRAPPLE].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_grapple", qfalse);			
+		
+		uiRank[NUM_FORCE_POWERS+SK_JETPACK].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_jetpack", qfalse);		
+
+
+
+		menu = Menus_FindByName("ingame_playergadgets1");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		}
+		
+		
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		{
+		Menu_ShowItemByName(menu, "forceranktitle", qfalse);
+		Menu_ShowItemByName(menu, "forceranktitle2", qfalse);
+		}		
+	}
+	//menu = Menus_FindByName("ingame_playergunnery1");
 	//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
 
 	/*
@@ -969,6 +2619,26 @@ void UI_ReadLegalForce(void)
 	}
 	*/
 	//[/ExpSys]
+	
+
+	int wDisable = 0;
+	int	gametype = 0;
+	
+	gametype = atoi(Info_ValueForKey(info, "g_gametype"));	
+	
+	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+
+	if (gametype == GT_DUEL || gametype == GT_POWERDUEL)
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
+	}
+	else
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_weaponDisable"));
+	}	
+	if ( wDisable == WP_SABERSONLY )
+	{
+			
 	if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank < 1 && ui_freeSaber.integer)
 	{
 		uiRank[FP_SABER_OFFENSE].uiForcePowersRank=1;
@@ -977,6 +2647,8 @@ void UI_ReadLegalForce(void)
 	{
 		uiRank[FP_SABER_DEFENSE].uiForcePowersRank=1;
 	}
+	}
+
 
 	UpdateForceUsed();
 
@@ -1760,6 +3432,25 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	}
 	*/
 	//[/ExpSys]
+
+	int wDisable = 0;
+	int	gametype = 0;
+	
+	gametype = atoi(Info_ValueForKey(info, "g_gametype"));	
+	
+	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+
+	if (gametype == GT_DUEL || gametype == GT_POWERDUEL)
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
+	}
+	else
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_weaponDisable"));
+	}	
+	if ( wDisable == WP_SABERSONLY )
+	{
+			
 	if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank < 1 && ui_freeSaber.integer)
 	{
 		uiRank[FP_SABER_OFFENSE].uiForcePowersRank=1;
@@ -1768,6 +3459,8 @@ void UI_ForceConfigHandle( int oldindex, int newindex )
 	{
 		uiRank[FP_SABER_DEFENSE].uiForcePowersRank=1;
 	}
+	}
+
 
 	UpdateForceUsed();
 }

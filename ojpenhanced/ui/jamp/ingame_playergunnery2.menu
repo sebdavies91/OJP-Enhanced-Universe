@@ -260,7 +260,7 @@
 		itemDef 
 		{
 			name					setsk_disruptorB
-			group					gunpowers
+			group					gunpowers 
 			style					0	
 			text					"E-5s / .. / ..:"
 			rect					180 120 110 15
@@ -281,7 +281,7 @@
 		// disruptorB assign
 		itemDef 
 		{
-			name					setsk_disruptor3
+			name					setsk_disruptorB
 			group					gunpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_DISRUPTORB
@@ -318,7 +318,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleA
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Repeater Rifles"
@@ -339,7 +339,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2A
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -534,7 +534,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleB
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Blaster/Flechette Shotguns"
@@ -555,7 +555,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2B
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -751,7 +751,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleC
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Conc/Rotary Cannons"
@@ -772,7 +772,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2C
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -963,7 +963,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleD
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Rocket/Grenade Launchers"
@@ -984,7 +984,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2D
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3

@@ -4573,7 +4573,11 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 
 	CG_RunLerpFrame( cent, ci, &cent->pe.legs, cent->currentState.legsFlip, cent->currentState.legsAnim, speedScale, qfalse);
 
-	if(cg.predictedVehicleState.fd.forcePowersActive & (1 << FP_GRIP))
+	if (!(cent->currentState.forcePowersActive & (1 << FP_RAGE)))
+	{ //don't affect torso anim speed unless raged
+		speedScale = 1.0f;
+	}
+	else
 	{
 		speedScale = 1.7f;
 	}
@@ -18996,6 +19000,7 @@ stillDoSaber:
 				{
 					BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
 				}
+
 				
 				//[SaberThrowSys]
 				if( cent->currentState.saberHolstered < 2 )

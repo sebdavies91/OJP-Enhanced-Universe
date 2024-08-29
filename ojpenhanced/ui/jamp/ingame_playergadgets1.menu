@@ -369,7 +369,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleA
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Advanced"
@@ -390,7 +390,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2A
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -636,7 +636,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleB
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Wrist Throwers"
@@ -657,7 +657,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2B
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -906,7 +906,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleC
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Status Change"
@@ -927,7 +927,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2C
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3

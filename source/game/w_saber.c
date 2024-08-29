@@ -11164,7 +11164,7 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 	int		BACKPACK_ROCKET_SPLASH_DAMAGE = 150;
 	int		BACKPACK_ROCKET_SPLASH_RADIUS = 512;
 	int 	ROCKET_DELAY = 6000;
-	float	vel = 3000.0;
+	float	vel = 2000.0;
 
 	G_SetAnim(self, &self->client->pers.cmd, SETANIM_LEGS, BOTH_FLIP_F, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
 	if (self->client->skillLevel[SK_BACKPACKROCKET] >= FORCE_LEVEL_3)
@@ -12976,6 +12976,22 @@ qboolean HasSetSaberOnly(void)
 		i++;
 	}
 
+	int iDisable = 0;
+	iDisable = g_itemDisable.integer;
+	
+
+	while (i < HI_NUM_HOLDABLE)
+	{
+		if (!(iDisable & (1 << i)) &&
+			i != HI_NONE )
+		{
+			return qfalse;
+		}
+
+		i++;
+	}
+	
+	
 	return qtrue;
 }
 

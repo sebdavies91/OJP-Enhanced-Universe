@@ -5835,7 +5835,24 @@ void G_SpawnItem (gentity_t *ent, gitem_t *item) {
 		//}
 	}
 
+	int iDisable = 0;
+	iDisable = g_itemDisable.integer;
+	
+
+	if (item->giType == IT_HOLDABLE &&
+		iDisable &&
+		(iDisable & (1 << item->giTag)))
+	{
+	//[MOREWEAPOPTIONS]
+		//if (g_gametype.integer != GT_JEDIMASTER)
+		//{
+			G_FreeEntity( ent );
+			return;
+		//}
+	}
 	//make sure the 
+	
+	
 	if (item->giType == IT_AMMO)
 	{
 		if(G_AmmoDisabled( wDisable, item ))

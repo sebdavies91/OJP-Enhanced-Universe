@@ -801,11 +801,11 @@ void TossClientItems( gentity_t *self ) {
 			{
 			dropped = WP_DropThermal2( self );		
 			}
-			if(self->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(self->client->ps.eFlags & EF_WP_OPTION_3)
 			{
 			dropped = WP_DropThermal3( self );		
 			}
-			if(self->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(self->client->ps.eFlags & EF_WP_OPTION_4)
 			{
 			dropped = WP_DropThermal4( self );		
 			}

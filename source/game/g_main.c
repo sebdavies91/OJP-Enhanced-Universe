@@ -147,6 +147,7 @@ vmCvar_t	g_mishapRegenTime;
 vmCvar_t	g_spawnInvulnerability;
 vmCvar_t	g_forcePowerDisable;
 vmCvar_t	g_weaponDisable;
+vmCvar_t	g_itemDisable;
 vmCvar_t	g_duelWeaponDisable;
 vmCvar_t	g_allowDuelSuicide;
 vmCvar_t	g_fraglimitVoteCorrection;
@@ -525,7 +526,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_forcePowerDisable, "g_forcePowerDisable", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
 	{ &g_weaponDisable, "g_weaponDisable", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
 	{ &g_duelWeaponDisable, "g_duelWeaponDisable", "1", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
-
+	{ &g_itemDisable, "g_itemDisable", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
+	
 	{ &g_allowDuelSuicide, "g_allowDuelSuicide", "1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &g_fraglimitVoteCorrection, "g_fraglimitVoteCorrection", "1", CVAR_ARCHIVE, 0, qtrue },
@@ -4818,7 +4820,7 @@ void G_RunFrame( int levelTime ) {
 					ent->client->jetPackDebReduce = level.time + JETPACK_DEFUEL_RATE;
 				}
 			}
-			else if(g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)		
+			else 	
 			{
 			if (ent->client->ps.jetpackFuel < 250 && ent->client->skillLevel[SK_JETPACK] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_FLAMETHROWER] <= FORCE_LEVEL_3  || ent->client->ps.jetpackFuel < 250 && ent->client->skillLevel[SK_JETPACK] <= FORCE_LEVEL_3 && ent->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3  )
 			{ //recharge jetpack
@@ -4845,19 +4847,13 @@ void G_RunFrame( int levelTime ) {
 				}		
 			
 			}
-			}
-			else if( g_gametype.integer == GT_HOLOCRON || g_gametype.integer == GT_SIEGE)		
-			{
-			if (ent->client->ps.jetpackFuel < 100)
-			{ //recharge jetpack
-				if (ent->client->jetPackDebRecharge < level.time)
-				{
+			else if (ent->client->ps.jetpackFuel < 100 && (ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_FLAMETHROWER)))
+			{	
 					ent->client->ps.jetpackFuel++;
-					ent->client->jetPackDebRecharge = level.time + JETPACK_REFUEL_RATE;
-				}		
-			
+					ent->client->jetPackDebRecharge = level.time + JETPACK_REFUEL_RATE;	
 			}
 			}
+
 #define CLOAK_DEFUEL_RATE		500 //approx. 20 seconds of idle use from a fully charged fuel amt
 #define CLOAK_REFUEL_RATE		100 //seems fair
 			if (ent->client->ps.powerups[PW_CLOAKED])
@@ -4902,7 +4898,7 @@ void G_RunFrame( int levelTime ) {
 					ent->client->cloakDebReduce = level.time + CLOAK_DEFUEL_RATE;
 				}
 			}
-			else if( g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)		
+			else
 			{
 			if (ent->client->ps.cloakFuel < 250 && ent->client->skillLevel[SK_CLOAK] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_ELECTROSHOCKER] <= FORCE_LEVEL_3 && ent->client->skillLevel[SK_SPHERESHIELD] <= FORCE_LEVEL_3 && ent->client->skillLevel[SK_OVERLOAD] <= FORCE_LEVEL_3|| 
 			ent->client->ps.cloakFuel < 250 && ent->client->skillLevel[SK_CLOAK] <= FORCE_LEVEL_3 && ent->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_SPHERESHIELD] <= FORCE_LEVEL_3 && ent->client->skillLevel[SK_OVERLOAD] <= FORCE_LEVEL_3|| 
@@ -4937,18 +4933,13 @@ void G_RunFrame( int levelTime ) {
 					ent->client->cloakDebRecharge = level.time + CLOAK_REFUEL_RATE;
 				}
 			}
-			}
-			else if( g_gametype.integer == GT_HOLOCRON || g_gametype.integer == GT_SIEGE)		
-			{
-			if (ent->client->ps.cloakFuel < 100)
-			{ //recharge cloak
-				if (ent->client->cloakDebRecharge < level.time)
-				{
+			else if (ent->client->ps.cloakFuel < 100 && (ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_CLOAK) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_ELECTROSHOCKER) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SPHERESHIELD) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_OVERLOAD)))
+			{	
 					ent->client->ps.cloakFuel++;
-					ent->client->cloakDebRecharge = level.time + CLOAK_REFUEL_RATE;
-				}
+					ent->client->cloakDebRecharge = level.time + CLOAK_REFUEL_RATE;		
 			}
 			}
+
 			if (g_gametype.integer == GT_SIEGE &&
 				ent->client->siegeClass != -1 &&
 				(bgSiegeClasses[ent->client->siegeClass].classflags & (1<<CFL_STATVIEWER)))

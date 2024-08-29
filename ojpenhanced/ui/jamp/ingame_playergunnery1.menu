@@ -323,7 +323,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleA
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Blaster Pistols"
@@ -344,7 +344,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2A
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -545,7 +545,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleB
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Blaster Rifles"
@@ -566,7 +566,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2B
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -758,7 +758,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleC
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Blaster Carbines"
@@ -779,7 +779,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2C
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -976,7 +976,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleD
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Ion/Flame/Ice Carbines"
@@ -997,7 +997,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2D
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -1189,7 +1189,7 @@
 		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleE
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Batons/Other Melee"
@@ -1210,7 +1210,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2E
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3

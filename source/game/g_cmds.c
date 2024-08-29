@@ -364,8 +364,7 @@ void Cmd_Give_f (gentity_t *cmdent, int baseArg)
 			}
 		}
 		else {
-		if( g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)
-		{
+
 			if(ent->client->ps.fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_3)
 			{
 			ent->client->ps.fd.forcePower=250;
@@ -385,19 +384,19 @@ void Cmd_Give_f (gentity_t *cmdent, int baseArg)
 			ent->client->ps.fd.forcePowerMax=100;
 			ent->client->ps.stats[STAT_MAX_DODGE] = 100;
 			}
+			else if (ent->client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
+			{ //recharge cloak
+			ent->client->ps.fd.forcePower=100;
+			ent->client->ps.fd.forcePowerMax=100;
+			ent->client->ps.stats[STAT_MAX_DODGE] = 100;
+			}
 			else 
 			{
 			ent->client->ps.fd.forcePower=25;
 			ent->client->ps.fd.forcePowerMax=25;
 			ent->client->ps.stats[STAT_MAX_DODGE] = 25;
 			}
-		}	
-		else
-			{
-		ent->client->ps.fd.forcePower=100;
-		ent->client->ps.fd.forcePowerMax=100;
-		ent->client->ps.stats[STAT_MAX_DODGE] = 100;
-			}			
+			
 		}
 		if (!give_all)
 			return;
@@ -1345,8 +1344,7 @@ void StopFollowing( gentity_t *ent ) {
 	//[OLDGAMETYPES]
 	ent->client->ps.isJediMaster = qfalse; // major exploit if you are spectating somebody and they are JM and you reconnect
 	//[/OLDGAMETYPES]
-	if( g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)
-	{
+
 		if(ent->client->skillLevel[SK_JETPACK] == FORCE_LEVEL_3 || ent->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3 )
 		{
 			ent->client->ps.jetpackFuel = 250;
@@ -1359,17 +1357,17 @@ void StopFollowing( gentity_t *ent ) {
 		{
 			ent->client->ps.jetpackFuel = 100;
 		}
+		else if (ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_FLAMETHROWER))
+		{	
+			ent->client->ps.jetpackFuel = 100;			
+		}
 		else
 		{
 			ent->client->ps.jetpackFuel = 0;
 		}
-	}
-	else		
-	{
-		ent->client->ps.jetpackFuel = 100;
-	}
-	if( g_gametype.integer != GT_HOLOCRON && g_gametype.integer != GT_SIEGE)
-	{
+
+
+
 		if(ent->client->skillLevel[SK_CLOAK] == FORCE_LEVEL_3 || ent->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3 || ent->client->skillLevel[SK_SPHERESHIELD] == FORCE_LEVEL_3 || ent->client->skillLevel[SK_OVERLOAD] == FORCE_LEVEL_3)
 		{
 			ent->client->ps.cloakFuel = 250;
@@ -1381,16 +1379,16 @@ void StopFollowing( gentity_t *ent ) {
 		else if(ent->client->skillLevel[SK_CLOAK] == FORCE_LEVEL_1 || ent->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1 || ent->client->skillLevel[SK_SPHERESHIELD] == FORCE_LEVEL_1 || ent->client->skillLevel[SK_OVERLOAD] == FORCE_LEVEL_1)
 		{
 			ent->client->ps.cloakFuel = 100;
-		}	
+		}
+		else if (ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_CLOAK) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_ELECTROSHOCKER) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SPHERESHIELD) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_OVERLOAD))
+		{	
+			ent->client->ps.cloakFuel = 100;			
+		}		
 		else
 		{
 			ent->client->ps.cloakFuel = 0;
 		}
-	}
-	else		
-	{
-		ent->client->ps.cloakFuel = 100;
-	}
+
 		
 
 		if(ent->client->skillLevel[SK_HEALTH] == FORCE_LEVEL_3)

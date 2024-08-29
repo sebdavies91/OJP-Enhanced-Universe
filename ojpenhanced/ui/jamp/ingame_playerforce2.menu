@@ -318,7 +318,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleA
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Status Powers"
@@ -339,7 +339,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2A
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -553,7 +553,7 @@
 		// Force Protecta assign
 		itemDef 
 		{
-			name					setsk_absorba
+			name					setsk_protecta
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PROTECTA
@@ -587,7 +587,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleB
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Influence Powers"
@@ -608,7 +608,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2B
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -864,7 +864,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleC
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Telekinetic Powers"
@@ -885,7 +885,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2C
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -1035,7 +1035,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleD
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Energy Powers"
@@ -1056,7 +1056,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2D
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
@@ -1331,7 +1331,7 @@
 	// Force Ranks title		
 		itemDef 
 		{
-			name				forceranktitle
+			name				forceranktitleE
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Other Status & Energy Powers"
@@ -1352,7 +1352,7 @@
 
 		itemDef 
 		{
-			name				forceranktitle2
+			name				forceranktitle2E
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3

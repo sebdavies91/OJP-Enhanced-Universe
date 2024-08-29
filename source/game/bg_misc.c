@@ -177,16 +177,16 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	{	0,	5,	8,	10	},	// Heal			// FP_HEAL
 	{	0,	1,	5,	10	},	// Jump			//FP_LEVITATION,//hold/duration -- lvl3 was 10
 	{	0,	1,	5,	10	},	// Speed		//FP_SPEED,//duration
-	{	0,	3,	8,	10	},	// Push			//FP_PUSH,//hold/duration
-	{	0,	3,	8,	10	},	// Pull			//FP_PULL,//hold/duration
-	{	0,	5,	8,	10	},	// Mind Trick	//FP_TELEPATHY,//instant -- lvl3 was 10
+	{	0,	3,	6,	10	},	// Push			//FP_PUSH,//hold/duration
+	{	0,	3,	6,	10	},	// Pull			//FP_PULL,//hold/duration
+	{	0,	4,	8,	10	},	// Mind Trick	//FP_TELEPATHY,//instant -- lvl3 was 10
 	{	0,	4,	8,	10	},	// Grip			//FP_GRIP,//hold/duration -- lvl3 was 10
 	{	0,	5,	8,	10	},	// Lightning	//FP_LIGHTNING,//hold/duration
 	{	0,	4,	8,	10	},	// Dark Rage	//FP_RAGE,//duration
 	{	0,	4,	8,	10	},	// Protection	//FP_PROTECT,//duration
 	{	0,	4,	8,	10	},	// Absorb		//FP_ABSORB,//duration
-	{	0,	4,	8,	10	},	// Team Heal	//FP_TEAM_HEAL,//instant
-	{	0,	4,	8,	10	},	// Team Force	//FP_TEAM_FORCE,//instant
+	{	0,	5,	8,	10	},	// Team Heal	//FP_TEAM_HEAL,//instant
+	{	0,	5,	8,	10	},	// Team Force	//FP_TEAM_FORCE,//instant
 	{	0,	5,	8,	10	},	// Drain		//FP_DRAIN,//hold/duration
 	{	0,	5,	8,	10	},	// Sight		//FP_SEE,//duration -- lvl3 was 10
 	{	0,	SABER_OFFENSE_L1,	0,	0	},	// Saber Attack	//FP_SABER_OFFENSE,
@@ -214,21 +214,21 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	*/
 	//NUM_FORCE_POWERS
 	//racc - additional skills
-	{	0,	5,	8,	10	},	//SK_JETPACK,		// Jetpack Skill	
+	{	0,	1,	5,	10	},	//SK_JETPACK,		// Jetpack Skill	
 	{	0,	1,	5,	10	},	//SK_PISTOL,		//blaster pistol
 	{	0,	3,	6,	10	},	//SK_BLASTER,		//blaster rifle skill
 	{	0,	6,	8,	10	},	//SK_THERMAL,		//thermal detenator skill
 	{	0,	8,	8,	10	},	//SK_ROCKET,		//rocket launcher skill
 	{	0,	10,	10,	10	},	//SK_BACTA			//bacta medikits skill
 	{	0,	5,	8,	10	},	//SK_FLAMETHROWER	//flamethrower skill
-	{	0,	5,  8,  10	},	//SK_BOWCASTER,		//bowcaster skill
+	{	0,	3,  6,  10	},	//SK_BOWCASTER,		//bowcaster skill
 	{	0,	10,	0,	0	},	//SK_FORCEFIELD,	//forcefield skill
-	{	0,	5,	8,	10	},	//SK_CLOAK,		//cloaking device skill
+	{	0,	4,	8,	10	},	//SK_CLOAK,		//cloaking device skill
 	{	0,	5,	8,	10	},	//SK_SEEKER,		//seeker droid skill
 	{	0,  5,	8,	10	},	//SK_SENTRY,		//sentry gun skill
 	{	0,  6,  8,  10	},	//SK_DETPACK,		//detpack skill
 	{   0,  7,  8,  10   },  //SK_REPEATER,      // repeater/clone rifle skill
-	{   0,  5,  8,  10   },	//SK_DISRUPTOR,      // Disruptor/sniper rifle skill
+	{   0,  7,  8,  10   },	//SK_DISRUPTOR,      // Disruptor/sniper rifle skill
 	//[StanceSelection]
 	{	0,	10,	0,	0	},	//SK_BLUESTYLE,	//Yellow lightsaber style
 	{	0,	10,	0,	0	},	//SK_REDSTYLE,	//Red lightsaber style
@@ -246,13 +246,13 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	{	0,	1,	5,	10	},	//SK_OLD
 	{	0,	5,	8,	10	},	//SK_EWEB
 	{	0,	10,	0,	0	},	//SK_BINOCULARS
-	{	0,	8,	8,	10	},	//SK_WRIST,		//rocket launcher skill
+	{	0,	1,	5,	10	},	//SK_WRIST,		//rocket launcher skill
 	{	0,	10,	10,	10	},	//SK_HEALTH,		//health skill
 	{	0,	10,	10,	10	},	//SK_SHIELDS,		//shield skill
 	{	0,	10,	10,	10	},	//SK_REPAIR	//shieldbooster skill
 	{	0,	5,	8,	10	},	//SK_ELECTROSHOCKER	//Electroshocker skill
-	{	0,	5,	8,	10	},	//SK_SPHERESHIELD,		//cloaking device skill				
-	{	0,	5,	8,	10	},	//SK_OVERLOAD,		//cloaking device skill	
+	{	0,	4,	8,	10	},	//SK_SPHERESHIELD,		//cloaking device skill				
+	{	0,	4,	8,	10	},	//SK_OVERLOAD,		//cloaking device skill	
 	{	0,	10, 10,	10	 },//SK_SQUADTEAM
 	{	0,	1, 1,	 1	 },//SK_SQUADTEAMA
 	{	0,	1, 1,	 1	 },//SK_SQUADTEAMB			
@@ -269,9 +269,9 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	{	0,	1, 1,	 1	 },//SK_FIGHTERSHIPB,
 	{	0,	1, 1,	 1	 },//SK_BOMBERSHIPB,
 	{	0,	1, 1,	 1	 },//SK_TRANSPORTSHIPB,	
-	{	0,	5,	8,	10	},	//SK_GRAPPLE,	//grapple skill
-	{	0,	5,	8,	10	},	//SK_AGILITY,		//agility skill			
-	{	0,	5,	8,	10	},	//SK_STRENGTH	//strength skill
+	{	0,	1,	5,	10	},	//SK_GRAPPLE,	//grapple skill
+	{	0,	3,	6,	10	},	//SK_AGILITY,		//agility skill			
+	{	0,	3,	6,	10	},	//SK_STRENGTH	//strength skill
 	{	0,	5,	8,	10	},	//SK_BACKPACKROCKET	//backpackrocket skill	
 	{	0,	1,	1,	1	},	//SK_BACKPACKROCKETA	//backpackrocketa skill		
 	{	0,	10,	10,	10	},	//SK_SPECIALCHARACTER	//specialcharacter skill	

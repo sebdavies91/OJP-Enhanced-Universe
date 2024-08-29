@@ -11385,13 +11385,21 @@ static void PM_Weapon( void )
 
 	if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))
 	{
-		addTime *= 0.75;
+		if(pm->ps->fd.forcePowerLevel[FP_RAGE] == FORCE_LEVEL_3)
+				addTime /= 5.0;
+		else if(pm->ps->fd.forcePowerLevel[FP_RAGE] == FORCE_LEVEL_2)
+				addTime /= 3.0;
+		else if(pm->ps->fd.forcePowerLevel[FP_RAGE] == FORCE_LEVEL_1)
+				addTime /= 1.5;
+		else
+				addTime /= 1.0;	
 	}
 	else if (pm->ps->fd.forceRageRecoveryTime > pm->cmd.serverTime)
 	{
 		addTime *= 1.5;
-	}
-	
+	}		
+
+		
 #ifdef QAGAME
 	if ( pm->ps->powerups[PW_OVERLOADED] )
 	{	
@@ -11401,10 +11409,14 @@ static void PM_Weapon( void )
 			}
 			else if(g_entities[pm->ps->clientNum].client->skillLevel[SK_OVERLOAD] == FORCE_LEVEL_2)
 				{
-				addTime *= 0.80;
+				addTime *= 0.70;
 			}
 			else if(g_entities[pm->ps->clientNum].client->skillLevel[SK_OVERLOAD] == FORCE_LEVEL_3)
 				{
+				addTime *= 0.50;
+			}
+			else
+			{
 				addTime *= 0.70;
 			}
 	}

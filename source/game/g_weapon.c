@@ -20,10 +20,10 @@ static  vec3_t  muzzle2;//[DualPistols]
 //spread for the bryar pistol.
 #define BRYAR_SPREAD				0.0
 //Used to be 1600.  It's crazy-fast, and looks much better than it did before!
-#define BRYAR_PISTOL_VEL			3500
+#define BRYAR_PISTOL_VEL			3000
 //Pistol damage used to be 10.  Very piddly, all things considered.  We all know what blasters are SUPPOSED to do.
 #define BRYAR_PISTOL_DAMAGE			70
-//#define BRYAR_PISTOL_VEL			3500
+//#define BRYAR_PISTOL_VEL			3000
 //#define BRYAR_PISTOL_DAMAGE			10
 //[/WeaponSys]
 //[BryarSecondary]
@@ -39,10 +39,9 @@ static  vec3_t  muzzle2;//[DualPistols]
 //[WeaponSys]
 //racc - primary fire spread
 #define BLASTER_SPREAD2				0.5f//1.2f
-#define BLASTER_VELOCITY			3500  //Used to be 2300.  Again, way too slow.  You can almost outrun them.
+#define BLASTER_VELOCITY			3000  //Used to be 2300.  Again, way too slow.  You can almost outrun them.
 //Better gun, better stopping power.  Kills in two hits if you don't have full shields.
 #define BLASTER_DAMAGE				45
-//#define BLASTER_VELOCITY			2300
 //#define BLASTER_DAMAGE				20
 //[/WeaponSys]
 
@@ -73,9 +72,9 @@ static  vec3_t  muzzle2;//[DualPistols]
 //----------
 //[WeaponSys]
 #define	BOWCASTER_DAMAGE			120  //was 50 -- Was 80 [Bowcaster]
-#define	BOWCASTER_VELOCITY			3500 //was 1300
+#define	BOWCASTER_VELOCITY			3000 //was 1300
 //#define	BOWCASTER_DAMAGE			70
-//#define	BOWCASTER_VELOCITY			1300
+
 //[/WeaponSys]
 #define BOWCASTER_SPLASH_DAMAGE		0
 #define BOWCASTER_SPLASH_RADIUS		0
@@ -91,9 +90,9 @@ static  vec3_t  muzzle2;//[DualPistols]
 #define REPEATER_SPREAD				1.0f
 //[WeaponSys]
 #define	REPEATER_DAMAGE				10  //was 14
-#define	REPEATER_VELOCITY			3500 //was 1600
+#define	REPEATER_VELOCITY			3000 //was 1600
 //#define	REPEATER_DAMAGE				14
-//#define	REPEATER_VELOCITY			1600
+
 //[/WeaponSys]
 #define REPEATER_SIZE				1
 #define REPEATER_ALT_SIZE				3	// half of bbox size
@@ -104,14 +103,14 @@ static  vec3_t  muzzle2;//[DualPistols]
 #define REPEATER_ALT_SPLASH_DAMAGE		100
 #define REPEATER_ALT_SPLASH_RADIUS		256
 #define REPEATER_ALT_SPLASH_RAD_SIEGE	384
-#define	REPEATER_ALT_VELOCITY			1100
+#define	REPEATER_ALT_VELOCITY			1000
 
 // DEMP2
 //----------
 #define	DEMP2_DAMAGE				50
 //[WeaponSys]
-#define	DEMP2_VELOCITY				1800
-//#define	DEMP2_VELOCITY				1800
+#define	DEMP2_VELOCITY				2000
+
 //[/WeaponSys]
 #define	DEMP2_SIZE					3		// half of bbox size
 
@@ -125,7 +124,7 @@ static  vec3_t  muzzle2;//[DualPistols]
 #define FLECHETTE_SHOTS				1
 #define FLECHETTE_SPREAD			3.0f
 #define FLECHETTE_DAMAGE			20//15
-#define FLECHETTE_VELOCITY			3500
+#define FLECHETTE_VELOCITY			3000
 #define FLECHETTE_SIZE				1
 #define FLECHETTE_GRENADES			1
 #define FLECHETTE_MINE_RADIUS_CHECK	384
@@ -136,8 +135,8 @@ static  vec3_t  muzzle2;//[DualPistols]
 // Personal Rocket Launcher
 //---------
 //[WeaponSys]
-#define	ROCKET_VELOCITY				2500  //was 900...  and again, could be outrun, just about. - Was 3500 DD
-//#define	ROCKET_VELOCITY				900 
+#define	ROCKET_VELOCITY				2000  //was 900...  and again, could be outrun, just about. - Was 3500 DD
+
 #define	ROCKET_DAMAGE				300
 #define	ROCKET_SPLASH_DAMAGE		150
 #define	ROCKET_SPLASH_RADIUS		512
@@ -153,7 +152,7 @@ static  vec3_t  muzzle2;//[DualPistols]
 //primary
 //man, this thing is too absurdly powerful. having to
 //slash the values way down from sp.
-#define	CONC_VELOCITY				2500
+#define	CONC_VELOCITY				2000
 #define	CONC_DAMAGE					300 //150
 #define	CONC_NPC_DAMAGE_EASY		300
 #define	CONC_NPC_DAMAGE_NORMAL		300
@@ -172,10 +171,10 @@ static  vec3_t  muzzle2;//[DualPistols]
 //spread for the bryar pistol.
 #define BRYAR_OLD_SPREAD				0.0
 //Used to be 1600.  It's crazy-fast, and looks much better than it did before!
-#define BRYAR_OLD_VEL			3500
+#define BRYAR_OLD_VEL			3000
 //Pistol damage used to be 10.  Very piddly, all things considered.  We all know what blasters are SUPPOSED to do.
 #define BRYAR_OLD_DAMAGE			70
-//#define BRYAR_OLD_VEL			3500
+//#define BRYAR_OLD_VEL			3000
 //#define BRYAR_OLD_DAMAGE			10
 //[/WeaponSys]
 //[BryarSecondary]
@@ -200,14 +199,14 @@ static  vec3_t  muzzle2;//[DualPistols]
 
 // ATST Main Gun
 //--------------
-#define ATST_MAIN_VEL				3500	// 
+#define ATST_MAIN_VEL				3000	// 
 #define ATST_MAIN_DAMAGE			150		// 
 #define ATST_MAIN_SIZE				3		// make it easier to hit things
 
 // ATST Side Gun
 //---------------
 #define ATST_SIDE_MAIN_DAMAGE				150
-#define ATST_SIDE_MAIN_VELOCITY				1300
+#define ATST_SIDE_MAIN_VELOCITY				2000
 #define ATST_SIDE_MAIN_NPC_DAMAGE_EASY		150
 #define ATST_SIDE_MAIN_NPC_DAMAGE_NORMAL	150
 #define ATST_SIDE_MAIN_NPC_DAMAGE_HARD		150
@@ -215,8 +214,8 @@ static  vec3_t  muzzle2;//[DualPistols]
 #define ATST_SIDE_MAIN_SPLASH_DAMAGE		50	// yeah, pretty small, either zero out or make it worth having?
 #define ATST_SIDE_MAIN_SPLASH_RADIUS		16	// yeah, pretty small, either zero out or make it worth having?
 
-#define ATST_SIDE_ALT_VELOCITY				2500
-#define ATST_SIDE_ALT_NPC_VELOCITY			600
+#define ATST_SIDE_ALT_VELOCITY				2000
+#define ATST_SIDE_ALT_NPC_VELOCITY			2000
 #define ATST_SIDE_ALT_DAMAGE				300
 
 #define ATST_SIDE_ROCKET_NPC_DAMAGE_EASY	300

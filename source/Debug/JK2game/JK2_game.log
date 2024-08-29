@@ -70,12 +70,12 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_vehicles.c
   g_vehicleTurret.c
   g_weapon.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5875,8): warning C4101: 'rTime': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10567,6): warning C4101: 'count': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5874,8): warning C4101: 'rTime': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10566,6): warning C4101: 'count': unreferenced local variable
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6908): warning C4715: 'WP_FireThermalDetonator3': not all control paths return a value
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(7156): warning C4715: 'WP_FireThermalDetonator4': not all control paths return a value
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6660): warning C4715: 'WP_FireThermalDetonator2': not all control paths return a value
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6907): warning C4715: 'WP_FireThermalDetonator3': not all control paths return a value
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6659): warning C4715: 'WP_FireThermalDetonator2': not all control paths return a value
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(7155): warning C4715: 'WP_FireThermalDetonator4': not all control paths return a value
   Compiling...
   NPC.c
   NPC_AI_AssassinDroid.c

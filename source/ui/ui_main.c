@@ -1255,7 +1255,24 @@ void _UI_Refresh( int realtime )
 			//Use BG_LegalizedForcePowers and transfer the result into the UI force settings
 			UI_ReadLegalForce();
 		}
+	char info[MAX_INFO_VALUE];
+	int wDisable = 0;
+	int	gametype = 0;
+	
+	gametype = atoi(Info_ValueForKey(info, "g_gametype"));	
+	
+	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
 
+	if (gametype == GT_DUEL || gametype == GT_POWERDUEL)
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_duelWeaponDisable"));
+	}
+	else
+	{
+		wDisable = atoi(Info_ValueForKey(info, "g_weaponDisable"));
+	}	
+	if ( wDisable == WP_SABERSONLY )
+	{
 		if (ui_freeSaber.integer && uiRank[FP_SABER_OFFENSE].uiForcePowersRank < 1)
 		{
 			uiRank[FP_SABER_OFFENSE].uiForcePowersRank = 1;
@@ -1264,6 +1281,8 @@ void _UI_Refresh( int realtime )
 		{
 			uiRank[FP_SABER_DEFENSE].uiForcePowersRank = 1;
 		}
+	}
+
 		//[ExpSys]
 		//ui_rankChange is now treated like a variable rather than a message sender
 		//trap_Cvar_Set("ui_rankChange", "0");
@@ -1275,8 +1294,8 @@ void _UI_Refresh( int realtime )
 
 	if (ui_freeSaber.integer)
 	{
-		bgForcePowerCost[FP_SABER_OFFENSE][FORCE_LEVEL_1] = 0;
-		bgForcePowerCost[FP_SABER_DEFENSE][FORCE_LEVEL_1] = 0;
+//		bgForcePowerCost[FP_SABER_OFFENSE][FORCE_LEVEL_1] = 0;
+//		bgForcePowerCost[FP_SABER_DEFENSE][FORCE_LEVEL_1] = 0;
 	}
 	else
 	{
@@ -2226,6 +2245,26 @@ qboolean UI_HasSetSaberOnly( void )
 		i++;
 	}
 
+
+
+
+
+	int iDisable = 0;
+	iDisable = atoi(Info_ValueForKey(info, "g_itemDisable"));
+	
+
+	while (i < HI_NUM_HOLDABLE)
+	{
+		if (!(iDisable & (1 << i)) &&
+			i != HI_NONE )
+		{
+			return qfalse;
+		}
+
+		i++;
+	}
+
+	
 	return qtrue;
 }
 
@@ -2480,7 +2519,7 @@ static void UI_SetForceDisabled(int force)
 
 				//[ExpSys]
 				//don't force Force Jump on players when that power is disabled.
-				if (i != FP_SABER_OFFENSE && i != FP_SABER_DEFENSE)
+				if (i != FP_SABER_OFFENSE && i != FP_SABER_DEFENSE )
 				//if (i != FP_LEVITATION && i != FP_SABER_OFFENSE && i != FP_SABER_DEFENSE)
 				//[/ExpSys]
 				{
