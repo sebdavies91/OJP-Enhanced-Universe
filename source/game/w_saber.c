@@ -3918,7 +3918,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}
 			else
 			{
-				saberBlockCost *= 3.0;
+				saberBlockCost *= 2.0;
 			}
 		}
 
@@ -3942,22 +3942,22 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 	{
 		if(defender->NPC)
 		{
-		  saberBlockCost *=1.5;	
+		  saberBlockCost *=1.0;	
 		}
 		else
 		{
-		  saberBlockCost *= 3.0;	
+		  saberBlockCost *= 2.0;	
 		}
 	}
 	if(defender->client->ps.groundEntityNum == ENTITYNUM_NONE)
 	{//in mid-air
 		if(defender->client->saber[0].numBlades == 1 && defender->client->ps.fd.saberAnimLevel == SS_DUAL)//Ataru's other perk much less cost for air hit
 		{
-			saberBlockCost *= 1.5;
+			saberBlockCost *= 0.5;
 		}
 		else
 		{
-			saberBlockCost *= 3.0;
+			saberBlockCost *= 2.0;
 		} 
 	}
 	if(defender->client->ps.saberBlockTime > level.time)

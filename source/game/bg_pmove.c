@@ -8809,7 +8809,7 @@ int PM_ItemUsable(playerState_t *ps, int forcedUse)
 
 		return 1;
 	case HI_SHIELDBOOSTER:
-		if (ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH])
+		if (ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_ARMOR])
 		{
 			return 0;
 		}
@@ -15789,6 +15789,7 @@ void Pmove (pmove_t *pmove) {
 	}
 
 	pmove->ps->pmove_framecount = (pmove->ps->pmove_framecount+1) & ((1<<PS_PMOVEFRAMECOUNTBITS)-1);
+
 
 // disable attacks when using jetpack if requested
 #ifdef QAGAME

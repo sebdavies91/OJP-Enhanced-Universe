@@ -408,6 +408,17 @@ void WP_InitForcePowers( gentity_t *ent )
 			}
 			i++;
 		}
+		
+		i = 0;
+
+		while (i < NUM_SKILLS)
+		{
+			ent->client->skillLevel[i] = bgSiegeClasses[ent->client->siegeClass].skillLevels[i];
+
+
+			i++;
+		}		
+		
 
 		if (!ent->client->sess.setForce)
 		{
@@ -865,6 +876,19 @@ void WP_SpawnInitForcePowers( gentity_t *ent )
 			}
 			i++;
 		}
+		
+		
+		
+		i = 0;
+
+		while (i < NUM_SKILLS)
+		{
+			ent->client->skillLevel[i] = bgSiegeClasses[ent->client->siegeClass].skillLevels[i];
+
+			i++;
+		}		
+		
+		
 	}
 
 	//[CoOp]
@@ -1105,7 +1129,7 @@ int ForcePowerUsableOn(gentity_t *attacker, gentity_t *other, forcePowers_t forc
 	if (other && other->client && other->s.eType == ET_NPC &&
 		other->s.NPC_class == CLASS_VEHICLE)
 	{ //can't use the force on vehicles.. except lightning
-		if (forcePower == FP_LIGHTNING || forcePower == FP_DRAIN || forcePower == FP_TEAM_FORCE)
+		if (forcePower == FP_LIGHTNING || forcePower == FP_DRAIN || forcePower == FP_TEAM_FORCE || forcePower == FP_GRIP)
 		{
 			return 1;
 		}
@@ -1115,11 +1139,11 @@ int ForcePowerUsableOn(gentity_t *attacker, gentity_t *other, forcePowers_t forc
 		}
 	}
 
-	if (other && other->client && other->s.eType == ET_NPC &&
-		g_gametype.integer == GT_SIEGE)
-	{ //can't use powers at all on npc's normally in siege... //racc - probably because they're objective based objects?
-		return 0;
-	}
+//	if (other && other->client && other->s.eType == ET_NPC &&
+//		g_gametype.integer == GT_SIEGE)
+//	{ //can't use powers at all on npc's normally in siege... //racc - probably because they're objective based objects?
+//		return 0;
+//	}
 
 	return 1;
 }
@@ -1701,12 +1725,33 @@ void ForceMidichlorian( gentity_t *self )
 		return;
 	}
 
-	if ( self->health >= self->client->ps.stats[STAT_MAX_HEALTH] && self->client->ps.stats[STAT_ARMOR] >= self->client->ps.stats[STAT_MAX_HEALTH])
+	if ( self->health >= self->client->ps.stats[STAT_MAX_HEALTH] && self->client->ps.stats[STAT_ARMOR] >= self->client->ps.stats[STAT_MAX_ARMOR])
 	{
 		return;
 	}
 
 	if (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_3)
+	{
+				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
+				{
+					self->health += 100;
+					if (self->health > self->client->ps.stats[STAT_MAX_HEALTH])
+					{
+						self->health = self->client->ps.stats[STAT_MAX_HEALTH];
+					}
+					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
+				}
+				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
+				{
+					self->client->ps.stats[STAT_ARMOR] += 100;
+					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_ARMOR])
+					{
+						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_ARMOR];
+					}
+					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
+				}
+	}
+	else if (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_2)
 	{
 				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
@@ -1720,14 +1765,14 @@ void ForceMidichlorian( gentity_t *self )
 				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
 					self->client->ps.stats[STAT_ARMOR] += 50;
-					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_HEALTH])
+					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_ARMOR])
 					{
-						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_HEALTH];
+						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_ARMOR];
 					}
 					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
 				}
 	}
-	else if (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_2)
+	else
 	{
 				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
@@ -1741,30 +1786,9 @@ void ForceMidichlorian( gentity_t *self )
 				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
 					self->client->ps.stats[STAT_ARMOR] += 25;
-					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_HEALTH])
+					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_ARMOR])
 					{
-						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_HEALTH];
-					}
-					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
-				}
-	}
-	else
-	{
-				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
-				{
-					self->health += 10;
-					if (self->health > self->client->ps.stats[STAT_MAX_HEALTH])
-					{
-						self->health = self->client->ps.stats[STAT_MAX_HEALTH];
-					}
-					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
-				}
-				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
-				{
-					self->client->ps.stats[STAT_ARMOR] += 10;
-					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_HEALTH])
-					{
-						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_HEALTH];
+						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_ARMOR];
 					}
 					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
 				}
@@ -1799,12 +1823,33 @@ void ForceHeal( gentity_t *self )
 		return;
 	}
 
-	if ( self->health >= self->client->ps.stats[STAT_MAX_HEALTH] && self->client->ps.stats[STAT_ARMOR] >= self->client->ps.stats[STAT_MAX_HEALTH])
+	if ( self->health >= self->client->ps.stats[STAT_MAX_HEALTH] && self->client->ps.stats[STAT_ARMOR] >= self->client->ps.stats[STAT_MAX_ARMOR])
 	{
 		return;
 	}
 
 	if (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_3)
+	{
+				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
+				{
+					self->health += 100;
+					if (self->health > self->client->ps.stats[STAT_MAX_HEALTH])
+					{
+						self->health = self->client->ps.stats[STAT_MAX_HEALTH];
+					}
+					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
+				}
+				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
+				{
+					self->client->ps.stats[STAT_ARMOR] += 100;
+					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_ARMOR])
+					{
+						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_ARMOR];
+					}
+					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
+				}
+	}
+	else if (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_2)
 	{
 				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
@@ -1818,14 +1863,14 @@ void ForceHeal( gentity_t *self )
 				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
 					self->client->ps.stats[STAT_ARMOR] += 50;
-					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_HEALTH])
+					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_ARMOR])
 					{
-						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_HEALTH];
+						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_ARMOR];
 					}
 					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
 				}
 	}
-	else if (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_2)
+	else
 	{
 				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
@@ -1839,30 +1884,9 @@ void ForceHeal( gentity_t *self )
 				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
 				{
 					self->client->ps.stats[STAT_ARMOR] += 25;
-					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_HEALTH])
+					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_ARMOR])
 					{
-						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_HEALTH];
-					}
-					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
-				}
-	}
-	else
-	{
-				if (self->client->ps.stats[STAT_HEALTH] < self->client->ps.stats[STAT_MAX_HEALTH] )
-				{
-					self->health += 10;
-					if (self->health > self->client->ps.stats[STAT_MAX_HEALTH])
-					{
-						self->health = self->client->ps.stats[STAT_MAX_HEALTH];
-					}
-					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
-				}
-				else if (self->client->ps.stats[STAT_HEALTH] == self->client->ps.stats[STAT_MAX_HEALTH] )
-				{
-					self->client->ps.stats[STAT_ARMOR] += 10;
-					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_HEALTH])
-					{
-						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_HEALTH];
+						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_ARMOR];
 					}
 					BG_ForcePowerDrain( &self->client->ps, FP_HEAL, 0 );
 				}
@@ -4272,9 +4296,9 @@ void ForceDrainDamage( gentity_t *self, gentity_t *traceEnt, vec3_t dir, vec3_t 
 					self->health > 0 && self->client->ps.stats[STAT_HEALTH] > 0 )
 				{
 					self->client->ps.stats[STAT_ARMOR] += dmg;
-					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_HEALTH])
+					if (self->client->ps.stats[STAT_ARMOR] > self->client->ps.stats[STAT_MAX_ARMOR])
 					{
-						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_HEALTH];
+						self->client->ps.stats[STAT_ARMOR] = self->client->ps.stats[STAT_MAX_ARMOR];
 					}
 
 
@@ -8694,7 +8718,12 @@ void DoGraspAction(gentity_t *self, forcePowers_t forcePower)
 	{
 		if(gripEnt->client)
 			gripEnt->client->ps.fd.forceGripBeingGripped = level.time + 1000;
-		
+
+		if(gripEnt->client)
+		{
+			G_SetAnim(gripEnt, &gripEnt->client->pers.cmd, SETANIM_BOTH, BOTH_PULLED_INAIR_B, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);			
+		}
+
 		if(gripEnt->client)
 			if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 5000)
 			{
@@ -8727,11 +8756,12 @@ void DoGraspAction(gentity_t *self, forcePowers_t forcePower)
 		//[/Asteroids]
 
 			gripEnt->client->ps.forceGripChangeMovetype = PM_FLOAT;
+			G_SetAnim(gripEnt, &gripEnt->client->pers.cmd, SETANIM_BOTH, BOTH_PULLED_INAIR_B, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
 		}
 
 		if(gripEnt->client)
 		{
-			G_SetAnim(gripEnt, &gripEnt->client->pers.cmd, SETANIM_BOTH, BOTH_PULLED_INAIR_B, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
+
 			if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 5000 && !self->client->ps.fd.forceGripDamageDebounceTime)
 			{ //if we managed to lift him into the air for 2 seconds, give him a crack
 				self->client->ps.fd.forceGripDamageDebounceTime = 1;
@@ -8747,7 +8777,7 @@ void DoGraspAction(gentity_t *self, forcePowers_t forcePower)
 					WP_ForcePowerStop(gripEnt, FP_GRIP);
 				}
 			}
-			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 9000)
+			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 10000)
 			{
 				WP_ForcePowerStop(self, forcePower);
 			}
@@ -8770,6 +8800,7 @@ void DoGraspAction(gentity_t *self, forcePowers_t forcePower)
 			//[/Asteroids]
 
 			gripEnt->client->ps.forceGripChangeMovetype = PM_FLOAT;
+			G_SetAnim(gripEnt, &gripEnt->client->pers.cmd, SETANIM_BOTH, BOTH_PULLED_INAIR_B, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
 		}
 		if(gripEnt->client)
 		{
@@ -8825,7 +8856,7 @@ void DoGraspAction(gentity_t *self, forcePowers_t forcePower)
 
 				gripEnt->client->ps.forceGripMoveInterval = level.time + 300; //only update velocity every 300ms, so as to avoid heavy bandwidth usage
 			}
-			G_SetAnim(gripEnt, &gripEnt->client->pers.cmd, SETANIM_BOTH, BOTH_PULLED_INAIR_B, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
+
 			if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 10000 && !self->client->ps.fd.forceGripDamageDebounceTime)
 			{ //if we managed to lift him into the air for 2 seconds, give him a crack
 				self->client->ps.fd.forceGripDamageDebounceTime = 1;
@@ -8841,7 +8872,7 @@ void DoGraspAction(gentity_t *self, forcePowers_t forcePower)
 					WP_ForcePowerStop(gripEnt, FP_GRIP);
 				}
 			}
-			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 19000)
+			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 20000)
 			{
 				WP_ForcePowerStop(self, forcePower);
 			}
@@ -9027,6 +9058,13 @@ void DoGripAction(gentity_t *self, forcePowers_t forcePower)
 	{
 		if(gripEnt->client)
 			gripEnt->client->ps.fd.forceGripBeingGripped = level.time + 1000;
+
+		if(gripEnt->client)
+		{
+			G_EntitySound( gripEnt, CHAN_VOICE, G_SoundIndex(va( "*choke%d.wav", Q_irand( 1, 3 ) )) );
+			gripEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
+			gripEnt->client->ps.forceHandExtendTime = level.time + 500;		
+		}
 		
 		if(gripEnt->client)
 			if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 5000)
@@ -9060,6 +9098,12 @@ void DoGripAction(gentity_t *self, forcePowers_t forcePower)
 		//[/Asteroids]
 
 			gripEnt->client->ps.forceGripChangeMovetype = PM_FLOAT;
+			
+			//Must play custom sounds on the actual entity. Don't use G_Sound (it creates a temp entity for the sound)
+			G_EntitySound( gripEnt, CHAN_VOICE, G_SoundIndex(va( "*choke%d.wav", Q_irand( 1, 3 ) )) );
+
+			gripEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
+			gripEnt->client->ps.forceHandExtendTime = level.time + 1000;
 		}
 
 		if(gripEnt->client)
@@ -9069,18 +9113,14 @@ void DoGripAction(gentity_t *self, forcePowers_t forcePower)
 				self->client->ps.fd.forceGripDamageDebounceTime = 1;
 				G_Damage(gripEnt, self, self, NULL, NULL, 50, DAMAGE_NO_ARMOR, MOD_FORCE_DARK);
 
-				//Must play custom sounds on the actual entity. Don't use G_Sound (it creates a temp entity for the sound)
-				G_EntitySound( gripEnt, CHAN_VOICE, G_SoundIndex(va( "*choke%d.wav", Q_irand( 1, 3 ) )) );
 
-				gripEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
-				gripEnt->client->ps.forceHandExtendTime = level.time + 5000;
 
 				if (gripEnt->client->ps.fd.forcePowersActive & (1 << FP_GRIP))
 				{ //choking, so don't let him keep gripping himself
 					WP_ForcePowerStop(gripEnt, FP_GRIP);
 				}
 			}
-			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 9000)
+			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 10000)
 			{
 				WP_ForcePowerStop(self, forcePower);
 			}
@@ -9103,6 +9143,12 @@ void DoGripAction(gentity_t *self, forcePowers_t forcePower)
 			//[/Asteroids]
 
 			gripEnt->client->ps.forceGripChangeMovetype = PM_FLOAT;
+			
+			//Must play custom sounds on the actual entity. Don't use G_Sound (it creates a temp entity for the sound)
+			G_EntitySound( gripEnt, CHAN_VOICE, G_SoundIndex(va( "*choke%d.wav", Q_irand( 1, 3 ) )) );
+
+			gripEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
+			gripEnt->client->ps.forceHandExtendTime = level.time + 2000;
 		}
 		if(gripEnt->client)
 		{
@@ -9164,18 +9210,14 @@ void DoGripAction(gentity_t *self, forcePowers_t forcePower)
 				self->client->ps.fd.forceGripDamageDebounceTime = 1;
 				G_Damage(gripEnt, self, self, NULL, NULL, 100, DAMAGE_NO_ARMOR, MOD_FORCE_DARK);
 
-				//Must play custom sounds on the actual entity. Don't use G_Sound (it creates a temp entity for the sound)
-				G_EntitySound( gripEnt, CHAN_VOICE, G_SoundIndex(va( "*choke%d.wav", Q_irand( 1, 3 ) )) );
 
-				gripEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
-				gripEnt->client->ps.forceHandExtendTime = level.time + 10000;
 
 				if (gripEnt->client->ps.fd.forcePowersActive & (1 << FP_GRIP))
 				{ //choking, so don't let him keep gripping himself
 					WP_ForcePowerStop(gripEnt, FP_GRIP);
 				}
 			}
-			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 19000)
+			else if ((level.time - gripEnt->client->ps.fd.forceGripStarted) > 20000)
 			{
 				WP_ForcePowerStop(self, forcePower);
 			}
@@ -9409,8 +9451,8 @@ static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd
 			WP_ForcePowerStop( self, forcePower );
 		}
 
-		if ( (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_1 && self->client->ps.fd.forceHealAmount >= 25) ||
-			(self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_2 && self->client->ps.fd.forceHealAmount >= 33))
+		if ( (self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_1 && self->client->ps.fd.forceHealAmount > 25) ||
+			(self->client->ps.fd.forcePowerLevel[FP_HEAL] == FORCE_LEVEL_2 && self->client->ps.fd.forceHealAmount > 50))
 		{
 			WP_ForcePowerStop( self, forcePower );
 		}
@@ -11303,14 +11345,14 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		{//fire electroshocker
 		
 		G_Damage(self, self, self, NULL, NULL, 1, DAMAGE_NO_ARMOR, MOD_FORCE_DARK);
-		self->client->ps.userInt3 |= (1 << FLAG_DEATHSIGHT);	
+		self->client->ps.userInt3 |= (1 << FLAG_STASIS2);	
 		}
 	}
 	
 	else
 	{
 		//G_Printf("%i: %i: Not using stasis\n", level.time, self->s.number);
-		self->client->ps.userInt3 &= ~(1 << FLAG_DEATHSIGHT);
+		self->client->ps.userInt3 &= ~(1 << FLAG_STASIS2);
 	}
 
 

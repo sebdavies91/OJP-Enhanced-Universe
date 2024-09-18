@@ -842,7 +842,7 @@ void CG_DrawArmor( menuDef_t *menuHUD )
 	//[/NewHud]
 
 	armor = ps->stats[STAT_ARMOR];
-	maxArmor = ps->stats[STAT_MAX_HEALTH];
+	maxArmor = ps->stats[STAT_MAX_ARMOR];
 
 	if (armor> maxArmor)
 	{
@@ -933,7 +933,7 @@ void CG_DrawArmor( menuDef_t *menuHUD )
 	// If armor is low, flash a graphic to warn the player
 	if (armor)	// Is there armor? Draw the HUD Armor TIC
 	{
-		quarterArmor = (float) (ps->stats[STAT_MAX_HEALTH] / 4.0f);
+		quarterArmor = (float) (ps->stats[STAT_MAX_ARMOR] / 4.0f);
 
 		// Make tic flash if armor is at 25% of full armor
 		if (ps->stats[STAT_ARMOR] < quarterArmor)		// Do whatever the flash timer says

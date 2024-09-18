@@ -364,14 +364,14 @@ qboolean ITM_AddHealth( gentity_t *ent, int amount)
 
 qboolean ITM_AddArmor( gentity_t *ent, int amount)
 {
-	if(ent->client->ps.stats[STAT_ARMOR] == ent->client->ps.stats[STAT_MAX_HEALTH])
+	if(ent->client->ps.stats[STAT_ARMOR] == ent->client->ps.stats[STAT_MAX_ARMOR])
 	{//maxed out health as is
 		return qfalse;
 	}
 
 	ent->client->ps.stats[STAT_ARMOR] += amount;
-	if(ent->client->ps.stats[STAT_ARMOR] > ent->client->ps.stats[STAT_MAX_HEALTH])
-		ent->client->ps.stats[STAT_ARMOR] = ent->client->ps.stats[STAT_MAX_HEALTH];
+	if(ent->client->ps.stats[STAT_ARMOR] > ent->client->ps.stats[STAT_MAX_ARMOR])
+		ent->client->ps.stats[STAT_ARMOR] = ent->client->ps.stats[STAT_MAX_ARMOR];
 
 	return qtrue;
 }
@@ -420,7 +420,7 @@ void health_think( gentity_t *ent )
 		}
 		else	// User has taken all health he can hold, see about giving it all to armor
 		{
-			dif = ent->enemy->client->ps.stats[STAT_MAX_HEALTH] - 
+			dif = ent->enemy->client->ps.stats[STAT_MAX_ARMOR] - 
 				ent->enemy->client->ps.stats[STAT_ARMOR];
 
 			if (dif > 3)
@@ -484,7 +484,7 @@ void health_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 			{	// Health
 				dif = other->client->ps.stats[STAT_MAX_HEALTH] - other->client->ps.stats[STAT_HEALTH];
 				// Armor
-				dif2 = other->client->ps.stats[STAT_MAX_HEALTH] - other->client->ps.stats[STAT_ARMOR];
+				dif2 = other->client->ps.stats[STAT_MAX_ARMOR] - other->client->ps.stats[STAT_ARMOR];
 				hold = (dif2 - dif);
 				// For every 3 points of health, you get 1 point of armor
 				// BUT!!! after health is filled up, you get the full energy going to armor

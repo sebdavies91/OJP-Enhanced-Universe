@@ -3094,7 +3094,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	self->client->ps.userInt3 &= ~(1 << FLAG_STASIS);
 	
 	self->client->deathsightTime = 0;
-	self->client->ps.userInt3 &= ~(1 << FLAG_DEATHSIGHT);
+	self->client->ps.userInt3 &= ~(1 << FLAG_STASIS2);
 	
 	self->client->freezeTime = 0;		
 	self->client->burnTime = 0;

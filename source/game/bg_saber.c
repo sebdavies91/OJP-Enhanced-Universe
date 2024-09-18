@@ -2841,7 +2841,7 @@ saberMoveName_t PM_SaberAttackForMovement(saberMoveName_t curmove)
 					//[/SaberSys]
 				}
 				//[/SaberSys]
-				}
+				
 			}
 			else if (!noSpecials&&
 				//[SaberSys]
@@ -2946,7 +2946,7 @@ saberMoveName_t PM_SaberAttackForMovement(saberMoveName_t curmove)
 					newmove = LS_A_T2B;
 				}
 			}
-		
+		}
 		else if ( pm->cmd.forwardmove < 0 )
 		{//backward= T2B slash//B2T uppercut?
 			if (!noSpecials&&
@@ -4959,7 +4959,7 @@ weapChecks:
 //				{//can't combo if we were parried.
 //					newmove = LS_READY;
 //				}
-				/*
+				
 				else if ( PM_SaberInParry( curmove ) )
 				{//can't attack straight from a block animation.
 					newmove = LS_READY;
@@ -4968,7 +4968,7 @@ weapChecks:
 				{//broken parries must always return to ready
 					newmove = LS_READY;
 				}
-				*/
+				
 				//[/SaberSys]
 				else//if ( pm->cmd.buttons&BUTTON_ATTACK && !(pm->ps->pm_flags&PMF_ATTACK_HELD) )//only do this if just pressed attack button?
 				{//get attack move from movement command

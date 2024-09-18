@@ -19861,7 +19861,7 @@ stillDoSaber:
 		trap_R_AddRefEntityToScene( &legs );
 	}
 	
-	if(cent->currentState.userInt3 & (1 << FLAG_DEATHSIGHT))
+	if(cent->currentState.userInt3 & (1 << FLAG_STASIS2))
 	{ //aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 128;

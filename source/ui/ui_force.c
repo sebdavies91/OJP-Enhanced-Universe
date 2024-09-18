@@ -711,7 +711,6 @@ void UpdateForceUsed()
 	
 	
 	
-	
 	if(uiRank[FP_PUSH].uiForcePowersRank<FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_PUSHA].uiForcePowersRank = 0;

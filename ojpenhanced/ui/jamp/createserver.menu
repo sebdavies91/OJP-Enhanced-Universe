@@ -64,15 +64,7 @@
 		}
 
 
-		itemDef
-		{
-			name				mainbackground
-			style				WINDOW_STYLE_FILLED
-			rect				118 98 404 304
-			backcolor			0 0 0 0.8
-			visible				1
-			decoration
-		}
+
 
 
 		itemDef 

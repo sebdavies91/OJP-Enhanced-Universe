@@ -230,7 +230,7 @@ void BotOrder(gentity_t *ent, int clientnum, int ordernum)
 //			&& g_gametype.integer != GT_SIEGE && g_gametype.integer != GT_TEAM)
 
 	if (g_gametype.integer != GT_CTF && g_gametype.integer != GT_CTY && g_gametype.integer != GT_SIEGE &&
-		g_gametype.integer != GT_TEAM)
+		g_gametype.integer != GT_TEAM )
 	//[/NewGameTypes][/EnhancedImpliment]
 	{
 		return;

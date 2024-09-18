@@ -160,7 +160,115 @@ stringID_table_t PowerupTable[] =
 	{"", -1}
 };
 
-
+stringID_table_t SKTable[] =
+{
+	ENUM2STRING(SK_JETPACK),
+	ENUM2STRING(SK_PISTOL),
+	ENUM2STRING(SK_BLASTER),
+	ENUM2STRING(SK_THERMAL),
+	ENUM2STRING(SK_ROCKET),
+	ENUM2STRING(SK_BACTA),
+	ENUM2STRING(SK_FLAMETHROWER),
+	ENUM2STRING(SK_BOWCASTER),
+	ENUM2STRING(SK_FORCEFIELD),
+	ENUM2STRING(SK_CLOAK),
+	ENUM2STRING(SK_SEEKER),
+	ENUM2STRING(SK_SENTRY),
+	ENUM2STRING(SK_DETPACK),
+	ENUM2STRING(SK_REPEATER),
+	ENUM2STRING(SK_DISRUPTOR),
+	ENUM2STRING(SK_BLUESTYLE),
+	ENUM2STRING(SK_REDSTYLE),
+	ENUM2STRING(SK_PURPLESTYLE),	
+	ENUM2STRING(SK_GREENSTYLE),
+	ENUM2STRING(SK_DUALSTYLE),
+	ENUM2STRING(SK_STAFFSTYLE),
+	ENUM2STRING(SK_LASERTURRETA),
+	ENUM2STRING(SK_FLECHETTE),
+	ENUM2STRING(SK_LASERTURRETB),
+	ENUM2STRING(SK_TRIPMINE),
+	ENUM2STRING(SK_DEMP2),
+	ENUM2STRING(SK_CONCUSSION),
+	ENUM2STRING(SK_OLD),
+	ENUM2STRING(SK_EWEB),
+	ENUM2STRING(SK_BINOCULARS),
+	ENUM2STRING(SK_WRIST),
+	ENUM2STRING(SK_HEALTH),
+	ENUM2STRING(SK_SHIELDS),
+	ENUM2STRING(SK_REPAIR),
+	ENUM2STRING(SK_ELECTROSHOCKER),
+	ENUM2STRING(SK_SPHERESHIELD),
+	ENUM2STRING(SK_OVERLOAD),
+	ENUM2STRING(SK_SQUADTEAM),
+	ENUM2STRING(SK_SQUADTEAMA),
+	ENUM2STRING(SK_SQUADTEAMB),
+	ENUM2STRING(SK_VEHICLEMOUNT),
+	ENUM2STRING(SK_LIGHTVEHICLEA),
+	ENUM2STRING(SK_MEDIUMVEHICLEA),
+	ENUM2STRING(SK_HEAVYVEHICLEA),
+	ENUM2STRING(SK_FIGHTERSHIPA),
+	ENUM2STRING(SK_BOMBERSHIPA),
+	ENUM2STRING(SK_TRANSPORTSHIPA),
+	ENUM2STRING(SK_LIGHTVEHICLEB),
+	ENUM2STRING(SK_MEDIUMVEHICLEB),
+	ENUM2STRING(SK_HEAVYVEHICLEB),
+	ENUM2STRING(SK_FIGHTERSHIPB),
+	ENUM2STRING(SK_BOMBERSHIPB),
+	ENUM2STRING(SK_TRANSPORTSHIPB),
+	ENUM2STRING(SK_GRAPPLE),
+	ENUM2STRING(SK_AGILITY),
+	ENUM2STRING(SK_STRENGTH),
+	ENUM2STRING(SK_BACKPACKROCKET),
+	ENUM2STRING(SK_BACKPACKROCKETA),
+	ENUM2STRING(SK_SPECIALCHARACTER),
+	ENUM2STRING(SK_JETPACKA),
+	ENUM2STRING(SK_JETPACKB),
+	ENUM2STRING(SK_WRISTA),
+	ENUM2STRING(SK_WRISTB),
+	ENUM2STRING(SK_PISTOLA),
+	ENUM2STRING(SK_PISTOLB),
+	ENUM2STRING(SK_BLASTERA),
+	ENUM2STRING(SK_BLASTERB),
+	ENUM2STRING(SK_DISRUPTORA),
+	ENUM2STRING(SK_DISRUPTORB),
+	ENUM2STRING(SK_BOWCASTERA),
+	ENUM2STRING(SK_BOWCASTERB),
+	ENUM2STRING(SK_REPEATERA),
+	ENUM2STRING(SK_REPEATERB),
+	ENUM2STRING(SK_DEMP2A),
+	ENUM2STRING(SK_DEMP2B),
+	ENUM2STRING(SK_FLECHETTEA),
+	ENUM2STRING(SK_FLECHETTEB),
+	ENUM2STRING(SK_CONCUSSIONA),
+	ENUM2STRING(SK_CONCUSSIONB),
+	ENUM2STRING(SK_ROCKETA),
+	ENUM2STRING(SK_ROCKETB),
+	ENUM2STRING(SK_THERMALA),
+	ENUM2STRING(SK_THERMALB),
+	ENUM2STRING(SK_TRIPMINEA),
+	ENUM2STRING(SK_TRIPMINEB),
+	ENUM2STRING(SK_DETPACKA),
+	ENUM2STRING(SK_DETPACKB),
+	ENUM2STRING(SK_OLDA),
+	ENUM2STRING(SK_OLDB),
+	ENUM2STRING(SK_FLAMETHROWERA),
+	ENUM2STRING(SK_ELECTROSHOCKERA),
+	ENUM2STRING(SK_LIGHTNINGA),
+	ENUM2STRING(SK_DRAINA),
+	ENUM2STRING(SK_GRIPA),
+	ENUM2STRING(SK_ABSORBA),
+	ENUM2STRING(SK_PROTECTA),
+	ENUM2STRING(SK_DESTRUCTIONA),
+	ENUM2STRING(SK_HEALA),
+	ENUM2STRING(SK_RAGEA),
+	ENUM2STRING(SK_TELEPATHYA),
+	ENUM2STRING(SK_STASISA),
+	ENUM2STRING(SK_PUSHA),
+	ENUM2STRING(SK_PULLA),
+	{"",	-1}	
+	
+	
+};
 //======================================
 //Parsing functions
 //======================================
@@ -737,6 +845,107 @@ void BG_SiegeTranslateForcePowers(char *buf, siegeClass_t *siegeClass)
 	}
 }
 
+
+void BG_SiegeTranslateSkills(char *buf, siegeClass_t *siegeClass)
+{
+	char checkSkill[1024];
+	char checkLevel[256];
+	int l = 0;
+	int k = 0;
+	int j = 0;
+	int i = 0;
+	int parsedLevel = 0;
+	qboolean noSkills = qfalse;
+
+
+
+	if (buf[0] == '0' && !buf[1])
+	{ //no powers then
+		noSkills = qtrue;
+	}
+
+	//First clear out the powers, or in the allPowers case, give us all level 3.
+	while (i < NUM_SKILLS)
+	{
+		{
+			siegeClass->skillLevels[i] = 0;
+		}
+		i++;
+	}
+
+	if (noSkills)
+	{ //we're done now then.
+		return;
+	}
+	i = 0;
+	while (buf[i])
+	{ //parse through the list which is seperated by |, and add all the weapons into a bitflag
+		if (buf[i] != ' ' && buf[i] != '|')
+		{
+			j = 0;
+
+			while (buf[i] && buf[i] != ' ' && buf[i] != '|' && buf[i] != ',')
+			{
+				checkSkill[j] = buf[i];
+				j++;
+				i++;
+			}
+			checkSkill[j] = 0;
+
+			if (buf[i] == ',')
+			{ //parse the power level
+				i++;
+				l = 0;
+				while (buf[i] && buf[i] != ' ' && buf[i] != '|')
+				{
+					checkLevel[l] = buf[i];
+					l++;
+					i++;
+				}
+				checkLevel[l] = 0;
+				parsedLevel = atoi(checkLevel);
+
+				//keep sane limits on the powers
+				if (parsedLevel < 0)
+				{
+					parsedLevel = 0;
+				}
+				if (parsedLevel > FORCE_LEVEL_5)
+				{
+					parsedLevel = FORCE_LEVEL_5;
+				}
+			}
+			else
+			{ //if it's not there, assume level 3 I guess.
+				parsedLevel = 3;
+			}
+
+			if (checkSkill[0])
+			{ //Got the name, compare it against the weapon table strings.
+				k = 0;
+
+
+				while (SKTable[k].id != -1 && SKTable[k].name[0])
+				{
+					if (!Q_stricmp(checkSkill, SKTable[k].name))
+					{ //found it, add the weapon into the weapons value
+						siegeClass->skillLevels[k] = parsedLevel;
+						break;
+					}
+					k++;
+				}
+			}
+		}
+
+		if (!buf[i])
+		{
+			break;
+		}
+		i++;
+	}
+}
+
+
 //Used for the majority of generic val parsing stuff. buf should be the value string,
 //table should be the appropriate string/id table. If bitflag is qtrue then the
 //values are accumulated into a bitflag. If bitflag is qfalse then the first value
@@ -963,6 +1172,22 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 		}
 	}
 
+
+	//Parse skills
+	if (BG_SiegeGetPairedValue(classInfo, "skills", parseBuf))
+	{
+		BG_SiegeTranslateSkills(parseBuf, &bgSiegeClasses[bgNumSiegeClasses]);
+	}
+	else
+	{ //fine, clear out the powers.
+		i = 0;
+		while (i < NUM_SKILLS)
+		{
+			bgSiegeClasses[bgNumSiegeClasses].skillLevels[i] = 0;
+			i++;
+		}
+	}
+	
 	//Parse classflags
 	if (BG_SiegeGetPairedValue(classInfo, "classflags", parseBuf))
 	{

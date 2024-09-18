@@ -1300,40 +1300,7 @@ void respawn( gentity_t *ent ) {
 	{//playing LMS and we're DEAD!  Just start chillin in tempSpec.
 		OJP_Spectator(ent);
 	}
-	else if(g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM
-		|| g_gametype.integer == GT_CTF)
-	{
-		if (ojp_ffaRespawnTimer.integer)
-		{
-			if (ent->client->tempSpectate <= level.time)
-			{
-				int minDel = g_siegeRespawn.integer* 2000;
-				if (minDel < 20000)
-				{
-					minDel = 20000;
-				}
-				OJP_Spectator(ent);
-				ent->client->tempSpectate = level.time + minDel;
 
-				// Respawn time.
-				if ( ent->s.number < MAX_CLIENTS )
-				{
-					gentity_t *te = G_TempEntity( ent->client->ps.origin, EV_SIEGESPEC );
-					te->s.time = ojp_ffaRespawnTimerCheck;
-					te->s.owner = ent->s.number;
-				}
-
-				return;
-			}
-		}
-		ClientSpawn(ent);
-		//[LastManStanding]
-		if ( ojp_lms.integer > 0 && BG_IsLMSGametype(g_gametype.integer) && LMS_EnoughPlayers())
-		{//reduce our number of lives since we respawned and we're not the only player.
-			ent->lives--;
-		}
-		//[/LastManStanding]
-	}
 	else if (g_gametype.integer == GT_SIEGE)
 	//if (g_gametype.integer == GT_SIEGE)
 	//[/LastManStanding]
@@ -1373,10 +1340,43 @@ void respawn( gentity_t *ent ) {
 	{
 		gentity_t	*tent;
 
+		if (ojp_ffaRespawnTimer.integer)
+		{
+			if (ent->client->tempSpectate <= level.time)
+			{
+				int minDel = g_siegeRespawn.integer* 2000;
+				if (minDel < 20000)
+				{
+					minDel = 20000;
+				}
+				OJP_Spectator(ent);
+				ent->client->tempSpectate = level.time + minDel;
+
+				// Respawn time.
+				if ( ent->s.number < MAX_CLIENTS )
+				{
+					gentity_t *te = G_TempEntity( ent->client->ps.origin, EV_SIEGESPEC );
+					te->s.time = ojp_ffaRespawnTimerCheck;
+					te->s.owner = ent->s.number;
+				}
+
+				return;
+			}
 		ClientSpawn(ent);
+		}
+		else
+		{
 		// add a teleportation effect
+		ClientSpawn(ent);		
 		tent = G_TempEntity( ent->client->ps.origin, EV_PLAYER_TELEPORT_IN );
 		tent->s.clientNum = ent->s.clientNum;
+		}
+		//[LastManStanding]
+		if ( ojp_lms.integer > 0 && BG_IsLMSGametype(g_gametype.integer) && LMS_EnoughPlayers())
+		{//reduce our number of lives since we respawned and we're not the only player.
+			ent->lives--;
+		}
+		//[/LastManStanding]
 	}
 }
 
@@ -2375,20 +2375,8 @@ void ClientUserinfoChanged( int clientNum ) {
 	strcpy(saber2Name, client->sess.saber2Type);
 
 	// set max health
-	if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
-	{
-		siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
-		maxHealth = 100;
 
-		if (scl->maxhealth)
-		{
-			maxHealth = scl->maxhealth;
-		}
 
-		health = maxHealth;
-	}
-	else
-	{
 	if(client->skillLevel[SK_HEALTH] == FORCE_LEVEL_3)
 		{
 		maxHealth = 999;
@@ -2403,10 +2391,25 @@ void ClientUserinfoChanged( int clientNum ) {
 		}
 	else 
 		{
-		maxHealth = 100;
+			if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
+			{
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				maxHealth = 100;
+
+				if (scl->maxhealth)
+				{
+				maxHealth = scl->maxhealth;
+				}
+
+
+			}
+			else
+			{
+			maxHealth = 100;
+			}
 		}
 		health = maxHealth;
-	}
+
 	client->pers.maxHealth = health;
 	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > maxHealth ) 
 	{
@@ -2424,7 +2427,22 @@ void ClientUserinfoChanged( int clientNum ) {
 		}
 	else 
 		{
-		client->pers.maxHealth = 100;
+			if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
+			{
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				client->pers.maxHealth = 100;
+
+				if (scl->maxhealth)
+				{
+				client->pers.maxHealth = scl->maxhealth;
+				}
+
+
+			}
+			else
+			{
+			client->pers.maxHealth = 100;
+			}
 		}
 
 	}
@@ -4026,18 +4044,8 @@ void ClientSpawn(gentity_t *ent) {
 	client->airOutTime = level.time + 12000;
 
 	// set max health
-	if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
-	{
-		siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
-		maxHealth = 100;
 
-		if (scl->maxhealth)
-		{
-			maxHealth = scl->maxhealth;
-		}
-	}
-	else
-	{
+
 	if(client->skillLevel[SK_HEALTH] == FORCE_LEVEL_3)
 		{
 		maxHealth = 999;
@@ -4052,9 +4060,22 @@ void ClientSpawn(gentity_t *ent) {
 		}
 	else 
 		{
+		if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
+		{
+			siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+			maxHealth = 100;
+
+			if (scl->maxhealth)
+			{
+				maxHealth = scl->maxhealth;
+			}
+		}
+		else
+		{
 		maxHealth = 100;
 		}
-	}		
+		}
+			
 
 	client->pers.maxHealth = maxHealth;//atoi( Info_ValueForKey( userinfo, "handicap" ) );
 	if ( client->pers.maxHealth < 1 || client->pers.maxHealth > maxHealth ) {
@@ -4072,7 +4093,20 @@ void ClientSpawn(gentity_t *ent) {
 		}
 	else 
 		{
-		client->pers.maxHealth = 100;		
+		if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
+		{
+			siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+			client->pers.maxHealth = 100;
+
+			if (scl->maxhealth)
+			{
+				client->pers.maxHealth = scl->maxhealth;
+			}
+		}
+		else
+		{
+		client->pers.maxHealth = 100;
+		}
 		}
 	}		
 		//client->pers.maxHealth = 100;
@@ -4536,10 +4570,6 @@ void ClientSpawn(gentity_t *ent) {
 		{
 			client->ps.weapon = WP_SABER;
 		}
-		else if (client->ps.stats[STAT_WEAPONS] & (1 << WP_BRYAR_PISTOL))
-		{
-			client->ps.weapon = WP_BRYAR_PISTOL;
-		}
 		else
 		{
 			client->ps.weapon = WP_MELEE;
@@ -4600,21 +4630,12 @@ void ClientSpawn(gentity_t *ent) {
 	{ //use class-specified inventory
 		client->ps.stats[STAT_HOLDABLE_ITEMS] = bgSiegeClasses[client->siegeClass].invenItems;
 		client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
-			if (client->ps.stats[STAT_WEAPONS] & (1 << WP_SABER))
-			{ //recharge cloak
-			ent->client->ps.fd.forcePower=100;
-			ent->client->ps.fd.forcePowerMax=100;
-			client->ps.stats[STAT_MAX_DODGE] = 100;
-			}
-			else 
-			{
-			ent->client->ps.fd.forcePower=25;
-			ent->client->ps.fd.forcePowerMax=25;
-			client->ps.stats[STAT_MAX_DODGE] = 25;
-			}							 
+						 
 	}
-	else
-	{
+	
+	
+
+	
 		//[ExpSys]
 		client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 
@@ -4682,25 +4703,38 @@ void ClientSpawn(gentity_t *ent) {
 	
 		if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_3)
 		{
-			client->ps.stats[STAT_ARMOR] = 999;
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 999;
 		}
 		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_2)
 		{
-			client->ps.stats[STAT_ARMOR] = 500;
-
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 500;
 		}
 		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_1)
 		{
-			client->ps.stats[STAT_ARMOR] = 250;
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 250;
 		}
 		else 
 		{
 
-		client->ps.stats[STAT_ARMOR] = 100;
+			if (g_gametype.integer == GT_SIEGE &&
+			client->siegeClass != -1 /*&&
+			bgSiegeClasses[client->siegeClass].startarmor*/)
+			{ //class specifies a start armor amount, so use it
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 100;
+				if (scl->maxarmor)
+				{
+				client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = scl->maxarmor;
+				}
+			}
+			else
+			{
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 100;					
+			}
 
 		}
 		
-	
+
 			if(client->ps.fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_3)
 			{
 			ent->client->ps.fd.forcePower=250;
@@ -5199,7 +5233,7 @@ void ClientSpawn(gentity_t *ent) {
 				client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_GRAPPLE);
 			}
 		}								
-	}
+	
 	if (g_gametype.integer == GT_SIEGE &&
 		client->siegeClass != -1 &&
 		bgSiegeClasses[client->siegeClass].powerups &&
@@ -5338,7 +5372,7 @@ void ClientSpawn(gentity_t *ent) {
 		client->siegeClass != -1 &&
 		bgSiegeClasses[client->siegeClass].starthealth)
 	{ //class specifies a start health, so use it
-		ent->health = client->ps.stats[STAT_HEALTH] = 100;
+		ent->health = client->ps.stats[STAT_HEALTH] = bgSiegeClasses[client->siegeClass].starthealth;
 	}
 	else
 	{
@@ -5346,39 +5380,47 @@ void ClientSpawn(gentity_t *ent) {
 	}
 
 	// Start with a small amount of armor as well.
-	if (g_gametype.integer == GT_SIEGE &&
-		client->siegeClass != -1 /*&&
-		bgSiegeClasses[client->siegeClass].startarmor*/)
-	{ //class specifies a start armor amount, so use it
-		client->ps.stats[STAT_ARMOR] = 100;
-	}
+
 	//[ExpSys]
-	else
-	{//armor in non-siege gametypes
+
 		//armor is now the number of skill points a player has not allociated. 
 		if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_3)
 		{
-			client->ps.stats[STAT_ARMOR] = 999;
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 999;
 		}
 		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_2)
 		{
-			client->ps.stats[STAT_ARMOR] = 500;
-
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 500;
 		}
 		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_1)
 		{
-			client->ps.stats[STAT_ARMOR] = 250;
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 250;
 		}
 		else 
 		{
+			if (g_gametype.integer == GT_SIEGE &&
+			client->siegeClass != -1 /*&&
+			bgSiegeClasses[client->siegeClass].startarmor*/)
+			{ //class specifies a start armor amount, so use it
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 100;
+				if (scl->maxarmor)
+				{
+				client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = scl->maxarmor;
+				}
+			}
+			else
+			{
+			client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] = 100;				
+			}
 
-		client->ps.stats[STAT_ARMOR] = 100;
+
 			
 		}	
 
 		
 	//	client->ps.stats[STAT_ARMOR] = client->sess.skillPoints - TotalAllociatedSkillPoints(ent);
-	}
+
 	/*
 	else if ( g_gametype.integer == GT_DUEL || g_gametype.integer == GT_POWERDUEL )
 	{//no armor in duel
@@ -5386,7 +5428,7 @@ void ClientSpawn(gentity_t *ent) {
 	}
 	else
 	{
-		client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_HEALTH] * 0.25;
+		client->ps.stats[STAT_ARMOR] = client->ps.stats[STAT_MAX_ARMOR] * 0.25;
 	}
 	*/
 	//[/ExpSys]

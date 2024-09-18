@@ -1014,8 +1014,7 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 				}
 				else
 				{
-					if (g_gametype.integer == GT_SIEGE &&
-						delta > 60)
+					if (delta > 60)
 					{ //longer falls hurt more
 						damage = delta*1; //good enough for now, I guess
 					}
@@ -3378,33 +3377,60 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 		else 
 		{
+			if (g_gametype.integer == GT_SIEGE &&
+			client->siegeClass != -1 /*&&
+			bgSiegeClasses[client->siegeClass].startarmor*/)
+			{ //class specifies a start armor amount, so use it
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				playerDuelShield = 100;
+				ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;		
 
-		playerDuelShield = 100;
-		ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
-
+				if (scl->startarmor)
+				{
+				playerDuelShield = scl->startarmor;
+				ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;		
+				}
+			}
+			else
+			{
+				playerDuelShield = 100;
+				ent->client->ps.stats[STAT_ARMOR]  = playerDuelShield;			
+			}
 			
 		}	
 				}
 				if( playerDuelShield >= 0){
-		if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_3)
+		if(client->skillLevel[SK_HEALTH] == FORCE_LEVEL_3)
 		{
 			ent->client->ps.stats[STAT_HEALTH] = ent->health = 999; // defaults to 100.
 		}
-		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_2)
+		else if(client->skillLevel[SK_HEALTH] == FORCE_LEVEL_2)
 		{
 			ent->client->ps.stats[STAT_HEALTH] = ent->health = 500; // defaults to 100.
 
 		}
-		else if(client->skillLevel[SK_SHIELDS] == FORCE_LEVEL_1)
+		else if(client->skillLevel[SK_HEALTH] == FORCE_LEVEL_1)
 		{
 			ent->client->ps.stats[STAT_HEALTH] = ent->health = 250; // defaults to 100.
 		}
 		else 
 		{
+			if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
+			{
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				ent->client->ps.stats[STAT_HEALTH] = ent->health = 100;
 
+				if (scl->maxhealth)
+				{
+				ent->client->ps.stats[STAT_HEALTH] = ent->health = scl->maxhealth;
+				}
+
+
+			}
+			else
+			{
 			ent->client->ps.stats[STAT_HEALTH] = ent->health = 100; // defaults to 100.
-
-			
+			}				
 		}						
 					
 					
@@ -3489,9 +3515,25 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 		else 
 		{
+			if (g_gametype.integer == GT_SIEGE &&
+			client->siegeClass != -1 /*&&
+			bgSiegeClasses[client->siegeClass].startarmor*/)
+			{ //class specifies a start armor amount, so use it
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				playerDuelShield = 100;
+				duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;		
 
-		playerDuelShield = 100;
-		duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;
+				if (scl->startarmor)
+				{
+				playerDuelShield = scl->startarmor;
+				duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;		
+				}
+			}
+			else
+			{
+				playerDuelShield = 100;
+				duelAgainst->client->ps.stats[STAT_ARMOR]  = playerDuelShield;			
+			}
 			
 		}	
 					
@@ -3512,9 +3554,22 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 		else 
 		{
+			if (g_gametype.integer == GT_SIEGE && client->siegeClass != -1)
+			{
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				duelAgainst->client->ps.stats[STAT_HEALTH] = duelAgainst->health = 100;
 
-		duelAgainst->client->ps.stats[STAT_HEALTH] = duelAgainst->health = 100; // defaults to 100.
-			
+				if (scl->maxhealth)
+				{
+				duelAgainst->client->ps.stats[STAT_HEALTH] = duelAgainst->health = scl->maxhealth;
+				}
+
+
+			}
+			else
+			{
+			duelAgainst->client->ps.stats[STAT_HEALTH] = duelAgainst->health = 100;
+			}			
 			
 		}	
 					
@@ -3596,8 +3651,23 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 		else 
 		{
+			if (g_gametype.integer == GT_SIEGE &&
+			client->siegeClass != -1 /*&&
+			bgSiegeClasses[client->siegeClass].startarmor*/)
+			{ //class specifies a start armor amount, so use it
+				siegeClass_t *scl = &bgSiegeClasses[client->siegeClass];
+				playerDuelShield = 100;		
 
-		playerDuelShield = 100;
+				if (scl->startarmor)
+				{
+				playerDuelShield = scl->startarmor;	
+				}
+			}
+			else
+			{
+				playerDuelShield = 100;		
+			}
+
 
 
 			
@@ -4918,9 +4988,7 @@ void ClientThink_real( gentity_t *ent ) {
 			{ //wave respawning on
 				forceRes = 1;
 			}
-			else if((g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM ||
-				g_gametype.integer == GT_CTF) &&
-				ojp_ffaRespawnTimer.integer)
+			else if(ojp_ffaRespawnTimer.integer)
 				forceRes = 1;
 
 			if ( forceRes > 0 && 

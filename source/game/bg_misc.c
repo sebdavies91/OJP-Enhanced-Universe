@@ -3184,7 +3184,7 @@ qboolean BG_CanItemBeGrabbed( int gametype, const entityState_t *ent, const play
 		return qtrue;
 
 	case IT_ARMOR:
-		if ( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH]/* * item->giTag*/ ) {
+		if ( ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_ARMOR]/* * item->giTag*/ ) {
 			return qfalse;
 		}
 		return qtrue;
@@ -4263,12 +4263,12 @@ qboolean BG_IsWhiteSpace(char c)
 //[LastManStanding]
 qboolean BG_IsLMSGametype(int gametype)
 {//indicates if this is a Last Man Standing compatible gametype or not.
-	if(gametype != GT_DUEL && gametype != GT_POWERDUEL && gametype != GT_SIEGE)
+
 	{
 		return qtrue;
 	}
 
-	return qfalse;
+//	return qfalse;
 }
 //[/LastManStanding]
 

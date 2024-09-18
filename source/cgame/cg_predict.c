@@ -456,12 +456,12 @@ static void Crosshair_CG_ClipMoveToEntities ( const vec3_t start, const vec3_t m
            				continue;
 			}
 			// lmo in the case of the crosshair we do want to see others in a duel if we are not dueling
-//			if ( !(cgs.m_duels & (1 << D_NOX)) && !cg.snap->ps.duelInProgress &&
-//				ent->bolt1 )
-//			{ //lmo if the entity is dueling -- but not with you, skip it
-//			  // NB. bolt1 contains the duelinprogress info
-//				continue;
-//			}
+			if (  !cg.snap->ps.duelInProgress &&
+				ent->bolt1 )
+			{ //lmo if the entity is dueling -- but not with you, skip it
+			  // NB. bolt1 contains the duelinprogress info
+				continue;
+			}
 		}
 		else if ( trace.fraction < 1.0 && cg.snap->ps.duelInProgress)
 		{

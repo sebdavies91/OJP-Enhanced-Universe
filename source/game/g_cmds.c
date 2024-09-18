@@ -1406,7 +1406,20 @@ void StopFollowing( gentity_t *ent ) {
 		}
 		else 
 		{
+		if (g_gametype.integer == GT_SIEGE && ent->client->siegeClass != -1)
+		{
+			siegeClass_t *scl = &bgSiegeClasses[ent->client->siegeClass];
+			ent->health = ent->client->ps.stats[STAT_HEALTH] = ent->client->ps.stats[STAT_MAX_HEALTH] = 100;
+
+			if (scl->maxhealth)
+			{
+				ent->health = ent->client->ps.stats[STAT_HEALTH] = ent->client->ps.stats[STAT_MAX_HEALTH] = scl->maxhealth;
+			}
+		}
+		else
+		{
 		ent->health = ent->client->ps.stats[STAT_HEALTH] = ent->client->ps.stats[STAT_MAX_HEALTH] = 100;
+		}
 		}
 	
 	
@@ -3294,7 +3307,7 @@ int G_ItemUsable(playerState_t *ps, int forcedUse)
 
 		return 1;
 	case HI_SHIELDBOOSTER:
-		if (ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_HEALTH])
+		if (ps->stats[STAT_ARMOR] >= ps->stats[STAT_MAX_ARMOR])
 		{
 			return 0;
 		}
@@ -3529,7 +3542,6 @@ qboolean G_ValidSaberStyle(gentity_t *ent, int saberStyle)
 	{//SS_YELLOW is the default and always valid
 		return qtrue;
 	}
-	
 	//otherwise, check to see if the player has the skill to use this style
 	switch (saberStyle)
 	{
@@ -3546,7 +3558,10 @@ qboolean G_ValidSaberStyle(gentity_t *ent, int saberStyle)
 				return qtrue;
 			}
 			break;
-	};
+	};		
+	
+
+
 
 	return qfalse;
 }

@@ -1376,10 +1376,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 	vec3_t		shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
 	//[/WeaponSys]
 
-	if ( g_gametype.integer == GT_SIEGE )
-	{
-		damage = DISRUPTOR_MAIN_DAMAGE_SIEGE;
-	}
+
 
 	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
 	{
@@ -1895,10 +1892,7 @@ static void WP_Disruptor2MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboo
 
 	//[/WeaponSys]
 
-	if ( g_gametype.integer == GT_SIEGE )
-	{
-		damage = DISRUPTOR_MAIN_DAMAGE_SIEGE;
-	}
+
 
 	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
 	{
@@ -2004,10 +1998,7 @@ static void WP_Disruptor3MainFire( gentity_t *ent )
 	vec3_t		shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
 	//[/WeaponSys]
 
-	if ( g_gametype.integer == GT_SIEGE )
-	{
-		damage = DISRUPTOR_MAIN_DAMAGE_SIEGE;
-	}
+
 
 	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
 	{
@@ -2483,10 +2474,7 @@ static void WP_Disruptor4MainFire( gentity_t *ent )
 	vec3_t		shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
 	//[/WeaponSys]
 
-	if ( g_gametype.integer == GT_SIEGE )
-	{
-		damage = DISRUPTOR_MAIN_DAMAGE_SIEGE;
-	}
+
 
 	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
 	{
@@ -3469,14 +3457,8 @@ static void WP_RepeaterAltFire( gentity_t *ent )
 	missile->splashMethodOfDeath = MOD_REPEATER_ALT_SPLASH;
 	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
 	missile->splashDamage = REPEATER_ALT_SPLASH_DAMAGE;
-	if ( g_gametype.integer == GT_SIEGE )	// we've been having problems with this being too hyper-potent because of it's radius
-	{
-		missile->splashRadius = REPEATER_ALT_SPLASH_RAD_SIEGE;
-	}
-	else
-	{
-		missile->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
-	}
+	missile->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
+	
 
 	// we don't want it to bounce forever
 	missile->bounceCount = 8;
@@ -3499,14 +3481,8 @@ static void WP_RepeaterAltFire( gentity_t *ent )
 	missile2->splashMethodOfDeath = MOD_REPEATER_ALT_SPLASH;
 	missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
 	missile2->splashDamage = REPEATER_ALT_SPLASH_DAMAGE;
-	if ( g_gametype.integer == GT_SIEGE )	// we've been having problems with this being too hyper-potent because of it's radius
-	{
-		missile2->splashRadius = REPEATER_ALT_SPLASH_RAD_SIEGE;
-	}
-	else
-	{
-		missile2->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
-	}
+	missile2->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
+
 
 	// we don't want it to bounce forever
 	missile2->bounceCount = 8;
@@ -3763,14 +3739,8 @@ static void WP_Repeater3AltFire( gentity_t *ent )
 	missile->splashMethodOfDeath = MOD_REPEATER_ALT_SPLASH;
 	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
 	missile->splashDamage = REPEATER_ALT_SPLASH_DAMAGE;
-	if ( g_gametype.integer == GT_SIEGE )	// we've been having problems with this being too hyper-potent because of it's radius
-	{
-		missile->splashRadius = REPEATER_ALT_SPLASH_RAD_SIEGE;
-	}
-	else
-	{
-		missile->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
-	}
+	missile->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
+
 
 	// we don't want it to bounce forever
 	missile->bounceCount = 8;
@@ -6498,7 +6468,7 @@ gentity_t *WP_FireThermalDetonator2( gentity_t *ent, qboolean altFire )
 
 	bolt->bounceCount = -5;
 
-	//return bolt;
+
 	
 	
 	
@@ -6568,7 +6538,7 @@ gentity_t *WP_FireThermalDetonator2( gentity_t *ent, qboolean altFire )
 	bolt2->bounceCount = -5;
 	
 
-	//return bolt, bolt2;
+	return bolt, bolt2;
 	}
 	else
 	{
@@ -6746,7 +6716,7 @@ gentity_t *WP_FireThermalDetonator3( gentity_t *ent, qboolean altFire )
 
 	bolt->bounceCount = -5;
 
-	//return bolt;
+
 	
 	
 	
@@ -6816,7 +6786,7 @@ gentity_t *WP_FireThermalDetonator3( gentity_t *ent, qboolean altFire )
 	bolt2->bounceCount = -5;
 	
 
-	//return bolt, bolt2;
+	return bolt, bolt2;
 	}
 	else
 	{
@@ -6994,7 +6964,7 @@ gentity_t *WP_FireThermalDetonator4( gentity_t *ent, qboolean altFire )
 
 	bolt->bounceCount = -5;
 
-	//return bolt;
+
 	
 	
 	
@@ -7064,7 +7034,7 @@ gentity_t *WP_FireThermalDetonator4( gentity_t *ent, qboolean altFire )
 	bolt2->bounceCount = -5;
 	
 
-	//return bolt, bolt2;
+	return bolt, bolt2;
 	}
 	else
 	{

@@ -70,12 +70,9 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_vehicles.c
   g_vehicleTurret.c
   g_weapon.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5874,8): warning C4101: 'rTime': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10566,6): warning C4101: 'count': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5844,8): warning C4101: 'rTime': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10536,6): warning C4101: 'count': unreferenced local variable
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6907): warning C4715: 'WP_FireThermalDetonator3': not all control paths return a value
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6659): warning C4715: 'WP_FireThermalDetonator2': not all control paths return a value
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(7155): warning C4715: 'WP_FireThermalDetonator4': not all control paths return a value
   Compiling...
   NPC.c
   NPC_AI_AssassinDroid.c
@@ -124,12 +121,12 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   SpeederNPC.c
   tri_coll_test.c
   w_force.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5003,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5301,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5511,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5723,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6255,13): warning C4101: 'aimingAt': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(7350,13): warning C4101: 'aimingAt': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5027,10): warning C4101: 'tr': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5325,10): warning C4101: 'tr': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5535,10): warning C4101: 'tr': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5747,10): warning C4101: 'tr': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6279,13): warning C4101: 'aimingAt': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(7374,13): warning C4101: 'aimingAt': unreferenced local variable
   w_saber.c
   WalkerNPC.c
   Generating Code...

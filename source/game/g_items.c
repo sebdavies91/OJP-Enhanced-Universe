@@ -1468,16 +1468,16 @@ static void ShieldBoosterGive(gentity_t *ent, int amount)
 		return;
 	}
 
-	if (ent->client->ps.stats[STAT_ARMOR] >= ent->client->ps.stats[STAT_MAX_HEALTH])
+	if (ent->client->ps.stats[STAT_ARMOR] >= ent->client->ps.stats[STAT_MAX_ARMOR])
 	{
 		return;
 	}
 
 	ent->client->ps.stats[STAT_ARMOR] += amount;
 
-	if (ent->client->ps.stats[STAT_ARMOR] > ent->client->ps.stats[STAT_MAX_HEALTH])
+	if (ent->client->ps.stats[STAT_ARMOR] > ent->client->ps.stats[STAT_MAX_ARMOR])
 	{
-		ent->client->ps.stats[STAT_ARMOR] = ent->client->ps.stats[STAT_MAX_HEALTH];
+		ent->client->ps.stats[STAT_ARMOR] = ent->client->ps.stats[STAT_MAX_ARMOR];
 	}
 
 }
@@ -4868,9 +4868,9 @@ int Pickup_Health (gentity_t *ent, gentity_t *other) {
 int Pickup_Armor( gentity_t *ent, gentity_t *other ) 
 {
 	other->client->ps.stats[STAT_ARMOR] += ent->item->quantity;
-	if ( other->client->ps.stats[STAT_ARMOR] > other->client->ps.stats[STAT_MAX_HEALTH] * ent->item->giTag ) 
+	if ( other->client->ps.stats[STAT_ARMOR] > other->client->ps.stats[STAT_MAX_ARMOR] * ent->item->giTag ) 
 	{
-		other->client->ps.stats[STAT_ARMOR] = other->client->ps.stats[STAT_MAX_HEALTH] * ent->item->giTag;
+		other->client->ps.stats[STAT_ARMOR] = other->client->ps.stats[STAT_MAX_ARMOR] * ent->item->giTag;
 	}
 
 	return adjustRespawnTime(RESPAWN_ARMOR, ent->item->giType, ent->item->giTag);
