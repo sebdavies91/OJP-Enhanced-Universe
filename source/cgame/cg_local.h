@@ -40,9 +40,9 @@
 #define	STEP_TIME			200
 #define	DUCK_TIME			100
 #define	PAIN_TWITCH_TIME	200
-#define	WEAPON_SELECT_TIME	1400
+#define	WEAPON_SELECT_TIME	1500
 #define	ITEM_SCALEUP_TIME	1000
-
+#define	WEAPON_SELECT_DELAY_TIME	300
 // Zoom vars
 #define	ZOOM_TIME			150		// not currently used?
 #define MAX_ZOOM_FOV		3.0f
@@ -1096,7 +1096,7 @@ typedef struct {
 	float			iconSelectTime;
 	float			invenSelectTime;
 	float			forceSelectTime;
-
+	float			delaySelectTime;
 	vec3_t			lastFPFlashPoint;
 
 /*

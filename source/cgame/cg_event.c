@@ -949,6 +949,7 @@ static void CG_ItemPickup( int itemNum ) {
 				if (!cg.snap->ps.emplacedIndex)
 				{
 					cg.weaponSelectTime = cg.time;
+					cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 				}
 				cg.weaponSelect = bg_itemlist[itemNum].giTag;
 			}
@@ -961,6 +962,7 @@ static void CG_ItemPickup( int itemNum ) {
 				if (!cg.snap->ps.emplacedIndex)
 				{
 					cg.weaponSelectTime = cg.time;
+					cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 				}
 				cg.weaponSelect = bg_itemlist[itemNum].giTag;
 			}
@@ -974,6 +976,7 @@ static void CG_ItemPickup( int itemNum ) {
 				if (!cg.snap->ps.emplacedIndex)
 				{
 					cg.weaponSelectTime = cg.time;
+					cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 				}
 				cg.weaponSelect = bg_itemlist[itemNum].giTag;
 			}
@@ -2376,6 +2379,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					if (cg.forceSelectTime < cg.time)
 					{
 						cg.forceSelectTime = cg.time;
+						cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
+						
 					}
 				}
 

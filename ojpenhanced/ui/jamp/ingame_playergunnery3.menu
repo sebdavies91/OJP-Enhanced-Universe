@@ -239,7 +239,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Thermal Detonator / Flame Grenade / Dioxis Gas Grenade"
+			descText				"Merr Sonn Thermal Detonator / Czerka Flame Grenade / Baktoid Dioxis Grenade"
 			visible					1 
 			action 
 			{ 
@@ -298,7 +298,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Ion Grenade / .. / .."
+			descText				"Kirgo Ion Grenade / .. / .."
 			visible					1 
 			action 
 			{ 
@@ -450,7 +450,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Thermal Mine / Flame Mine / Dioxis Mine"
+			descText				"Golan Arms Thermal Mine / Czerka Flame Mine / Baktoid Dioxis Mine"
 			visible					1 
 			action 
 			{ 
@@ -509,7 +509,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Ion Mine / .. / .."
+			descText				"Kirgo Ion Mine / .. / .."
 			visible					1 
 			action 
 			{ 
@@ -662,7 +662,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Thermal Bomb / Flame Bomb / Dioxis Bomb"
+			descText				"Merr Sonn Thermal Bomb / Czerka Flame Bomb / Baktoid Dioxis Bomb"
 			visible					1 
 			action 
 			{ 
@@ -721,7 +721,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Ion Bomb / .. / .."
+			descText				"Kirgo Ion Bomb / .. / .."
 			visible					1 
 			action 
 			{ 

@@ -4644,6 +4644,7 @@ void CG_NextForcePower_f( void )
 	{
 		cg.forceSelect = cg.snap->ps.fd.forcePowerSelected;
 		cg.forceSelectTime = cg.time;
+		cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 	}
 }
 
@@ -4691,6 +4692,7 @@ void CG_PrevForcePower_f( void )
 	{
 		cg.forceSelect = cg.snap->ps.fd.forcePowerSelected;
 		cg.forceSelectTime = cg.time;
+		cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 	}
 }
 
@@ -4721,6 +4723,7 @@ void CG_NextInventory_f(void)
 	{
 		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 		cg.invenSelectTime = cg.time;
+		cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 	}
 }
 
@@ -4751,5 +4754,6 @@ void CG_PrevInventory_f(void)
 	{
 		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 		cg.invenSelectTime = cg.time;
+		cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 	}
 }

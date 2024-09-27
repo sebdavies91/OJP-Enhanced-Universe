@@ -298,7 +298,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Merr-Sonn JT-12 Metal Jetpack / Merr-Sonn JT-12 White Jetpack / Rocket Boots"
+			descText				"Merr-Sonn JT-12 Metal Jetpack / Merr-Sonn JT-12 White Jetpack / Mitrinomon Rocket Boots"
 			visible					1 
 			action 
 			{ 
@@ -452,7 +452,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Thermal Rocket / Flame Rocket / Concussion Rocket"
+			descText				"Merr Sonn Thermal Rocket / Czerka Flame Rocket / Stouker Concussion Rocket"
 			visible					1 
 			action 
 			{ 

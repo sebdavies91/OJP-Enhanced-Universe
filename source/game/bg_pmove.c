@@ -7465,9 +7465,17 @@ void PM_BeginWeaponChange( int weapon ) {
 		pm->ps->stats[STAT_AMMOPOOL] = ent->client->ps.stats[STAT_AMMOPOOL] = ent->bullets[pm->ps->weapon];
 	}
 
+	
+
+	
+
+	
+
 #endif
 //[Reload]
 
+	
+	
 	// turn of any kind of zooming when weapon switching.
 	if (pm->ps->zoomMode)
 	{
@@ -7882,13 +7890,6 @@ void PM_FinishWeaponChange( void ) {
 	}
 	
 
-	
-
-	
-	if(g_gametype.integer == GT_SIEGE)
-	{
-		pm->ps->eFlags2 &= ~EF2_NOALTFIRE;
-	}
 	
 #endif
 	//[SaberThrowSys][test]

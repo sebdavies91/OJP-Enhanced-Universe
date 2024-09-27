@@ -238,7 +238,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Tenloss DXR-6 Disruptor Rifle / Tusken Cycler Sniper Rifle / Blastech DLT-20A Laser Rifle"
+			descText				"Tenloss DXR-6 Disruptor Rifle / Tusken Cycler Projectile Rifle / Blastech DLT-20A Laser Rifle"
 			visible					1 
 			action 
 			{ 
@@ -295,7 +295,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baktoid E-5S Sniper Rifle / .. / .."
+			descText				"Baktoid E-5S Disruptor Rifle / .. / .."
 			visible					1 
 			action 
 			{ 
@@ -537,7 +537,7 @@
 			name				forceranktitleB
 			group				"playersettingforcegroup"
 			style				0	
-			text				"Blaster/Flechette Shotguns"
+			text				"Shot/Array Guns"
 			rect				180 165 0 0
 			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
@@ -579,7 +579,7 @@
 			name					setsk_flechette
 			group					gunpowers
 			style					0	
-			text					"Blaster/Flechette Shotgun:"
+			text					"Shot/Array Gun:"
 			rect					180 180 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -612,7 +612,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Blaster/Flechette Shotgun"
+			descText				"Shot/Array Gun"
 			visible					1 
 			action 
 			{ 
@@ -670,7 +670,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Golan Arms FC-1 Flechette Shotgun / Golan Arms CR-1 Blaster Cannon / Blastech DBA Blaster Array Gun"
+			descText				"Golan Arms FC-1 Shotgun / Golan Arms CR-1 Shotgun / Blastech DBA Array Gun"
 			visible					1 
 			action 
 			{ 
@@ -727,7 +727,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Arakyd ACP Blaster Array Gun / .. / .."
+			descText				"Arakyd ACP Array Gun / .. / .."
 			visible					1 
 			action 
 			{ 
@@ -886,7 +886,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Stouker Concussion Rifle / Merr Sonn Z-6 Rotary Cannon / Merr Sonn Z-12 Rotary Cannon"
+			descText				"Stouker Concussion Cannon / Merr Sonn Z-6 Rotary Cannon / Merr Sonn Z-12 Rotary Cannon"
 			visible					1 
 			action 
 			{ 
@@ -943,7 +943,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Arakyd LJ-70 Concussion Rifle / .. / .."
+			descText				"Arakyd LJ-70 Concussion Cannon / .. / .."
 			visible					1 
 			action 
 			{ 
@@ -1063,7 +1063,7 @@
 			name					setsk_rocketA
 			group					gunpowers
 			style					0	
-			text					"PLX-2M / PMG / PLX-1:"
+			text					"PLX-2M / MG / PLX-1:"
 			rect					180 285 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -1098,7 +1098,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Merr Sonn PLX-2M Rocket Launcher / Packered Mortar Gun / Merr Sonn PLX-1 Rocket Launcher"
+			descText				"Merr Sonn PLX-2M Rocket Launcher / Packered MG Grenade Launcher / Merr Sonn PLX-1 Rocket Launcher"
 			visible					1 
 			action 
 			{ 

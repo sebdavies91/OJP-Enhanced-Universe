@@ -1509,14 +1509,15 @@ void CG_PredictPlayerState( void ) {
 		cg_pmove.ps->fd.saberAnimLevelBase = cg_pmove.ps->fd.saberAnimLevel;
 		if ( cg_pmove.ps->saberHolstered == 1 )
 		{
-			if ( ci->saber[0].numBlades > 0 )
-			{
-				cg_pmove.ps->fd.saberAnimLevelBase = SS_STAFF;
-			}
-			else if ( ci->saber[1].model[0] )
+			if ( ci->saber[1].model[0] )
 			{
 				cg_pmove.ps->fd.saberAnimLevelBase = SS_DUAL;
 			}
+			else if ( ci->saber[0].numBlades > 0 )
+			{
+				cg_pmove.ps->fd.saberAnimLevelBase = SS_STAFF;
+			}
+
 		}
 	
 		Pmove (&cg_pmove);

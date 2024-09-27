@@ -192,6 +192,7 @@ void CG_Respawn( void ) {
 
 	// display weapons available
 	cg.weaponSelectTime = cg.time;
+	cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 
 	// select the weapon the server says we are using
 	cg.weaponSelect = cg.snap->ps.weapon;

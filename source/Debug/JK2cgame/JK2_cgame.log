@@ -12,6 +12,7 @@
   cg_camera.c
   cg_consolecmds.c
   cg_draw.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2555,7): warning C4101: 'itemNdex': unreferenced local variable
   cg_drawtools.c
   cg_effects.c
   cg_ents.c

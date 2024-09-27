@@ -1,3 +1,4 @@
+
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_players.c -- handle the media and animation for player entities
@@ -9,6 +10,9 @@
 //True View Camera Position Check Function
 extern void CheckCameraLocation( vec3_t OldeyeOrigin );
 //[/TrueView]
+								 
+	  
+						   
 
 extern vmCvar_t	cg_thirdPersonAlpha;
 
@@ -1333,8 +1337,10 @@ qboolean	trueviewwarning = qfalse;
 CG_RegisterClientModelname
 ==========================
 */
+							   
 qboolean BG_IsValidCharacterModel(const char *modelName, const char *skinName);
 qboolean BG_ValidateSkinForTeam( const char *modelName, char *skinName, int team, float *colors );
+							 
 
 static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName, const char *teamName, int clientNum ) {
 	int handle;
@@ -2587,6 +2593,11 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	int k = 0;
 	qboolean saberUpdate[MAX_SABERS];
 
+			
+										   
+		 
+	  
+
 	ci = &cgs.clientinfo[clientNum];
 
 	oldGhoul2 = ci->ghoul2Model;
@@ -2626,6 +2637,16 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 			k++;
 		}
 
+			
+																	   
+																   
+						
+							
+
+																							  
+									  
+	  
+
 		memset( ci, 0, sizeof( *ci ) );
 		return;		// player just left
 	}
@@ -2637,6 +2658,9 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	// isolate the player's name
 	v = Info_ValueForKey(configstring, "n");
 	Q_strncpyz( newInfo.name, v, sizeof( newInfo.name ) );
+ 
+															   
+										 
 
 	// colors
 	v = Info_ValueForKey( configstring, "c1" );
@@ -2939,6 +2963,26 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		newInfo.colorOverride[0] = newInfo.colorOverride[1] = newInfo.colorOverride[2] = 0.0f;
 	}
 
+			
+						   
+						   
+
+												  
+  
+																							  
+																								  
+
+								
+
+						   
+												 
+
+									
+
+								 
+  
+	  
+
 	// scan for an existing clientinfo that matches this modelname
 	// so we can avoid loading checks if possible
 	if ( !CG_ScanForExistingClientInfo( &newInfo, clientNum ) ) {
@@ -2951,7 +2995,13 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 			// keep whatever they had if it won't violate team skins
 			CG_SetDeferredClientInfo( &newInfo );
 		} else {
+			
+								 
+	  
 			CG_LoadClientInfo( &newInfo );
+			
+								  
+	  
 		}
 	}
 
@@ -2989,7 +3039,9 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 
 	// Check if the ghoul2 model changed in any way.  This is safer than assuming we have a legal cent shile loading info.
 	if (entitiesInitialized && ci->ghoul2Model && (oldGhoul2 != ci->ghoul2Model))
+  
 	{	// Copy the new ghoul2 model to the centity.
+											  
 		animation_t *anim;
 		centity_t *cent = &cg_entities[clientNum];
 		
@@ -3440,6 +3492,7 @@ void CG_PlayerAnimEventDo( centity_t *cent, animevent_t *animEvent )
 	case AEV_SOUND:
 		{	// are there variations on the sound?
 			if ( animEvent->eventData[AED_SOUNDINDEX_START] == 0)
+					 
 			{
 				const int n = Q_irand( animEvent->eventData[AED_CSOUND_RANDSTART], (animEvent->eventData[AED_CSOUND_RANDSTART]+animEvent->eventData[AED_SOUND_NUMRANDOMSNDS]) );
 				trap_S_StartSound( NULL, cent->currentState.number, channel, CG_CustomSound(cent->currentState.number, va(animEvent->stringData, n)) );
@@ -4022,8 +4075,10 @@ qboolean CG_InRollAnim( centity_t *cent )
 CG_SetLerpFrameAnimation
 ===============
 */
+							   
 qboolean BG_SaberStanceAnim( int anim );
 qboolean PM_RunningAnim( int anim );
+							 
 static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFrame_t *lf, int newAnimation, float animSpeedMult, qboolean torsoOnly, qboolean flipState) {
 	animation_t	*anim;
 	float animSpeed;
@@ -4479,6 +4534,16 @@ static void CG_RunLerpFrame( centity_t *cent, clientInfo_t *ci, lerpFrame_t *lf,
 		lf->lastForcedFrame = -1;
 
 		if ( (newAnimation != lf->animationNumber || cent->currentState.brokenLimbs != ci->brokenLimbs || lf->lastFlip != flipState || !lf->animation) || (CG_FirstAnimFrame(lf, torsoOnly, speedScale)) ) 
+														  
+								  
+					   
+													   
+															
+													   
+													 
+						 
+											   
+													 
 		{
 			CG_SetLerpFrameAnimation( cent, ci, lf, newAnimation, speedScale, torsoOnly, flipState);
 		}
@@ -4528,7 +4593,9 @@ static void CG_ClearLerpFrame( centity_t *cent, clientInfo_t *ci, lerpFrame_t *l
 CG_PlayerAnimation
 ===============
 */
+							   
 qboolean PM_WalkingAnim( int anim );
+							 
 
 static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float *legsBackLerp,
 						int *torsoOld, int *torso, float *torsoBackLerp ) {
@@ -4581,6 +4648,7 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 	{
 		speedScale = 1.7f;
 	}
+
 	*legsOld = cent->pe.legs.oldFrame;
 	*legs = cent->pe.legs.frame;
 	*legsBackLerp = cent->pe.legs.backlerp;
@@ -5214,6 +5282,7 @@ void CG_G2ServerBoneAngles(centity_t *cent)
 			bone = cent->currentState.boneIndex2;
 			VectorCopy(cent->currentState.boneAngles2, boneAngles);
 			break;
+  
 		case 1:
 			bone = cent->currentState.boneIndex3;
 			VectorCopy(cent->currentState.boneAngles3, boneAngles);
@@ -5222,6 +5291,7 @@ void CG_G2ServerBoneAngles(centity_t *cent)
 			bone = cent->currentState.boneIndex4;
 			VectorCopy(cent->currentState.boneAngles4, boneAngles);
 			break;
+  
 		default:
 			break;
 		}
@@ -5716,6 +5786,10 @@ static void CG_PlayerFlag( centity_t *cent, qhandle_t hModel ) {
 	*/
 	//FIXME: Not doing this at the moment because sorting totally messes up
 
+			
+										  
+							
+	  
 	trap_R_AddRefEntityToScene( &ent );
 }
 
@@ -5802,6 +5876,10 @@ static void CG_PlayerFloatSprite( centity_t *cent, qhandle_t shader ) {
 	ent.shaderRGBA[1] = 255;
 	ent.shaderRGBA[2] = 255;
 	ent.shaderRGBA[3] = 255;
+			
+										  
+								  
+	  
 	trap_R_AddRefEntityToScene( &ent );
 }
 
@@ -5870,6 +5948,12 @@ static void CG_PlayerSprites( centity_t *cent ) {
 	{
 		CG_PlayerFloatSprite( cent, cgs.media.vchatShader );
 	}
+																				   
+										 
+  
+														
+		 
+  
 //	else if ( cent->currentState.eType != ET_NPC && //don't draw talk balloons on NPCs
 //		(cent->currentState.eFlags & EF_TALK) )
 //	{
@@ -7141,7 +7225,10 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, float
 	}
 	//[/RGBSabers]
 
+			
+										  
 	saber.renderfx = rfx;
+	  
 
 	trap_R_AddRefEntityToScene( &saber );
 
@@ -10782,6 +10869,7 @@ void CG_SaberCompWork(vec3_t start, vec3_t end, centity_t *owner, int saberNum, 
 							{ //don't do on fighters cause they have crazy full axial angles
 								int weaponMarkShader = 0, markShader = cgs.media.bdecal_saberglow;
 
+		
 								VectorSubtract(endTr, trace.endpos, ePos);
 								VectorNormalize(ePos);
 								VectorMA(trace.endpos, 4.0f, ePos, ePos);
@@ -10789,6 +10877,8 @@ void CG_SaberCompWork(vec3_t start, vec3_t end, centity_t *owner, int saberNum, 
 								if (owner->currentState.eType == ET_NPC)
 								{
 									client = owner->npcClient;
+																	  
+															
 								}
 								else
 								{
@@ -10924,7 +11014,9 @@ void CG_SaberCompWork(vec3_t start, vec3_t end, centity_t *owner, int saberNum, 
 #define SABER_TRAIL_TIME	40.0f
 #define FX_USE_ALPHA		0x08000000
 
+							   
 qboolean BG_SuperBreakWinAnim( int anim );
+							 
 
 void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, int renderfx, int modelIndex, int saberNum, int bladeNum, vec3_t origin, vec3_t angles, qboolean fromSaber, qboolean dontDraw)
 {
@@ -11002,12 +11094,18 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 	BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, org_);
 	BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, axis_[0]);
 
+			
+									  
+	  
 	if (!fromSaber && saberEnt && !cent->currentState.saberInFlight)
 	{
 		VectorCopy(org_, saberEnt->currentState.pos.trBase);
 
 		VectorCopy(axis_[0], saberEnt->currentState.apos.trBase);
 	}
+			
+  
+	  
 
 	VectorMA( org_, saberLen, axis_[0], end );
 	
@@ -11084,12 +11182,18 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 				trace.endpos[2] += seDif[2]*0.1f;
 			}
 
+			
+										
+	  
 			if (client->saber[saberNum].blade[bladeNum].storageTime < cg.time)
 			{ //debounce it in case our framerate is absurdly high. Using storageTime since it's not used for anything else in the client.
 				CG_SaberCompWork(org_, trace.endpos, cent, saberNum, bladeNum);
 
 				client->saber[saberNum].blade[bladeNum].storageTime = cg.time + 5;
+	
+			
 			}
+	  
 		}
 
 		for ( i = 0; i < 1; i++ )//was 2 because it would go through architecture and leave saber trails on either side of the brush - but still looks bad if we hit a corner, blade is still 8 longer than hit
@@ -11196,6 +11300,9 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 			}
 		}
 	}
+
+		   
+
 CheckTrail:   
         
 	if (!cg_saberTrail.integer)
@@ -11225,6 +11332,8 @@ CheckTrail:
 		if(cent->currentState.userInt3 & (1 << FLAG_ATTACKFAKE))
 		{//attack faking, have a longer saber trail
 			saberTrail->duration *= 2;
+   
+				  
 		}
 
 		if( cent->currentState.userInt3 & (1 << FLAG_FATIGUED_HEAVY) )
@@ -11249,20 +11358,29 @@ CheckTrail:
 		// if we happen to be timescaled or running in a high framerate situation, we don't want to flood
 		//	the system with very small trail slices...but perhaps doing it by distance would yield better results?
 		if ( cg.time > saberTrail->lastTime + 2 || cg_saberTrail.integer == 2 ) // 2ms
+  
+				
 		{
 			if (!dontDraw)
 			{
 				if ( (BG_SuperBreakWinAnim(cent->currentState.torsoAnim) || saberMoveData[cent->currentState.saberMove].trailLength > 0 || ((cent->currentState.powerups & (1 << PW_SPEED) && cg_speedTrail.integer)) || (cent->currentState.saberInFlight && saberNum == 0)) && cg.time < saberTrail->lastTime + 2000 ) // if we have a stale segment, don't draw until we have a fresh one
+																							   
 				{
 		#if 0
 					if (cg_saberTrail.integer == 2 && cg_shadows.integer != 2 && cgs.glconfig.stencilBits >= 4)
 					{
 						polyVert_t	verts[4];
+												 
+												  
 
+																					  
 						VectorCopy( org_, verts[0].xyz );
 						VectorMA( end, 3.0f, axis_[0], verts[1].xyz );
 						VectorCopy( saberTrail->tip, verts[2].xyz );
 						VectorCopy( saberTrail->base, verts[3].xyz );
+								 
+								 
+								
 
 						//tc doesn't even matter since we're just gonna stencil an outline, but whatever.
 						verts[0].st[0] = 0;	
@@ -11295,9 +11413,35 @@ CheckTrail:
 
 						//don't capture postrender objects (now we'll postrender the saber so it doesn't get in the capture)
 						trap_R_SetRefractProp(1.0f, 0.0f, qtrue, qtrue);
+	 
+		
+	   
+	 
+										
 
 						//shader 2 is always the crazy refractive shader.
 						trap_R_AddPolyToScene( 2, 4, verts );
+					 
+											 
+			 
+						
+											  
+			 
+						
+											   
+			 
+					   
+											 
+			 
+					  
+											  
+			 
+						
+											   
+			 
+			  
+											  
+			 
 					}
 					else
 		#endif
@@ -11371,6 +11515,9 @@ CheckTrail:
 									}
 									else
 									VectorSet( rgb1, 0.0f, 64.0f, 255.0f );
+						 
+														  
+												  
 
 								}
 								break;
@@ -11489,8 +11636,14 @@ CheckTrail:
 							*/
 							//[RGBSabers]
 							if(scolor == SABER_BLACK)
+		
+		  
+	   
 								fx.mShader = cgs.media.blackSaberTrail;
 							//[/RGBSabers]
+								   
+	   
+		
 
 							trap_FX_AddPrimitive(&fx);
 						}
@@ -11892,6 +12045,11 @@ void CG_DrawPlayerSphere(centity_t *cent, vec3_t origin, float scale, int shader
 	ent.hModel = cgs.media.halfShieldModel;
 	ent.customShader = shader;	
 
+			
+										  
+							
+	  
+
 	trap_R_AddRefEntityToScene( &ent );
 
 	if (!cg.renderingThirdPerson && cent->currentState.number == cg.predictedPlayerState.clientNum)
@@ -12198,8 +12356,10 @@ int CG_HandleAppendedSkin(char *modelName)
 }
 
 //Create a temporary ghoul2 instance and get the gla name so we can try loading animation data and sounds.
+							   
 void BG_GetVehicleModelName(char *modelname);
 void BG_GetVehicleSkinName(char *skinname);
+							 
 
 void CG_CacheG2AnimInfo(char *modelName)
 {
@@ -12320,10 +12480,12 @@ static void CG_RegisterVehicleAssets( Vehicle_t *pVeh )
 
 extern void CG_HandleNPCSounds(centity_t *cent);
 
+							   
 extern void G_CreateAnimalNPC( Vehicle_t **pVeh, const char *strAnimalType );
 extern void G_CreateSpeederNPC( Vehicle_t **pVeh, const char *strType );
 extern void G_CreateWalkerNPC( Vehicle_t **pVeh, const char *strAnimalType );
 extern void G_CreateFighterNPC( Vehicle_t **pVeh, const char *strType );
+							 
 
 extern playerState_t *cgSendPS[MAX_GENTITIES];
 void CG_G2AnimEntModelLoad(centity_t *cent)
@@ -14314,7 +14476,9 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 CG_Player
 ===============
 */
+							   
 int BG_EmplacedView(vec3_t baseAngles, vec3_t angles, float *newYaw, float constraint);
+							 
 
 float CG_RadiusForCent( centity_t *cent )
 {
@@ -14375,10 +14539,19 @@ void CG_CheckThirdPersonAlpha( centity_t *cent, refEntity_t *legs )
 			{//vehicle has auto third-person alpha on
 				trace_t trace;
 				vec3_t	dir2Crosshair, end;
+			
+																								 
+	 
 				VectorSubtract( cg_crosshairPos, cameraCurLoc, dir2Crosshair );
+	  
 				VectorNormalize( dir2Crosshair );
+			
+																																   
+																																   
+	 
 				VectorMA( cameraCurLoc, cent->m_pVehicle->m_pVehicleInfo->cameraRange*2.0f, dir2Crosshair, end );
 				CG_G2Trace( &trace, cameraCurLoc, vec3_origin, vec3_origin, end, ENTITYNUM_NONE, CONTENTS_BODY );
+	  
 				if ( trace.entityNum == cent->currentState.clientNum 
 					|| trace.entityNum == cg.predictedPlayerState.clientNum)
 				{//hit me or the vehicle I'm in
@@ -14404,6 +14577,9 @@ void CG_CheckThirdPersonAlpha( centity_t *cent, refEntity_t *legs )
 				cg_vehThirdPersonAlpha = 1.0f;
 				//use the cvar
 				alpha = cg_thirdPersonAlpha.value;
+			
+															  
+	  
 			}
 		}
 	}
@@ -14414,6 +14590,9 @@ void CG_CheckThirdPersonAlpha( centity_t *cent, refEntity_t *legs )
 		//use the cvar
 		setFlags = RF_FORCE_ENT_ALPHA;
 		alpha = cg_thirdPersonAlpha.value;
+			
+															
+	  
 	}
 	
 	if ( alpha < 1.0f )
@@ -15863,6 +16042,9 @@ void CG_Player( centity_t *cent ) {
 	//first if we are not an npc and we are using an emplaced gun then make sure our
 	//angles are visually capped to the constraints (otherwise it's possible to lerp
 	//a little outside and look kind of twitchy)
+			
+									  
+	  
 	if (cent->currentState.weapon == WP_EMPLACED_GUN &&
 		cent->currentState.otherEntityNum2)
 	{
@@ -15873,6 +16055,9 @@ void CG_Player( centity_t *cent ) {
 			cent->lerpAngles[YAW] = empYaw;
 		}
 	}
+			
+  
+	  
 
 	if (cent->currentState.iModelScale)
 	{ //if the server says we have a custom scale then set it now.
@@ -15890,6 +16075,9 @@ void CG_Player( centity_t *cent ) {
 		VectorClear(cent->modelScale);
 	}
 
+			
+									  
+	  
 	if ((cg_smoothClients.integer || cent->currentState.heldByClient) && (cent->currentState.groundEntityNum >= ENTITYNUM_WORLD || cent->currentState.eType == ET_TERRAIN) &&
 		!(cent->currentState.eFlags2 & EF2_HYPERSPACE) && cg.predictedPlayerState.m_iVehicleNum != cent->currentState.number)
 	{ //always smooth when being thrown
@@ -15935,6 +16123,9 @@ void CG_Player( centity_t *cent ) {
 	{
 		VectorCopy(cent->lerpOrigin, cent->beamEnd);
 	}
+			
+  
+	  
 
 	if (cent->currentState.m_iVehicleNum &&
 		cent->currentState.NPC_class != CLASS_VEHICLE)
@@ -16061,6 +16252,9 @@ void CG_Player( centity_t *cent ) {
 	}
 
 	// Add the player to the radar if on the same team and its a team game
+			
+																												   
+	  
 	if (cgs.gametype >= GT_TEAM)
 	{
 		if ( cent->currentState.eType != ET_NPC &&
@@ -16084,6 +16278,11 @@ void CG_Player( centity_t *cent ) {
 		}
 
 	}
+			
+  
+			
+  
+	  
 
 	if (!cent->ghoul2)
 	{ //not ready yet?
@@ -16121,6 +16320,9 @@ void CG_Player( centity_t *cent ) {
 		return;
 	}
 
+			
+									  
+	  
 	if (ci->superSmoothTime)
 	{ //do crazy smoothing
 		if (ci->superSmoothTime > cg.time)
@@ -16133,6 +16335,11 @@ void CG_Player( centity_t *cent ) {
 			trap_G2API_AbsurdSmoothing(cent->ghoul2, qfalse);
 		}
 	}
+			
+  
+			
+  
+	  
 
 	if (cg.predictedPlayerState.pm_type == PM_INTERMISSION)
 	{ //don't show all this shit during intermission
@@ -16405,6 +16612,9 @@ void CG_Player( centity_t *cent ) {
 	}
 	else if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), 3))
 	{ //fixme: would be good if this could be done not every frame
+			
+									 
+	  
 		trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), 3);
 	}
 
@@ -16420,6 +16630,9 @@ void CG_Player( centity_t *cent ) {
 		cent->weapon = 0;
 	}
 
+			
+									  
+	  
 	if (cent->torsoBolt && !(cent->currentState.eFlags & EF_DEAD))
 	{ //he's alive and has a limb missing still, reattach it and reset the weapon
 		CG_ReattachLimb(cent);
@@ -16436,12 +16649,25 @@ void CG_Player( centity_t *cent ) {
 		trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), 1);
 		g2HasWeapon = qfalse;
 	}
+			
+  
+			
+  
+	  
 
+			
+																																		   
+																				
+														   
+																	
+  
+	 
 	if (!cent->trickAlphaTime || (cg.time - cent->trickAlphaTime) > 1000)
 	{ //things got out of sync, perhaps a new client is trying to fill in this slot
 		cent->trickAlpha = 255;
 		cent->trickAlphaTime = cg.time;
 	}
+	  
 
 	if (cent->currentState.eFlags & EF_NODRAW)
 	{ //If nodraw, return here
@@ -16453,6 +16679,54 @@ void CG_Player( centity_t *cent ) {
 	}
 
 	//If this client has tricked you.
+			
+														 
+									 
+									 
+									 
+						 
+  
+															 
+   
+																																 
+																	 
+
+															  
+	
+														   
+	
+
+			   
+   
+	  
+   
+			   
+														  
+																	 
+				
+   
+  
+	 
+  
+															   
+   
+																															 
+																	 
+
+																
+	
+															 
+	
+
+			   
+   
+	  
+   
+															
+																	 
+   
+  
+	 
 	if (CG_IsMindTricked(cent->currentState.trickedentindex,
 		cent->currentState.trickedentindex2,
 		cent->currentState.trickedentindex3,
@@ -16499,6 +16773,7 @@ void CG_Player( centity_t *cent ) {
 			cent->trickAlphaTime = cg.time;
 		}
 	}
+	  
 
 	// get the player model information
 	renderfx = 0;
@@ -16652,6 +16927,11 @@ void CG_Player( centity_t *cent ) {
 	{
 		 cent->saberWasInFlight = qfalse;
 	}
+			
+  
+			
+  
+	  
 
 	memset (&legs, 0, sizeof(legs));
 
@@ -16755,6 +17035,7 @@ void CG_Player( centity_t *cent ) {
 		{
 			if (CG_ThereIsAMaster())
 			{
+  
 				if (!cg.snap->ps.isJediMaster)
 				{
 					if (!cent->currentState.isJediMaster)
@@ -16762,6 +17043,7 @@ void CG_Player( centity_t *cent ) {
 						CG_PlayerFloatSprite( cent, cgs.media.teamRedShader);
 					}
 				}
+  
 			}
 		}
 	}
@@ -16837,6 +17119,10 @@ void CG_Player( centity_t *cent ) {
 		AnglesToAxis( angles, seeker.axis );
 
 		seeker.hModel = trap_R_RegisterModel("models/items/remote.md3");
+			
+										   
+								
+	  
 		trap_R_AddRefEntityToScene( &seeker );
 	}
 
@@ -16911,6 +17197,14 @@ void CG_Player( centity_t *cent ) {
 	{
 		if ( !cg.renderingThirdPerson && (cg_trueguns.integer || cent->currentState.weapon == WP_SABER 
 			|| cent->currentState.weapon == WP_MELEE) && !cg.predictedPlayerState.zoomMode)	
+									 
+				   
+		  
+   
+  
+																						   
+									 
+					   
 		{
 			//<True View varibles
 			mdxaBone_t 		eyeMatrix;
@@ -16947,12 +17241,16 @@ void CG_Player( centity_t *cent ) {
 						goto SkipTrueView;
 					}
 				}
+								  
+		   
 			}
 					
 			//Set the original eye Origin
 			VectorCopy( cg.refdef.vieworg, OldeyeOrigin);
 
 			//set the player's view origin
+						   
+																																						
 			BG_GiveMeVectorFromMatrix(&eyeMatrix, ORIGIN, cg.refdef.vieworg);
 
 			//Find the orientation of the eye tag surface
@@ -17014,6 +17312,7 @@ void CG_Player( centity_t *cent ) {
 
 		}
 	}
+	  
 
 SkipTrueView:
 
@@ -17069,6 +17368,10 @@ SkipTrueView:
 
 			//reframe_minus1.customShader = 2;
 
+			
+											
+										 
+	  
 			trap_R_AddRefEntityToScene(&reframe_minus1);
 		}
 
@@ -17094,11 +17397,18 @@ SkipTrueView:
 
 			//reframe_minus2.customShader = 2;
 
+			
+											
+										 
+	  
 			trap_R_AddRefEntityToScene(&reframe_minus2);
 		}
 	}
 
 	//trigger animation-based sounds, done before next lerp frame.
+			
+									
+	  
 	CG_TriggerAnimSounds(cent);
 
 	// get the animation state (after rotation, to allow feet shuffle)
@@ -17108,10 +17418,18 @@ SkipTrueView:
 	// add the talk baloon or disconnect icon
 	CG_PlayerSprites( cent );
 
+			
+									  
+	  
 	if (cent->currentState.eFlags & EF_DEAD)
 	{ //keep track of death anim frame for when we copy off the bodyqueue
 		ci->frame = cent->pe.torso.frame;
 	}
+			
+  
+			
+  
+	  
 
 	if (cent->currentState.activeForcePass && cent->currentState.forcePowersActive & (1 << FP_DRAIN)
 		&& cent->currentState.NPC_class != CLASS_VEHICLE)
@@ -17690,6 +18008,7 @@ SkipTrueView:
 
 		{
 			trap_FX_PlayEntityEffectID(cgs.effects.flamethrower, efOrgL, axis, -1, -1, -1, -1);
+																															 
 		}
 
 	}
@@ -18018,6 +18337,10 @@ SkipTrueView:
 			{
 			//use refractive effect
 //			CG_ForceGraspEffect( efOrgL );
+					  
+				  
+						   
+													   
 
 			}
 			}
@@ -18026,10 +18349,14 @@ SkipTrueView:
 			//use refractive effect
 //			CG_ForceGraspEffect( efOrgL );
 
+																	 
+	 
+													 
 			}	
 			
 		
 
+												 
 
 			}
 			else
@@ -18075,10 +18402,29 @@ SkipTrueView:
 			}	
 			
 		
+					 
+					  
+										  
+	
+																	  
 
+							 
+															   
+					
+														
+	 
+															   
+				   
+														
+	 
+															   
+			   
+														
+	 
 
 		}			
 		}
+															   
 
 		else if (cent->currentState.powerups & (1 << PW_PULL))
 		{
@@ -18136,6 +18482,20 @@ SkipTrueView:
 
 			//use refractive effect
 			CG_ForcePushBlur( efOrgL, cent );
+									   
+											  
+									  
+	 
+								   
+	 
+									   
+	 
+									
+	 
+																				   
+	
+									   
+											  
 			}
 			else if (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)
 			{
@@ -18241,6 +18601,9 @@ SkipTrueView:
 		cent->bodyFadeTime = 0;
 	}
 
+			
+									  
+	  
 	if (cent->currentState.weapon == WP_STUN_BATON && cent->currentState.number == cg.snap->ps.clientNum)
 	{
 		trap_S_AddLoopingSound( cent->currentState.number, cg.refdef.vieworg, vec3_origin, 
@@ -18254,6 +18617,7 @@ SkipTrueView:
 			trap_S_RegisterSound( "sound/movers/doors/forcefield_lp.wav" ) 
 			);
 	}
+	  
 
 	if (cent->currentState.powerups & ( 1 << PW_OVERLOADED ) )
 	{
@@ -18271,7 +18635,11 @@ SkipTrueView:
 	else if (doAlpha)
 	{
 		legs.renderfx |= RF_FORCE_ENT_ALPHA;
+			
+																		  
+	 
 		legs.shaderRGBA[3] = cent->trickAlpha;
+	  
 
 		if (legs.shaderRGBA[3] < 1)
 		{ //don't cancel it out even if it's < 1
@@ -18329,6 +18697,10 @@ SkipTrueView:
 			legs.shaderRGBA[3] = ((cent->teamPowerEffectTime - cg.time)/8);
 
 			legs.customShader = trap_R_RegisterShader( "powerups/ysalimarishell" );
+			
+											
+							   
+	  
 			trap_R_AddRefEntityToScene(&legs);
 
 			legs.customShader = 0;
@@ -18598,6 +18970,7 @@ SkipTrueView:
 			i++;
 		}
 	}
+  
 
 	if ((cent->currentState.powerups & (1 << PW_YSALAMIRI)) ||
 		(cgs.gametype == GT_CTY && ((cent->currentState.powerups & (1 << PW_REDFLAG)) || (cent->currentState.powerups & (1 << PW_BLUEFLAG)))) )
@@ -18635,6 +19008,11 @@ SkipTrueView:
 		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.0f, cgs.media.invulnerabilityShader );
 	}
 stillDoSaber:
+
+			  
+											  
+		
+
 	if ((cent->currentState.eFlags & EF_DEAD) && cent->currentState.weapon == WP_SABER)
 	{//racc - turn off saber if player died.
 		//cent->saberLength = 0;
@@ -18728,6 +19106,9 @@ stillDoSaber:
 		if (iwantout 
 			&& !cent->currentState.saberInFlight)
 		{//racc - we're doing minimal rendering and our saber isn't out.  IE, don't render the saber blade.
+			
+										
+	  
 			if (cent->currentState.eFlags & EF_DEAD)
 			{
 				if (cent->ghoul2 
@@ -18738,15 +19119,28 @@ stillDoSaber:
 					g2HasWeapon = qfalse;
 				}
 			}
+			 
+	
+			 
+	
+	  
 			return;
 			//goto endOfCall;
 		}
 
+			
+									   
+	  
 		if (g2HasWeapon 
 			&& cent->currentState.saberInFlight)
 		{ //keep this set, so we don't re-unholster the thing when we get it back, even if it's knocked away.
 			cent->saberWasInFlight = qtrue;
 		}
+			
+   
+			
+   
+	  
 
 		if (cent->currentState.saberInFlight 
 			&& cent->currentState.saberEntityNum)
@@ -18754,6 +19148,10 @@ stillDoSaber:
 			centity_t *saberEnt;
 
 			saberEnt = &cg_entities[cent->currentState.saberEntityNum];
+
+			
+										
+	  
 
 			if (/*!cent->bolt4 &&*/ g2HasWeapon || !cent->bolt3 ||
 				saberEnt->serverSaberHitIndex != saberEnt->currentState.modelindex/*|| !cent->saberLength*/)
@@ -18891,6 +19289,7 @@ stillDoSaber:
 				{
 					cent->bolt2 = cg.time;
 				}
+
 				if (cent->bolt3 != 90)
 				{
 					if (cent->bolt3 < 90)
@@ -18976,6 +19375,7 @@ stillDoSaber:
 					BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 				}
 
+
 				// basejka code
 				if ( ci->saber[0].numBlades > 1//staff
 					&& cent->currentState.saberHolstered == 1 )//extra blades off
@@ -19042,6 +19442,7 @@ stillDoSaber:
 						l++;
 					}
 				}
+
 
 				/* basejka code
 				//while (l < MAX_SABERS)
@@ -19132,6 +19533,7 @@ stillDoSaber:
 					BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
 				}
 				if ( ci->saber[1].model[0]	//dual sabers
+	   
 					&& cent->currentState.saberHolstered == 1 )//second one off
 				{
 					//[SaberThrowSys]			
@@ -19140,6 +19542,11 @@ stillDoSaber:
 						//the first saber.
 						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 						BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
+																											 
+		
+
+		   
+	   
 					}
 					else
 					{
@@ -19156,6 +19563,11 @@ stillDoSaber:
 			}
 
 			/* basejka code
+	  
+   
+			
+										
+	  
 			if ( ci->saber[0].numBlades > 1//staff
 				&& cent->currentState.saberHolstered == 1 )//extra blades off
 			{//only first blade should be on
@@ -19175,6 +19587,8 @@ stillDoSaber:
 			{
 				BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
 			}
+			
+	
 			*/
 			//[/SaberThrowSys]
 		}
@@ -19187,6 +19601,9 @@ stillDoSaber:
 		}
 		*/
 		//Leaving right arm on, at least for now.
+			
+									   
+	  
 		if (cent->currentState.brokenLimbs & (1 << BROKENLIMB_LARM))
 		{
 			BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
@@ -19201,8 +19618,11 @@ stillDoSaber:
 			BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 			//BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
 		}
+			
+   
 		*/
 		//[/SaberThrowSys]
+	  
 		/*
 		else
 		{
@@ -19218,9 +19638,14 @@ stillDoSaber:
 	else if (cent->currentState.weapon == WP_SABER)
 	{
 		//cent->saberLength = 0;
+			
+									   
+	  
 		BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 		BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
 
+   
+	  
 		drawPlayerSaber = qtrue;
 	}
 	*/
@@ -19228,11 +19653,17 @@ stillDoSaber:
 	else
 	{
 		//cent->saberLength = 0;
+			
+									   
+	  
 		BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 		BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
 
 		BG_SI_SetLength(&ci->saber[0], 0);
 		BG_SI_SetLength(&ci->saber[1], 0);
+			
+   
+	  
 	}
 
 #ifdef _RAG_BOLT_TESTING
@@ -19244,8 +19675,14 @@ stillDoSaber:
 
 	if (cent->currentState.weapon == WP_SABER)
 	{
+			
+									   
+	  
 		BG_SI_SetLengthGradual(&ci->saber[0], cg.time);
 		BG_SI_SetLengthGradual(&ci->saber[1], cg.time);
+			
+   
+	  
 	}
 
 	if (drawPlayerSaber)
@@ -19262,6 +19699,9 @@ stillDoSaber:
 		{
 			saberEnt = &cg_entities[cent->currentState.saberEntityNum];
 
+			
+										
+	  
 			if (/*cent->bolt4 && */!g2HasWeapon)
 			{
 				trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_SABER), 0, cent->ghoul2, 1);
@@ -19278,6 +19718,9 @@ stillDoSaber:
 
 			cent->bolt3 = 0;
 			cent->bolt2 = 0;
+			
+	
+	  
 		}
 		else
 		{
@@ -19321,7 +19764,14 @@ stillDoSaber:
 
 			while (k < ci->saber[l].numBlades)
 			{
-				if ( //cent->currentState.fireflag == SS_STAFF&& //in saberstaff style
+				if ( ci->saber[1].model[0]//we have a second saber
+					&& cent->currentState.saberHolstered == 1 //it should be off
+					&& l > 0//and this is the second one
+					&& ci->saber[l].blade[k].length <= 0 )//it's completely off
+				{//second saber is turned off and this blade is done with turning off
+					CG_AddSaberBlade( cent, cent, NULL, 0, 0, l, k, legs.origin, rootAngles, qfalse, qtrue);
+				}
+				else if ( //cent->currentState.fireflag == SS_STAFF&& //in saberstaff style
 					cent->currentState.saberHolstered == 1 //extra blades should be off
 					&& k > 0 //this is an extra blade
 					&& ci->saber[l].blade[k].length <= 0 )//it's completely off
@@ -19329,13 +19779,13 @@ stillDoSaber:
 					//don't draw them
 					CG_AddSaberBlade( cent, cent, NULL, 0, 0, l, k, legs.origin, rootAngles, qfalse, qtrue);
 				}
-				else if ( ci->saber[1].model[0]//we have a second saber
-					&& cent->currentState.saberHolstered == 1 //it should be off
-					&& l > 0//and this is the second one
-					&& ci->saber[l].blade[k].length <= 0 )//it's completely off
-				{//second saber is turned off and this blade is done with turning off
-					CG_AddSaberBlade( cent, cent, NULL, 0, 0, l, k, legs.origin, rootAngles, qfalse, qtrue);
-				}
+														   
+																 
+										 
+																
+																		 
+																							 
+	 
 				else
 				{
 					CG_AddSaberBlade( cent, cent, NULL, 0, 0, l, k, legs.origin, rootAngles, qfalse, qfalse);
@@ -19354,6 +19804,9 @@ stillDoSaber:
 		}
 	}
 
+			
+									  
+	  
 	if (cent->currentState.saberInFlight && !cent->currentState.saberEntityNum)
 	{ //reset the length if the saber is knocked away
 		BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
@@ -19380,6 +19833,11 @@ stillDoSaber:
 			g2HasWeapon = qfalse;
 		}
 	}
+			
+  
+			
+  
+	  
 
 	if (iwantout)
 	{
@@ -19448,12 +19906,26 @@ stillDoSaber:
 				legs.customShader = cgs.media.forceShell;
 		
 				trap_R_AddRefEntityToScene( &legs );	//draw the shell
+											 
+								
+	  
+										
+
+						  
 
 				legs.customShader = 0;	//reset to player model
+										
+										
 
 				legs.shaderRGBA[0] = MAX(savRGBA[0]-subLen/8,1);
+	 
 				legs.shaderRGBA[1] = MAX(savRGBA[1]-subLen/8,1);
+	 
+								 
+	 
 				legs.shaderRGBA[2] = MAX(savRGBA[2]-subLen/8,1);
+	 
+							  
 				}
 
 				if (subLen <= 1024)
@@ -19530,6 +20002,10 @@ stillDoSaber:
 		if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) 
 			&& cg.snap->ps.clientNum != cent->currentState.number)
 		{//just draw him
+			
+											
+							   
+	  
 			trap_R_AddRefEntityToScene( &legs );
 		}
 		else
@@ -19547,6 +20023,10 @@ stillDoSaber:
 				legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2] = 255.0f * perc;
 				legs.shaderRGBA[3] = 0;
 				legs.customShader = cgs.media.cloakedShader;
+			
+											 
+								
+	  
 				trap_R_AddRefEntityToScene( &legs );
 
 				legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2] = 255;
@@ -19563,6 +20043,10 @@ stillDoSaber:
 		if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) 
 			&& cg.snap->ps.clientNum != cent->currentState.number)
 		{//just draw him
+			
+											
+							   
+	  
 			trap_R_AddRefEntityToScene( &legs );
 		}
 		else
@@ -19601,6 +20085,10 @@ stillDoSaber:
 				{
 					trap_R_SetRefractProp(1.0f, 0.0f, qfalse, qfalse); //don't need to do this every frame.. but..
 					legs.customShader = 2; //crazy "refractive" shader
+			
+											  
+								 
+	  
 					trap_R_AddRefEntityToScene( &legs );
 					legs.customShader = 0;
 				}
@@ -19609,6 +20097,10 @@ stillDoSaber:
 					legs.renderfx = 0;//&= ~(RF_RGB_TINT|RF_ALPHA_FADE);
 					legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2] = legs.shaderRGBA[3] = 255;
 					legs.customShader = cgs.media.cloakedShader;
+			
+											  
+								 
+	  
 					trap_R_AddRefEntityToScene( &legs );
 					legs.customShader = 0;
 				}
@@ -19619,6 +20111,10 @@ stillDoSaber:
 	if (!(cent->currentState.powerups & (1 << PW_CLOAKED)))
 	{ //don't add the normal model if cloaked
 		CG_CheckThirdPersonAlpha( cent, &legs );
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene(&legs);
 	}
 
@@ -19640,6 +20136,9 @@ stillDoSaber:
 		cent->frame_hold_time = cg.time + 254;
 	}
 
+			
+									  
+	  
 	if (cent->frame_hold_time >= cg.time)
 	{
 		refEntity_t reframe_hold;
@@ -19679,6 +20178,10 @@ stillDoSaber:
 		}
 
 		reframe_hold.ghoul2 = cent->frame_hold;
+			
+										   
+									  
+	  
 		trap_R_AddRefEntityToScene(&reframe_hold);
 	}
 	else
@@ -19843,6 +20346,10 @@ stillDoSaber:
 			legs.customShader = cgs.media.electricBody2Shader;
 		}
 
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene(&legs);
 	}
 	}
@@ -19912,6 +20419,10 @@ stillDoSaber:
 		legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
 		legs.customShader = cgs.media.forceSightBubble;
 		
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene( &legs );
 	}
 
@@ -19942,6 +20453,10 @@ stillDoSaber:
 			legs.customShader = cgs.media.playerShieldDamage;
 		}
 		
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene( &legs );
 	}
 	//For now, these two are using the old shield shader. This is just so that you
@@ -20000,6 +20515,10 @@ stillDoSaber:
 		ScaleModelAxis(&prot);
 		*/
 
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene( &prot );
 	}
 	}
@@ -20036,6 +20555,10 @@ stillDoSaber:
 		legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
 		legs.customShader = cgs.media.playerShieldDamage;
 		
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene( &legs );
 	}
 	}
@@ -20134,6 +20657,10 @@ stillDoSaber:
 		legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
 		legs.customShader = cgs.media.sightShell;
 		
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene( &legs );
 	}
 
@@ -20170,6 +20697,10 @@ stillDoSaber:
 				legs.customShader = cgs.media.electricBody2Shader;
 			}
 
+			
+											
+							   
+	  
 			trap_R_AddRefEntityToScene( &legs );
 
 			if ( random() > 0.9f )
@@ -20199,6 +20730,10 @@ stillDoSaber:
 		legs.renderfx &= ~RF_RGB_TINT;
 		legs.customShader = cgs.media.playerShieldDamage;
 		
+			
+										   
+							  
+	  
 		trap_R_AddRefEntityToScene( &legs );
 	}
 #if 0

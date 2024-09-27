@@ -181,7 +181,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Bacta Canister"
+			descText				"Biotech Bacta Canister"
 			visible					1 
 			action 
 			{ 
@@ -237,7 +237,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Shield Booster"
+			descText				"Biotech Shield Booster"
 			visible					1 
 			action 
 			{ 
@@ -447,7 +447,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Force Field Projector"
+			descText				"Kuat Force Field Projector"
 			visible					1 
 			action 
 			{ 
@@ -558,7 +558,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Sentry Turret"
+			descText				"Blastech Sentry Turret"
 			visible					1 
 			action 
 			{ 
@@ -887,7 +887,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Merr Sonn Electroshocker / Blastech Beamprojector / Sienar Orbitalstrike"
+			descText				"Kirgo Electroshocker / Phylon Beam Projector / Sienar Orbital Strike"
 			visible					1 
 			action 
 			{ 
@@ -987,7 +987,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Cloak Generator"
+			descText				"Sienar Cloak Generator"
 			visible					1 
 			action 
 			{ 
@@ -1042,7 +1042,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Shield Generator"
+			descText				"Koensayr Shield Generator"
 			visible					1 
 			action 
 			{ 
@@ -1096,7 +1096,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Overload"
+			descText				"Baktoid Overload"
 			visible					1 
 			action 
 			{ 

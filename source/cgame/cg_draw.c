@@ -161,6 +161,162 @@ char *showPowersName[] =
 	NULL
 };
 
+char *showPowersName2[] = 
+{
+	"HEAL3",//FP_HEAL
+	"JUMP3",//FP_LEVITATION
+	"SPEED3",//FP_SPEED
+	"PUSH3",//FP_PUSH
+	"PULL3",//FP_PULL
+	"MINDTRICK3",//FP_TELEPATHY
+	"GRIP3",//FP_GRIP
+	"LIGHTNING3",//FP_LIGHTNING
+	"DARK_RAGE3",//FP_RAGE
+	"PROTECT3",//FP_PROTECT
+	"ABSORB3",//FP_ABSORB
+	"TEAM_HEAL3",//FP_TEAM_HEAL
+	"TEAM_REPLENISH3",//FP_TEAM_FORCE
+	"DRAIN3",//FP_DRAIN
+	"SEEING3",//FP_SEE
+	"SABER_OFFENSE3",//FP_SABER_OFFENSE
+	"SABER_DEFENSE3",//FP_SABER_DEFENSE
+	"SABER_THROW3",//FP_SABERTHROW
+	NULL
+};
+
+char *showItemsName[] = 
+{	
+	"NONE2",//HI_NONE
+	"SEEKER2",//HI_SEEKER
+	"SHIELD2",//HI_SHIELD
+	"MEDPAC2",//HI_MEDPAC
+	"SHIELDBOOSTER2",//HI_SHIELDBOOSTER
+	"BINOCULARS2",//HI_BINOCULARS
+	"SENTRY_GUN2",//HI_SENTRY_GUN
+	"JETPACK2",//HI_JETPACK
+	"SQUADTEAM2",//HI_SQUADTEAM
+	"VEHICLEMOUNT2",//HI_VEHICLEMOUNT
+	"EWEB2",//HI_EWEB
+	"CLOAK2",//HI_CLOAK
+	"FLAMETHROWER2",//HI_FLAMETHROWER
+	"ELECTROSHOCKER2",//HI_ELECTROSHOCKER
+	"SPHERESHIELD2",//HI_SPHERESHIELD
+	"OVERLOAD2",//HI_OVERLOAD
+	"GRAPPLE2",//HI_GRAPPLE
+	NULL
+};
+
+char *showItemsName2[] = 
+{
+	"NONE3",//HI_NONE
+	"SEEKER3",//HI_SEEKER
+	"SHIELD3",//HI_SHIELD
+	"MEDPAC3",//HI_MEDPAC
+	"SHIELDBOOSTER3",//HI_SHIELDBOOSTER
+	"BINOCULARS3",//HI_BINOCULARS
+	"SENTRY_GUN3",//HI_SENTRY_GUN
+	"JETPACK3",//HI_JETPACK
+	"SQUADTEAM3",//HI_SQUADTEAM
+	"VEHICLEMOUNT3",//HI_VEHICLEMOUNT
+	"EWEB3",//HI_EWEB
+	"CLOAK3",//HI_CLOAK
+	"FLAMETHROWER3",//HI_FLAMETHROWER
+	"ELECTROSHOCKER3",//HI_ELECTROSHOCKER
+	"SPHERESHIELD3",//HI_SPHERESHIELD
+	"OVERLOAD3",//HI_OVERLOAD
+	"GRAPPLE3",//HI_GRAPPLE
+	NULL
+};
+
+char *showItemsName3[] = 
+{
+	"NONE4",//HI_NONE
+	"SEEKER4",//HI_SEEKER
+	"SHIELD4",//HI_SHIELD
+	"MEDPAC4",//HI_MEDPAC
+	"SHIELDBOOSTER4",//HI_SHIELDBOOSTER
+	"BINOCULARS4",//HI_BINOCULARS
+	"SENTRY_GUN4",//HI_SENTRY_GUN
+	"JETPACK4",//HI_JETPACK
+	"SQUADTEAM4",//HI_SQUADTEAM
+	"VEHICLEMOUNT4",//HI_VEHICLEMOUNT
+	"EWEB4",//HI_EWEB
+	"CLOAK4",//HI_CLOAK
+	"FLAMETHROWER4",//HI_FLAMETHROWER
+	"ELECTROSHOCKER4",//HI_ELECTROSHOCKER
+	"SPHERESHIELD4",//HI_SPHERESHIELD
+	"OVERLOAD4",//HI_OVERLOAD
+	"GRAPPLE4",//HI_GRAPPLE
+	NULL
+};
+
+char *showItemsName4[] = 
+{
+	"NONE5",//HI_NONE
+	"SEEKER5",//HI_SEEKER
+	"SHIELD5",//HI_SHIELD
+	"MEDPAC5",//HI_MEDPAC
+	"SHIELDBOOSTER5",//HI_SHIELDBOOSTER
+	"BINOCULARS5",//HI_BINOCULARS
+	"SENTRY_GUN5",//HI_SENTRY_GUN
+	"JETPACK5",//HI_JETPACK
+	"SQUADTEAM5",//HI_SQUADTEAM
+	"VEHICLEMOUNT5",//HI_VEHICLEMOUNT
+	"EWEB5",//HI_EWEB
+	"CLOAK5",//HI_CLOAK
+	"FLAMETHROWER5",//HI_FLAMETHROWER
+	"ELECTROSHOCKER5",//HI_ELECTROSHOCKER
+	"SPHERESHIELD5",//HI_SPHERESHIELD
+	"OVERLOAD5",//HI_OVERLOAD
+	"GRAPPLE5",//HI_GRAPPLE
+	NULL
+};
+
+char *showItemsName5[] = 
+{
+	"NONE6",//HI_NONE
+	"SEEKER6",//HI_SEEKER
+	"SHIELD6",//HI_SHIELD
+	"MEDPAC6",//HI_MEDPAC
+	"SHIELDBOOSTER6",//HI_SHIELDBOOSTER
+	"BINOCULARS6",//HI_BINOCULARS
+	"SENTRY_GUN6",//HI_SENTRY_GUN
+	"JETPACK6",//HI_JETPACK
+	"SQUADTEAM6",//HI_SQUADTEAM
+	"VEHICLEMOUNT6",//HI_VEHICLEMOUNT
+	"EWEB6",//HI_EWEB
+	"CLOAK6",//HI_CLOAK
+	"FLAMETHROWER6",//HI_FLAMETHROWER
+	"ELECTROSHOCKER6",//HI_ELECTROSHOCKER
+	"SPHERESHIELD6",//HI_SPHERESHIELD
+	"OVERLOAD6",//HI_OVERLOAD
+	"GRAPPLE6",//HI_GRAPPLE
+	NULL
+};
+
+char *showItemsName6[] = 
+{
+	"NONE7",//HI_NONE
+	"SEEKER7",//HI_SEEKER
+	"SHIELD7",//HI_SHIELD
+	"MEDPAC7",//HI_MEDPAC
+	"SHIELDBOOSTER7",//HI_SHIELDBOOSTER
+	"BINOCULARS7",//HI_BINOCULARS
+	"SENTRY_GUN7",//HI_SENTRY_GUN
+	"JETPACK7",//HI_JETPACK
+	"SQUADTEAM7",//HI_SQUADTEAM
+	"VEHICLEMOUNT7",//HI_VEHICLEMOUNT
+	"EWEB7",//HI_EWEB
+	"CLOAK7",//HI_CLOAK
+	"FLAMETHROWER7",//HI_FLAMETHROWER
+	"ELECTROSHOCKER7",//HI_ELECTROSHOCKER
+	"SPHERESHIELD7",//HI_SPHERESHIELD
+	"OVERLOAD7",//HI_OVERLOAD
+	"GRAPPLE7",//HI_GRAPPLE
+	NULL
+};
+
+
 //Called from UI shared code. For now we'll just redirect to the normal anim load function.
 
 int UI_ParseAnimationFile(const char *filename, animation_t *animset, qboolean isHumanoid) 
@@ -2250,11 +2406,18 @@ void CG_DrawForceSelect( void )
 			holdX += (smallIconSize+pad);
 		}
 	}
-
-	if ( showPowersName[cg.forceSelect] ) 
+	if ( showPowersName2[cg.forceSelect] || showPowersName2[cg.forceSelect] ) 
+	{		
+	if(cg.snap->ps.eFlags & EF_FP_OPTION_2)
+	{
+		UI_DrawProportionalString(320, y + 30 + yOffset, CG_GetStringEdString("SP_INGAME", showPowersName2[cg.forceSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else	
 	{
 		UI_DrawProportionalString(320, y + 30 + yOffset, CG_GetStringEdString("SP_INGAME", showPowersName[cg.forceSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}	
 	}
+
 }
 
 /*
@@ -2272,7 +2435,6 @@ void CG_DrawInvenSelect( void )
 	int				holdX,x,y,y2,pad;
 	int				height;
 	float			addX;
-
 	// don't display if dead
 	if ( cg.snap->ps.stats[STAT_HEALTH] <= 0 ) 
 	{
@@ -2424,30 +2586,40 @@ void CG_DrawInvenSelect( void )
 		/*CG_DrawNumField ((x-(bigIconSize/2)) + addX, y, 2, cg.snap->ps.inventory[cg.inventorySelect], 6, 12, 
 			NUM_FONT_SMALL,qfalse);*/
 
-		itemNdex = BG_GetItemIndexByTag(cg.itemSelect, IT_HOLDABLE);
-		if (bg_itemlist[itemNdex].classname)
-		{
-			vec4_t	textColor = { .312f, .75f, .621f, 1.0f };
-			char	text[1024];
-			char	upperKey[1024];
-
-			strcpy(upperKey, bg_itemlist[itemNdex].classname);
 			
 			//[Flamethrower]
-			if ( trap_SP_GetStringTextString( va("SP_INGAME_%s",Q_strupr(upperKey)), text, sizeof( text )) 
-				|| trap_SP_GetStringTextString( va("OJP_MENUS_%s",Q_strupr(upperKey)), text, sizeof( text )))
-			//if ( trap_SP_GetStringTextString( va("SP_INGAME_%s",Q_strupr(upperKey)), text, sizeof( text )))
-			//[/Flamethrower]
-			{
-				UI_DrawProportionalString(320, y+45, text, UI_CENTER | UI_SMALLFONT, textColor);
-			}
-			else
-			{
-				UI_DrawProportionalString(320, y+45, bg_itemlist[itemNdex].classname, UI_CENTER | UI_SMALLFONT, textColor);
-			}
-		}
+	if ( showItemsName[cg.itemSelect] || showItemsName2[cg.itemSelect] || showItemsName3[cg.itemSelect] || showItemsName4[cg.itemSelect] || showItemsName5[cg.itemSelect] || showItemsName6[cg.itemSelect] ) 	
+	{	
+	
+	if(cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+	{
+		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName6[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
 	}
+	else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+	{
+		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName5[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3)
+	{
+		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName4[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else if(cg.snap->ps.eFlags & EF_HI_OPTION_2)
+	{
+		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName2[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else if(cg.snap->ps.eFlags & EF_HI_OPTION_3)
+	{
+		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName3[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else	
+	{
+		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}	
+	}
+			
 
+
+	}
 	i = cg.itemSelect + 1;
 	if (i> HI_NUM_HOLDABLE-1)
 	{
@@ -9186,7 +9358,8 @@ static void CG_Draw2D( void ) {
 			{
 				drawSelect = 3;
 			}
-
+	if ((cg.delaySelectTime)<cg.time)	// Time is up for the HUD to display
+	{
 			switch(drawSelect)
 			{
 			case 1:
@@ -9201,6 +9374,8 @@ static void CG_Draw2D( void ) {
 			default:
 				break;
 			}
+	}
+
 
 			if (cg_drawStatus.integer)
 			{

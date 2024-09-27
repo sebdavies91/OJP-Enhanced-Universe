@@ -23,7 +23,101 @@ void CG_SetGhoul2InfoRef( refEntity_t *ent, refEntity_t	*s1)
 /*
 Ghoul2 Insert End
 */
+char *showWeaponsName[] = 
+{
+	"NONE2",//WP_NONE
+	"STUN_BATON2",//WP_STUN_BATON
+	"MELEE2",//WP_MELEE
+	"SABER2",//WP_SABER
+	"BRYAR_PISTOL2",//WP_BRYAR_PISTOL
+	"BLASTER2",//WP_BLASTER
+	"DISRUPTOR2",//WP_DISRUPTOR
+	"BOWCASTER2",//WP_BOWCASTER
+	"REPEATER2",//WP_REPEATER
+	"DEMP22",//WP_DEMP2
+	"FLECHETTE2",//WP_FLECHETTE
+	"ROCKET_LAUNCHER2",//WP_ROCKET_LAUNCHER
+	"THERMAL2",//WP_THERMAL
+	"TRIP_MINE2",//WP_TRIP_MINE
+	"DET_PACK2",//WP_DET_PACK
+	"CONCUSSION2",//WP_CONCUSSION
+	"BRYAR_OLD2",//WP_BRYAR_OLD
+	"EMPLACED_GUN2",//WP_EMPLACED_GUN
+	"TURRET2",//WT_TURRET
+	NULL
+};
 
+char *showWeaponsName2[] = 
+{
+	"NONE3",//WP_NONE
+	"STUN_BATON3",//WP_STUN_BATON
+	"MELEE3",//WP_MELEE
+	"SABER3",//WP_SABER
+	"BRYAR_PISTOL3",//WP_BRYAR_PISTOL
+	"BLASTER3",//WP_BLASTER
+	"DISRUPTOR3",//WP_DISRUPTOR
+	"BOWCASTER3",//WP_BOWCASTER
+	"REPEATER3",//WP_REPEATER
+	"DEMP23",//WP_DEMP2
+	"FLECHETTE3",//WP_FLECHETTE
+	"ROCKET_LAUNCHER3",//WP_ROCKET_LAUNCHER
+	"THERMAL3",//WP_THERMAL
+	"TRIP_MINE3",//WP_TRIP_MINE
+	"DET_PACK3",//WP_DET_PACK
+	"CONCUSSION3",//WP_CONCUSSION
+	"BRYAR_OLD3",//WP_BRYAR_OLD
+	"EMPLACED_GUN3",//WP_EMPLACED_GUN
+	"TURRET3",//WT_TURRET
+	NULL
+};
+
+char *showWeaponsName3[] = 
+{
+	"NONE4",//WP_NONE
+	"STUN_BATON4",//WP_STUN_BATON
+	"MELEE4",//WP_MELEE
+	"SABER4",//WP_SABER
+	"BRYAR_PISTOL4",//WP_BRYAR_PISTOL
+	"BLASTER4",//WP_BLASTER
+	"DISRUPTOR4",//WP_DISRUPTOR
+	"BOWCASTER4",//WP_BOWCASTER
+	"REPEATER4",//WP_REPEATER
+	"DEMP24",//WP_DEMP2
+	"FLECHETTE4",//WP_FLECHETTE
+	"ROCKET_LAUNCHER4",//WP_ROCKET_LAUNCHER
+	"THERMAL4",//WP_THERMAL
+	"TRIP_MINE4",//WP_TRIP_MINE
+	"DET_PACK4",//WP_DET_PACK
+	"CONCUSSION4",//WP_CONCUSSION
+	"BRYAR_OLD4",//WP_BRYAR_OLD
+	"EMPLACED_GUN4",//WP_EMPLACED_GUN
+	"TURRET4",//WT_TURRET
+	NULL
+};
+
+char *showWeaponsName4[] = 
+{
+	"NONE5",//WP_NONE
+	"STUN_BATON5",//WP_STUN_BATON
+	"MELEE5",//WP_MELEE
+	"SABER5",//WP_SABER
+	"BRYAR_PISTOL5",//WP_BRYAR_PISTOL
+	"BLASTER5",//WP_BLASTER
+	"DISRUPTOR5",//WP_DISRUPTOR
+	"BOWCASTER5",//WP_BOWCASTER
+	"REPEATER5",//WP_REPEATER
+	"DEMP25",//WP_DEMP2
+	"FLECHETTE5",//WP_FLECHETTE
+	"ROCKET_LAUNCHER5",//WP_ROCKET_LAUNCHER
+	"THERMAL5",//WP_THERMAL
+	"TRIP_MINE5",//WP_TRIP_MINE
+	"DET_PACK5",//WP_DET_PACK
+	"CONCUSSION5",//WP_CONCUSSION
+	"BRYAR_OLD5",//WP_BRYAR_OLD
+	"EMPLACED_GUN5",//WP_EMPLACED_GUN
+	"TURRET5",//WT_TURRET
+	NULL
+};
 /*
 =================
 CG_RegisterItemVisuals
@@ -1916,6 +2010,7 @@ void CG_DrawIconBackground(void)
 	{
 //		drawType = cgs.media.inventoryIconBackground;
 		cg.iconSelectTime = cg.invenSelectTime;
+
 	}
 	else
 	{
@@ -2403,22 +2498,25 @@ void CG_DrawWeaponSelect( void ) {
 	}
 
 	// draw the selected name
-	if ( cg_weapons[ cg.weaponSelect ].item ) 
+	if ( showWeaponsName[cg.weaponSelect] || showWeaponsName2[cg.weaponSelect] || showWeaponsName3[cg.weaponSelect] || showWeaponsName4[cg.weaponSelect]  ) 	
+	{	
+	
+	if(cg.snap->ps.eFlags & EF_WP_OPTION_2 )
 	{
-		vec4_t			textColor = { .875f, .718f, .121f, 1.0f };
-		char	text[1024];
-		char	upperKey[1024];
-
-		strcpy(upperKey, cg_weapons[ cg.weaponSelect ].item->classname);
-
-		if ( trap_SP_GetStringTextString( va("SP_INGAME_%s",Q_strupr(upperKey)), text, sizeof( text )))
-		{
-			UI_DrawProportionalString(320, y+45+yOffset, text, UI_CENTER|UI_SMALLFONT, textColor);
-		}
-		else
-		{
-			UI_DrawProportionalString(320, y+45+yOffset, cg_weapons[ cg.weaponSelect ].item->classname, UI_CENTER|UI_SMALLFONT, textColor);
-		}
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName2[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else if(cg.snap->ps.eFlags & EF_WP_OPTION_3)
+	{
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName3[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else if(cg.snap->ps.eFlags & EF_WP_OPTION_4)
+	{
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName4[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	else	
+	{
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}	
 	}
 
 	trap_R_SetColor( NULL );
@@ -2452,6 +2550,7 @@ void CG_NextWeapon_f( void ) {
 	}
 
 	cg.weaponSelectTime = cg.time;
+	cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 	original = cg.weaponSelect;
 
 	for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
@@ -2518,6 +2617,7 @@ void CG_PrevWeapon_f( void ) {
 	}
 
 	cg.weaponSelectTime = cg.time;
+	cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 	original = cg.weaponSelect;
 
 	for ( i = 0 ; i < WP_NUM_WEAPONS ; i++ ) {
@@ -2594,6 +2694,7 @@ void CG_Weapon_f( void ) {
 				num = WP_MELEE;
 
 				cg.weaponSelectTime = cg.time;
+				cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 				
 				if (cg.weaponSelect != num)
 				{
@@ -2682,6 +2783,7 @@ void CG_Weapon_f( void ) {
 	}
 
 	cg.weaponSelectTime = cg.time;
+	cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 
 	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) )
 	{
@@ -2798,6 +2900,7 @@ void CG_WeaponClean_f( void ) {
 	}
 
 	cg.weaponSelectTime = cg.time;
+	cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 
 	if ( ! ( cg.snap->ps.stats[STAT_WEAPONS] & ( 1 << num ) ) )
 	{
@@ -2840,6 +2943,7 @@ void CG_OutOfAmmoChange( int oldWeapon )
 
 	return;
 	cg.weaponSelectTime = cg.time;
+	cg.delaySelectTime = cg.time+WEAPON_SELECT_DELAY_TIME;
 
 	for ( i = LAST_USEABLE_WEAPON ; i > 0 ; i-- )	//We don't want the emplaced or turret
 	{
