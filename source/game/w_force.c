@@ -5685,6 +5685,7 @@ void ForceDeathSight(gentity_t *self)
 				{
 
 					ent->client->deathsightTime = level.time + DEATHSIGHT_TIME;
+					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + DEATHSIGHT_TIME;
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/deathsight.wav"));
 				//	player_Freeze(ent);
@@ -5695,6 +5696,7 @@ void ForceDeathSight(gentity_t *self)
 				{
 
 					ent->client->deathsightTime = level.time + DEATHSIGHTJEDI_TIME;
+					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + DEATHSIGHTJEDI_TIME;
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/deathsight.wav"));
 				//	player_Freeze(ent);
@@ -5705,6 +5707,7 @@ void ForceDeathSight(gentity_t *self)
 				{
 
 					ent->client->deathsightTime = level.time + DEATHSIGHTJEDI_TIME;
+					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + DEATHSIGHTJEDI_TIME;
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/deathsight.wav"));
 				//	player_Freeze(ent);
@@ -5909,22 +5912,6 @@ void ForceFreeze(gentity_t *self)
 					ent->client->ps.userInt1 |= LOCK_LEFT;	
 					ent->client->viewLockTime = level.time + STASIS_TIME;
 					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + STASIS_TIME;
-					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim3[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim5[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim7[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}	
 
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/stasis.wav"));
@@ -5950,22 +5937,7 @@ void ForceFreeze(gentity_t *self)
 					ent->client->ps.userInt1 |= LOCK_LEFT;	
 					ent->client->viewLockTime = level.time + STASISJEDI_TIME;
 					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + STASISJEDI_TIME;
-					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim3[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim5[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim7[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}	
+
 
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/stasis.wav"));
@@ -5991,22 +5963,7 @@ void ForceFreeze(gentity_t *self)
 					ent->client->ps.userInt1 |= LOCK_LEFT;						
 					ent->client->viewLockTime = level.time + STASISJEDI_TIME;
 					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + STASISJEDI_TIME;
-					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim3[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim5[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim7[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}
-					else
-					{
-					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
-					}	
+
 
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/stasis.wav"));
@@ -9359,23 +9316,26 @@ static void WP_UpdateMindtrickEnts(gentity_t *self)
 		{
 			gentity_t *ent = &g_entities[i];
 
-			if ( !ent || !ent->client || !ent->inuse || ent->health < 1 ||
+			if ( !ent || !ent->client || !ent->inuse || ent->health < 1   ||
 				(ent->client->ps.fd.forcePowersActive & (1 << FP_SEE)) )
 			{
 				RemoveTrickedEnt(&self->client->ps.fd, i);
 			}
+
 			else if ((level.time - self->client->dangerTime) < g_TimeSinceLastFrame*4)
 			{ //Untrick this entity if the tricker (self) fires while in his fov
 				if (trap_InPVS(ent->client->ps.origin, self->client->ps.origin) &&
-					OrgVisible(ent->client->ps.origin, self->client->ps.origin, ent->s.number))
+					OrgVisible(ent->client->ps.origin, self->client->ps.origin, ent->s.number) )
 				{
 					RemoveTrickedEnt(&self->client->ps.fd, i);
 				}
 			}
+
 			else if (BG_HasYsalamiri(g_gametype.integer, &ent->client->ps))
 			{
 				RemoveTrickedEnt(&self->client->ps.fd, i);
 			}
+			
 		}
 
 		i++;
@@ -11340,11 +11300,12 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 
 
-	if(self->client->deathsightTime > level.time)
+	if(self->client->deathsightTime > level.time )
 	{//stasis is active, flip active frozen flag
 		{//fire electroshocker
-		
 		G_Damage(self, self, self, NULL, NULL, 1, DAMAGE_NO_ARMOR, MOD_FORCE_DARK);
+		G_SetAnim(self, NULL, SETANIM_LEGS, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_NORMAL, self->client->deathsightTime);
+		G_SetAnim(self, NULL, SETANIM_TORSO, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->deathsightTime);		
 		self->client->ps.userInt3 |= (1 << FLAG_STASIS2);	
 		}
 	}
@@ -11357,17 +11318,22 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 
 
-	if(self->client->stasisTime > level.time)
+	if(self->client->stasisTime > level.time )
 	{//stasis is active, flip active frozen flag
 		{//fire electroshocker
+			G_SetAnim(self, NULL, SETANIM_LEGS, bgAllAnims[self->localAnimIndex].anims[self->client->ps.legsAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);	
+			G_SetAnim(self, NULL, SETANIM_TORSO, bgAllAnims[self->localAnimIndex].anims[self->client->ps.torsoAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);		
 			self->client->ps.userInt3 |= (1 << FLAG_STASIS);
+			
 
 			
 		}
 	}
-	else if(self->client->freezeTime > level.time)
+	else if(self->client->freezeTime > level.time )
 	{//freezing is active, flip active frozen flag
 		{//fire electroshocker
+			G_SetAnim(self, NULL, SETANIM_TORSO, bgAllAnims[self->localAnimIndex].anims[self->client->ps.torsoAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->freezeTime);
+			G_SetAnim(self, NULL, SETANIM_LEGS, bgAllAnims[self->localAnimIndex].anims[self->client->ps.legsAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->freezeTime);	
 			self->client->ps.userInt3 |= (1 << FLAG_STASIS);
 			
 		}

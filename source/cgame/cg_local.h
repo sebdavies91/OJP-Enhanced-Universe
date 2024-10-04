@@ -1256,6 +1256,7 @@ typedef struct {
 	qhandle_t	purpleSaberCoreShader;
 	qhandle_t	cyanSaberGlowShader;
 	qhandle_t	cyanSaberCoreShader;
+
 	
 	//[RGBSabers]
 	qhandle_t	rgbSaberGlowShader; 

@@ -806,7 +806,7 @@
 			name					setsk_stasisa
 			group					lightpowers
 			style					0	
-			text					"Stasis / Curse / ..:"
+			text					"Stasis / Insanity / ..:"
 			rect					180 315 110 15
 			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
@@ -840,7 +840,7 @@
 			forecolor				0.5 0.5 1 1
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Force Stasis / Force Curse / .."
+			descText				"Force Stasis / Force Insanity / .."
 			visible				1 
 			action 
 			{ 

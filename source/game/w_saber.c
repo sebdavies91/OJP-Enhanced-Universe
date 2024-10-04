@@ -866,6 +866,7 @@ GAME_INLINE qboolean G_CheckLookTarget( gentity_t *ent, vec3_t	lookAngles, float
 	//		headAngles and torsoAngles?  But often the tag_torso is straight but the torso itself
 	//		is deformed to not face straight... sigh...
 
+	
 	if (ent->s.eType == ET_NPC &&
 		ent->s.m_iVehicleNum &&
 		ent->s.NPC_class != CLASS_VEHICLE )

@@ -534,6 +534,7 @@ void NPC_Pain(gentity_t *self, gentity_t *attacker, int damage)
 	if ( NPCInfo->ignorePain == qfalse )
 	{
 		NPCInfo->confusionTime = 0;//clear any charm or confusion, regardless
+		NPCInfo->charmedTime = 0;
 		if ( damage != -1 )
 		{//-1 == don't play pain anim
 			//Set our proper pain animation

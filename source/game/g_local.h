@@ -97,7 +97,7 @@ extern vec3_t gPainPoint;
 #define DEBUG_SABER_BOX
 #endif
 
-#define	MAX_G_SHARED_BUFFER_SIZE		65536
+#define	MAX_G_SHARED_BUFFER_SIZE		32768
 extern char gSharedBuffer[MAX_G_SHARED_BUFFER_SIZE];
 
 // movers are things like doors, plats, buttons, etc

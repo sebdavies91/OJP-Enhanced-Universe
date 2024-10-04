@@ -96,11 +96,11 @@ extern qboolean ItemParse_model_g2anim_go( itemDef_t *item, const char *animName
 
 
 #ifdef CGAME
-#define MEM_POOL_SIZE  2048 * 1024 //q3 mem1024 * 1024 //base jka mem128 * 1024
+#define MEM_POOL_SIZE  32 * 1024 * 1024 //q3 mem1024 * 1024 //base jka mem128 * 1024
 #define UI_ALLOCATION_TAG	TAG_CG_UI_ALLOC
 #else
 //#define MEM_POOL_SIZE  1024 * 1024
-#define MEM_POOL_SIZE  2048 * 1024
+#define MEM_POOL_SIZE  32 * 1024 * 1024
 #define	UI_ALLOCATION_TAG	TAG_UI_ALLOC
 #endif
 

@@ -124,9 +124,9 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5027,10): warning C4101: 'tr': unreferenced local variable
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5325,10): warning C4101: 'tr': unreferenced local variable
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5535,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5747,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6279,13): warning C4101: 'aimingAt': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(7374,13): warning C4101: 'aimingAt': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5750,10): warning C4101: 'tr': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6236,13): warning C4101: 'aimingAt': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(7331,13): warning C4101: 'aimingAt': unreferenced local variable
   w_saber.c
   WalkerNPC.c
   Generating Code...

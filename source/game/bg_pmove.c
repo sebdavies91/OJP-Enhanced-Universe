@@ -14989,21 +14989,7 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.buttons &= ~BUTTON_SABERTHROW;
 		pm->cmd.buttons &= ~BUTTON_THERMALTHROW;
 	}
-	if (pm->ps->userInt3 & (1 << FLAG_STASIS)
-		&& (pm->ps->weapon == WP_SABER
-		|| pm->ps->weapon == WP_MELEE))
-	{
-		pm->cmd.buttons &= ~BUTTON_ATTACK;
-		pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
-		pm->cmd.buttons &= ~BUTTON_USE_HOLDABLE;
-		pm->cmd.buttons &= ~BUTTON_USE;
-		pm->cmd.buttons &= ~BUTTON_FORCEPOWER;
-		pm->cmd.buttons &= ~BUTTON_FORCEGRIP;
-		pm->cmd.buttons &= ~BUTTON_FORCE_LIGHTNING;
-		pm->cmd.buttons &= ~BUTTON_FORCE_DRAIN;
-		pm->cmd.buttons &= ~BUTTON_SABERTHROW;
-		pm->cmd.buttons &= ~BUTTON_THERMALTHROW;
-	}
+
 	
 	if ( BG_InRoll( pm->ps, pm->ps->legsAnim ) )
 	{ //can't roll unless you're able to move normally
