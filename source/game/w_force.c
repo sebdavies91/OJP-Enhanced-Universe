@@ -11304,8 +11304,11 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	{//stasis is active, flip active frozen flag
 		{//fire electroshocker
 		G_Damage(self, self, self, NULL, NULL, 1, DAMAGE_NO_ARMOR, MOD_FORCE_DARK);
+		if( self->s.NPC_class != CLASS_VEHICLE && self->localAnimIndex <= 1 )
+		{
 		G_SetAnim(self, NULL, SETANIM_LEGS, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_NORMAL, self->client->deathsightTime);
-		G_SetAnim(self, NULL, SETANIM_TORSO, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->deathsightTime);		
+		G_SetAnim(self, NULL, SETANIM_TORSO, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->deathsightTime);	
+		}
 		self->client->ps.userInt3 |= (1 << FLAG_STASIS2);	
 		}
 	}
@@ -11321,21 +11324,23 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	if(self->client->stasisTime > level.time )
 	{//stasis is active, flip active frozen flag
 		{//fire electroshocker
+		if( self->s.NPC_class != CLASS_VEHICLE && self->localAnimIndex <= 1 )
+		{
 			G_SetAnim(self, NULL, SETANIM_LEGS, bgAllAnims[self->localAnimIndex].anims[self->client->ps.legsAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);	
 			G_SetAnim(self, NULL, SETANIM_TORSO, bgAllAnims[self->localAnimIndex].anims[self->client->ps.torsoAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);		
-			self->client->ps.userInt3 |= (1 << FLAG_STASIS);
-			
-
-			
+		}			
+			self->client->ps.userInt3 |= (1 << FLAG_STASIS);			
 		}
 	}
 	else if(self->client->freezeTime > level.time )
 	{//freezing is active, flip active frozen flag
 		{//fire electroshocker
-			G_SetAnim(self, NULL, SETANIM_TORSO, bgAllAnims[self->localAnimIndex].anims[self->client->ps.torsoAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->freezeTime);
-			G_SetAnim(self, NULL, SETANIM_LEGS, bgAllAnims[self->localAnimIndex].anims[self->client->ps.legsAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->freezeTime);	
-			self->client->ps.userInt3 |= (1 << FLAG_STASIS);
-			
+		if( self->s.NPC_class != CLASS_VEHICLE && self->localAnimIndex <= 1 )
+		{
+			G_SetAnim(self, NULL, SETANIM_LEGS, bgAllAnims[self->localAnimIndex].anims[self->client->ps.legsAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);	
+			G_SetAnim(self, NULL, SETANIM_TORSO, bgAllAnims[self->localAnimIndex].anims[self->client->ps.torsoAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);		
+		}	
+			self->client->ps.userInt3 |= (1 << FLAG_STASIS);			
 		}
 	}	
 	else
