@@ -9,7 +9,7 @@
 
 //[CoOp]
 //some SP maps require more memory.  Bumped the memory size a little.
-#define	POOLSIZE	(32 * 1024 * 1024) //SERENITY memory
+#define	POOLSIZE	(16 * 1024 * 1024) //SERENITY memory
 //#define POOLSIZE	(4 * 88400) 
 //#define POOLSIZE	(256 * 1024) //racc - 32 x 8192
 //[/CoOp]

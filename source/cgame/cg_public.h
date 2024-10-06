@@ -590,7 +590,7 @@ typedef struct
 	int				mask;
 } ragCallbackTraceLine_t;
 
-#define	MAX_CG_SHARED_BUFFER_SIZE		32768
+#define	MAX_CG_SHARED_BUFFER_SIZE		16384
 
 //----------------------------------------------
 
