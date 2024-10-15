@@ -1029,6 +1029,10 @@ void NPC_BSFollowLeader (void)
 			VectorScale( NPC->client->ps.moveDir, -1, NPC->client->ps.moveDir );
 		}//otherwise, stay where we are
 		//check for do not enter and stop if there's one there...
+		
+		
+		
+		
 		if ( ucmd.forwardmove || ucmd.rightmove || VectorCompare( vec3_origin, NPC->client->ps.moveDir ) )
 		{
 			NPC_MoveDirClear( ucmd.forwardmove, ucmd.rightmove, qtrue );

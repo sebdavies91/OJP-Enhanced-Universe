@@ -127,8 +127,13 @@ TIMER_Set
 */
 
 void TIMER_Set( gentity_t *ent, const char *identifier, int duration )
-{
-	gtimer_t *timer = TIMER_GetNew(ent->s.number, identifier);
+{	
+	//Temporary Fix
+	if (!ent)
+	{
+	return;
+	}
+	gtimer_t* timer = TIMER_GetNew(ent->s.number, identifier);
 
 	if (!timer)
 	{
@@ -136,6 +141,7 @@ void TIMER_Set( gentity_t *ent, const char *identifier, int duration )
 	}
 	timer->name = identifier;
 	timer->time = level.time + duration;
+
 }
 
 /*

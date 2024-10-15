@@ -2373,17 +2373,6 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 		G_ClearEnemy( NPC );
 	}
 
-											 
-																					  
-  
-					  
-  
-
- 
- 
-
-	
-  
 	NPC_HandleAIFlags();
 
 	//FIXME: these next three bits could be a function call, some sort of setup/cleanup func
@@ -2433,83 +2422,13 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 	*/
 	//[/CoOp]
 																	 
-	   
-		   
-		   
-															
-			
-							 
-																									  
-  
-	
-		 
-   
-																									
-								
-				  
-			
-			   
-					 
-			  
-				
-   
-			 
-
-					  
-		   
-   
-  
-   
-	
-	  
-	
-		 
-  
-	  
-   
-																													  
-																							
-															
-			
-												 
-																	 
-																	 
-													  
-   
-   
-		  
-		
-	  
-   
-			 
-	  
-	  
-	  
-   
- 
-
 	//[CoOp] SP code
 	//Execute our bState
 	bState = G_CurrentBState( NPCInfo );
 	
 
 	/* old MP code
-   
-	
 
-  
-   
- 
-   
-	  
-		
-			 
-		 
-  
-	 
-	  
-		  
-	  
 	//Execute our bState
 	if(NPCInfo->tempBehavior)
 	{//Overrides normal behavior until cleared
@@ -2545,7 +2464,11 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 	
 	//FIXME: don't walk off ledges unless we can get to our goal faster that way, or that's our goal's surface
 	//NPCPredict();
-
+	//Temporary Fix
+	if (!NPC)
+	{
+		return;
+	}
 	if ( NPC->enemy )
 	{
 		if ( !NPC->enemy->inuse )
@@ -2662,8 +2585,11 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 	}
 
 	// end of thinking cleanup
-	NPCInfo->touchedByPlayer = NULL;
-
+	//Temporary Fix
+	if (NPCInfo)
+	{
+		NPCInfo->touchedByPlayer = NULL;
+	}
 	//[CoOp] SP Code
 	/* this feature isn't used anymore.  Maybe enable later?
 	NPC_CheckPlayerAim();

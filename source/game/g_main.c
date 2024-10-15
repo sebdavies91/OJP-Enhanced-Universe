@@ -416,7 +416,7 @@ static cvarTable_t		gameCvarTable[] = {
 	
 	//[ExpSys]
 	//sets the initial skill points that players get.
-	{ &g_minForceRank, "g_minExpLevel", "300", CVAR_ARCHIVE, 0, qfalse  }, //Default was 16
+	{ &g_minForceRank, "g_minExpLevel", "400", CVAR_ARCHIVE, 0, qfalse  }, //Default was 16
 	{ &g_maxForceRank, "g_maxExpLevel", "600", CVAR_ARCHIVE, 0, qfalse  },//Default was 250
 	//{ &g_maxForceRank, "g_maxForceRank", "6", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qfalse  },
 	//[/ExpSys]
@@ -508,6 +508,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &sv_privatepassword, "sv_privatePassword", "", CVAR_TEMP, 0, qfalse },
 	//[/PrivatePasswordFix]
 
+
 	//[FatigueSys]
 	{ &g_forceRegenTime, "g_forceRegenTime", "100", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue  },
 
@@ -532,10 +533,10 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_fraglimitVoteCorrection, "g_fraglimitVoteCorrection", "1", CVAR_ARCHIVE, 0, qtrue },
 
-	{ &g_fraglimit, "fraglimit", "50", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
+	{ &g_fraglimit, "fraglimit", "20", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 	{ &g_duel_fraglimit, "duel_fraglimit", "10", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
-	{ &g_timelimit, "timelimit", "30", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
-	{ &g_capturelimit, "capturelimit", "5", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
+	{ &g_timelimit, "timelimit", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
+	{ &g_capturelimit, "capturelimit", "8", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_NORESTART, 0, qtrue },
 
 	{ &g_synchronousClients, "g_synchronousClients", "0", CVAR_SYSTEMINFO, 0, qfalse  },
 

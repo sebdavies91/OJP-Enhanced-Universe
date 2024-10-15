@@ -930,7 +930,7 @@ qboolean WP_SaberParseParms( const char *SaberName, saberInfo_t *saber )
 				SkipRestOfLine( &p );
 				continue;
 			}
-			if ( n < 1 || n > MAX_BLADES )
+			if ( n < 1 || n >= MAX_BLADES )
 			{
 				Com_Error(ERR_DROP, "WP_SaberParseParms: saber %s has illegal number of blades (%d) max: %d", useSaber, n, MAX_BLADES );
 				continue;

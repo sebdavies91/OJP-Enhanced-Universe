@@ -14988,6 +14988,7 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.buttons &= ~BUTTON_FORCE_DRAIN;
 		pm->cmd.buttons &= ~BUTTON_SABERTHROW;
 		pm->cmd.buttons &= ~BUTTON_THERMALTHROW;
+		pm->cmd.buttons &= ~BUTTON_WALKING;
 	}
 
 	

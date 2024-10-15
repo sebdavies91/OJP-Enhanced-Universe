@@ -5912,7 +5912,22 @@ void ForceFreeze(gentity_t *self)
 					ent->client->ps.userInt1 |= LOCK_LEFT;	
 					ent->client->viewLockTime = level.time + STASIS_TIME;
 					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + STASIS_TIME;
-
+					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim3[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim5[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim7[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
+					}
+					else
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASIS_TIME);
+					}	
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/stasis.wav"));
 					ent->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
@@ -5937,7 +5952,22 @@ void ForceFreeze(gentity_t *self)
 					ent->client->ps.userInt1 |= LOCK_LEFT;	
 					ent->client->viewLockTime = level.time + STASISJEDI_TIME;
 					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + STASISJEDI_TIME;
-
+					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim3[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim5[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim7[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}
+					else
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}	
 
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/stasis.wav"));
@@ -5963,7 +5993,22 @@ void ForceFreeze(gentity_t *self)
 					ent->client->ps.userInt1 |= LOCK_LEFT;						
 					ent->client->viewLockTime = level.time + STASISJEDI_TIME;
 					ent->client->ps.legsTimer = ent->client->ps.torsoTimer = level.time + STASISJEDI_TIME;
-
+					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim3[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim5[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim7[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}
+					else
+					{
+					G_SetAnim(ent, NULL, SETANIM_BOTH, WeaponReadyAnim[ent->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, STASISJEDI_TIME);
+					}	
 
 				//	G_AddEvent(ent, EV_STASIS, DirToByte(dir));
 					G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/weapons/force/stasis.wav"));
@@ -10961,7 +11006,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	{
 		if (self->client->ps.fd.forceGripSoundTime < level.time  )
 		{
-		if ( self->enemy && self->enemy->client->ps.userInt3 & (1 << FLAG_GRIP2))
+		if (self->enemy && self->enemy->client && self->enemy->client->ps.userInt3 & (1 << FLAG_GRIP2))
 		{
 			G_PreDefSound(self->client->ps.origin, PDSOUND_FORCEGRASP);			
 		}
@@ -11323,23 +11368,13 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 	if(self->client->stasisTime > level.time )
 	{//stasis is active, flip active frozen flag
-		{//fire electroshocker
-		if( self->s.NPC_class != CLASS_VEHICLE && self->localAnimIndex <= 1 )
-		{
-			G_SetAnim(self, NULL, SETANIM_LEGS, bgAllAnims[self->localAnimIndex].anims[self->client->ps.legsAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);	
-			G_SetAnim(self, NULL, SETANIM_TORSO, bgAllAnims[self->localAnimIndex].anims[self->client->ps.torsoAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);		
-		}			
+		{//fire electroshocker		
 			self->client->ps.userInt3 |= (1 << FLAG_STASIS);			
 		}
 	}
 	else if(self->client->freezeTime > level.time )
 	{//freezing is active, flip active frozen flag
 		{//fire electroshocker
-		if( self->s.NPC_class != CLASS_VEHICLE && self->localAnimIndex <= 1 )
-		{
-			G_SetAnim(self, NULL, SETANIM_LEGS, bgAllAnims[self->localAnimIndex].anims[self->client->ps.legsAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);	
-			G_SetAnim(self, NULL, SETANIM_TORSO, bgAllAnims[self->localAnimIndex].anims[self->client->ps.torsoAnim].firstFrame, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, self->client->stasisTime);		
-		}	
 			self->client->ps.userInt3 |= (1 << FLAG_STASIS);			
 		}
 	}	
@@ -11349,7 +11384,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		self->client->ps.userInt3 &= ~(1 << FLAG_STASIS);
 	}		
 	
-			
+					
 	
 	
 	
@@ -11851,7 +11886,12 @@ qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, in
 	{
 		return qfalse;
 	}
-
+	
+	if (self->client->ps.userInt3 & (1 << FLAG_STASIS))
+	{
+		return qfalse;		
+	}
+	
 	if (!g_forceDodge.integer)
 	{
 		return qfalse;
@@ -11875,10 +11915,7 @@ qboolean Jedi_DodgeEvasion( gentity_t *self, gentity_t *shooter, trace_t *tr, in
 		return qfalse;
 	}
 
-	if (self->client->ps.userInt3 & (1 << FLAG_STASIS))
-	{
-		return qfalse;
-	}
+
 	if (g_forceDodge.integer == 2)
 	{
 		if (self->client->ps.fd.forcePowersActive)

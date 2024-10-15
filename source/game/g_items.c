@@ -3131,7 +3131,8 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			//SquadTeam3->NPC->goalEntity is being cleared after we spawn
 			SquadTeam3->NPC->goalEntity = SquadTeam3->client->leader = ent;
 			SquadTeam3->NPC->behaviorState = BS_FOLLOW_LEADER;
-			SquadTeam3->NPC->followDist = 150;
+			SquadTeam3->NPC->followDist = 50;
+			SquadTeam3->NPC->distToGoal = 50;
 			ent->client->SquadTeam3 = SquadTeam3;
 
 
@@ -3312,7 +3313,8 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			//SquadTeam2->NPC->goalEntity is being cleared after we spawn
 			SquadTeam2->NPC->goalEntity = SquadTeam2->client->leader = ent;
 			SquadTeam2->NPC->behaviorState = BS_FOLLOW_LEADER;
-			SquadTeam2->NPC->followDist = 100;
+			SquadTeam2->NPC->followDist = 50;
+			SquadTeam2->NPC->distToGoal = 50;
 			ent->client->SquadTeam2 = SquadTeam2;
 
 			//seeker's ammo count is set in NPC_SetMiscDefaultData();
@@ -3486,6 +3488,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			SquadTeam->NPC->goalEntity = SquadTeam->client->leader = ent;
 			SquadTeam->NPC->behaviorState = BS_FOLLOW_LEADER;
 			SquadTeam->NPC->followDist = 50;
+			SquadTeam->NPC->distToGoal = 50;
 			ent->client->SquadTeam = SquadTeam;
 
 			//seeker's ammo count is set in NPC_SetMiscDefaultData();
@@ -3580,7 +3583,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 					SquadTeam->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
 		}	
 	}
-
+	
 	/*
 	if ( g_gametype.integer == GT_SIEGE && d_siegeSeekerNPC.integer )
 	{//actualy spawn a SquadTeam NPC

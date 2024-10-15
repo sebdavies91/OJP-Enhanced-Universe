@@ -11128,7 +11128,36 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 #ifndef FINAL_BUILD
 	viewlock = self->client->ps.userInt1;
 #endif
-    
+ 
+			if( self->client->SquadTeam3 && self->client->SquadTeam3->health > 0  && self->client->SquadTeam3->NPC->goalEntity == self->client->SquadTeam3->client->leader)
+			{
+			vec3_t	pt, dir;
+			pt[0] = self->client->SquadTeam3->client->leader->r.currentOrigin[0] + cos( 3.1415/6 ) * 50;
+			pt[1] = self->client->SquadTeam3->client->leader->r.currentOrigin[1] + sin( 3.1415/6 ) * 50;
+			pt[2] = self->client->SquadTeam3->client->leader->r.currentOrigin[2];
+			VectorSubtract( pt, self->client->SquadTeam3->r.currentOrigin, dir );
+			VectorMA(self->client->SquadTeam3->client->ps.velocity, 0.8f, dir, self->client->SquadTeam3->client->ps.velocity);
+			}
+			if(self->client->SquadTeam2 && self->client->SquadTeam2->health > 0 && self->client->SquadTeam2->NPC->goalEntity == self->client->SquadTeam2->client->leader)
+			{
+			vec3_t	pt, dir;
+			pt[0] = self->client->SquadTeam2->client->leader->r.currentOrigin[0] + cos( 5*3.1415/6 ) * 50;
+			pt[1] = self->client->SquadTeam2->client->leader->r.currentOrigin[1] + sin( 5*3.1415/6 ) * 50;
+			pt[2] = self->client->SquadTeam2->client->leader->r.currentOrigin[2];
+			VectorSubtract( pt, self->client->SquadTeam2->r.currentOrigin, dir );
+			VectorMA(self->client->SquadTeam2->client->ps.velocity, 0.8f, dir, self->client->SquadTeam2->client->ps.velocity);
+			}
+			if(  self->client->SquadTeam && self->client->SquadTeam->health > 0 && self->client->SquadTeam->NPC->goalEntity == self->client->SquadTeam->client->leader)
+			{
+			vec3_t	pt, dir;
+			pt[0] = self->client->SquadTeam->client->leader->r.currentOrigin[0] + cos( 9*3.1415/6 ) * 50;
+			pt[1] = self->client->SquadTeam->client->leader->r.currentOrigin[1] + sin( 9*3.1415/6 ) * 50;
+			pt[2] = self->client->SquadTeam->client->leader->r.currentOrigin[2];
+			VectorSubtract( pt, self->client->SquadTeam->r.currentOrigin, dir );
+			VectorMA(self->client->SquadTeam->client->ps.velocity, 0.8f, dir, self->client->SquadTeam->client->ps.velocity);
+			}
+
+ 
 	//[SnapThrow]
 	if (ucmd->buttons & BUTTON_THERMALTHROW)
 	{//player wants to snap throw a gernade
@@ -11147,6 +11176,8 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 	}
 
 	//[/SnapThrow]
+
+
 
 	extern void RocketDie(gentity_t * self, gentity_t * inflictor, gentity_t * attacker, int damage, int mod);
 	//[SnapThrow]
@@ -11247,6 +11278,9 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 	}
 	}
 	}
+
+
+
 
 	if (self->client->skillLevel[SK_SPECIALCHARACTER] >= FORCE_LEVEL_1 )
 	{

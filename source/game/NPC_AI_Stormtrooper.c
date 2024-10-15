@@ -791,7 +791,11 @@ qboolean NPC_CheckEnemyStealth( gentity_t *target )
 		if ( target_rating > realize && (NPCInfo->scriptFlags&SCF_LOOK_FOR_ENEMIES) )
 		{
 			G_SetEnemy( NPC, target );
-			NPCInfo->enemyLastSeenTime = level.time;
+			//Temporary Fix
+			if (NPCInfo)
+			{
+				NPCInfo->enemyLastSeenTime = level.time;
+			}
 			TIMER_Set( NPC, "attackDelay", Q_irand( 500, 2500 ) );
 			return qtrue;
 		}
@@ -1000,7 +1004,11 @@ static qboolean NPC_ST_InvestigateEvent( int eventID, qboolean extraSuspicious )
 			//FIXME: what if can't actually see enemy, don't know where he is... should we make them just become very alert and start looking for him?  Or just let combat AI handle this... (act as if you lost him)
 			//ST_Speech( NPC, SPEECH_CHARGE, 0 );
 			G_SetEnemy( NPC, level.alertEvents[eventID].owner );
-			NPCInfo->enemyLastSeenTime = level.time;
+			//Temporary Fix
+			if (NPCInfo)
+			{
+				NPCInfo->enemyLastSeenTime = level.time;
+			}
 			TIMER_Set( NPC, "attackDelay", Q_irand( 500, 2500 ) );
 			if ( level.alertEvents[eventID].type == AET_SOUND )
 			{//heard him, didn't see him, stick for a bit
