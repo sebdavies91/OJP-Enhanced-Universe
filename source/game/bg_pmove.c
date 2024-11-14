@@ -14975,8 +14975,9 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.buttons &= ~BUTTON_ATTACK;
 		pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
 	}
+#ifdef QAGAME
 
-	if (pm->ps->userInt3 & (1 << FLAG_STASIS))
+	if (g_entities[pm->ps->clientNum].client->stasisTime > level.time || g_entities[pm->ps->clientNum].client->freezeTime > level.time )
 	{ //don't let attack or alt attack if being gripped I guess
 		pm->cmd.buttons &= ~BUTTON_ATTACK;
 		pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
@@ -14991,6 +14992,7 @@ void PmoveSingle (pmove_t *pmove) {
 		pm->cmd.buttons &= ~BUTTON_WALKING;
 	}
 
+#endif
 	
 	if ( BG_InRoll( pm->ps, pm->ps->legsAnim ) )
 	{ //can't roll unless you're able to move normally

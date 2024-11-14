@@ -1770,10 +1770,17 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	//In case they're in notarget mode
 	if ( enemy->flags & FL_NOTARGET )
 		return qfalse;
-	if( enemy->client && (self->client->NPC_class == CLASS_SEEKER || self->client->NPC_class == CLASS_SQUADTEAM))
+	
+	
+	
+	if(self->NPC && self->NPC->charmedTime > level.time)
 	{
 					
 		if ( self->activator == enemy)
+			{
+			return qfalse;
+			}
+		if (enemy->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
 			{
 			return qfalse;
 			}
@@ -1784,6 +1791,81 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 			return qfalse;
 			}
 		if (enemy->activator->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
+			{
+			return qfalse;
+			}
+		}
+			return qtrue;
+	}
+	if(enemy->NPC && enemy->NPC->charmedTime > level.time)
+	{
+		if ( enemy->activator == self)
+			{
+			return qfalse;
+			}
+//		if (self->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
+//			{
+//			return qfalse;
+//			}
+		if (self->activator)
+		{
+		if (self->activator == enemy->activator)
+			{
+			return qfalse;
+			}
+//		if (self->activator->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
+//			{
+//			return qfalse;
+//			}
+		}
+			return qtrue;	
+	}
+
+	
+	
+	if(self->client && enemy->client && (self->client->NPC_class == CLASS_SEEKER || self->client->NPC_class == CLASS_SQUADTEAM))
+	{
+					
+		if ( self->activator == enemy)
+			{
+			return qfalse;
+			}
+		if (enemy->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
+			{
+			return qfalse;
+			}
+		if (enemy->activator)
+		{
+		if (enemy->activator == self->activator)
+			{
+			return qfalse;
+			}
+		if (enemy->activator->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
+			{
+			return qfalse;
+			}
+		}
+
+	}
+	
+	if( self->client && enemy->client && (enemy->client->NPC_class == CLASS_SEEKER || enemy->client->NPC_class == CLASS_SQUADTEAM))
+	{
+					
+		if ( enemy->activator == self)
+			{
+			return qfalse;
+			}
+		if (self->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
+			{
+			return qfalse;
+			}
+		if (self->activator)
+		{
+		if (self->activator == enemy->activator)
+			{
+			return qfalse;
+			}
+		if (self->activator->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
 			{
 			return qfalse;
 			}

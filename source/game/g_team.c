@@ -195,6 +195,55 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 		return qfalse;
 	}
 
+	if( ent1->client->corruptedTime > level.time)
+	{
+					
+		if ( ent1->activator == ent2)
+			{
+			return qtrue;
+			}
+		if (ent2->client->sess.sessionTeam == ent1->activator->client->sess.sessionTeam)
+			{
+			return qtrue;
+			}
+		if (ent2->activator)
+		{
+		if (ent2->activator == ent1->activator)
+			{
+			return qtrue;
+			}
+		if (ent2->activator->client->sess.sessionTeam == ent1->activator->client->sess.sessionTeam)
+			{
+			return qtrue;
+			}
+		}
+			return qfalse;
+	}
+	if(ent2->client->corruptedTime > level.time)
+	{
+		if ( ent2->activator == ent1)
+			{
+			return qtrue;
+			}
+//		if (ent1->client->sess.sessionTeam == ent2->activator->client->sess.sessionTeam)
+//			{
+//			return qtrue;
+//			}
+		if (ent1->activator)
+		{
+		if (ent1->activator == ent2->activator)
+			{
+			return qtrue;
+			}
+//		if (ent1->activator->client->sess.sessionTeam == ent2->activator->client->sess.sessionTeam)
+//			{
+//			return qtrue;
+//			}
+		}
+			return qfalse;	
+	}
+
+
 	if (g_gametype.integer == GT_POWERDUEL)
 	{
 		if (ent1->client->sess.duelTeam == ent2->client->sess.duelTeam)

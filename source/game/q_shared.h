@@ -2335,6 +2335,7 @@ typedef struct siegePers_s
 #define	BUTTON_THERMALTHROW		8192		//+button13
 //[/SnapThrow]
 #define	BUTTON_GRAPPLE						16384		//+button14
+#define	BUTTON_15				32768
 //NOTE: As far as I've been able to test, the buttons seen below don't work because they 
 //aren't set to command buttons in the engine.
 #define	BUTTON_16				32768
@@ -2427,13 +2428,13 @@ typedef enum {
 
 	//flag indicates that the player was parried.  
 	//They won't be able to launch into a combo from the bounce.
-//	, FLAG_PARRIED
+	, FLAG_PARRIED
 
 	//flag indicates that this block is a pre-block and interruptable
 	, FLAG_PREBLOCK
 
 	//[QuickParry]
-//	, FLAG_QUICKPARRY
+	, FLAG_QUICKPARRY
 	//[/QuickParry]
 	, FLAG_BLOCKING
 	//[/SaberSys]
@@ -2453,7 +2454,6 @@ typedef enum {
 	//[DodgeSys]
 //	, FLAG_DODGE_LIGHT
 //	, FLAG_DODGE_CRITICAL
-	, FLAG_STASIS
 	, FLAG_JETPACK2
 	, FLAG_JETPACK3
 	, FLAG_JETPACK4
@@ -2464,8 +2464,6 @@ typedef enum {
 	, FLAG_RAGE2
 	, FLAG_PUSH2
 	, FLAG_PULL2
-	, FLAG_STASIS2
-	, FLAG_GRIP2
 	//[/DodgeSys]
 } userInt3Flags_t;
 
@@ -2748,7 +2746,7 @@ typedef struct entityState_s {
 	int		weapon;			// determines weapon and flash model, etc
 	int		legsAnim;
 	int		torsoAnim;
-
+	
 	qboolean	legsFlip; //set to opposite when the same anim needs restarting, sent over in only 1 bit. Cleaner and makes porting easier than having that god forsaken ANIM_TOGGLEBIT.
 	qboolean	torsoFlip;
 

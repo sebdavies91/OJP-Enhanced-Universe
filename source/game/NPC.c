@@ -1932,7 +1932,10 @@ void NPC_RunBehavior( int team, int bState )
 	}
 	*/
 	//[/CoOp]
-	if(NPC->activator && NPC->activator->client && NPC->activator->client->remote != NPC)
+	if(NPC->activator && NPC->activator->client && NPC->activator->client->remote != NPC )
+	{
+		
+	if(NPC->client->NPC_class == CLASS_SEEKER || NPC->client->NPC_class == CLASS_SQUADTEAM)
 	{
 		if(  NPC->activator->health <= 0){
 			//have us fall down and explode.
@@ -1944,25 +1947,10 @@ void NPC_RunBehavior( int team, int bState )
 			G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
 			return;
 		}
-		
+	}	
 
 	}
 	
-		if(NPC->activator && NPC->activator->client && NPC->activator->client->remote != NPC)
-	{
-		if(  NPC->activator->health <= 0){
-			//have us fall down and explode.
-			G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
-			return;
-		}
-		else if(  NPC->activator->client->sess.sessionTeam == TEAM_SPECTATOR){
-			//have us fall down and explode.
-			G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
-			return;
-		}
-
-
-	}
 	
 	if ( bState == BS_CINEMATIC )
 	{

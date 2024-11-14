@@ -307,10 +307,14 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 			mechAttacker->behaveMode = SABBEHAVE_ATTACK;
 #endif
 
-
-//			{
-//			attacker->client->ps.userInt3 |= ( 1 << FLAG_PARRIED );
-//			}
+			if (blocker->client->pers.cmd.buttons & BUTTON_15)
+			{
+				attacker->client->ps.userInt3 |= (1 << FLAG_QUICKPARRY);
+			}
+			else
+			{
+			attacker->client->ps.userInt3 |= ( 1 << FLAG_PARRIED );
+			}
 
 			SabBeh_AddBalance(blocker, mechBlocker, MPCOST_PARRYING_ATTACKFAKE, qfalse);
 			BG_AddFatigue(&blocker->client->ps, FPCOST_PARRYING_PURE);
@@ -383,15 +387,15 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 #ifdef _DEBUG
 			mechAttacker->behaveMode = SABBEHAVE_ATTACKPARRIED;
 #endif
-
-
-			SabBeh_AddBalance(blocker, mechBlocker, MPCOST_PARRYING, qfalse);
-
 			//[QuickParry]
-
-//			{
-//			attacker->client->ps.userInt3 |= ( 1 << FLAG_PARRIED );
-//			}
+			if (blocker->client->pers.cmd.buttons & BUTTON_15)
+			{
+				attacker->client->ps.userInt3 |= ( 1 << FLAG_QUICKPARRY);
+			}
+			else
+			{
+			attacker->client->ps.userInt3 |= ( 1 << FLAG_PARRIED );
+			}
 			//[/QuickParry]
 
 			SabBeh_AddBalance(blocker, mechBlocker, MPCOST_PARRYING, qfalse);

@@ -1749,7 +1749,7 @@ void Flamethrower_Fire( gentity_t *self )
 				//[/ForceSys]
 				{
 					//rww - Shields can now absorb lightning too.
-					G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_LAVA );
+					G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_UNKNOWN );
 
 					//[ForceSys]
 					//lightning also blasts the target back.
@@ -2216,7 +2216,8 @@ void Icethrower_Fire( gentity_t *self )
 					traceEnt->client->ps.userInt1 |= LOCK_LEFT;	
 					traceEnt->client->viewLockTime = level.time + FREEZE_TIME/3;
 					traceEnt->client->ps.legsTimer = traceEnt->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
-
+					traceEnt->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
+					traceEnt->client->ps.saberBlocked = BLOCKED_NONE;
 					if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2)
 					{
 					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim3[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
@@ -2299,7 +2300,7 @@ void Electroshocker_Fire( gentity_t *self )
 	vec3_t	forward;
 	gentity_t	*traceEnt;
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
-	int SHOCK_TIME=2500;
+	int SHOCK_TIME=5000;
 	float	radius = ELECTROSHOCKER_RADIUS, dot, dist;
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
@@ -2471,11 +2472,17 @@ void Electroshocker_Fire( gentity_t *self )
 					//[ForceSys]
 					//don't do the electrical effect unless we didn't block with the saber.
 					//don't do the electrical effect unless we didn't block with the saber.
-					if (traceEnt->client->ps.electrifyTime < (level.time + SHOCK_TIME/2) && damage)
+
+					
+					if (traceEnt->client->shockTime < (level.time + SHOCK_TIME/2) && damage)
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-						traceEnt->client->ps.electrifyTime = level.time + SHOCK_TIME;
+						gentity_t	*tent;
+						tent = G_TempEntity(traceEnt->r.currentOrigin, EV_SHOCKED);
+						tent->s.eventParm = DirToByte(dir);
+						tent->s.owner = traceEnt->s.number;
+						traceEnt->client->shockTime = level.time + SHOCK_TIME;
 					}
 					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
 					)
@@ -2678,6 +2685,10 @@ void Lasersupport_Fire( gentity_t *self )
 					}
 					//[ForceSys]
 					//don't do the electrical effect unless we didn't block with the saber.
+					if ( traceEnt->client->ps.stats[STAT_HEALTH]+ traceEnt->client->ps.stats[STAT_ARMOR]-damage < 1 )
+					{//electrocution effect
+						traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
+					}					
 					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
 					)
 					{//disable cloak temporarily

@@ -316,6 +316,8 @@ typedef struct {
 	int				legsAnim;
 	int				torsoAnim;
 
+
+	
 	float		facial_blink;		// time before next blink. If a minus value, we are in blink mode
 	float		facial_frown;		// time before next frown. If a minus value, we are in frown mode
 	float		facial_aux;			// time before next aux. If a minus value, we are in aux mode
@@ -500,10 +502,10 @@ typedef struct centity_s {
 	int				trickAlphaTime;
 
 	int				teamPowerEffectTime;
-	qboolean		teamPowerType; //0 regen, 1 heal, 2 drain, 3 absorb, 4 negation
+	qboolean		teamPowerType; //0 regen, 1 heal, 2 drain, 3 absorb, 4 negation, 5 dissipate, 6 stasis, 7 insanity, 8 lightning, 9 judgement
 	
 	int				itemPowerEffectTime;
-	qboolean		itemPowerType; //0 flame, 1 ice, 
+	qboolean		itemPowerType; //0 flame, 1 ice, 2 shock 
 	
 	qboolean		isRagging;
 	qboolean		ownerRagging;
@@ -1367,7 +1369,9 @@ typedef struct {
 	qhandle_t	cloakedShader;
 
 	qhandle_t	boltShader;
-
+	qhandle_t	boltShader2;
+	qhandle_t	boltShader3;
+	qhandle_t	boltShader4;
 	qhandle_t	shadowMarkShader;
 
 	//glass shard shader

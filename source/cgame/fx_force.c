@@ -69,3 +69,15 @@ void FX_Frozen(vec3_t origin, vec3_t dir)
 	VectorScale(dir, -1.0, dir);
 	trap_FX_PlayEffectID(cgs.effects.frozen, origin, dir, -1, -1);
 }	
+
+/*
+-------------------------
+FX_Shocked
+-------------------------
+*/
+// This effect is not generic because of possible enhancements
+void FX_Shocked(vec3_t origin, vec3_t dir)
+{
+	VectorScale(dir, -1.0, dir);
+	trap_FX_PlayEffectID(cgs.effects.frozen, origin, dir, -1, -1);
+}

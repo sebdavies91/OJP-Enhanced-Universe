@@ -2277,8 +2277,9 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.lightningFlash = trap_R_RegisterShader("gfx/misc/lightningFlash");	
 	
 	cgs.media.boltShader = trap_R_RegisterShader( "gfx/misc/blueLine" );
-
-
+	cgs.media.boltShader2 = trap_R_RegisterShader( "gfx/misc/lightningline" );	
+	cgs.media.boltShader3 = trap_R_RegisterShader( "gfx/misc/judgementline" );
+	cgs.media.boltShader4 = trap_R_RegisterShader( "gfx/misc/electroshockbolt" );
 
 		cgs.effects.orangeShotEffect			= trap_FX_RegisterEffect( "bryar/shot" );
 		cgs.effects.redShotEffect			= trap_FX_RegisterEffect( "dh-17/shot" );		

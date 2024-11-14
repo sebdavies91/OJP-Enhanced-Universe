@@ -242,6 +242,8 @@ int BasicDodgeCosts[MOD_MAX] =
 	50,		//MOD_FREEZER_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	50,		//MOD_ION_EXPLOSION,	//death by player's seeker droid.	
 	50,		//MOD_ION_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	100,		//MOD_FORCE_DESTRUCTION,	//death by player's seeker droid.	
+	100,		//MOD_FORCE_BURST,	//death by player's seeker droid.
 	//[/SeekerItemNPC]
 	//MOD_MAX
 };
@@ -3992,7 +3994,9 @@ int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, 
 			atk->methodOfDeath == MOD_FLECHETTE_ALT_SPLASH ||
 			atk->methodOfDeath == MOD_CONC ||
 			atk->methodOfDeath == MOD_CONC_ALT ||
-			atk->methodOfDeath == MOD_BRYAR_PISTOL_ALT) )
+			atk->methodOfDeath == MOD_BRYAR_PISTOL_ALT ||
+			atk->methodOfDeath == MOD_FORCE_DESTRUCTION ||
+			atk->methodOfDeath == MOD_FORCE_BURST) )
 	{//can't block this stuff with a saber
 		return 0;
 	}
@@ -9803,9 +9807,9 @@ void saberFirstThrown(gentity_t *saberent)
 		VectorCopy(traceFrom, traceTo);
 		if(saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW] >= FORCE_LEVEL_3)
 		{
-			traceTo[0] += fwd[0]*2096;
-			traceTo[1] += fwd[1]*2096;
-			traceTo[2] += fwd[2]*2096;
+			traceTo[0] += fwd[0]*2048;
+			traceTo[1] += fwd[1]*2048;
+			traceTo[2] += fwd[2]*2048;
 		}
 		else
 		{
@@ -10175,10 +10179,10 @@ qboolean OJP_DodgeKick( gentity_t *self, gentity_t *pusher, const vec3_t pushDir
 				return qfalse;
 			}
 		}
-		//else if(!(self->client->buttons & BUTTON_15))
-		//{
-		//	return qfalse;
-		//}
+		else if(!(self->client->buttons & BUTTON_15))
+		{
+			return qfalse;
+		}
 
 	}
 
@@ -11128,36 +11132,17 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 #ifndef FINAL_BUILD
 	viewlock = self->client->ps.userInt1;
 #endif
- 
-			if( self->client->SquadTeam3 && self->client->SquadTeam3->health > 0  && self->client->SquadTeam3->NPC->goalEntity == self->client->SquadTeam3->client->leader)
-			{
-			vec3_t	pt, dir;
-			pt[0] = self->client->SquadTeam3->client->leader->r.currentOrigin[0] + cos( 3.1415/6 ) * 50;
-			pt[1] = self->client->SquadTeam3->client->leader->r.currentOrigin[1] + sin( 3.1415/6 ) * 50;
-			pt[2] = self->client->SquadTeam3->client->leader->r.currentOrigin[2];
-			VectorSubtract( pt, self->client->SquadTeam3->r.currentOrigin, dir );
-			VectorMA(self->client->SquadTeam3->client->ps.velocity, 0.8f, dir, self->client->SquadTeam3->client->ps.velocity);
-			}
-			if(self->client->SquadTeam2 && self->client->SquadTeam2->health > 0 && self->client->SquadTeam2->NPC->goalEntity == self->client->SquadTeam2->client->leader)
-			{
-			vec3_t	pt, dir;
-			pt[0] = self->client->SquadTeam2->client->leader->r.currentOrigin[0] + cos( 5*3.1415/6 ) * 50;
-			pt[1] = self->client->SquadTeam2->client->leader->r.currentOrigin[1] + sin( 5*3.1415/6 ) * 50;
-			pt[2] = self->client->SquadTeam2->client->leader->r.currentOrigin[2];
-			VectorSubtract( pt, self->client->SquadTeam2->r.currentOrigin, dir );
-			VectorMA(self->client->SquadTeam2->client->ps.velocity, 0.8f, dir, self->client->SquadTeam2->client->ps.velocity);
-			}
-			if(  self->client->SquadTeam && self->client->SquadTeam->health > 0 && self->client->SquadTeam->NPC->goalEntity == self->client->SquadTeam->client->leader)
-			{
-			vec3_t	pt, dir;
-			pt[0] = self->client->SquadTeam->client->leader->r.currentOrigin[0] + cos( 9*3.1415/6 ) * 50;
-			pt[1] = self->client->SquadTeam->client->leader->r.currentOrigin[1] + sin( 9*3.1415/6 ) * 50;
-			pt[2] = self->client->SquadTeam->client->leader->r.currentOrigin[2];
-			VectorSubtract( pt, self->client->SquadTeam->r.currentOrigin, dir );
-			VectorMA(self->client->SquadTeam->client->ps.velocity, 0.8f, dir, self->client->SquadTeam->client->ps.velocity);
-			}
 
- 
+	//[/SnapThrow]
+	
+	//I'm leaving these tests in so someone might find more open buttons eventually.
+	/*
+
+	if (ucmd->buttons & BUTTON_15)
+	{
+		G_Printf("Button Flag 15 Pressed.\n");
+	}
+	*/
 	//[SnapThrow]
 	if (ucmd->buttons & BUTTON_THERMALTHROW)
 	{//player wants to snap throw a gernade
@@ -11176,180 +11161,6 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 	}
 
 	//[/SnapThrow]
-
-
-
-	extern void RocketDie(gentity_t * self, gentity_t * inflictor, gentity_t * attacker, int damage, int mod);
-	//[SnapThrow]
-	if (BG_CrouchAnim( self->client->ps.legsAnim))
-	{
-	if (self->client->skillLevel[SK_BACKPACKROCKET] >= FORCE_LEVEL_1 && ucmd->buttons & BUTTON_USE  )
-	{
-	if( !(self->client->backpackrocketTime > level.time))
-		{
-	{//player wants to snap throw a rocket
-	vec3_t	start;
-	vec3_t	dir;
-	vec3_t	reposition;
-	int 	BACKPACK_ROCKET_DAMAGE=300;
-	int		BACKPACK_ROCKET_SIZE = 3;
-	int		BACKPACK_ROCKET_SPLASH_DAMAGE = 150;
-	int		BACKPACK_ROCKET_SPLASH_RADIUS = 512;
-	int 	ROCKET_DELAY = 6000;
-	float	vel = 2000.0;
-
-	G_SetAnim(self, &self->client->pers.cmd, SETANIM_LEGS, BOTH_FLIP_F, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, 0);
-	if (self->client->skillLevel[SK_BACKPACKROCKET] >= FORCE_LEVEL_3)
-	{
-		BACKPACK_ROCKET_SPLASH_DAMAGE = BACKPACK_ROCKET_SPLASH_DAMAGE * 3;
-		BACKPACK_ROCKET_DAMAGE = BACKPACK_ROCKET_DAMAGE * 3;
-	}
-	else if (self->client->skillLevel[SK_BACKPACKROCKET] == FORCE_LEVEL_2)
-	{
-		BACKPACK_ROCKET_SPLASH_DAMAGE = BACKPACK_ROCKET_SPLASH_DAMAGE * 2;
-		BACKPACK_ROCKET_DAMAGE = BACKPACK_ROCKET_DAMAGE * 2;
-	}
-	AngleVectors(self->client->ps.viewangles, dir, NULL, NULL);
-	VectorNormalize(dir);
-	reposition[0] = 0.0;
-	reposition[1] = 0.0;
-	reposition[2] = 15.0;
-	reposition[0] = self->client->renderInfo.eyePoint[0] + reposition[0];
-	reposition[1] = self->client->renderInfo.eyePoint[1] + reposition[1];
-	reposition[2] = self->client->renderInfo.eyePoint[2] + reposition[2];
-	VectorCopy(reposition, start);
-
-	gentity_t	*missile; 
-	missile= CreateMissile( start, dir, vel, 10000, self, qfalse );
-	
-	
-
-
-	if (self->client->skillLevel[SK_BACKPACKROCKETA] == FORCE_LEVEL_1)
-	{
-	missile->classname = "rocket_proj";
-	missile->s.weapon = WP_THERMAL;
-	}
-	else if (self->client->skillLevel[SK_BACKPACKROCKETA] == FORCE_LEVEL_2)
-	{
-	missile->classname = "rocket_proj";
-	missile->s.weapon = WP_ROCKET_LAUNCHER;
-	}
-	else if (self->client->skillLevel[SK_BACKPACKROCKETA] == FORCE_LEVEL_3)
-	{
-	missile->classname = "rocket_proj";
-	missile->s.weapon = WP_CONCUSSION;
-	}	
-	else
-	{
-	missile->classname = "rocket_proj";
-	missile->s.weapon = WP_THERMAL;
-	}	
-	
-	
-
-	VectorSet( missile->r.maxs, BACKPACK_ROCKET_SIZE, BACKPACK_ROCKET_SIZE, BACKPACK_ROCKET_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
-
-
-	missile->damage = BACKPACK_ROCKET_DAMAGE;
-	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-
-	missile->methodOfDeath = MOD_ROCKET;
-	missile->splashMethodOfDeath = MOD_ROCKET_SPLASH;
-	
-
-	missile->clipmask = MASK_SHOT;
-//===testing being able to shoot rockets out of the air==================================
-	missile->health = 10;
-	missile->takedamage = qtrue;
-	missile->r.contents = MASK_SHOT;
-	missile->die = RocketDie;
-//===testing being able to shoot rockets out of the air==================================
-	
-	missile->splashDamage = BACKPACK_ROCKET_SPLASH_DAMAGE;
-	missile->splashRadius = BACKPACK_ROCKET_SPLASH_RADIUS;
-	// we don't want it to bounce forever
-	missile->bounceCount = 0;
-	self->client->backpackrocketTime = level.time + ROCKET_DELAY;//delay the activation
-	G_Sound( self, CHAN_BODY, G_SoundIndex("sound/weapons/rocket/fire") );
-
-	}
-	}
-	}
-	}
-
-
-
-
-	if (self->client->skillLevel[SK_SPECIALCHARACTER] >= FORCE_LEVEL_1 )
-	{
-	Q3_SetInvisible( self->s.number, qtrue );	
-	G_MuteSound(self->s.number, CHAN_VOICE);
-	if ( !(G_IsRidingVehicle(self)) && self->health > 0)
-	{
-				if (self->client->specialcharacterSpawn == 0 )
-				{
-					if (self->client->skillLevel[SK_SPECIALCHARACTER] == FORCE_LEVEL_2 )
-					{
-					gentity_t* SpecialCharacter;
-					SpecialCharacter = NPC_SpawnType(self, "droideka", va("player%iSpecialCharacter", self->s.number), qtrue);
-					self->client->specialcharacterSpawn = 1;
-					}
-					else if (self->client->skillLevel[SK_SPECIALCHARACTER] == FORCE_LEVEL_1 )
-					{
-					gentity_t* SpecialCharacter;
-					SpecialCharacter = NPC_SpawnType(self, "Mark1_Vehicle", va("player%iSpecialCharacter", self->s.number), qtrue);
-					self->client->specialcharacterSpawn = 1;
-					}
-				}
-				gentity_t* target;
-				trace_t		trace;
-				vec3_t		src, dest, vf;
-				vec3_t		viewspot;
-				VectorCopy(self->client->ps.origin, viewspot);
-				viewspot[2] += self->client->ps.viewheight;
-				VectorCopy( viewspot, src );
-				AngleVectors( self->client->ps.viewangles, vf, NULL, vf );
-				VectorMA( src, 128, vf, dest );
-				trap_Trace( &trace, src, vec3_origin, vec3_origin, dest, self->s.number, MASK_OPAQUE|CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_ITEM|CONTENTS_CORPSE );
-				target = &g_entities[trace.entityNum];				
-				if (target && target->m_pVehicle && target->client &&
-					target->s.NPC_class == CLASS_VEHICLE )
-				{ //if SpecialCharacter is a vehicle then perform appropriate checks
-					Vehicle_t* pVeh = target->m_pVehicle;
-
-					if (pVeh->m_pVehicleInfo)
-					{
-						{ //not belonging to a team, or client is on same team
-							pVeh->m_pVehicleInfo->Board(pVeh, (bgEntity_t*)self);
-						}						
-						//clear the damn button!
-						self->client->pers.cmd.buttons &= ~BUTTON_USE;
-
-
-					}
-
-				}
-
-
-
-	}
-	
-
-	}
-	
-	//[/SnapThrow]
-	
-	//I'm leaving these tests in so someone might find more open buttons eventually.
-	/*
-
-	if (ucmd->buttons & BUTTON_15)
-	{
-		G_Printf("Button Flag 15 Pressed.\n");
-	}
-	*/
-
 
 	
 	if (ucmd->buttons & BUTTON_16)
@@ -13261,10 +13072,10 @@ qboolean G_BlockIsQuickParry( gentity_t *self, gentity_t *attacker, vec3_t hitLo
 					//vs the actual attack location.
 	qboolean inFront = InFront(attacker->client->ps.origin, self->client->ps.origin, self->client->ps.viewangles, 0.0f);
     
-	//if(!(self->client->pers.cmd.buttons & BUTTON_15))
-	//{
-	//	return qfalse;
-	//}
+	if(!(self->client->pers.cmd.buttons & BUTTON_15))
+	{
+		return qfalse;
+	}
 
 	if(!inFront)
 	{//can't parry attacks to the rear.
@@ -13576,10 +13387,10 @@ qboolean G_InAttackParry(gentity_t *self)
 		return qfalse;
 	}
 
-//	if(self->client->ps.userInt3 & (1 << FLAG_PARRIED))
-//	{//can't attack parry when parried.
-//		return qfalse;
-//	}
+	if(self->client->ps.userInt3 & (1 << FLAG_PARRIED))
+	{//can't attack parry when parried.
+		return qfalse;
+	}
 
 	if(BG_SaberInTransitionAny(self->client->ps.saberMove))
 	{//in transition, start, or return

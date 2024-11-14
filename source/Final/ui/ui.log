@@ -1,0 +1,53 @@
+﻿  bg_misc.c
+  bg_saga.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1293,21): warning C4456: declaration of 'i' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1028,6): message : see declaration of 'i'
+  bg_vehicleLoad.c
+  bg_weapons.c
+  q_math.c
+  q_shared.c
+  ui_atoms.c
+  ui_force.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_force.c(660,8): warning C4456: declaration of 'i' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_force.c(276,39): message : see declaration of 'i'
+  ui_gameinfo.c
+  ui_main.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(496,37): warning C4459: declaration of 'ui_siegeInfo' hides global declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_local.h(82,17): message : see declaration of 'ui_siegeInfo'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(523,37): warning C4459: declaration of 'ui_siegeInfo' hides global declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_local.h(82,17): message : see declaration of 'ui_siegeInfo'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(544,37): warning C4459: declaration of 'ui_siegeInfo' hides global declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_local.h(82,17): message : see declaration of 'ui_siegeInfo'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(5562,6): warning C4189: 'gameType': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(5764,18): warning C4456: declaration of 'item' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(5746,13): message : see declaration of 'item'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(5773,18): warning C4456: declaration of 'item' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(5746,13): message : see declaration of 'item'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(6191,26): warning C4456: declaration of 'listPtr' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(6182,16): message : see declaration of 'listPtr'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(6644,31): warning C4456: declaration of 'name' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(6285,14): message : see declaration of 'name'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(6697,31): warning C4456: declaration of 'name' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(6285,14): message : see declaration of 'name'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(9294,11): warning C4456: declaration of 'i' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(9257,15): message : see declaration of 'i'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(9809,18): warning C4457: declaration of 'item' hides function parameter
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(9787,70): message : see declaration of 'item'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(9888,18): warning C4457: declaration of 'item' hides function parameter
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_main.c(9787,70): message : see declaration of 'item'
+  ui_saber.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_saber.c(811,8): warning C4456: declaration of 'i' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_saber.c(682,6): message : see declaration of 'i'
+  ui_shared.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(759,16): warning C4456: declaration of 'color' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(711,9): message : see declaration of 'color'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(5469,23): warning C4456: declaration of 'modelPtr' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(5458,14): message : see declaration of 'modelPtr'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6108,21): warning C4456: declaration of 'parent' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6099,14): message : see declaration of 'parent'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6664,14): warning C4456: declaration of 'color' hides previous local declaration
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6166,10): message : see declaration of 'color'
+  ui_syscalls.c
+  Generating Code...
+     Creating library .\../Final/uix86.lib and object .\../Final/uix86.exp
+  ui.vcxproj -> E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\ojpenhanced\uix86.dll

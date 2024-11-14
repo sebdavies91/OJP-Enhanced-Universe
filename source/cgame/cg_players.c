@@ -4177,10 +4177,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 				blendTime = 200;
 			}
 		}
-//		if( cent->currentState.userInt3 & (1 << FLAG_QUICKPARRY))
-//		{
-//			blendTime *= 1.8;
-//		}
+
 
 		animSpeed *= animSpeedMult;
 
@@ -4656,10 +4653,7 @@ static void CG_PlayerAnimation( centity_t *cent, int *legsOld, int *legs, float 
 	// If this is not a vehicle, you may lerm the frame (since vehicles never have a torso anim). -AReis
 	if ( cent->currentState.NPC_class != CLASS_VEHICLE )
 	{	
-//		if( cent->currentState.userInt3 & (1 << FLAG_QUICKPARRY))
-//		{
-//			speedScale *= 1.8;
-//		}
+
 		CG_RunLerpFrame( cent, ci, &cent->pe.torso, cent->currentState.torsoFlip, cent->currentState.torsoAnim, speedScale, qtrue );
 
 		*torsoOld = cent->pe.torso.oldFrame;
@@ -18305,62 +18299,8 @@ SkipTrueView:
 			(cg.renderingThirdPerson || cent->currentState.number != cg.snap->ps.clientNum) )
 		*/
 		{
-			if (cent->currentState.userInt3 & (1 << FLAG_GRIP2))
-			{
-			vec3_t boltDir;
-			vec3_t origBolt;
-			VectorCopy(efOrgL, origBolt);
-			BG_GiveMeVectorFromMatrix( &lHandMatrix, NEGATIVE_Y, boltDir );			
-			
-			
-			
-			
-			if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
-			{//arc
-			if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-			{
-		 
-																	  
-																																																								 
-			//use refractive effect
-//			CG_ForceGraspEffect( efOrgR );
-   
 
-			//use refractive effect
-//			CG_ForceGraspEffect( efOrgL );
-
-			}
-			else if (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)
-			{
-			//use refractive effect
-//			CG_ForceGraspEffect( efOrgL );
-					  
-				  
-						   
-													   
-
-			}
-			}
-		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)
-			{
-			//use refractive effect
-//			CG_ForceGraspEffect( efOrgL );
-
-																	 
-	 
-													 
-			}	
-			
 		
-
-												 
-
-			}
-			else
-		{
 			vec3_t boltDir;
 			vec3_t origBolt;
 			VectorCopy(efOrgL, origBolt);
@@ -18422,7 +18362,7 @@ SkipTrueView:
 														
 	 
 
-		}			
+					
 		}
 															   
 
@@ -18649,7 +18589,7 @@ SkipTrueView:
 
 	if (cent->teamPowerEffectTime > cg.time)
 	{
-		if (cent->teamPowerType == 3)
+		if (cent->teamPowerType == 3 || cent->teamPowerType == 5 || cent->teamPowerType == 6 || cent->teamPowerType == 7 || cent->teamPowerType == 8 || cent->teamPowerType == 9)
 		{ //absorb is a somewhat different effect entirely
 			//Guess I'll take care of it where it's always been, just checking these values instead.
 		}
@@ -18674,20 +18614,20 @@ SkipTrueView:
 				legs.shaderRGBA[1] = 255;
 				legs.shaderRGBA[2] = 0;
 			}
-			else if (cent->teamPowerType == 0)
+			if (cent->teamPowerType == 0)
 			{ //regen
 				legs.shaderRGBA[0] = 0;
 				legs.shaderRGBA[1] = 0;
 				legs.shaderRGBA[2] = 255;
 			}
-			else if (cent->teamPowerType == 4)
+			if (cent->teamPowerType == 4)
 			{ //negation
 				legs.shaderRGBA[0] = 255;
 				legs.shaderRGBA[1] = 255;
 				legs.shaderRGBA[2] = 255;
 				legs.shaderRGBA[3] = 255;
 			}
-			else
+			if (cent->teamPowerType == 2)
 			{ //drain
 				legs.shaderRGBA[0] = 255;
 				legs.shaderRGBA[1] = 0;
@@ -18716,7 +18656,41 @@ SkipTrueView:
 
 	if (cent->itemPowerEffectTime > cg.time)
 	{
-	
+
+		if (cent->itemPowerType == 0)
+		{
+
+		vec3_t tempAngles;
+
+		if ( random() > 0.4f )
+		{
+			// fade out over the last 500 ms
+			int brightness = 255;
+			
+
+
+
+			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
+			legs.renderfx &= ~RF_MINLIGHT;
+
+			legs.renderfx |= RF_RGB_TINT;
+			legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2];
+			legs.shaderRGBA[3] = 255;
+
+
+
+			trap_R_AddRefEntityToScene( &legs );
+
+			if ( random() > 0.9f )
+				trap_S_StartSound ( NULL, cent->currentState.number, CHAN_AUTO, cgs.media.incinerationSound );
+		}
+
+		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
+		CG_ForceIncineration( cent, legs.origin, tempAngles, cgs.media.boltShader, qfalse );
+		} 
+		
+		
+		
 		if (cent->itemPowerType == 1)
 		{ //absorb is a somewhat different effect entirely
 
@@ -18748,37 +18722,48 @@ SkipTrueView:
 		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
 		CG_ForceCryo( cent, legs.origin, tempAngles, cgs.media.boltShader, qfalse );
 		}
-		else
-		{
-
+		
+		if (cent->itemPowerType == 2)
+		{ //absorb is a somewhat different effect entirely
 		vec3_t tempAngles;
 
-		if ( random() > 0.4f )
+		if (random() > 0.4f )
 		{
 			// fade out over the last 500 ms
 			int brightness = 255;
 			
 
 
-
 			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
 			legs.renderfx &= ~RF_MINLIGHT;
 
 			legs.renderfx |= RF_RGB_TINT;
-			legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2];
+			legs.shaderRGBA[2] = 64;
+			legs.shaderRGBA[0] = legs.shaderRGBA[1] = 255;
 			legs.shaderRGBA[3] = 255;
 
+			if ( rand() & 1 )
+			{
+				legs.customShader = cgs.media.electricBodyShader;	
+			}
+			else
+			{
+				legs.customShader = cgs.media.electricBody2Shader;
+			}
 
-
+			
+											
+							   
+	  
 			trap_R_AddRefEntityToScene( &legs );
 
 			if ( random() > 0.9f )
-				trap_S_StartSound ( NULL, cent->currentState.number, CHAN_AUTO, cgs.media.incinerationSound );
+				trap_S_StartSound ( NULL, cent->currentState.number, CHAN_AUTO, cgs.media.crackleSound );
 		}
 
 		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
-		CG_ForceIncineration( cent, legs.origin, tempAngles, cgs.media.boltShader, qfalse );
-		}
+		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader4, qfalse );
+		}	
 	}
 
 
@@ -20354,7 +20339,7 @@ stillDoSaber:
 	}
 	}
 
-	if(cent->currentState.userInt3 & (1 << FLAG_STASIS))
+	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 6))
 	{ //aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 255;
@@ -20368,7 +20353,7 @@ stillDoSaber:
 		trap_R_AddRefEntityToScene( &legs );
 	}
 	
-	if(cent->currentState.userInt3 & (1 << FLAG_STASIS2))
+	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 7))
 	{ //aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 128;
@@ -20527,9 +20512,9 @@ stillDoSaber:
 	//AND
 	//always show if it is you with the absorb on
 	if ((cent->currentState.number == cg.predictedPlayerState.clientNum && (cg.predictedPlayerState.fd.forcePowersActive & (1<<FP_ABSORB))) ||
-		(cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 3))
+		(cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 3)||(cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 5))
 	{
-	if(cent->currentState.userInt3 & (1 << FLAG_ABSORB2))	
+	if(cent->currentState.userInt3 & (1 << FLAG_ABSORB2)||(cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 5))	
 	{
 		//aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
@@ -20664,6 +20649,90 @@ stillDoSaber:
 		trap_R_AddRefEntityToScene( &legs );
 	}
 
+
+
+	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 8))
+	{
+		vec3_t tempAngles;
+
+		if (random() > 0.4f )
+		{
+			// fade out over the last 500 ms
+			int brightness = 255;
+			
+
+			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
+			legs.renderfx &= ~RF_MINLIGHT;
+
+			legs.renderfx |= RF_RGB_TINT; 
+			legs.shaderRGBA[0] = 160;
+			legs.shaderRGBA[1] = 64;
+			legs.shaderRGBA[2] = 255;
+			legs.shaderRGBA[3] = 255;
+
+			if ( rand() & 1 )
+			{
+				legs.customShader = cgs.media.electricBodyShader;	
+			}
+			else
+			{
+				legs.customShader = cgs.media.electricBody2Shader;
+			}
+
+			
+											
+							   
+	  
+			trap_R_AddRefEntityToScene( &legs );
+
+			if ( random() > 0.9f )
+				trap_S_StartSound ( NULL, cent->currentState.number, CHAN_AUTO, cgs.media.crackleSound );
+		}
+
+		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
+		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader2, qfalse );
+	}
+
+	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 9))
+	{
+		vec3_t tempAngles;
+
+		if (random() > 0.4f )
+		{
+			// fade out over the last 500 ms
+			int brightness = 255;
+			
+
+			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
+			legs.renderfx &= ~RF_MINLIGHT;
+
+			legs.renderfx |= RF_RGB_TINT; 
+			legs.shaderRGBA[1] = 255;
+			legs.shaderRGBA[0] = legs.shaderRGBA[2] = 0;
+			legs.shaderRGBA[3] = 255;
+
+			if ( rand() & 1 )
+			{
+				legs.customShader = cgs.media.electricBodyShader;	
+			}
+			else
+			{
+				legs.customShader = cgs.media.electricBody2Shader;
+			}
+
+			
+											
+							   
+	  
+			trap_R_AddRefEntityToScene( &legs );
+
+			if ( random() > 0.9f )
+				trap_S_StartSound ( NULL, cent->currentState.number, CHAN_AUTO, cgs.media.crackleSound );
+		}
+
+		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
+		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader3, qfalse );
+	}
 	// Electricity
 	//------------------------------------------------
 	if ( cent->currentState.emplacedOwner > cg.time ) 

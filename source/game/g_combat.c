@@ -1157,6 +1157,8 @@ char	*modNames[MOD_MAX] = {
 	"MOD_FREEZER_EXPLOSION_SPLASH",
 	"MOD_ION_EXPLOSION",
 	"MOD_ION_EXPLOSION_SPLASH",
+	"MOD_FORCE_DESTRUCTION",
+	"MOD_FORCE_BURST",
 };
 
 
@@ -3091,15 +3093,14 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 
 	self->client->stasisTime = 0;
-	self->client->ps.userInt3 &= ~(1 << FLAG_STASIS);
-	
 	self->client->deathsightTime = 0;
-	self->client->ps.userInt3 &= ~(1 << FLAG_STASIS2);
+	self->client->lightningTime = 0;
+	self->client->judgementTime = 0;
 	
 	self->client->freezeTime = 0;		
 	self->client->burnTime = 0;
 
-	
+	self->client->shockTime = 0;	
 	self->client->toxicTime = 0;
 	
 	self->client->backpackrocketTime = 0;
@@ -5708,7 +5709,23 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		
 		if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)))
 		{
+			if (targ->client->ps.fd.forcePower)
+			{
 
+				//G_Sound(targ, CHAN_AUTO, protectHitSound);
+				if (targ->client->forcePowerSoundDebounce < level.time)
+				{
+				if(targ->client->ps.userInt3 & (1 << FLAG_PROTECT2))
+				{
+					G_PreDefSound(targ->client->ps.origin, PDSOUND_BARRIERHIT);	
+				}
+				else
+				{
+					G_PreDefSound(targ->client->ps.origin, PDSOUND_PROTECTHIT);
+				}
+					targ->client->forcePowerSoundDebounce = level.time + 400;
+				}
+			}
 			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
 			{
 				
@@ -5721,6 +5738,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 		
 	}
+
+
 	
 	if (mod == MOD_DEMP2 && targ && targ->inuse && targ->client)
 	{
@@ -5784,6 +5803,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 					targ->client->ps.userInt1 |= LOCK_LEFT;	
 					targ->client->viewLockTime = level.time + FREEZE_TIME/3;
 					targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
+					targ->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
+					targ->client->ps.saberBlocked = BLOCKED_NONE;
 					if (targ->client->ps.eFlags & EF_WP_OPTION_2)
 					{
 					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
@@ -5799,7 +5820,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 					else
 					{
 					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}					
+					}	
+
 
 			}
 		}
@@ -5856,6 +5878,8 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 					targ->client->ps.userInt1 |= LOCK_LEFT;	
 					targ->client->viewLockTime = level.time + FREEZE_TIME/3;
 					targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
+					targ->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
+					targ->client->ps.saberBlocked = BLOCKED_NONE;
 					if (targ->client->ps.eFlags & EF_WP_OPTION_2)
 					{
 					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
@@ -6014,7 +6038,9 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			mod != MOD_FREEZER_EXPLOSION &&
 			mod != MOD_FREEZER_EXPLOSION_SPLASH &&
 			mod != MOD_ION_EXPLOSION &&
-			mod != MOD_ION_EXPLOSION_SPLASH )
+			mod != MOD_ION_EXPLOSION_SPLASH &&
+			mod != MOD_FORCE_DESTRUCTION &&
+			mod != MOD_FORCE_BURST )
 		{
 			if ( mod != MOD_MELEE || !G_HeavyMelee( attacker ) )
 			{ //let classes with heavy melee ability damage heavy wpn dmg doors with fists

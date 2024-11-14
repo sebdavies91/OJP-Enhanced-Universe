@@ -3516,8 +3516,13 @@ char *eventnames[] = {
 	"EV_FORCE_SEVERED",
 	"EV_FORCE_HEALED",
 	"EV_FORCE_MIDICHLORIAN",
+	"EV_FORCE_STASIS",
+	"EV_FORCE_INSANITY",
+	"EV_FORCE_LIGHTNING",
+	"EV_FORCE_JUDGEMENT",
 	"EV_BURNED",
 	"EV_FROZEN",
+	"EV_SHOCKED",	
 	"EV_GIB_PLAYER",			// gib a previously living player
 	"EV_SCOREPLUM",			// score plum
 

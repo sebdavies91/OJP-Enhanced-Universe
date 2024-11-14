@@ -695,7 +695,9 @@ clientkilled:
 		case MOD_ION_EXPLOSION_SPLASH:		
 			message = "KILLED_FREEZER_EXPLOSION";
 			vehMessage = qtrue;
-			break;	
+			break;
+		case MOD_FORCE_DESTRUCTION:
+		case MOD_FORCE_BURST:				
 		default:
 			message = "KILLED_GENERIC";
 			break;
@@ -3168,7 +3170,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					int clnum = es->trickedentindex;
 
 					cg_entities[clnum].teamPowerEffectTime = cg.time + 1000;
-					cg_entities[clnum].teamPowerType = 3;
+					cg_entities[clnum].teamPowerType = 5;
 				}
 				break;
 			case PDSOUND_DISSIPATE:
@@ -4216,7 +4218,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		ByteToDir( es->eventParm, dir );
 		FX_ForceDrained(position, dir);
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 1000;
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
 		cg_entities[es->owner].teamPowerType = 2;
 		break;
 	case EV_FORCE_SEVERED:
@@ -4224,7 +4226,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		ByteToDir( es->eventParm, dir );
 		FX_ForceSevered(position, dir);
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 1000;
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
 		cg_entities[es->owner].teamPowerType = 4;
 		break;		
 	case EV_FORCE_HEALED:
@@ -4243,6 +4245,56 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		//cg_entities[es->owner].teamPowerEffectTime = cg.time + 1000;
 		//cg_entities[es->owner].teamPowerType = 4;
 		break;	
+	case EV_FORCE_STASIS:
+		DEBUGNAME("EV_FORCE_STASIS");
+		ByteToDir( es->eventParm, dir );
+		//trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
+		if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_1)
+		{
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 5000*es->otherEntityNum2;
+		}
+		else if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
+		{
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
+		}
+		else if(cg.snap->ps.fd.forcePowerLevel[FP_SABER_OFFENSE]>= FORCE_LEVEL_1)
+		{
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
+		}		
+		cg_entities[es->owner].teamPowerType = 6;
+		break;
+	case EV_FORCE_INSANITY:
+		DEBUGNAME("EV_FORCE_INSANITY");
+		ByteToDir( es->eventParm, dir );
+		//trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
+		if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_1)
+		{
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 5000*es->otherEntityNum2;
+		}
+		else if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
+		{
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
+		}
+		else if(cg.snap->ps.fd.forcePowerLevel[FP_SABER_OFFENSE]>= FORCE_LEVEL_1)
+		{
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
+		}		
+		cg_entities[es->owner].teamPowerType = 7;
+		break;
+	case EV_FORCE_LIGHTNING:
+		DEBUGNAME("EV_FORCE_LIGHTNING");
+		ByteToDir( es->eventParm, dir );
+		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
+		cg_entities[es->owner].teamPowerType = 8;
+		break;
+	case EV_FORCE_JUDGEMENT:
+		DEBUGNAME("EV_FORCE_JUDGEMENT");
+		ByteToDir( es->eventParm, dir );
+		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
+		cg_entities[es->owner].teamPowerType = 9;
+		break;
 	case EV_BURNED:
 		DEBUGNAME("EV_BURNED");
 		ByteToDir( es->eventParm, dir );
@@ -4259,6 +4311,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.cryoSound );
 		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
 		cg_entities[es->owner].itemPowerType = 1;
+		break;
+
+	case EV_SHOCKED:
+		DEBUGNAME("EV_SHOCKED");
+		ByteToDir( es->eventParm, dir );
+		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
+		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
+		cg_entities[es->owner].itemPowerType = 2;
 		break;
 		
 	case EV_GIB_PLAYER:

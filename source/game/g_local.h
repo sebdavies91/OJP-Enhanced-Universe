@@ -1000,7 +1000,11 @@ struct gclient_s {
 	int			freezeTime;
 	int			stasisTime;
 	int			deathsightTime;
+	int			lightningTime;
+	int			judgementTime;
+	int			corruptedTime;
 	int			burnTime;	
+	int			shockTime;
 	int			toxicTime;	
 	int			backpackrocketTime;
 	int			specialcharacterSpawn;

@@ -1148,8 +1148,13 @@ typedef enum {
 	EV_FORCE_SEVERED,
 	EV_FORCE_HEALED,
 	EV_FORCE_MIDICHLORIAN,
+	EV_FORCE_STASIS,
+	EV_FORCE_INSANITY,	
+	EV_FORCE_LIGHTNING,	
+	EV_FORCE_JUDGEMENT,	
 	EV_BURNED,
 	EV_FROZEN,
+	EV_SHOCKED,
 	EV_GIB_PLAYER,			// gib a previously living player
 	EV_SCOREPLUM,			// score plum
 
@@ -1386,6 +1391,8 @@ typedef enum {
 	MOD_FREEZER_EXPLOSION_SPLASH,
 	MOD_ION_EXPLOSION,
 	MOD_ION_EXPLOSION_SPLASH,
+	MOD_FORCE_DESTRUCTION,
+	MOD_FORCE_BURST,
 	//[/SeekerItemNPC]
 	//AURELIO: when/if you put this back in, remember to make a case for it in all the other places where
 	//mod's are checked. Also, it probably isn't the most elegant solution for what you want - just add

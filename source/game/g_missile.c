@@ -487,7 +487,9 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->methodOfDeath != MOD_FREEZER_EXPLOSION &&
 			ent->methodOfDeath != MOD_FREEZER_EXPLOSION_SPLASH &&
 			ent->methodOfDeath != MOD_ION_EXPLOSION &&
-			ent->methodOfDeath != MOD_ION_EXPLOSION_SPLASH)
+			ent->methodOfDeath != MOD_ION_EXPLOSION_SPLASH &&
+			ent->methodOfDeath != MOD_FORCE_DESTRUCTION &&
+			ent->methodOfDeath != MOD_FORCE_BURST)
 			//[/Asteroids]
 		{
 			vec3_t fwd;
@@ -528,6 +530,8 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->methodOfDeath != MOD_VEHICLE &&
 			ent->methodOfDeath != MOD_CONC &&
 			ent->methodOfDeath != MOD_CONC_ALT &&
+			ent->methodOfDeath != MOD_FORCE_DESTRUCTION &&
+			ent->methodOfDeath != MOD_FORCE_BURST &&
 			!(ent->dflags&DAMAGE_HEAVY_WEAP_CLASS) )
 		{
 			vec3_t fwd;
@@ -662,7 +666,9 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->methodOfDeath != MOD_REPEATER_ALT &&
 			ent->methodOfDeath != MOD_FLECHETTE_ALT_SPLASH &&
 			ent->methodOfDeath != MOD_CONC &&
-			ent->methodOfDeath != MOD_CONC_ALT /*&&
+			ent->methodOfDeath != MOD_CONC_ALT &&
+			ent->methodOfDeath != MOD_FORCE_DESTRUCTION &&
+			ent->methodOfDeath != MOD_FORCE_BURST/*&&
 			otherOwner->client->ps.saberBlockTime < level.time*/)
 		{ //for now still deflect even if saberBlockTime >= level.time because it hit the actual saber
 			//[BoltBlockSys]
