@@ -1440,7 +1440,7 @@
 			name					setsk_ragea
 			group					darkpowers
 			style					0	
-			text					"Rage / Extreme / ..:"
+			text					"Rage / Valor / ..:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
 			//[ForceSys]			430 255 175 15
 			rect					430 285 110 15
@@ -1481,7 +1481,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Force Rage / Force Extreme / .."
+			descText				"Force Rage / Force Valor / .."
 			visible					1 
 			action 
 			{ 
