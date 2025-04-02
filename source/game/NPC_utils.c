@@ -1804,7 +1804,12 @@ void G_CheckCharmed( gentity_t *self )
 		self->client->playerTeam = savTeam;
 		self->client->leader = NULL;
 		self->NPC->charmedTime = 0;
-		self->activator = NULL;
+		self->corruptionactivator=NULL;	
+		if(self->client->NPC_class == CLASS_SQUADTEAM || self->client->NPC_class == CLASS_SEEKER)
+		{
+		self->client->leader=self->originalactivator;
+		}
+
 		if ( self->health > 0 )
 		{
 			if ( self->NPC->tempBehavior == BS_FOLLOW_LEADER )

@@ -696,8 +696,7 @@ clientkilled:
 			message = "KILLED_FREEZER_EXPLOSION";
 			vehMessage = qtrue;
 			break;
-		case MOD_FORCE_DESTRUCTION:
-		case MOD_FORCE_BURST:				
+		case MOD_FORCE_DESTRUCTION:			
 		default:
 			message = "KILLED_GENERIC";
 			break;
@@ -1444,14 +1443,11 @@ void CG_G2MarkEvent(entityState_t *es)
 	}
 	switch(es->weapon)
 	{
-	case WP_STUN_BATON:
 	case WP_BRYAR_PISTOL:   
 	case WP_BLASTER:
 	case WP_DISRUPTOR:
 	case WP_BOWCASTER:
 	case WP_REPEATER:
-	case WP_DEMP2:
-	case WP_FLECHETTE:
 	case WP_CONCUSSION:
 	case WP_BRYAR_OLD:   
 	case WP_TURRET:
@@ -3144,14 +3140,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			case PDSOUND_PROTECT:
 				sID = trap_S_RegisterSound("sound/weapons/force/protect.mp3");
 				break;
-			case PDSOUND_BARRIERHIT:
-				sID = trap_S_RegisterSound("sound/weapons/force/barrierhit.mp3");
-				break;
-			case PDSOUND_BARRIER:
-				sID = trap_S_RegisterSound("sound/weapons/force/barrier.mp3");
+			case PDSOUND_DEATHFIELD:
+				sID = trap_S_RegisterSound("sound/weapons/force/deathfield.mp3");
 				break;
 			case PDSOUND_ABSORBHIT:
 				sID = trap_S_RegisterSound("sound/weapons/force/absorbhit.mp3");
+/*
 				if (es->trickedentindex >= 0 && es->trickedentindex < MAX_CLIENTS)
 				{
 					int clnum = es->trickedentindex;
@@ -3159,22 +3153,13 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 					cg_entities[clnum].teamPowerEffectTime = cg.time + 1000;
 					cg_entities[clnum].teamPowerType = 3;
 				}
+*/
 				break;
 			case PDSOUND_ABSORB:
 				sID = trap_S_RegisterSound("sound/weapons/force/absorb.mp3");
 				break;
-			case PDSOUND_DISSIPATEHIT:
-				sID = trap_S_RegisterSound("sound/weapons/force/dissipatehit.mp3");
-				if (es->trickedentindex >= 0 && es->trickedentindex < MAX_CLIENTS)
-				{
-					int clnum = es->trickedentindex;
-
-					cg_entities[clnum].teamPowerEffectTime = cg.time + 1000;
-					cg_entities[clnum].teamPowerType = 5;
-				}
-				break;
-			case PDSOUND_DISSIPATE:
-				sID = trap_S_RegisterSound("sound/weapons/force/dissipate.mp3");
+			case PDSOUND_DEATHSIGHT:
+				sID = trap_S_RegisterSound("sound/weapons/force/deathsight.mp3");
 				break;
 			case PDSOUND_FORCEJUMP:
 				sID = trap_S_RegisterSound("sound/weapons/force/jump.mp3");
@@ -3198,6 +3183,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_TEAM_POWER:
 		DEBUGNAME("EV_TEAM_POWER");
+/*
 		{
 			int clnum = 0;
 
@@ -3221,6 +3207,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				clnum++;
 			}
 		}
+*/
 		break;
 
 	case EV_SCREENSHAKE:
@@ -4219,7 +4206,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		FX_ForceDrained(position, dir);
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
 		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 2;
+		cg_entities[es->owner].teamPowerType = 0;
 		break;
 	case EV_FORCE_SEVERED:
 		DEBUGNAME("EV_FORCE_SEVERED");
@@ -4227,58 +4214,28 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		FX_ForceSevered(position, dir);
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
 		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 4;
+		cg_entities[es->owner].teamPowerType = 1;
 		break;		
 	case EV_FORCE_HEALED:
 		DEBUGNAME("EV_FORCE_HEALED");
 		ByteToDir( es->eventParm, dir );
 		FX_ForceHealed(position, dir);
-		//trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		//cg_entities[es->owner].teamPowerEffectTime = cg.time + 1000;
-		//cg_entities[es->owner].teamPowerType = 2;
 		break;
-	case EV_FORCE_MIDICHLORIAN:
-		DEBUGNAME("EV_FORCE_MIDICHLORIAN");
+	case EV_FORCE_REGENERATED:
+		DEBUGNAME("EV_FORCE_REGENERATED");
 		ByteToDir( es->eventParm, dir );
-		FX_ForceMidichlorian(position, dir);
-		//trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		//cg_entities[es->owner].teamPowerEffectTime = cg.time + 1000;
-		//cg_entities[es->owner].teamPowerType = 4;
+		FX_ForceRegenerated(position, dir);
 		break;	
 	case EV_FORCE_STASIS:
 		DEBUGNAME("EV_FORCE_STASIS");
 		ByteToDir( es->eventParm, dir );
-		//trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_1)
-		{
 		cg_entities[es->owner].teamPowerEffectTime = cg.time + 5000*es->otherEntityNum2;
-		}
-		else if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
-		{
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
-		}
-		else if(cg.snap->ps.fd.forcePowerLevel[FP_SABER_OFFENSE]>= FORCE_LEVEL_1)
-		{
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
-		}		
 		cg_entities[es->owner].teamPowerType = 6;
 		break;
 	case EV_FORCE_INSANITY:
 		DEBUGNAME("EV_FORCE_INSANITY");
 		ByteToDir( es->eventParm, dir );
-		//trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_1)
-		{
 		cg_entities[es->owner].teamPowerEffectTime = cg.time + 5000*es->otherEntityNum2;
-		}
-		else if(cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
-		{
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
-		}
-		else if(cg.snap->ps.fd.forcePowerLevel[FP_SABER_OFFENSE]>= FORCE_LEVEL_1)
-		{
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
-		}		
 		cg_entities[es->owner].teamPowerType = 7;
 		break;
 	case EV_FORCE_LIGHTNING:
@@ -4286,15 +4243,38 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		ByteToDir( es->eventParm, dir );
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
 		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 8;
+		cg_entities[es->owner].teamPowerType = 2;
 		break;
 	case EV_FORCE_JUDGEMENT:
 		DEBUGNAME("EV_FORCE_JUDGEMENT");
 		ByteToDir( es->eventParm, dir );
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
 		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 9;
+		cg_entities[es->owner].teamPowerType = 3;
 		break;
+
+	case EV_FORCE_DEATHFIELDED:
+		DEBUGNAME("EV_FORCE_DEATHFIELDED");
+		ByteToDir( es->eventParm, dir );
+		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
+		cg_entities[es->owner].teamPowerType = 4;
+		break;
+		
+	case EV_FORCE_DEATHSIGHTED:
+		DEBUGNAME("EV_FORCE_DEATHSIGHTED");
+		ByteToDir( es->eventParm, dir );
+		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
+		cg_entities[es->owner].teamPowerType = 5;
+		break;
+
+	case EV_FORCE_BLINDED:
+		DEBUGNAME("EV_FORCE_BLINDED");
+		ByteToDir( es->eventParm, dir );
+		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
+		cg_entities[es->owner].teamPowerType = 8;
+		break;			
 	case EV_BURNED:
 		DEBUGNAME("EV_BURNED");
 		ByteToDir( es->eventParm, dir );
@@ -4319,7 +4299,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
 		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
 		cg_entities[es->owner].itemPowerType = 2;
-		break;
+		break;	
 		
 	case EV_GIB_PLAYER:
 		DEBUGNAME("EV_GIB_PLAYER");

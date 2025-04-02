@@ -265,7 +265,7 @@
 			name					setsk_heala
 			group					lightpowers
 			style					0	
-			text					"Heal / Midich. Manip. / ..:"
+			text					"Heal / Regeneration / ..:"
 			rect					180 105 110 15
 			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
@@ -299,7 +299,7 @@
 			forecolor				0.5 0.5 1 1
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Force Heal / Force Midichlorian Manipulation / .."
+			descText				"Force Heal / Force Regeneration / .."
 			visible				1 
 			action 
 			{ 
@@ -356,129 +356,16 @@
 			bordercolor				0 0 0 0
 			visible				1 
 			decoration
-		}		
-		// Force Absorb title
-		itemDef 
-		{
-			name					setfp_absorb
-			group					lightpowers
-			style					0	
-			text					"Force Immunity Power:"
-			rect					180 165 110 15
-			textalign				ITEM_ALIGN_RIGHT	
-			textalignx				0
-			textaligny				0
-			font					4
-			textscale				1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			forecolor				0.5 0.5 1 1
-			border					0
-			bordercolor				0 0 0 0
-			visible					1 
-			decoration
 		}
 
-		// Force Absorb assign
-		itemDef 
-		{
-			name					setfp_absorb
-			group					lightpowers
-			style					0	
-			ownerdraw				UI_FORCE_RANK_ABSORB
-			rect					80 165 175 15
-			textalign				ITEM_ALIGN_RIGHT		
-			textalignx				115
-			textaligny				-5
-			font					4
-			textscale				1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			forecolor				0.5 0.5 1 1
-			border					0
-			bordercolor				0 0 0 0
-			descText				"Force Immunity Power"
-			visible				1 
-			action 
-			{ 
-				play			"sound/interface/button1.wav" ;
-			}
-
-			mouseenter 
-			{ 
-				setitemcolor	setfp_absorb forecolor 0.75 0.75 1 1
-			}
-			mouseexit 
-			{ 
-				setitemcolor	setfp_absorb forecolor 0.5 0.5 1 1
-			}
-		}
-		
-		// Force Absorba title
-		itemDef 
-		{
-			name					setsk_absorba
-			group					lightpowers
-			style					0	
-			text					"Absorb / Dissipate / ..:"
-			rect					180 180 110 15
-			textalign				ITEM_ALIGN_RIGHT	
-			textalignx				0
-			textaligny				0
-			font					4
-			textscale				1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			forecolor				0.5 0.5 1 1
-			border					0
-			bordercolor				0 0 0 0
-			visible					1 
-			decoration
-		}
-
-		// Force Absorba assign
-		itemDef 
-		{
-			name					setsk_absorba
-			group					lightpowers
-			style					0	
-			ownerdraw				UI_FORCE_RANK_ABSORBA
-			rect					80 180 175 15
-			textalign				ITEM_ALIGN_RIGHT		
-			textalignx				115
-			textaligny				-5
-			font					4
-			textscale				1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			forecolor				0.5 0.5 1 1
-			border					0
-			bordercolor				0 0 0 0
-			descText				"Force Absorb / Force Dissipate / .."
-			visible				1 
-			action 
-			{ 
-				play			"sound/interface/button1.wav" ;
-			}
-
-			mouseenter 
-			{ 
-				setitemcolor	setsk_absorba forecolor 0.75 0.75 1 1
-			}
-			mouseexit 
-			{ 
-				setitemcolor	setsk_absorba forecolor 0.5 0.5 1 1
-			}
-		}		
-		
 		// Force Protect title
 		itemDef 
 		{
 			name					setfp_protect
 			group					lightpowers
 			style					0	
-			text					"Damage Immunity Power:"
-			rect					180 195 110 15
+			text					"Damage Field Power:"
+			rect					180 165 110 15
 			textalign				ITEM_ALIGN_RIGHT
 			textalignx				0
 			textaligny				0
@@ -500,7 +387,7 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PROTECT
-			rect					80 195 175 15
+			rect					80 165 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
@@ -511,7 +398,7 @@
 			forecolor				0.5 0.5 1 1
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Damage Immunity Power"
+			descText				"Damage Field Power"
 			visible					1 
 			action 
 			{ 
@@ -534,8 +421,8 @@
 			name					setsk_protecta
 			group					lightpowers
 			style					0	
-			text					"Protect / Barrier / .."
-			rect					180 210 110 15
+			text					"Protect / Dark Aura / .."
+			rect					180 180 110 15
 			textalign				ITEM_ALIGN_RIGHT	
 			textalignx				0
 			textaligny				0
@@ -557,7 +444,7 @@
 			group					lightpowers
 			style					0	
 			ownerdraw				UI_FORCE_RANK_PROTECTA
-			rect					80 210 175 15
+			rect					80 180 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
@@ -568,7 +455,7 @@
 			forecolor				0.5 0.5 1 1
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Force Protect / Force Barrier / .."
+			descText				"Force Protect / Force Dark Aura / .."
 			visible				1 
 			action 
 			{ 
@@ -583,7 +470,122 @@
 			{ 
 				setitemcolor	setsk_protecta forecolor 0.5 0.5 1 1
 			}
-		}	
+		}		
+		// Force Absorb title
+		itemDef 
+		{
+			name					setfp_absorb
+			group					lightpowers
+			style					0	
+			text					"Force Field Power:"
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.5 0.5 1 1
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+
+		// Force Absorb assign
+		itemDef 
+		{
+			name					setfp_absorb
+			group					lightpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_ABSORB
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.5 0.5 1 1
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Force Field Power"
+			visible				1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setfp_absorb forecolor 0.75 0.75 1 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setfp_absorb forecolor 0.5 0.5 1 1
+			}
+		}
+		
+		// Force Absorba title
+		itemDef 
+		{
+			name					setsk_absorba
+			group					lightpowers
+			style					0	
+			text					"Absorb / Deadly Sight / ..:"
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.5 0.5 1 1
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+
+		// Force Absorba assign
+		itemDef 
+		{
+			name					setsk_absorba
+			group					lightpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_ABSORBA
+			rect					80 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.5 0.5 1 1
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Force Absorb / Force Deadly Sight / .."
+			visible				1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_absorba forecolor 0.75 0.75 1 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_absorba forecolor 0.5 0.5 1 1
+			}
+		}		
+		
+	
 	// Force Ranks title		
 		itemDef 
 		{
@@ -1566,7 +1568,7 @@
 			name					setsk_destructiona
 			group					darkpowers
 			style					0	
-			text					"Destruction / Burst / ..:"
+			text					"Destruction / Blinding / ..:"
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
 			//[ForceSys]			430 255 175 15
 			rect					430 315 110 15
@@ -1607,7 +1609,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Force Destruction / Force Burst / .."
+			descText				"Force Destruction / Force Blinding / .."
 			visible					1 
 			action 
 			{ 

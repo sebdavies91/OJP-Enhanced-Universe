@@ -3437,7 +3437,7 @@ void player_touch(gentity_t *self, gentity_t *other, trace_t *trace )
 		float speed = (vec_t)sqrt (other->client->ps.velocity[0]*
 			other->client->ps.velocity[0] + other->client->ps.velocity[1]*
 			other->client->ps.velocity[1])/2;
-		G_Printf("Speed %f\n",speed);
+		//G_Printf("Speed %f\n",speed);
 		if(speed > 50)
 		{
 			int damage = (speed >= 100 ? 35 : 10);
@@ -3461,7 +3461,7 @@ void player_touch(gentity_t *self, gentity_t *other, trace_t *trace )
 			if(gripper == NULL)
 				return;
 		
-			G_Printf("Damage: %i\n",damage);
+			//G_Printf("Damage: %i\n",damage);
 			//G_Damage(gripEnt, self, self, NULL, NULL, 2, DAMAGE_NO_ARMOR, MOD_FORCE_DARK);
 			G_Damage(other,gripper,gripper,NULL,NULL,damage,DAMAGE_NO_ARMOR,MOD_FORCE_DARK);
 			G_Damage(self,other,other,NULL,NULL,damage,DAMAGE_NO_ARMOR,0);

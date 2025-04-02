@@ -763,10 +763,6 @@ void BG_SetSharedVehicleFunctions( vehicleInfo_t *pVehInfo )
 		case VH_WALKER:
 			G_SetWalkerVehicleFunctions( pVehInfo );
 			break;
-		//Raz: Warn if we try to set shared funcs for invalid(?) vehicles
-		default:
-			Com_Printf( "Can't set vehicle shared functions for type %d\n", pVehInfo->type );
-			break;
 	}
 #endif
 }

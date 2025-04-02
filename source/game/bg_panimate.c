@@ -3579,6 +3579,7 @@ void BG_SetAnimFinal(playerState_t *ps, animation_t *animations,
 				ps->torsoTimer = ((animations[anim].numFrames ) * fabs((float)(animations[anim].frameLerp)));
 			}
 
+	
 			if (ps->fd.forcePowersActive & (1 << FP_RAGE))
 			{
 				if(ps->fd.forcePowerLevel[FP_RAGE] == FORCE_LEVEL_3)
@@ -3673,6 +3674,7 @@ setAnimLegs:
 			if (PM_RunningAnim(anim) ||
 				PM_WalkingAnim(anim)) //these guys are ok, they don't actually reference pm
 			{
+
 				if (ps->fd.forcePowersActive & (1 << FP_RAGE))
 				{
 					//[Rage]
@@ -3686,7 +3688,7 @@ setAnimLegs:
 						ps->legsTimer /= 1.0;
 					//[/Rage]
 				}
-				else if (ps->fd.forcePowersActive & (1 << FP_SPEED))
+				if (ps->fd.forcePowersActive & (1 << FP_SPEED))
 				{
 					if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_3)
 						ps->legsTimer /= 5.0;
@@ -3696,13 +3698,6 @@ setAnimLegs:
 						ps->legsTimer /= 1.25;
 					else
 						ps->legsTimer /= 1.0;
-				}
-
-			
-
-				else
-				{
-					ps->legsTimer /= 1.0;
 				}
 			}
 		}

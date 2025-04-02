@@ -88,65 +88,65 @@ int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] =
 		//NUM_FORCE_POWERS
 	},
 	{
-		40,//FP_HEAL,//instant //was 25, but that was way too little
+		30,//FP_HEAL,//instant //was 25, but that was way too little
 		10,//FP_LEVITATION,//hold/duration
 		1,//FP_SPEED,//duration
 		20,//FP_PUSH,//hold/duration
 		20,//FP_PULL,//hold/duration
 		40,//FP_TELEPATHY,//instant
-		40,//FP_GRIP,//hold/duration
+		30,//FP_GRIP,//hold/duration
 		1,//FP_LIGHTNING,//hold/duration
-		40,//FP_RAGE,//duration
-		40,//FP_PROTECT,//duration
-		40,//FP_ABSORB,//duration
+		30,//FP_RAGE,//duration
+		30,//FP_PROTECT,//duration
+		30,//FP_ABSORB,//duration
 		40,//FP_TEAM_HEAL,//instant
-		40,//FP_TEAM_FORCE,//instant
+		60,//FP_TEAM_FORCE,//instant
 		1,//FP_DRAIN,//hold/duration
 		20,//FP_SEE,//duration
 		0,//FP_SABER_OFFENSE,
-		2,//FP_SABER_DEFENSE,
+		1,//FP_SABER_DEFENSE,
 		20//FP_SABERTHROW,
 		//NUM_FORCE_POWERS
 	},
 	{
-		40,//FP_HEAL,//instant //was 25, but that was way too little
+		30,//FP_HEAL,//instant //was 25, but that was way too little
 		10,//FP_LEVITATION,//hold/duration
 		1,//FP_SPEED,//duration
 		20,//FP_PUSH,//hold/duration
 		20,//FP_PULL,//hold/duration
-		40,//FP_TELEPATHY,//instant
-		40,//FP_GRIP,//hold/duration
+		30,//FP_TELEPATHY,//instant
+		30,//FP_GRIP,//hold/duration
 		1,//FP_LIGHTNING,//hold/duration
-		40,//FP_RAGE,//duration
-		40,//FP_PROTECT,//duration
-		40,//FP_ABSORB,//duration
-		40,//FP_TEAM_HEAL,//instant
-		40,//FP_TEAM_FORCE,//instant
+		30,//FP_RAGE,//duration
+		30,//FP_PROTECT,//duration
+		30,//FP_ABSORB,//duration
+		30,//FP_TEAM_HEAL,//instant
+		50,//FP_TEAM_FORCE,//instant
 		1,//FP_DRAIN,//hold/duration
 		20,//FP_SEE,//duration
 		0,//FP_SABER_OFFENSE,
-		2,//FP_SABER_DEFENSE,
+		1,//FP_SABER_DEFENSE,
 		20//FP_SABERTHROW,
 		//NUM_FORCE_POWERS
 	},
 	{
-		40,//FP_HEAL,//instant //was 25, but that was way too little
+		30,//FP_HEAL,//instant //was 25, but that was way too little
 		10,//FP_LEVITATION,//hold/duration
 		1,//FP_SPEED,//duration
 		20,//FP_PUSH,//hold/duration
 		20,//FP_PULL,//hold/duration
-		40,//FP_TELEPATHY,//instant
-		40,//FP_GRIP,//hold/duration
+		30,//FP_TELEPATHY,//instant
+		30,//FP_GRIP,//hold/duration
 		1,//FP_LIGHTNING,//hold/duration
-		40,//FP_RAGE,//duration
-		40,//FP_PROTECT,//duration
-		40,//FP_ABSORB,//duration
-		40,//FP_TEAM_HEAL,//instant
-		40,//FP_TEAM_FORCE,//instant
+		30,//FP_RAGE,//duration
+		30,//FP_PROTECT,//duration
+		30,//FP_ABSORB,//duration
+		30,//FP_TEAM_HEAL,//instant
+		50,//FP_TEAM_FORCE,//instant
 		1,//FP_DRAIN,//hold/duration
 		20,//FP_SEE,//duration
 		0,//FP_SABER_OFFENSE,
-		2,//FP_SABER_DEFENSE,
+		1,//FP_SABER_DEFENSE,
 		20//FP_SABERTHROW,
 		//NUM_FORCE_POWERS
 	}
@@ -11384,6 +11384,7 @@ static void PM_Weapon( void )
 	}
 	*/
 
+
 	if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))
 	{
 		if(pm->ps->fd.forcePowerLevel[FP_RAGE] == FORCE_LEVEL_3)
@@ -11400,7 +11401,13 @@ static void PM_Weapon( void )
 		addTime *= 1.5;
 	}		
 
-		
+#ifdef QAGAME
+	if(g_entities[pm->ps->clientNum].client->deathfieldTime> pm->cmd.serverTime)
+	{
+		addTime *= 1.5;		
+	}
+#endif
+	
 #ifdef QAGAME
 	if ( pm->ps->powerups[PW_OVERLOADED] )
 	{	
@@ -12289,23 +12296,18 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 	{
 		ps->speed *= 0.5;
 	}
-
-
-
 	if (ps->fd.forcePowersActive & (1 << FP_SPEED))
 	{
-#ifdef QAGAME
-		if(g_entities[pm->ps->clientNum].client->ps.fd.forcePowerLevel[FP_SPEED] >= FORCE_LEVEL_3)
+		if(ps->fd.forcePowerLevel[FP_SPEED] >= FORCE_LEVEL_3)
 			ps->speed *= 7.0;
-		else if(g_entities[pm->ps->clientNum].client->ps.fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_2)
+		else if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_2)
 			ps->speed *= 3.5;
-		else if(g_entities[pm->ps->clientNum].client->ps.fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_1)
+		else if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_1)
 			ps->speed *= 1.75;//was 1.7
 		else
 			ps->speed *= 1.0;//was 1.7
-#endif
 	}
-	else if (ps->fd.forcePowersActive & (1 << FP_RAGE))
+	if (ps->fd.forcePowersActive & (1 << FP_RAGE))
 	{
 		//[Rage]
 		if(ps->fd.forcePowerLevel[FP_RAGE] == FORCE_LEVEL_3)
@@ -12322,8 +12324,14 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 	{
 		ps->speed *= 0.75;
 	}
-	else
+
+#ifdef QAGAME
+	if(g_entities[pm->ps->clientNum].client->deathfieldTime> svTime)
 	{
+		ps->speed *= 0.75;	
+	}
+#endif
+
 #ifdef QAGAME
 
 			if(g_entities[pm->ps->clientNum].client->skillLevel[SK_AGILITY]  == FORCE_LEVEL_3)
@@ -12336,7 +12344,7 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 				ps->speed *= 1.0;//was 1.7
 		
 #endif
-	}
+	
 	if (pm->ps->weapon == WP_DISRUPTOR &&
 		pm->ps->zoomMode == 1 && pm->ps->zoomLockTime < pm->cmd.serverTime)
 	{
@@ -14977,21 +14985,33 @@ void PmoveSingle (pmove_t *pmove) {
 	}
 #ifdef QAGAME
 
-	if (g_entities[pm->ps->clientNum].client->stasisTime > level.time || g_entities[pm->ps->clientNum].client->freezeTime > level.time )
+	if ( g_entities[pm->ps->clientNum].client->stasisTime > level.time || g_entities[pm->ps->clientNum].client->freezeTime > level.time )
 	{ //don't let attack or alt attack if being gripped I guess
 		pm->cmd.buttons &= ~BUTTON_ATTACK;
-		pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
 		pm->cmd.buttons &= ~BUTTON_USE_HOLDABLE;
+		pm->cmd.buttons &= ~BUTTON_GESTURE;
+		pm->cmd.buttons &= ~BUTTON_WALKING;
 		pm->cmd.buttons &= ~BUTTON_USE;
-		pm->cmd.buttons &= ~BUTTON_FORCEPOWER;
 		pm->cmd.buttons &= ~BUTTON_FORCEGRIP;
+		pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
+		pm->cmd.buttons &= ~BUTTON_FORCEPOWER;
 		pm->cmd.buttons &= ~BUTTON_FORCE_LIGHTNING;
 		pm->cmd.buttons &= ~BUTTON_FORCE_DRAIN;
 		pm->cmd.buttons &= ~BUTTON_SABERTHROW;
 		pm->cmd.buttons &= ~BUTTON_THERMALTHROW;
-		pm->cmd.buttons &= ~BUTTON_WALKING;
+		pm->cmd.buttons &= ~BUTTON_GRAPPLE;		
 	}
 
+	if (g_entities[pm->ps->clientNum].client->disablingTime > level.time)
+	{ //don't let attack or alt attack if being gripped I guess
+		pm->cmd.buttons &= ~BUTTON_ATTACK;
+		pm->cmd.buttons &= ~BUTTON_USE_HOLDABLE;
+		pm->cmd.buttons &= ~BUTTON_USE;
+		pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
+		pm->cmd.buttons &= ~BUTTON_SABERTHROW;
+		pm->cmd.buttons &= ~BUTTON_THERMALTHROW;
+		pm->cmd.buttons &= ~BUTTON_GRAPPLE;		
+	}
 #endif
 	
 	if ( BG_InRoll( pm->ps, pm->ps->legsAnim ) )

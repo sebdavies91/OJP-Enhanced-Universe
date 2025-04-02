@@ -1158,7 +1158,6 @@ char	*modNames[MOD_MAX] = {
 	"MOD_ION_EXPLOSION",
 	"MOD_ION_EXPLOSION_SPLASH",
 	"MOD_FORCE_DESTRUCTION",
-	"MOD_FORCE_BURST",
 };
 
 
@@ -3093,7 +3092,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 
 	self->client->stasisTime = 0;
-	self->client->deathsightTime = 0;
+	self->client->insanityTime = 0;
 	self->client->lightningTime = 0;
 	self->client->judgementTime = 0;
 	
@@ -3104,7 +3103,14 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	self->client->toxicTime = 0;
 	
 	self->client->backpackrocketTime = 0;
-	self->client->specialcharacterSpawn = 0;	
+	self->client->specialcharacterSpawn = 0;
+	self->client->disablingTime = 0;
+	self->client->deathfieldTime = 0;	
+	self->client->deathsightTime = 0;
+	self->client->blindingTime = 0;	
+	self->client->repulseTime = 0;	
+	self->client->deathfieldbubbledamageTime = 0;
+	self->client->deathsightbubbledamageTime = 0;
 		//[SeekerItemNpc]
 
 	//[/SeekerItemNpc]
@@ -4593,7 +4599,6 @@ qboolean G_GetHitLocFromSurfName( gentity_t *ent, const char *surfName, int *hit
 
 	if ( ent->client 
 		&& ( ent->client->NPC_class == CLASS_R2D2 
-			|| ent->client->NPC_class == CLASS_R2D2 
 			|| ent->client->NPC_class == CLASS_GONK
 			|| ent->client->NPC_class == CLASS_MOUSE
 			|| ent->client->NPC_class == CLASS_SENTRY
@@ -5657,10 +5662,13 @@ int gPainMOD = 0;
 int gPainHitLoc = -1;
 vec3_t gPainPoint;
 
+extern int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
 //[CloakingVehicles]
 extern void G_ToggleVehicleCloak(playerState_t *ps);
 //[/CloakingVehicles]
 extern qboolean ButterFingers(gentity_t *saberent, gentity_t *saberOwner, gentity_t *other, trace_t *tr);
+
+
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
 	gclient_t	*client;
@@ -5693,53 +5701,90 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	
 	if (targ && targ->client && targ->client->ps.powerups[PW_SPHERESHIELDED] ) 
 	{
-			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
+			if (attacker && attacker->client && (mod == MOD_FORCE_DARK || mod == MOD_FORCE_DESTRUCTION))
 			{
 				
 			}
-
 			else
 			{
 			return;
 			}
 	}
+
+
 
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) 
 	{ 
 		
 		if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)))
 		{
-			if (targ->client->ps.fd.forcePower)
-			{
-
-				//G_Sound(targ, CHAN_AUTO, protectHitSound);
-				if (targ->client->forcePowerSoundDebounce < level.time)
-				{
-				if(targ->client->ps.userInt3 & (1 << FLAG_PROTECT2))
-				{
-					G_PreDefSound(targ->client->ps.origin, PDSOUND_BARRIERHIT);	
-				}
-				else
-				{
-					G_PreDefSound(targ->client->ps.origin, PDSOUND_PROTECTHIT);
-				}
-					targ->client->forcePowerSoundDebounce = level.time + 400;
-				}
-			}
-			if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & ( 1 << FP_LIGHTNING )|| attacker->client->ps.fd.forcePowersActive & (1 << FP_DRAIN)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_GRIP)|| attacker->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
+			if (targ->client->ps.userInt3 & (1 << FLAG_PROTECT2))
 			{
 				
 			}
-
 			else
 			{
-			return;
+				if (targ->client->ps.fd.forcePower)
+				{
+
+				//G_Sound(targ, CHAN_AUTO, protectHitSound);
+					if (targ->client->forcePowerSoundDebounce < level.time)
+					{
+						G_PreDefSound(targ->client->ps.origin, PDSOUND_PROTECTHIT);
+						targ->client->forcePowerSoundDebounce = level.time + 400;
+					}
+				}
+				if (attacker && attacker->client && (mod == MOD_FORCE_DARK || mod == MOD_FORCE_DESTRUCTION))
+				{
+				
+				}
+				else
+				{
+				return;
+				}				
 			}
+
 		}
 		
 	}
 
 
+	if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_ABSORB))) 
+	{
+			if (targ->client->ps.userInt3 & (1 << FLAG_ABSORB2))
+			{
+				
+			}
+			else
+			{
+				if (attacker && attacker->client && (mod == MOD_FORCE_DARK || mod == MOD_FORCE_DESTRUCTION))
+				{
+					return;				
+				}
+				else
+				{
+
+				}				
+			}
+	}
+
+	if (mod == MOD_FORCE_DESTRUCTION && targ && targ->inuse && targ->client)
+	{	
+		if (BG_HasYsalamiri(g_gametype.integer, &targ->client->ps))		
+		{
+			return;				
+		}
+		if (WP_AbsorbConversion(targ->client, targ->client->ps.fd.forcePowerLevel[FP_ABSORB], attacker, FP_TEAM_FORCE, attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE], forcePowerNeeded[attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE]][FP_TEAM_FORCE])!=-1)
+		{
+			return;			
+		}
+		if (OJP_BlockFocus(attacker,targ,forcePowerNeeded[attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE]][FP_TEAM_FORCE],FP_TEAM_FORCE,qtrue))
+		{	
+			return;
+		}	
+
+	}
+	
 	
 	if (mod == MOD_DEMP2 && targ && targ->inuse && targ->client)
 	{
@@ -6039,8 +6084,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			mod != MOD_FREEZER_EXPLOSION_SPLASH &&
 			mod != MOD_ION_EXPLOSION &&
 			mod != MOD_ION_EXPLOSION_SPLASH &&
-			mod != MOD_FORCE_DESTRUCTION &&
-			mod != MOD_FORCE_BURST )
+			mod != MOD_FORCE_DESTRUCTION )
 		{
 			if ( mod != MOD_MELEE || !G_HeavyMelee( attacker ) )
 			{ //let classes with heavy melee ability damage heavy wpn dmg doors with fists
@@ -6093,7 +6137,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			if(targ->client->ps.userInt3 & (1 << FLAG_RAGE2))
 			{
-			damage *= 0.5;
+			damage *= 2/3;
 			}
 			else
 			{
@@ -6109,7 +6153,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 			else
 			{
-			damage *= 1.5;				
+			damage *= 3/2;				
 			}
 		}
 
@@ -6892,7 +6936,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		targ->client->lasthurt_client = attacker->s.number;
 		targ->client->lasthurt_mod = mod;
 	}
-
+/*
 	if ( !(dflags & DAMAGE_NO_PROTECTION) ) 
 	{//protect overridden by no_protection
 		if (take && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)))
@@ -6906,7 +6950,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				{
 				if(targ->client->ps.userInt3 & (1 << FLAG_PROTECT2))
 				{
-					G_PreDefSound(targ->client->ps.origin, PDSOUND_BARRIERHIT);	
+					G_PreDefSound(targ->client->ps.origin, PDSOUND_DEATHFIELDHIT);	
 				}
 				else
 				{
@@ -6972,7 +7016,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 	}
-
+*/
 	if (shieldAbsorbed)
 	{
 		/*
@@ -7059,7 +7103,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				//breaking the game so I'm gonna be safe and only do this only
 				//if your weapon is not busy
 				targ->client->ps.weaponTime = 2500;
-				targ->client->freezeTime = level.time + 2500;
+				targ->client->toxicTime = level.time + 2500;
 				if (targ->client->ps.weaponstate == WEAPON_CHARGING ||
 					targ->client->ps.weaponstate == WEAPON_CHARGING_ALT)
 				{

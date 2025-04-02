@@ -98,7 +98,6 @@ int weaponFromMOD[MOD_MAX] =
 	WP_NONE,	//MOD_ION_EXPLOSION,	//death by player's seeker droid.	
 	WP_NONE,	//MOD_ION_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	WP_NONE,	//MOD_FORCE_DESTRUCTION,	//death by player's seeker droid.	
-	WP_NONE,	//MOD_FORCE_BURST,	//death by player's seeker droid.
 };
 
 char *weaponNameFromIndex[WP_NUM_WEAPONS] = 

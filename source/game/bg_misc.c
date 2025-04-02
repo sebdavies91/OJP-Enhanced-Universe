@@ -370,7 +370,7 @@ int WeaponReadyAnim[WP_NUM_WEAPONS] =
 {
 	TORSO_DROPWEAP1,//WP_NONE,
 
-	TORSO_WEAPONREADY1,//WP_STUN_BATON,
+	TORSO_WEAPONREADY2,//WP_STUN_BATON,
 	TORSO_WEAPONREADY3,//WP_MELEE,
 	BOTH_STAND2,//WP_SABER,
 	TORSO_WEAPONREADY2,//WP_BRYAR_PISTOL,
@@ -499,7 +499,7 @@ int WeaponReadyAnim3[WP_NUM_WEAPONS] =
 {
 	TORSO_DROPWEAP1,//WP_NONE,
 
-	TORSO_WEAPONREADY1,//WP_STUN_BATON,
+	TORSO_WEAPONREADY2,//WP_STUN_BATON,
 	TORSO_WEAPONREADY3,//WP_MELEE,
 	BOTH_STAND2,//WP_SABER,
 	TORSO_WEAPONREADY2,//WP_BRYAR_PISTOL,
@@ -629,7 +629,7 @@ int WeaponReadyAnim5[WP_NUM_WEAPONS] =
 {
 	TORSO_DROPWEAP1,//WP_NONE,
 
-	TORSO_WEAPONREADY1,//WP_STUN_BATON,
+	TORSO_WEAPONREADY2,//WP_STUN_BATON,
 	TORSO_WEAPONREADY3,//WP_MELEE,
 	BOTH_STAND2,//WP_SABER,
 	TORSO_WEAPONREADY2,//WP_BRYAR_PISTOL,
@@ -760,7 +760,7 @@ int WeaponReadyAnim7[WP_NUM_WEAPONS] =
 {
 	TORSO_DROPWEAP1,//WP_NONE,
 
-	TORSO_WEAPONREADY1,//WP_STUN_BATON,
+	TORSO_WEAPONREADY2,//WP_STUN_BATON,
 	TORSO_WEAPONREADY3,//WP_MELEE,
 	BOTH_STAND2,//WP_SABER,
 	TORSO_WEAPONREADY2,//WP_BRYAR_PISTOL,
@@ -1021,15 +1021,11 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	
 	int final_Side;
 	//[ExpSys]
-	int final_Powers[NUM_TOTAL_SKILLS];
+	int final_Powers[NUM_TOTAL_SKILLS] = {0};
 	//int final_Powers[NUM_FORCE_POWERS];
 	//[/ExpSys]
 
-	//[BugFix36]
-	//blank out the final_Powers array in case we get garbage in powerOut.  
-	//Garbage is more freqent in Enhanced due to the new force skills.
-	memset(final_Powers, 0, sizeof(final_Powers));
-	//[/BugFix36]
+
 
 	if (powerLen >= 128)
 	{ //This should not happen. If it does, this is obviously a bogus string.
@@ -1150,14 +1146,9 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	//while (i < NUM_FORCE_POWERS)
 	//[/ExpSys]
 	{
-		countDown = 0;
-
-		countDown = final_Powers[i];
-
-		if(countDown > 3)
-		{
-			return -1;
-		}
+		countDown = Com_Clampi( 0, NUM_FORCE_POWER_LEVELS, final_Powers[i] );
+		
+		
 		while (countDown > 0)
 		{
 			usedPoints += bgForcePowerCost[i][countDown]; //[fp index][fp level]
@@ -1283,7 +1274,9 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 							qboolean stillHaveForce = qfalse;
 							for(counter = 0; counter < NUM_TOTAL_SKILLS; counter++)
 							{
-								if(counter != FP_SEE && final_Powers[counter])
+								if(counter != FP_SEE && final_Powers[counter] && // 74145: Only count force powers and saber skills
+									(counter < NUM_FORCE_POWERS ||
+										(counter >= NUM_FORCE_POWERS+SK_BLUESTYLE && counter <= NUM_FORCE_POWERS+SK_STAFFSTYLE)))													   
 								{
 									stillHaveForce = qtrue;
 									break;
@@ -2883,16 +2876,17 @@ qboolean	BG_PlayerTouchesItem( playerState_t *ps, entityState_t *item, int atTim
 
 int BG_ProperForceIndex(int power)
 {
-	int i = 0;
+	int i;
+		   
 
-	while (i < NUM_FORCE_POWERS)
-	{
-		if (forcePowerSorted[i] == power)
-		{
+	for ( i=0; i<NUM_FORCE_POWERS; i++ ) {
+  
+		if ( forcePowerSorted[i] == power )
+   
 			return i;
-		}
+   
 
-		i++;
+	  
 	}
 
 	return -1;
@@ -2905,9 +2899,7 @@ void BG_CycleForce(playerState_t *ps, int direction)
 	int presel = i;
 	int foundnext = -1;
 
-	if (!(ps->fd.forcePowersKnown & (1 << x)) ||
-		x >= NUM_FORCE_POWERS ||
-		x == -1)
+	if ( x >= NUM_FORCE_POWERS || x == -1 )
 	{ //apparently we have no valid force powers
 		return;
 	}
@@ -2937,7 +2929,7 @@ void BG_CycleForce(playerState_t *ps, int direction)
 
 	while (x != presel)
 	{ //loop around to the current force power
-		if (ps->fd.forcePowersKnown & (1 << i) && i != ps->fd.forcePowerSelected)
+		if (ps->fd.forcePowersKnown & (1 << i) && i != (signed)ps->fd.forcePowerSelected)
 		{ //we have the force power
 			if (i != FP_LEVITATION &&
 				i != FP_SABER_OFFENSE &&
@@ -3515,14 +3507,17 @@ char *eventnames[] = {
 	"EV_FORCE_DRAINED",
 	"EV_FORCE_SEVERED",
 	"EV_FORCE_HEALED",
-	"EV_FORCE_MIDICHLORIAN",
+	"EV_FORCE_REGENERATED",
 	"EV_FORCE_STASIS",
 	"EV_FORCE_INSANITY",
 	"EV_FORCE_LIGHTNING",
 	"EV_FORCE_JUDGEMENT",
+	"EV_FORCE_DEATHFIELDED",
+	"EV_FORCE_DEATHSIGHTED",
+	"EV_FORCE_BLINDED",
 	"EV_BURNED",
 	"EV_FROZEN",
-	"EV_SHOCKED",	
+	"EV_SHOCKED",
 	"EV_GIB_PLAYER",			// gib a previously living player
 	"EV_SCOREPLUM",			// score plum
 

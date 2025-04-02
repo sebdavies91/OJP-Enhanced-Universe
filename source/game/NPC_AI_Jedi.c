@@ -50,7 +50,7 @@ extern void ForceHeal( gentity_t *self );
 extern void ForceRage( gentity_t *self );
 extern void ForceProtect( gentity_t *self );
 extern void ForceAbsorb( gentity_t *self );
-extern void ForceFreeze( gentity_t *self );
+extern void ForceStasis( gentity_t *self );
 extern int WP_MissileBlockForBlock( int saberBlock );
 extern qboolean G_GetHitLocFromSurfName( gentity_t *ent, const char *surfName, int *hitLoc, vec3_t point, vec3_t dir, vec3_t bladeDir, int mod );
 extern qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
@@ -1592,6 +1592,20 @@ void NPC_Jedi_RateNewEnemy( gentity_t *self, gentity_t *enemy )
 	TIMER_Set( self, "chatter", Q_irand( 4000, 7000 ) );
 }
 
+static void Jedi_Valor( void )
+{//racc - activate Force Rage
+	Jedi_Aggression( NPC, 10 - NPCInfo->stats.aggression + Q_irand( -2, 2 ) );
+	TIMER_Set( NPC, "roamTime", 0 );
+	TIMER_Set( NPC, "chatter", 0 );
+	TIMER_Set( NPC, "walking", 0 );
+	TIMER_Set( NPC, "taunting", 0 );
+	TIMER_Set( NPC, "jumpChaseDebounce", 0 );
+	TIMER_Set( NPC, "movenone", 0 );
+	TIMER_Set( NPC, "movecenter", 0 );
+	TIMER_Set( NPC, "noturn", 0 );
+	ForceValor( NPC );
+}
+
 static void Jedi_Rage( void )
 {//racc - activate Force Rage
 	Jedi_Aggression( NPC, 10 - NPCInfo->stats.aggression + Q_irand( -2, 2 ) );
@@ -2730,34 +2744,68 @@ static void Jedi_CombatDistance( int enemy_dist )
 				&& (NPC->client->ps.fd.forcePowersActive&(1<<FP_HEAL)) == 0 
 				&& Q_irand( 0, 1 ) )
 			{
-				ForceHeal( NPC );
-				usedForce = qtrue;
+					if (NPC->client->skillLevel[SK_HEALA] == FORCE_LEVEL_2)
+					{
+					ForceRegeneration( NPC );
+					usedForce = qtrue;							
+					}
+					else
+					{
+					ForceHeal( NPC );
+					usedForce = qtrue;					
+					}
 				//FIXME: check level of heal and know not to move or attack when healing
 			}
 			else if ( (NPC->client->ps.fd.forcePowersKnown&(1<<FP_PROTECT)) != 0 
 				&& (NPC->client->ps.fd.forcePowersActive&(1<<FP_PROTECT)) == 0
 				&& Q_irand( 0, 1 ) )
 			{
-				ForceProtect( NPC );
-				usedForce = qtrue;
+					if (NPC->client->skillLevel[SK_PROTECTA] == FORCE_LEVEL_2)
+					{
+					ForceDeathfield( NPC );
+					usedForce = qtrue;							
+					}
+					else
+					{
+					ForceProtect( NPC );
+					usedForce = qtrue;					
+					}
 			}
 			//[ForceSys]
-			/*
+			
 			else if ( (NPC->client->ps.fd.forcePowersKnown&(1<<FP_ABSORB)) != 0 
 				&& (NPC->client->ps.fd.forcePowersActive&(1<<FP_ABSORB)) == 0
 				&& Q_irand( 0, 1 ) )
 			{
-				ForceAbsorb( NPC );
-				usedForce = qtrue;
+					if (NPC->client->skillLevel[SK_ABSORBA] == FORCE_LEVEL_2)
+					{
+					ForceDeathsight( NPC );
+					usedForce = qtrue;							
+					}
+					else
+					{
+					ForceAbsorb( NPC );
+					usedForce = qtrue;					
+					}
 			}
-			*/
+			
 			//[/ForceSys]
 			else if ( (NPC->client->ps.fd.forcePowersKnown&(1<<FP_RAGE)) != 0 
 				&& (NPC->client->ps.fd.forcePowersActive&(1<<FP_RAGE)) == 0
 				&& Q_irand( 0, 1 ) )
 			{
-				Jedi_Rage();
-				usedForce = qtrue;
+//				Jedi_Rage();
+//				usedForce = qtrue;
+					if (NPC->client->skillLevel[SK_RAGEA] == FORCE_LEVEL_2)
+					{
+					Jedi_Valor();
+					usedForce = qtrue;							
+					}
+					else
+					{
+					Jedi_Rage();
+					usedForce = qtrue;					
+					}
 			}
 			//FIXME: what about things like mind tricks and force sight?
 		}
@@ -3121,7 +3169,15 @@ static void Jedi_CombatDistance( int enemy_dist )
 		if ( (NPC->client->ps.fd.forcePowersKnown&(1<<FP_RAGE)) != 0 
 			&& (NPC->client->ps.fd.forcePowersActive&(1<<FP_RAGE)) == 0 )
 		{
-			Jedi_Rage();
+//			Jedi_Rage();
+					if (NPC->client->skillLevel[SK_RAGEA] == FORCE_LEVEL_2)
+					{
+					Jedi_Valor();						
+					}
+					else
+					{
+					Jedi_Rage();					
+					}
 		}
 	}
 }
@@ -7752,7 +7808,7 @@ void NPC_Jedi_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		if ( mod == MOD_FORCE_DARK )
 		{//see if we should turn on absorb
 			//[ForceSys]
-			/*
+			
 			if ( (self->client->ps.fd.forcePowersKnown&(1<<FP_ABSORB)) != 0 
 				&& (self->client->ps.fd.forcePowersActive&(1<<FP_ABSORB)) == 0 )
 			{//know absorb and not already using it
@@ -7763,12 +7819,19 @@ void NPC_Jedi_Pain(gentity_t *self, gentity_t *attacker, int damage)
 					{
 						if ( !Q_irand( 0, 5 ) )
 						{
-							ForceAbsorb( self );
+							if (self->client->skillLevel[SK_ABSORBA] == FORCE_LEVEL_2)
+							{
+							ForceDeathsight( self );						
+							}
+							else
+							{
+							ForceAbsorb( self );				
+							}
 						}
 					}
 				}
 			}
-			*/
+			
 			//[/ForceSys]
 		}
 		else if ( damage > Q_irand( 5, 20 ) )
@@ -7791,7 +7854,14 @@ void NPC_Jedi_Pain(gentity_t *self, gentity_t *attacker, int damage)
 							}
 							else
 							{
-								ForceProtect( self );
+								if (self->client->skillLevel[SK_PROTECTA] == FORCE_LEVEL_2)
+								{
+								ForceDeathfield( self );						
+								}
+								else
+								{
+								ForceProtect( self );				
+								}
 							}
 						}
 					}
@@ -8246,7 +8316,14 @@ void NPC_BSJedi_FollowLeader( void )
 		if (Q_irand(0,3)==0)
 		{
 			TIMER_Set(NPC, "FollowHealDebouncer", Q_irand(12000, 18000));
-			ForceHeal( NPC );
+			if (NPC->client->skillLevel[SK_HEALA] == FORCE_LEVEL_2)
+			{
+			ForceRegeneration( NPC );						
+			}
+			else
+			{
+			ForceHeal( NPC );				
+			}
 		}
 		else
 		{
@@ -8553,7 +8630,14 @@ static void Jedi_Attack( void )
 							else if ( (NPC->client->ps.fd.forcePowersKnown&(1<<FP_HEAL)) != 0 
 								&& (NPC->client->ps.fd.forcePowersActive&(1<<FP_HEAL)) == 0 )
 							{
-								ForceHeal( NPC );
+								if (NPC->client->skillLevel[SK_HEALA] == FORCE_LEVEL_2)
+								{
+								ForceRegeneration( NPC );							
+								}
+								else
+								{
+								ForceHeal( NPC );				
+								}
 							}
 						}
 						/*

@@ -47,9 +47,9 @@ void NPC_Seeker_Pain(gentity_t *self, gentity_t *attacker, int damage)
 
 	//[SeekerItemNpc]
 	//if we die, remove the control from our owner
-	if(self->health < 0 && self->activator && self->activator->client){
-		self->activator->client->remote = NULL;
-		self->activator->client->ps.stats[STAT_HOLDABLE_ITEMS] &= ~(1 << HI_SEEKER);
+	if(self->health < 0 && self->originalactivator && self->originalactivator->client){
+		self->originalactivator->client->remote = NULL;
+		self->originalactivator->client->ps.stats[STAT_HOLDABLE_ITEMS] &= ~(1 << HI_SEEKER);
 	}
 	//[/SeekerItemNpc]
 
@@ -395,9 +395,9 @@ qboolean Seeker_Fire( void )
 
 	//our player should get the kill, if any
 	//FIXME: we have a special case here.  we want the kill to be given to the activator, BUT we want the missile to NOT hurt the player
-	//attempting to leave missile->parent == NPC, but missile->r.ownerNum to NPC->activator->s.number, no idea if it will work, just doing a guess.
-	//if(NPC->activator)
-	//	missile = CreateMissile( muzzle, dir, 1000, 10000, NPC->activator, qfalse );
+	//attempting to leave missile->parent == NPC, but missile->r.ownerNum to NPC->originalactivator->s.number, no idea if it will work, just doing a guess.
+	//if(NPC->originalactivator)
+	//	missile = CreateMissile( muzzle, dir, 1000, 10000, NPC->originalactivator, qfalse );
 	//else
 		missile = CreateMissile( muzzle, dir, 1000, 10000, NPC, qfalse );
 
@@ -430,8 +430,8 @@ qboolean Seeker_Fire( void )
 	//[/CoOp]
 
 	////no, it isnt in SP version, but will it let the player get the kill but not let the seeker shoot itself?
-	//if(NPC->activator)
-	//	missile->r.ownerNum = NPC->activator->s.number;
+	//if(NPC->originalactivator)
+	//	missile->r.ownerNum = NPC->originalactivator->s.number;
 
 	//according to the old q3 source, if the missile has the activators ownerNum and the seeker also has that ownerNum, 
 	//the seeker shouldnt shoot itself.
@@ -588,7 +588,7 @@ void Seeker_FindEnemy( void )
 	float closestDist = SEEKER_SEEK_RADIUS * SEEKER_SEEK_RADIUS + 1;
 	//[/SeekerItemNpc]
 	
-	if(NPC->activator && NPC->activator->client->ps.weapon == WP_SABER && !NPC->activator->client->ps.saberHolstered)
+	if(NPC->originalactivator && NPC->originalactivator->client->ps.weapon == WP_SABER && !NPC->originalactivator->client->ps.saberHolstered)
 	{
 		NPC->enemy=NULL;
 		return;
@@ -622,13 +622,13 @@ void Seeker_FindEnemy( void )
 		}
 
 		//[SeekerItemNpc]
-		if(OnSameTeam(NPC->activator, ent))
+		if(OnSameTeam(NPC->originalactivator, ent))
 		{//our owner is on the same team as this entity, don't target them.
 			continue;
 		}
 
 		//dont attack our owner
-		if(NPC->activator == ent)
+		if(NPC->originalactivator == ent)
 			continue;
 
 		if(ent->s.NPC_class == CLASS_VEHICLE)
@@ -700,9 +700,9 @@ void Seeker_FollowPlayer( void )
 
 	Seeker_MaintainHeight();
 
-	if(NPC->activator && NPC->activator->client)
+	if(NPC->originalactivator && NPC->originalactivator->client)
 	{
-		if(NPC->activator->client->remote != NPC || NPC->activator->health <= 0){
+		if(NPC->originalactivator->client->remote != NPC || NPC->originalactivator->health <= 0){
 			//have us fall down and explode.
 			NPC->NPC->aiFlags |= NPCAI_CUSTOM_GRAVITY;
 			return;
@@ -993,7 +993,7 @@ void NPC_BSSeeker_Default( void )
 	}
 
 	//[SeekerItemNpc]
-	if ( NPC->client->NPC_class != CLASS_BOBAFETT && NPC->activator->health <= 0){
+	if ( NPC->client->NPC_class != CLASS_BOBAFETT && NPC->originalactivator && NPC->originalactivator->health <= 0){
 
 		G_Damage( NPC, NPC, NPC, NULL, NULL, NPC->health, 0, MOD_COLLISION );
 		return;
@@ -1025,10 +1025,10 @@ void NPC_BSSeeker_Default( void )
 
 	if ( NPC->enemy && NPC->enemy->client && NPC->enemy->health && NPC->enemy->inuse )
 	{
-		if ( NPC->client->NPC_class != CLASS_BOBAFETT
+		if ( NPC->client->NPC_class != CLASS_BOBAFETT && NPC->originalactivator
 			//[CoOp]
 			//[SeekerItemNpc] - dont attack our owner or leader, and dont shoot at dead people
-			&& ( NPC->enemy == NPC->activator || NPC->enemy->client->sess.sessionTeam == NPC->activator->client->sess.sessionTeam || (NPC->enemy->activator && NPC->enemy->activator == NPC->activator) || (NPC->enemy->activator && NPC->enemy->activator->client->sess.sessionTeam == NPC->activator->client->sess.sessionTeam)  || !NPC->enemy->inuse || NPC->health <= 0 ||
+			&& ( NPC->enemy == NPC->originalactivator || NPC->enemy->client->sess.sessionTeam == NPC->originalactivator->client->sess.sessionTeam || (NPC->enemy->originalactivator && NPC->enemy->originalactivator == NPC->originalactivator) || (NPC->enemy->originalactivator && NPC->enemy->originalactivator->client->sess.sessionTeam == NPC->originalactivator->client->sess.sessionTeam)  || !NPC->enemy->inuse || NPC->health <= 0 ||
 			( NPC->enemy->client && NPC->enemy->client->NPC_class == CLASS_SEEKER )) )
 			//&& ( NPC->enemy->s.number < MAX_CLIENTS || ( NPC->enemy->client && NPC->enemy->client->NPC_class == CLASS_SEEKER )) )
 			//[/SeekerItemNpc]

@@ -488,8 +488,7 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->methodOfDeath != MOD_FREEZER_EXPLOSION_SPLASH &&
 			ent->methodOfDeath != MOD_ION_EXPLOSION &&
 			ent->methodOfDeath != MOD_ION_EXPLOSION_SPLASH &&
-			ent->methodOfDeath != MOD_FORCE_DESTRUCTION &&
-			ent->methodOfDeath != MOD_FORCE_BURST)
+			ent->methodOfDeath != MOD_FORCE_DESTRUCTION )
 			//[/Asteroids]
 		{
 			vec3_t fwd;
@@ -530,8 +529,7 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->methodOfDeath != MOD_VEHICLE &&
 			ent->methodOfDeath != MOD_CONC &&
 			ent->methodOfDeath != MOD_CONC_ALT &&
-			ent->methodOfDeath != MOD_FORCE_DESTRUCTION &&
-			ent->methodOfDeath != MOD_FORCE_BURST &&
+			ent->methodOfDeath != MOD_FORCE_DESTRUCTION  &&
 			!(ent->dflags&DAMAGE_HEAVY_WEAP_CLASS) )
 		{
 			vec3_t fwd;
@@ -667,8 +665,7 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			ent->methodOfDeath != MOD_FLECHETTE_ALT_SPLASH &&
 			ent->methodOfDeath != MOD_CONC &&
 			ent->methodOfDeath != MOD_CONC_ALT &&
-			ent->methodOfDeath != MOD_FORCE_DESTRUCTION &&
-			ent->methodOfDeath != MOD_FORCE_BURST/*&&
+			ent->methodOfDeath != MOD_FORCE_DESTRUCTION /*&&
 			otherOwner->client->ps.saberBlockTime < level.time*/)
 		{ //for now still deflect even if saberBlockTime >= level.time because it hit the actual saber
 			//[BoltBlockSys]
@@ -920,7 +917,7 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				//	//permanently disable the saboteur's cloak
 				//	other->client->cloakToggleTime = Q3_INFINITE;
 				//}
-				if (ent->methodOfDeath == MOD_DEMP2_ALT || ent->methodOfDeath == MOD_DEMP2 || ent->methodOfDeath == MOD_ION_EXPLOSION || ent->methodOfDeath == MOD_ION_EXPLOSION_SPLASH  || ent->methodOfDeath == MOD_INCINERATOR || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_DIOXIS || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_FREEZER || ent->methodOfDeath == MOD_FREEZER_EXPLOSION || ent->methodOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)
+				if (other->methodOfDeath == MOD_DEMP2_ALT  || other->methodOfDeath == MOD_DEMP2 || other->methodOfDeath == MOD_ION_EXPLOSION || other->methodOfDeath == MOD_ION_EXPLOSION_SPLASH)
 				{//temp disable
 					Jedi_Decloak( other );
 					other->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
@@ -933,7 +930,7 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				//	//permanently disable the saboteur's cloak
 				//	other->client->sphereshieldToggleTime = Q3_INFINITE;
 				//}
-				if (ent->methodOfDeath == MOD_DEMP2_ALT  || ent->methodOfDeath == MOD_DEMP2 || ent->methodOfDeath == MOD_ION_EXPLOSION || ent->methodOfDeath == MOD_ION_EXPLOSION_SPLASH )
+				if (other->methodOfDeath == MOD_DEMP2_ALT  || other->methodOfDeath == MOD_DEMP2 || other->methodOfDeath == MOD_ION_EXPLOSION || other->methodOfDeath == MOD_ION_EXPLOSION_SPLASH)
 				{//temp disable
 					Sphereshield_Off( other );
 					other->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
@@ -946,10 +943,23 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 				//	//permanently disable the saboteur's cloak
 				//	//other->client->overloadToggleTime = Q3_INFINITE;
 				//}
-				if (ent->methodOfDeath == MOD_INCINERATOR || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION || ent->methodOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_DIOXIS || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION || ent->methodOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH || ent->methodOfDeath == MOD_FREEZER || ent->methodOfDeath == MOD_FREEZER_EXPLOSION || ent->methodOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)
+				if (other->methodOfDeath == MOD_DEMP2_ALT  || other->methodOfDeath == MOD_DEMP2 || other->methodOfDeath == MOD_ION_EXPLOSION || other->methodOfDeath == MOD_ION_EXPLOSION_SPLASH)
 				{//temp disable
 					Overload_Off( other );
 					other->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
+				}
+			}
+			else if ( other && other->client && other->client->jetPackOn )
+			{
+				//if ( ent->methodOfDeath == MOD_DEMP2_ALT )
+				//{//direct hit with alt disables cloak forever
+				//	//permanently disable the saboteur's cloak
+				//	//other->client->overloadToggleTime = Q3_INFINITE;
+				//}
+				if (other->methodOfDeath == MOD_DEMP2_ALT  || other->methodOfDeath == MOD_DEMP2 || other->methodOfDeath == MOD_ION_EXPLOSION || other->methodOfDeath == MOD_ION_EXPLOSION_SPLASH)
+				{//temp disable
+					Jetpack_Off(other);
+					other->client->jetPackToggleTime = level.time + Q_irand( 3000, 10000 );
 				}
 			}
 		}

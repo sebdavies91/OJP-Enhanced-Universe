@@ -4065,16 +4065,27 @@ void DEMP2_AltRadiusDamage( gentity_t *ent )
 						gent->client->ps.electrifyTime = level.time + Q_irand( 300, 800 );
 					}
 				}
-				if ( gent->client->ps.powerups[PW_CLOAKED] )
-				{//disable cloak temporarily
-					Jedi_Decloak( gent );
-					gent->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-				}
-				if ( gent->client->ps.powerups[PW_SPHERESHIELDED] )
-				{//disable cloak temporarily
-					Sphereshield_Off( gent );
-					gent->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-				}
+					if (gent->client->ps.powerups[PW_CLOAKED] )
+					{//disable cloak temporarily
+						Jedi_Decloak(gent);
+						gent->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
+					}
+					if (gent->client->ps.powerups[PW_SPHERESHIELDED] )
+					{//disable cloak temporarily
+						Sphereshield_Off(gent);
+						gent->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
+					}
+					if (gent->client->ps.powerups[PW_OVERLOADED] )
+					{//disable cloak temporarily
+						Overload_Off(gent);
+						gent->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
+					}
+					if (gent->client->jetPackOn )
+					{//disable cloak temporarily
+						Jetpack_Off(gent);
+						gent->client->jetPackToggleTime = level.time + Q_irand( 3000, 10000 );
+					}
+
 				//if ( gent->client->ps.powerups[PW_OVERLOADED] )
 				//{//disable cloak temporarily
 				//	Overload_Off( gent );
@@ -7313,6 +7324,12 @@ void laserTrapExplode( gentity_t *self )
 
 	if (self->activator)
 	{
+	if (self->s.weapon == WP_FLECHETTE)
+	{
+		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_TRIP_MINE_SPLASH/*MOD_LT_SPLASH*/ );		
+	}
+	else
+	{
 	if (self->s.eFlags & EF_WP_OPTION_2)
 	{
 		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_INCINERATOR_EXPLOSION_SPLASH/*MOD_LT_SPLASH*/ );
@@ -7329,7 +7346,8 @@ void laserTrapExplode( gentity_t *self )
 	{
 		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_TRIP_MINE_SPLASH/*MOD_LT_SPLASH*/ );		
 	}
-
+	}
+	
 	}
 
 	if (self->s.weapon != WP_FLECHETTE)

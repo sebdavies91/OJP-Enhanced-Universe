@@ -549,6 +549,7 @@ extern qboolean NPC_MoveDirClear( int forwardmove, int rightmove, qboolean reset
 //[CoOp]
 qboolean NPC_BSFollowLeader_UpdateLeader(void)
 {//racc - checks the status of our leader.  If the leader is invalid, do some backup behavior.
+	
 	if ( NPC->client->leader//have a leader
 		&& NPC->client->leader->s.number < MAX_CLIENTS //player
 		&& NPC->client->leader->client//player is a client

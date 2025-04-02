@@ -399,6 +399,11 @@ struct gentity_s {
 	gentity_t	*enemy;
 	gentity_t	*lastEnemy;
 	gentity_t	*activator;
+	gentity_t	*originalactivator;
+	gentity_t	*confusionactivator;
+	gentity_t	*corruptionactivator;
+	gentity_t	*stasisactivator;
+	gentity_t	*insanityactivator;
 	gentity_t	*teamchain;		// next entity in team
 	gentity_t	*teammaster;	// master of the team
 
@@ -432,7 +437,9 @@ struct gentity_s {
 	int			genericValue13;
 	int			genericValue14;
 	int			genericValue15;
+	
 
+	
 	char		*soundSet;
 
 	qboolean	isSaberEntity;
@@ -999,7 +1006,7 @@ struct gclient_s {
 	qboolean	hookhasbeenfired;	
 	int			freezeTime;
 	int			stasisTime;
-	int			deathsightTime;
+	int			insanityTime;
 	int			lightningTime;
 	int			judgementTime;
 	int			corruptedTime;
@@ -1008,6 +1015,13 @@ struct gclient_s {
 	int			toxicTime;	
 	int			backpackrocketTime;
 	int			specialcharacterSpawn;
+	int			disablingTime;
+	int			deathsightTime;
+	int			deathfieldTime;
+	int			blindingTime;
+	int			repulseTime;
+	int			deathsightbubbledamageTime;
+	int			deathfieldbubbledamageTime;
 };
 
 //Interest points
@@ -1767,18 +1781,19 @@ void ForceHeal( gentity_t *self );
 void ForceSpeed( gentity_t *self, int forceDuration );
 void ForceRage( gentity_t *self );
 void ForceGrip( gentity_t *self );
-void ForceFreeze( gentity_t *self );
+void ForceGrasp( gentity_t *self );
+void ForceStasis( gentity_t *self );
 void ForceProtect( gentity_t *self );
 void ForceAbsorb( gentity_t *self );
 void ForceDestruction( gentity_t *self );
-void ForceBurst( gentity_t *self );
-void ForceDeathSight( gentity_t *self );
-void ForceDissipate( gentity_t *self );
-void ForceBarrier( gentity_t *self );
-void ForceExtreme( gentity_t *self );
+void ForceBlinding( gentity_t *self );
+void ForceInsanity( gentity_t *self );
+void ForceDeathfield( gentity_t *self );
+void ForceDeathsight( gentity_t *self );
+void ForceValor( gentity_t *self );
 void ForceCorrupt( gentity_t *self );
 void ForceExplode( gentity_t *self, qboolean pull );
-void ForceMidichlorian( gentity_t *self );
+void ForceRegeneration( gentity_t *self );
 //void ForceTeamHeal( gentity_t *self );
 //[ManualDodge]
 void ManualButtonDodge(gentity_t *ent);

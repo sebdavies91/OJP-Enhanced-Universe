@@ -2216,19 +2216,19 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 	
 	if (en->client && en->client->ps.powerups[PW_CLOAKED])
 	{ //not a client, don't care about him
-		if(en->client->skillLevel[SK_CLOAK] == FORCE_LEVEL_3)
-		{
-			return 0;
-		}
-		else
-		{
 			if(!(en->client->ps.eFlags & EF_FIRING) && !(en->client->ps.eFlags & EF_ALT_FIRING))
 			{
 				return 0;
-			}	
-		}	
+			}		
 	}
 	
+	if (en->client && level.clients[bs->client].blindingTime > level.time)
+	{ //not a client, don't care about him
+			if(!(en->client->ps.eFlags & EF_FIRING) && !(en->client->ps.eFlags & EF_ALT_FIRING))
+			{
+				return 0;
+			}		
+	}
 	
 	if (en->health < 1)
 	{ //he's already dead
@@ -6943,7 +6943,7 @@ int BotUseInventoryItem(bot_state_t *bs)
 	}
 	if (bs->cur_ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_EWEB))
 	{
-		if (bs->currentEnemy && bs->frame_Enemy_Len > 250)
+		if (bs->currentEnemy && bs->frame_Enemy_Len > 128)
 		{
 			bs->cur_ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_EWEB, IT_HOLDABLE);
 			goto wantuseitem;
@@ -6952,7 +6952,7 @@ int BotUseInventoryItem(bot_state_t *bs)
 
 	if (bs->cur_ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_FLAMETHROWER))
 	{
-		if (bs->currentEnemy && bs->frame_Enemy_Len < 250)
+		if (bs->currentEnemy && bs->frame_Enemy_Len < 256)
 		{
 			bs->cur_ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_FLAMETHROWER, IT_HOLDABLE);
 			goto wantuseitem;
@@ -6960,7 +6960,7 @@ int BotUseInventoryItem(bot_state_t *bs)
 	}
 	if (bs->cur_ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_ELECTROSHOCKER))
 	{
-		if (bs->currentEnemy && bs->frame_Enemy_Len < 250)
+		if (bs->currentEnemy && bs->frame_Enemy_Len < 256)
 		{
 			bs->cur_ps.stats[STAT_HOLDABLE_ITEM] = BG_GetItemIndexByTag(HI_ELECTROSHOCKER, IT_HOLDABLE);
 			goto wantuseitem;
@@ -7407,8 +7407,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 		VectorSubtract(bs->currentEnemy->client->ps.origin, bs->eye, a_fo);
 		vectoangles(a_fo, a_fo);
 		
-		if(bs->cur_ps.fd.forceSide == FORCE_LIGHTSIDE || bs->cur_ps.fd.forceSide == FORCE_DARKSIDE)		
-		{
+
 		//do this above all things
 		if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PUSH)) && (bs->doForcePush > level.time || bs->cur_ps.fd.forceGripBeingGripped > level.time) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PUSH]][FP_PUSH] /*&& InFieldOfVision(bs->viewangles, 50, a_fo)*/)
 		{
@@ -7500,7 +7499,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			useTheForce = 1;
 			forceHostile = 0;
 		}
-		}
+		
 		if (!useTheForce)
 		{ //try neutral powers
 			if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PUSH)) && bs->cur_ps.fd.forceGripBeingGripped > level.time && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PUSH]][FP_PUSH] && InFieldOfVision(bs->viewangles, 50, a_fo))

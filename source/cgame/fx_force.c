@@ -22,7 +22,7 @@ FX_ForceSevered
 void FX_ForceSevered(vec3_t origin, vec3_t dir)
 {
 	VectorScale(dir, -1.0, dir);
-	trap_FX_PlayEffectID(cgs.effects.forceSevered, origin, dir, -1, -1);
+	trap_FX_PlayEffectID(cgs.effects.ForceSevered, origin, dir, -1, -1);
 }	
 /*
 -------------------------
@@ -37,15 +37,16 @@ void FX_ForceHealed(vec3_t origin, vec3_t dir)
 }
 /*
 -------------------------
-FX_ForceMidichlorian
+FX_ForceRegenerated
 -------------------------
 */
 // This effect is not generic because of possible enhancements
-void FX_ForceMidichlorian(vec3_t origin, vec3_t dir)
+void FX_ForceRegenerated(vec3_t origin, vec3_t dir)
 {
 	VectorScale(dir, -1.0, dir);
-	trap_FX_PlayEffectID(cgs.effects.forceMidichlorian, origin, dir, -1, -1);
+	trap_FX_PlayEffectID(cgs.effects.ForceRegenerated, origin, dir, -1, -1);
 }
+
 /*
 -------------------------
 FX_Burned

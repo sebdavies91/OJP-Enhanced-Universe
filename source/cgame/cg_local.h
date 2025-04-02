@@ -42,7 +42,7 @@
 #define	PAIN_TWITCH_TIME	200
 #define	WEAPON_SELECT_TIME	1500
 #define	ITEM_SCALEUP_TIME	1000
-#define	WEAPON_SELECT_DELAY_TIME	300
+#define	WEAPON_SELECT_DELAY_TIME	100
 // Zoom vars
 #define	ZOOM_TIME			150		// not currently used?
 #define MAX_ZOOM_FOV		3.0f
@@ -302,7 +302,7 @@ typedef struct {
 	qhandle_t		bolt_motion;
 
 	qhandle_t		bolt_llumbar;
-
+	
 	int				siegeIndex;
 	int				siegeDesiredTeam;
 
@@ -502,7 +502,7 @@ typedef struct centity_s {
 	int				trickAlphaTime;
 
 	int				teamPowerEffectTime;
-	qboolean		teamPowerType; //0 regen, 1 heal, 2 drain, 3 absorb, 4 negation, 5 dissipate, 6 stasis, 7 insanity, 8 lightning, 9 judgement
+	qboolean		teamPowerType; //0 drain, 1 sever, 2 lightning, 3 judgement, 4 deathfield, 5 deathsight, 6 stasis, 7 insanity, 8 blinding
 	
 	int				itemPowerEffectTime;
 	qboolean		itemPowerType; //0 flame, 1 ice, 2 shock 
@@ -1519,7 +1519,6 @@ typedef struct {
 	sfxHandle_t blueTookYsalSound;
 
 	sfxHandle_t	drainSound;
-
 	//music blips
 	sfxHandle_t	happyMusic;
 	sfxHandle_t dramaticFailure;
@@ -1750,12 +1749,16 @@ typedef struct
 	fxHandle_t forceDrained;
 	fxHandle_t burned;
 	fxHandle_t frozen;
-	fxHandle_t forceNegation;
-	fxHandle_t forceNegationWide;
-	fxHandle_t forceSevered;
+	fxHandle_t forceDeathfield;
+	fxHandle_t forceDeathsight;
+	fxHandle_t forceSever;
+	fxHandle_t forceSeverWide;
+	fxHandle_t ForceSevered;
 	fxHandle_t forceHealed;
-	fxHandle_t forceMidichlorian;
+	fxHandle_t ForceRegenerated;
 	fxHandle_t forceExplode;
+	fxHandle_t forceDestruction;
+	fxHandle_t forceBlinding;
 	//TURRET
 	fxHandle_t turretShotEffect;
 
@@ -2870,7 +2873,7 @@ void FX_EmplacedWeaponHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid
 void FX_ForceDrained(vec3_t origin, vec3_t dir);
 void FX_ForceSevered(vec3_t origin, vec3_t dir);
 void FX_ForceHealed(vec3_t origin, vec3_t dir);
-void FX_ForceMidichlorian(vec3_t origin, vec3_t dir);
+void FX_ForceRegenerated(vec3_t origin, vec3_t dir);
 void FX_Burned(vec3_t origin, vec3_t dir);
 void FX_Frozen(vec3_t origin, vec3_t dir);
 void FX_BryarOldHitWall( vec3_t origin, vec3_t normal );

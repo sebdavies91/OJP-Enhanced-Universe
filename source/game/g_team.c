@@ -191,56 +191,61 @@ OnSameTeam
 extern qboolean G_CheckVehicleNPCTeamDamage( gentity_t *ent );
 //[/Asteroids]
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
-	if ( !ent1->client || !ent2->client ) {
+	if ( !(ent1 && ent1->client) || !(ent2 && ent2->client) ) {
 		return qfalse;
 	}
 
-	if( ent1->client->corruptedTime > level.time)
+	if(ent1 && ent1->client->corruptedTime > level.time)
 	{
-					
-		if ( ent1->activator == ent2)
+		if ( ent1->corruptionactivator)
+		{				
+		if ( ent1->corruptionactivator == ent2)
 			{
 			return qtrue;
 			}
-		if (ent2->client->sess.sessionTeam == ent1->activator->client->sess.sessionTeam)
+		if ((g_gametype.integer != GT_POWERDUEL && ent2->client->sess.sessionTeam == ent1->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent2->client->sess.duelTeam == ent1->corruptionactivator->client->sess.duelTeam) )
 			{
 			return qtrue;
 			}
-		if (ent2->activator)
+		if (ent2->corruptionactivator)
 		{
-		if (ent2->activator == ent1->activator)
+		if (ent2->corruptionactivator == ent1->corruptionactivator)
 			{
 			return qtrue;
 			}
-		if (ent2->activator->client->sess.sessionTeam == ent1->activator->client->sess.sessionTeam)
+		if ((g_gametype.integer != GT_POWERDUEL && ent2->corruptionactivator->client->sess.sessionTeam == ent1->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent2->corruptionactivator->client->sess.duelTeam == ent1->corruptionactivator->client->sess.duelTeam) )
 			{
 			return qtrue;
 			}
 		}
 			return qfalse;
+		}
 	}
-	if(ent2->client->corruptedTime > level.time)
+	if(ent2 && ent2->client->corruptedTime > level.time)
 	{
-		if ( ent2->activator == ent1)
+		if ( ent2->corruptionactivator)
+		{
+		if ( ent2->corruptionactivator == ent1)
 			{
 			return qtrue;
 			}
-//		if (ent1->client->sess.sessionTeam == ent2->activator->client->sess.sessionTeam)
+//		if ((g_gametype.integer != GT_POWERDUEL && ent1->client->sess.sessionTeam == ent2->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent1->client->sess.duelTeam == ent2->corruptionactivator->client->sess.duelTeam) )
 //			{
 //			return qtrue;
 //			}
-		if (ent1->activator)
+		if (ent1->corruptionactivator)
 		{
-		if (ent1->activator == ent2->activator)
+		if (ent1->corruptionactivator == ent2->corruptionactivator)
 			{
 			return qtrue;
 			}
-//		if (ent1->activator->client->sess.sessionTeam == ent2->activator->client->sess.sessionTeam)
+//		if ((g_gametype.integer != GT_POWERDUEL && ent1->corruptionactivator->client->sess.sessionTeam == ent2->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent1->corruptionactivator->client->sess.duelTeam == ent2->corruptionactivator->client->sess.duelTeam) )
 //			{
 //			return qtrue;
 //			}
 		}
 			return qfalse;	
+		}
 	}
 
 

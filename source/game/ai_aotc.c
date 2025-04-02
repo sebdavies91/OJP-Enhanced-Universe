@@ -3688,8 +3688,7 @@ void AOTC_StandardBotAI(bot_state_t *bs, float thinktime)
 		else
 		*/
 		//[/NewGameTypes][EnhancedImpliment]
-		if(bs->cur_ps.fd.forceSide == FORCE_LIGHTSIDE || bs->cur_ps.fd.forceSide == FORCE_DARKSIDE)
-		{
+
 			//do this above all things
 			if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PUSH)) && (bs->doForcePush > level.time || bs->cur_ps.fd.forceGripBeingGripped > level.time) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PUSH]][FP_PUSH] /*&& InFieldOfVision(bs->viewangles, 50, a_fo)*/)
 			{
@@ -3785,7 +3784,7 @@ void AOTC_StandardBotAI(bot_state_t *bs, float thinktime)
 
 
 			
-		}
+
 
 		if (!useTheForce)
 		{ //try neutral powers

@@ -1745,12 +1745,12 @@ void NAV_CalculatePaths( const char *filename, int checksum )
 	int i;
 
 	//Raz: This was a bad check, and I see no clear alternatives..
-#if 0
+
 	if ( !tempWaypointList )
 	{
 		return;
 	}
-#endif
+
 
 #ifndef FINAL_BUILD
 	fatalErrors = 0;

@@ -1799,8 +1799,8 @@ static void CG_RegisterSounds( void ) {
 
 	trap_S_RegisterSound("sound/weapons/saber/saber_catch.wav");
 
-	cgs.media.teamHealSound = trap_S_RegisterSound("sound/weapons/force/teamheal.wav");
-	cgs.media.teamRegenSound = trap_S_RegisterSound("sound/weapons/force/teamforce.wav");
+//	cgs.media.teamHealSound = trap_S_RegisterSound("sound/weapons/force/teamheal.wav");
+//	cgs.media.teamRegenSound = trap_S_RegisterSound("sound/weapons/force/teamforce.wav");
 
 	trap_S_RegisterSound("sound/weapons/force/heal.wav");
 	trap_S_RegisterSound("sound/weapons/force/speed.wav");
@@ -1840,12 +1840,10 @@ static void CG_RegisterSounds( void ) {
 
 	trap_S_RegisterSound("sound/weapons/force/protecthit.mp3"); //PDSOUND_PROTECTHIT
 	trap_S_RegisterSound("sound/weapons/force/protect.mp3"); //PDSOUND_PROTECT
-	trap_S_RegisterSound("sound/weapons/force/barrierhit.mp3"); //PDSOUND_BARRIERHIT
-	trap_S_RegisterSound("sound/weapons/force/barrier.mp3"); //PDSOUND_BARRIER
+	trap_S_RegisterSound("sound/weapons/force/deathfield.mp3"); //PDSOUND_DEATHFIELD
 	trap_S_RegisterSound("sound/weapons/force/absorbhit.mp3"); //PDSOUND_ABSORBHIT
 	trap_S_RegisterSound("sound/weapons/force/absorb.mp3"); //PDSOUND_ABSORB
-	trap_S_RegisterSound("sound/weapons/force/dissipate.mp3"); //PDSOUND_DISSIPATE
-	trap_S_RegisterSound("sound/weapons/force/dissipatehit.mp3"); //PDSOUND_DISSIPATEHIT
+	trap_S_RegisterSound("sound/weapons/force/deathsight.mp3"); //PDSOUND_DEATHSIGHT
 	trap_S_RegisterSound("sound/weapons/force/jump.mp3"); //PDSOUND_FORCEJUMP
 	trap_S_RegisterSound("sound/weapons/force/grip.mp3"); //PDSOUND_FORCEGRIP
 	trap_S_RegisterSound("sound/weapons/force/telekinesis.mp3"); //PDSOUND_FORCEGRASP
@@ -1876,7 +1874,6 @@ static void CG_RegisterSounds( void ) {
 	}
 
 	cgs.media.drainSound = trap_S_RegisterSound("sound/weapons/force/drained.mp3");
-
 	cgs.media.happyMusic = trap_S_RegisterSound("music/goodsmall.mp3");
 	cgs.media.dramaticFailure = trap_S_RegisterSound("music/badsmall.mp3");
 
@@ -2377,18 +2374,22 @@ static void CG_RegisterGraphics( void ) {
 	cgs.effects.forceDrainWide	= trap_FX_RegisterEffect( "effects/mp/drainwide.efx" );
 	cgs.effects.forceDrained	= trap_FX_RegisterEffect( "effects/mp/drainhit.efx");
 
-	cgs.effects.forceNegation		= trap_FX_RegisterEffect( "effects/force/negation.efx" );
-	cgs.effects.forceNegationWide	= trap_FX_RegisterEffect( "effects/force/negationwide.efx" );
-	cgs.effects.forceSevered	= trap_FX_RegisterEffect( "effects/mp/negationhit.efx");	
+	cgs.effects.forceSever		= trap_FX_RegisterEffect( "effects/mp/sever.efx" );
+	cgs.effects.forceSeverWide	= trap_FX_RegisterEffect( "effects/mp/severwide.efx" );
+	cgs.effects.ForceSevered	= trap_FX_RegisterEffect( "effects/mp/severhit.efx");	
 	
 
 	cgs.effects.forceHealed	= trap_FX_RegisterEffect( "effects/force/heal2.efx" );
-	cgs.effects.forceMidichlorian	= trap_FX_RegisterEffect( "effects/force/heal3.efx");
+	cgs.effects.ForceRegenerated	= trap_FX_RegisterEffect( "effects/force/heal3.efx");
 	cgs.effects.forceExplode		= trap_FX_RegisterEffect( "effects/force/shockwave" );
-
-
+	cgs.effects.forceDeathfield	= trap_FX_RegisterEffect( "effects/mp/deathfield");
+	cgs.effects.forceDeathsight	= trap_FX_RegisterEffect( "effects/mp/deathsight");		
+	cgs.effects.forceDestruction		= trap_FX_RegisterEffect( "effects/force/destruction.efx" );
+	cgs.effects.forceBlinding		= trap_FX_RegisterEffect( "effects/force/blinding.efx" );
 	cgs.effects.burned	= trap_FX_RegisterEffect( "fire/fire_old.efx");
 	cgs.effects.frozen	= trap_FX_RegisterEffect( "ice/ice_old.efx");
+
+
 	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
 		cgs.media.crosshairShader[i] = trap_R_RegisterShaderNoMip( va("gfx/2d/crosshair%c", 'a'+i) );
 	}

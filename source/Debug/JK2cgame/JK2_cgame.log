@@ -51,6 +51,16 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   cg_marks.c
   cg_newDraw.c
   cg_players.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18564,63): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t [3]'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18564,59): warning C4024: 'trap_FX_PlayEffectID': different types for formal and actual parameter 3
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18647,63): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t [3]'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18647,59): warning C4024: 'trap_FX_PlayEffectID': different types for formal and actual parameter 3
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(20649,66): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t [3]'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(20649,62): warning C4024: 'trap_FX_PlayEffectID': different types for formal and actual parameter 3
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(20729,67): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t [3]'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(20729,63): warning C4024: 'trap_FX_PlayEffectID': different types for formal and actual parameter 3
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(20730,67): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t [3]'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(20730,63): warning C4024: 'trap_FX_PlayEffectID': different types for formal and actual parameter 3
   cg_playerstate.c
   cg_predict.c
   cg_saga.c

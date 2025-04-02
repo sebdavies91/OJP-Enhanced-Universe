@@ -1571,7 +1571,6 @@ retryModel:
 	//We need a lower lumbar bolt for footsteps
 	ci->bolt_llumbar = trap_G2API_AddBolt(ci->ghoul2Model, 0, "lower_lumbar");
 
-
 	//[VisualWeapons]
 	//Initialize the holster bolts
 	ci->holster_saber = trap_G2API_AddBolt(ci->ghoul2Model, 0, "*holster_saber");
@@ -13140,7 +13139,7 @@ void CG_ForceFPLSPlayerModel(centity_t *cent, clientInfo_t *ci)
 
 		//We need a lower lumbar bolt for footsteps
 		ci->bolt_llumbar = trap_G2API_AddBolt(ci->ghoul2Model, 0, "lower_lumbar");
-
+		
 		CG_CopyG2WeaponInstance(cent, cent->currentState.weapon, ci->ghoul2Model);
 	}
 	else
@@ -14944,8 +14943,7 @@ void SmoothTrueView(vec3_t eyeAngles)
 		DidSpecial = qtrue;
 	}
 
-	if ( ( (cg.predictedPlayerState.torsoAnim) == BOTH_JUMPFLIPSLASHDOWN1)
-		|| ( (cg.predictedPlayerState.torsoAnim) == BOTH_JUMPFLIPSLASHDOWN1) )
+	if ( (cg.predictedPlayerState.torsoAnim) == BOTH_JUMPFLIPSLASHDOWN1) 
 	{
 		eyeRange = qfalse;
 		DidSpecial = qtrue;
@@ -16025,10 +16023,12 @@ void CG_Player( centity_t *cent ) {
 	vec3_t			angles, dir, elevated, enang, seekorg;
 	int				iwantout = 0, successchange = 0;
 	int				team;
-	mdxaBone_t 		boltMatrix, lHandMatrix, rHandMatrix;
+	mdxaBone_t 		boltMatrix, lHandMatrix, rHandMatrix, lEyeMatrix, rEyeMatrix;
 	int				doAlpha = 0;
 	qboolean		gotLHandMatrix = qfalse;
 	qboolean		gotRHandMatrix = qfalse;
+	qboolean		gotLEyeMatrix = qfalse;
+	qboolean		gotREyeMatrix = qfalse;
 	qboolean		g2HasWeapon = qfalse;
 	qboolean		drawPlayerSaber = qfalse;
 	qboolean		checkDroidShields = qfalse;
@@ -17491,19 +17491,19 @@ SkipTrueView:
 		 
 																	  
 																																																								 
-				trap_FX_PlayEntityEffectID(cgs.effects.forceNegationWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSeverWide, efOrgR, axis, -1, -1, -1, -1);
    
 
-				trap_FX_PlayEntityEffectID(cgs.effects.forceNegationWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSeverWide, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceNegation, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSever, efOrgL, axis, -1, -1, -1, -1);
 			}
 			}
 		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)) )
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceNegation, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSever, efOrgL, axis, -1, -1, -1, -1);
 			}
 		
 		if (cent->bolt4 < cg.time)
@@ -17782,6 +17782,172 @@ SkipTrueView:
 		}
 
 	}
+	
+	if (cent->currentState.activeForcePass && cent->currentState.forcePowersActive & (1 << FP_TEAM_FORCE)
+		&& cent->currentState.NPC_class != CLASS_VEHICLE)
+	{
+	if (cent->currentState.userInt3 & (1 << FLAG_DESTRUCTION2))
+	{
+			vec3_t axis[3];
+		vec3_t tAng, fAng, fxDir;
+		vec3_t efOrgL; //origin left hand
+		vec3_t efOrgR; //origin right hand
+																		  
+
+		VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+
+		VectorSet( fAng, cent->pe.torso.pitchAngle, cent->pe.torso.yawAngle, 0 );
+
+		AngleVectors( fAng, fxDir, NULL, NULL );
+
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			
+			if (!gotRHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_rhand, &rHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotRHandMatrix = qtrue;
+			}					
+			efOrgR[0] = rHandMatrix.matrix[0][3]; //right hand matrix -> efOrgR
+			efOrgR[1] = rHandMatrix.matrix[1][3];
+			efOrgR[2] = rHandMatrix.matrix[2][3];
+
+			if (!gotLHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_lhand, &lHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotLHandMatrix = qtrue;
+			}
+			efOrgL[0] = lHandMatrix.matrix[0][3]; //left hand matrix -> efOrgL
+			efOrgL[1] = lHandMatrix.matrix[1][3];
+			efOrgL[2] = lHandMatrix.matrix[2][3];
+		}
+		else
+		{
+																																																							  
+			if (!gotLHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_lhand, &lHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotLHandMatrix = qtrue;
+			}
+			efOrgL[0] = lHandMatrix.matrix[0][3]; //just for the simple lightning from the left hand
+			efOrgL[1] = lHandMatrix.matrix[1][3];
+			efOrgL[2] = lHandMatrix.matrix[2][3];
+		}
+
+		AnglesToAxis(fAng, axis);
+ 
+		if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
+			{//arc
+			if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{
+		 
+																	  
+																																																								 
+				trap_FX_PlayEntityEffectID(cgs.effects.forceBlinding, efOrgR, axis, -1, -1, -1, -1);
+   
+
+				trap_FX_PlayEntityEffectID(cgs.effects.forceBlinding, efOrgL, axis, -1, -1, -1, -1);
+			}
+			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
+			{
+				trap_FX_PlayEntityEffectID(cgs.effects.forceBlinding, efOrgL, axis, -1, -1, -1, -1);
+			}
+			}
+		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)) )
+			{
+				trap_FX_PlayEntityEffectID(cgs.effects.forceBlinding, efOrgL, axis, -1, -1, -1, -1);
+			}
+		
+
+	}
+	else
+	{
+			vec3_t axis[3];
+		vec3_t tAng, fAng, fxDir;
+		vec3_t efOrgL; //origin left hand
+		vec3_t efOrgR; //origin right hand
+																		  
+
+		VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+
+		VectorSet( fAng, cent->pe.torso.pitchAngle, cent->pe.torso.yawAngle, 0 );
+
+		AngleVectors( fAng, fxDir, NULL, NULL );
+
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			
+			if (!gotRHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_rhand, &rHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotRHandMatrix = qtrue;
+			}					
+			efOrgR[0] = rHandMatrix.matrix[0][3]; //right hand matrix -> efOrgR
+			efOrgR[1] = rHandMatrix.matrix[1][3];
+			efOrgR[2] = rHandMatrix.matrix[2][3];
+
+			if (!gotLHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_lhand, &lHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotLHandMatrix = qtrue;
+			}
+			efOrgL[0] = lHandMatrix.matrix[0][3]; //left hand matrix -> efOrgL
+			efOrgL[1] = lHandMatrix.matrix[1][3];
+			efOrgL[2] = lHandMatrix.matrix[2][3];
+		}
+		else
+		{
+																																																							  
+			if (!gotLHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_lhand, &lHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotLHandMatrix = qtrue;
+			}
+			efOrgL[0] = lHandMatrix.matrix[0][3]; //just for the simple lightning from the left hand
+			efOrgL[1] = lHandMatrix.matrix[1][3];
+			efOrgL[2] = lHandMatrix.matrix[2][3];
+		}
+
+		AnglesToAxis(fAng, axis);
+ 
+		if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
+			{//arc
+			if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{
+		 
+																	  
+																																																								 
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDestruction, efOrgR, axis, -1, -1, -1, -1);
+   
+
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDestruction, efOrgL, axis, -1, -1, -1, -1);
+			}
+			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
+			{
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDestruction, efOrgL, axis, -1, -1, -1, -1);
+			}
+			}
+		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)) )
+			{
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDestruction, efOrgL, axis, -1, -1, -1, -1);
+			}
+		
+	}	
+	}
+	
+	
 	if( cent->currentState.userInt3 & (1 << FLAG_THROWER) && cent->currentState.userInt3 & (1 << FLAG_THROWER2))
 	{//player is firing icethrower, render effect.
 		vec3_t axis[3];
@@ -18370,36 +18536,32 @@ SkipTrueView:
 		{
 		if( cent->currentState.userInt3 & (1 << FLAG_PULL2))
 		{
-		vec3_t up = { 0,0,1 };
-				if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
-			{//arc
-			if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-			{
-		 
-				
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgR, cent );
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgR, up, -1, -1 );
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgL, up, -1, -1 );
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgL, cent );
-			}
-		else if (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)
-			{
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgL, cent );	
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgL, up, -1, -1 );
-			}
-			}
-		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD))
-			{
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgL, cent );
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgL, up, -1, -1 );
-			}	
+			vec3_t efOrg;
+			vec3_t tAng, fxAng;
+			vec3_t axis[3];
+
+			//VectorSet( tAng, 0, cent->pe.torso.yawAngle, 0 );
+			VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+
+			trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_motion, &boltMatrix, tAng, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+
+			BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, efOrg);
+			BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, fxAng);
+
+ 			axis[0][0] = boltMatrix.matrix[0][0];
+ 			axis[0][1] = boltMatrix.matrix[1][0];
+		 	axis[0][2] = boltMatrix.matrix[2][0];
+
+ 			axis[1][0] = boltMatrix.matrix[0][1];
+ 			axis[1][1] = boltMatrix.matrix[1][1];
+		 	axis[1][2] = boltMatrix.matrix[2][1];
+
+ 			axis[2][0] = boltMatrix.matrix[0][2];
+ 			axis[2][1] = boltMatrix.matrix[1][2];
+		 	axis[2][2] = boltMatrix.matrix[2][2];
+
+			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
+			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrg, axis, -1, -1 );
 		
 		
 
@@ -18457,36 +18619,32 @@ SkipTrueView:
 		{
 		if( cent->currentState.userInt3 & (1 << FLAG_PUSH2))
 		{
-		vec3_t up = { 0,0,1 };
-				if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
-			{//arc
-			if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-			{
-		 
-				
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgR, cent );
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgR, up, -1, -1 );
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgL, up, -1, -1 );
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgL, cent );
-			}
-		else if (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)
-			{
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgL, cent );	
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgL, up, -1, -1 );
-			}
-			}
-		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD))
-			{
-			//use refractive effect
-			//CG_ForceExplodeBlur( efOrgL, cent );
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrgL, up, -1, -1 );
-			}	
+			vec3_t efOrg;
+			vec3_t tAng, fxAng;
+			vec3_t axis[3];
+
+			//VectorSet( tAng, 0, cent->pe.torso.yawAngle, 0 );
+			VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+
+			trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_motion, &boltMatrix, tAng, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+
+			BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, efOrg);
+			BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, fxAng);
+
+ 			axis[0][0] = boltMatrix.matrix[0][0];
+ 			axis[0][1] = boltMatrix.matrix[1][0];
+		 	axis[0][2] = boltMatrix.matrix[2][0];
+
+ 			axis[1][0] = boltMatrix.matrix[0][1];
+ 			axis[1][1] = boltMatrix.matrix[1][1];
+		 	axis[1][2] = boltMatrix.matrix[2][1];
+
+ 			axis[2][0] = boltMatrix.matrix[0][2];
+ 			axis[2][1] = boltMatrix.matrix[1][2];
+		 	axis[2][2] = boltMatrix.matrix[2][2];
+
+			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
+			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrg, axis, -1, -1 );	
 		
 		
 
@@ -18589,7 +18747,7 @@ SkipTrueView:
 
 	if (cent->teamPowerEffectTime > cg.time)
 	{
-		if (cent->teamPowerType == 3 || cent->teamPowerType == 5 || cent->teamPowerType == 6 || cent->teamPowerType == 7 || cent->teamPowerType == 8 || cent->teamPowerType == 9)
+		if (cent->teamPowerType == 6 || cent->teamPowerType == 7 || cent->teamPowerType == 2 || cent->teamPowerType == 3 || cent->teamPowerType == 4)
 		{ //absorb is a somewhat different effect entirely
 			//Guess I'll take care of it where it's always been, just checking these values instead.
 		}
@@ -18607,33 +18765,45 @@ SkipTrueView:
 			preCol[1] = legs.shaderRGBA[1];
 			preCol[2] = legs.shaderRGBA[2];
 			preCol[3] = legs.shaderRGBA[3];
-
-			if (cent->teamPowerType == 1)
-			{ //heal
-				legs.shaderRGBA[0] = 0;
-				legs.shaderRGBA[1] = 255;
-				legs.shaderRGBA[2] = 0;
-			}
+/*
 			if (cent->teamPowerType == 0)
 			{ //regen
 				legs.shaderRGBA[0] = 0;
 				legs.shaderRGBA[1] = 0;
 				legs.shaderRGBA[2] = 255;
 			}
-			if (cent->teamPowerType == 4)
-			{ //negation
-				legs.shaderRGBA[0] = 255;
+			if (cent->teamPowerType == 1)
+			{ //heal
+				legs.shaderRGBA[0] = 0;
 				legs.shaderRGBA[1] = 255;
-				legs.shaderRGBA[2] = 255;
-				legs.shaderRGBA[3] = 255;
+				legs.shaderRGBA[2] = 0;
 			}
-			if (cent->teamPowerType == 2)
+*/
+			if (cent->teamPowerType == 0)
 			{ //drain
 				legs.shaderRGBA[0] = 255;
 				legs.shaderRGBA[1] = 0;
 				legs.shaderRGBA[2] = 0;
 			}
-
+			if (cent->teamPowerType == 1)
+			{ //sever
+				legs.shaderRGBA[0] = 255;
+				legs.shaderRGBA[1] = 255;
+				legs.shaderRGBA[2] = 255;
+				legs.shaderRGBA[3] = 255;
+			}
+			if (cent->teamPowerType == 5)
+			{ //deathsight
+				legs.shaderRGBA[0] = 255;
+				legs.shaderRGBA[1] = 128;
+				legs.shaderRGBA[2] = 0;
+			}
+			if (cent->teamPowerType == 8)
+			{ //blinding
+				legs.shaderRGBA[0] = 255;
+				legs.shaderRGBA[1] = 255;
+				legs.shaderRGBA[2] = 255;
+			}
 			legs.shaderRGBA[3] = ((cent->teamPowerEffectTime - cg.time)/8);
 
 			legs.customShader = trap_R_RegisterShader( "powerups/ysalimarishell" );
@@ -20296,7 +20466,8 @@ stillDoSaber:
 		legs.renderfx &= ~RF_MINLIGHT;
 
 		legs.renderfx |= RF_RGB_TINT;
-		legs.shaderRGBA[0] = legs.shaderRGBA[1] = 0;
+		legs.shaderRGBA[0] = 0;
+		legs.shaderRGBA[1] = 255;
 		legs.shaderRGBA[2] = 255;
 		legs.shaderRGBA[3] = 255;
 
@@ -20450,30 +20621,33 @@ stillDoSaber:
 	{ //aborb is represented by green..
 	if(cent->currentState.userInt3 & (1 << FLAG_PROTECT2))
 	{
-		refEntity_t prot;
-		
-		memcpy(&prot, &legs, sizeof(prot));
+			vec3_t efOrg;
+			vec3_t tAng, fxAng;
+			vec3_t axis[3];
 
-		prot.shaderRGBA[0] = 128;
-		prot.shaderRGBA[1] = 0;
-		prot.shaderRGBA[2] = 255;
-		prot.shaderRGBA[3] = 254;
+			//VectorSet( tAng, 0, cent->pe.torso.yawAngle, 0 );
+			VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
 
-		prot.renderfx &= ~RF_RGB_TINT;
-		prot.renderfx &= ~RF_FORCE_ENT_ALPHA;
-		prot.customShader = cgs.media.protectShader;
+			trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_motion, &boltMatrix, tAng, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
 
-		/*
-		if (!prot.modelScale[0] && !prot.modelScale[1] && !prot.modelScale[2])
-		{
-			prot.modelScale[0] = prot.modelScale[1] = prot.modelScale[2] = 1.0f;
-		}
-		VectorScale(prot.modelScale, 1.1f, prot.modelScale);
-		prot.origin[2] -= 2.0f;
-		ScaleModelAxis(&prot);
-		*/
+			BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, efOrg);
+			BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, fxAng);
 
-		trap_R_AddRefEntityToScene( &prot );
+ 			axis[0][0] = boltMatrix.matrix[0][0];
+ 			axis[0][1] = boltMatrix.matrix[1][0];
+		 	axis[0][2] = boltMatrix.matrix[2][0];
+
+ 			axis[1][0] = boltMatrix.matrix[0][1];
+ 			axis[1][1] = boltMatrix.matrix[1][1];
+		 	axis[1][2] = boltMatrix.matrix[2][1];
+
+ 			axis[2][0] = boltMatrix.matrix[0][2];
+ 			axis[2][1] = boltMatrix.matrix[1][2];
+		 	axis[2][2] = boltMatrix.matrix[2][2];
+
+			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
+			trap_FX_PlayEffectID( cgs.effects.forceDeathfield, efOrg, axis, -1, -1 );
+			
 	}
 	else
 	{
@@ -20511,22 +20685,52 @@ stillDoSaber:
 	//Showing only when the power has been active (absorbed something) recently now, instead of always.
 	//AND
 	//always show if it is you with the absorb on
-	if ((cent->currentState.number == cg.predictedPlayerState.clientNum && (cg.predictedPlayerState.fd.forcePowersActive & (1<<FP_ABSORB))) ||
-		(cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 3)||(cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 5))
+	if ((cent->currentState.number == cg.predictedPlayerState.clientNum && (cg.predictedPlayerState.fd.forcePowersActive & (1<<FP_ABSORB))) )
 	{
-	if(cent->currentState.userInt3 & (1 << FLAG_ABSORB2)||(cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 5))	
+	if(cent->currentState.userInt3 & (1 << FLAG_ABSORB2))	
 	{
-		//aborb is represented by blue..
-		legs.shaderRGBA[0] = 255;
-		legs.shaderRGBA[1] = 0;
-		legs.shaderRGBA[2] = 0;
-		legs.shaderRGBA[3] = 255;
+		vec3_t axis[3];
+		vec3_t tAng, fAng, fxDir;
+		vec3_t efOrgL; //origin left hand
+		vec3_t efOrgR; //origin right hand
+		qhandle_t eyesBoltL, eyesBoltR;																		  
 
-		legs.renderfx &= ~RF_RGB_TINT;
-		legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
-		legs.customShader = cgs.media.playerShieldDamage;
+		VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+
+		VectorSet( fAng, cent->pe.torso.pitchAngle, cent->pe.torso.yawAngle, 0 );
+
+		AngleVectors( fAng, fxDir, NULL, NULL );
+		eyesBoltR = trap_G2API_AddBolt(cent->ghoul2, 0, "reye");
+		eyesBoltL = trap_G2API_AddBolt(cent->ghoul2, 0, "leye");
+			
+			if (!gotREyeMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, eyesBoltR, &rEyeMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotRHandMatrix = qtrue;
+			}					
+			efOrgR[0] = rEyeMatrix.matrix[0][3]; //right hand matrix -> efOrgR
+			efOrgR[1] = rEyeMatrix.matrix[1][3];
+			efOrgR[2] = rEyeMatrix.matrix[2][3];
+
+			if (!gotLEyeMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, eyesBoltL, &lEyeMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotLHandMatrix = qtrue;
+			}
+			efOrgL[0] = lEyeMatrix.matrix[0][3]; //left hand matrix -> efOrgL
+			efOrgL[1] = lEyeMatrix.matrix[1][3];
+			efOrgL[2] = lEyeMatrix.matrix[2][3];
 		
-		trap_R_AddRefEntityToScene( &legs );
+
+
+		AnglesToAxis(fAng, axis);
+
+			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
+			trap_FX_PlayEffectID( cgs.effects.forceDeathsight, efOrgR, axis, -1, -1 );
+			trap_FX_PlayEffectID( cgs.effects.forceDeathsight, efOrgL, axis, -1, -1 );
+			
+			
+
 	}
 	else
 	{
@@ -20651,7 +20855,7 @@ stillDoSaber:
 
 
 
-	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 8))
+	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 2))
 	{
 		vec3_t tempAngles;
 
@@ -20693,7 +20897,7 @@ stillDoSaber:
 		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader2, qfalse );
 	}
 
-	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 9))
+	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 3))
 	{
 		vec3_t tempAngles;
 
@@ -20732,6 +20936,48 @@ stillDoSaber:
 
 		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
 		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader3, qfalse );
+	}
+	
+	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 4))
+	{
+		vec3_t tempAngles;
+
+		if (random() > 0.4f )
+		{
+			// fade out over the last 500 ms
+			int brightness = 255;
+			
+
+			legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
+			legs.renderfx &= ~RF_MINLIGHT;
+
+			legs.renderfx |= RF_RGB_TINT; 
+			legs.shaderRGBA[0] = 160;
+			legs.shaderRGBA[1] = 64;
+			legs.shaderRGBA[2] = 255;
+			legs.shaderRGBA[3] = 255;
+
+			if ( rand() & 1 )
+			{
+				legs.customShader = cgs.media.electricBodyShader;	
+			}
+			else
+			{
+				legs.customShader = cgs.media.electricBody2Shader;
+			}
+
+			
+											
+							   
+	  
+			trap_R_AddRefEntityToScene( &legs );
+
+			if ( random() > 0.9f )
+				trap_S_StartSound ( NULL, cent->currentState.number, CHAN_AUTO, cgs.media.crackleSound );
+		}
+
+		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
+		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader2, qfalse );
 	}
 	// Electricity
 	//------------------------------------------------

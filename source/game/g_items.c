@@ -1237,14 +1237,14 @@ void ItemUse_Seeker(gentity_t *ent)
 
 	gentity_t *remote = ent->client->remote;
 
-	if(!remote || !remote->inuse || !remote->client || remote->activator != ent)
+	if(!remote || !remote->inuse || !remote->client || (remote->activator != ent && !remote->originalactivator))
 	{//actualy spawn a remote NPC
 
 		remote = NPC_SpawnType( ent, "seeker", va("player%iseeker", ent->s.number), qfalse );
 		if ( remote && remote->client )
 		{//set it to my team
 			remote->s.owner = remote->r.ownerNum = ent->s.number;
-			remote->activator = ent;
+			remote->originalactivator = ent;
 			//remote->NPC->goalEntity is being cleared after we spawn
 			remote->NPC->goalEntity = remote->client->leader = ent;
 			//remote->NPC->behaviorState = BS_FOLLOW_LEADER;
@@ -1606,7 +1606,7 @@ void Flamethrower_Fire( gentity_t *self )
 	vec3_t	forward;
 	gentity_t	*traceEnt;
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
-	int BURN_TIME=2500;
+	int BURN_TIME = 2500;
 	float	radius = FLAMETHROWER_RADIUS, dot, dist;
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
@@ -1727,11 +1727,21 @@ void Flamethrower_Fire( gentity_t *self )
 		}
 
 			
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
 				{
-					damage = 0;
+					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
+					{
+						
+					}
+					else
+					{
+					damage = 0;						
+					}
 				}
-			
+				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				{
+					damage = 0;						
+				}			
 
 	//			if (modPowerLevel != -1)
 				{
@@ -1741,7 +1751,7 @@ void Flamethrower_Fire( gentity_t *self )
 
 				}
 				//[ForceSys]
-	//			saberBlocked = OJP_BlockLightning(self, traceEnt, impactPoint, dmg);
+	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
 				if (damage //&& !saberBlocked
 				)
@@ -1795,18 +1805,7 @@ void Flamethrower_Fire( gentity_t *self )
 						tent->s.owner = traceEnt->s.number;
 						traceEnt->client->burnTime = level.time + BURN_TIME;
 					}
-					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Jedi_Decloak( traceEnt );
-						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}		
-					if ( traceEnt->client->ps.powerups[PW_OVERLOADED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Overload_Off( traceEnt );
-						traceEnt->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
-					}
+
 				}
 		}
 
@@ -1934,9 +1933,20 @@ void Dioxisthrower_Fire( gentity_t *self )
 				}
 		}
 
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
 				{
-					damage = 0;
+					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
+					{
+						
+					}
+					else
+					{
+					damage = 0;						
+					}
+				}
+				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				{
+					damage = 0;						
 				}
 
 
@@ -1948,7 +1958,7 @@ void Dioxisthrower_Fire( gentity_t *self )
 
 				}
 				//[ForceSys]
-	//			saberBlocked = OJP_BlockLightning(self, traceEnt, impactPoint, dmg);
+	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
 				if (damage //&& !saberBlocked
 				)
@@ -2002,18 +2012,7 @@ void Dioxisthrower_Fire( gentity_t *self )
 					traceEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
 					traceEnt->client->ps.forceHandExtendTime = level.time + TOXIC_TIME/3;
 					}		
-					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Jedi_Decloak( traceEnt );
-						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}		
-					if ( traceEnt->client->ps.powerups[PW_OVERLOADED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Overload_Off( traceEnt );
-						traceEnt->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
-					}
+	
 		
 				}
 		}
@@ -2143,9 +2142,20 @@ void Icethrower_Fire( gentity_t *self )
 				}
 		}
 
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
 				{
-					damage = 0;
+					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
+					{
+						
+					}
+					else
+					{
+					damage = 0;						
+					}
+				}
+				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				{
+					damage = 0;						
 				}
 
 
@@ -2157,7 +2167,7 @@ void Icethrower_Fire( gentity_t *self )
 
 				}
 				//[ForceSys]
-	//			saberBlocked = OJP_BlockLightning(self, traceEnt, impactPoint, dmg);
+	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
 				if (damage //&& !saberBlocked
 				)
@@ -2210,10 +2220,16 @@ void Icethrower_Fire( gentity_t *self )
 					tent->s.eventParm = DirToByte(dir);
 					tent->s.owner = traceEnt->s.number;
 					traceEnt->client->freezeTime = level.time + FREEZE_TIME;
+					traceEnt->client->ps.userInt1 |= LOCK_MOVERIGHT;
+					traceEnt->client->ps.userInt1 |= LOCK_MOVELEFT;
+					traceEnt->client->ps.userInt1 |= LOCK_MOVEFORWARD;
+					traceEnt->client->ps.userInt1 |= LOCK_MOVEBACK;
+					traceEnt->client->ps.userInt1 |= LOCK_MOVEUP;
+					traceEnt->client->ps.userInt1 |= LOCK_MOVEDOWN;
 					traceEnt->client->ps.userInt1 |= LOCK_UP;
 					traceEnt->client->ps.userInt1 |= LOCK_DOWN;
 					traceEnt->client->ps.userInt1 |= LOCK_RIGHT;
-					traceEnt->client->ps.userInt1 |= LOCK_LEFT;	
+					traceEnt->client->ps.userInt1 |= LOCK_LEFT;		
 					traceEnt->client->viewLockTime = level.time + FREEZE_TIME/3;
 					traceEnt->client->ps.legsTimer = traceEnt->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
 					traceEnt->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
@@ -2236,18 +2252,7 @@ void Icethrower_Fire( gentity_t *self )
 					}	
 
 					}
-					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Jedi_Decloak( traceEnt );
-						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}		
-					if ( traceEnt->client->ps.powerups[PW_OVERLOADED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Overload_Off( traceEnt );
-						traceEnt->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
-					}
+
 		
 				}
 
@@ -2300,7 +2305,7 @@ void Electroshocker_Fire( gentity_t *self )
 	vec3_t	forward;
 	gentity_t	*traceEnt;
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
-	int SHOCK_TIME=5000;
+	int SHOCK_TIME = 2500;
 	float	radius = ELECTROSHOCKER_RADIUS, dot, dist;
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
@@ -2414,9 +2419,20 @@ void Electroshocker_Fire( gentity_t *self )
 				}
 		}
 
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
 				{
-					damage = 0;
+					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
+					{
+						
+					}
+					else
+					{
+					damage = 0;						
+					}
+				}
+				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				{
+					damage = 0;						
 				}
 
 	//			if (modPowerLevel != -1)
@@ -2427,7 +2443,7 @@ void Electroshocker_Fire( gentity_t *self )
 
 				}
 				//[ForceSys]
-	//			saberBlocked = OJP_BlockLightning(self, traceEnt, impactPoint, dmg);
+	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
 				if (damage //&& !saberBlocked
 				)
@@ -2483,20 +2499,27 @@ void Electroshocker_Fire( gentity_t *self )
 						tent->s.eventParm = DirToByte(dir);
 						tent->s.owner = traceEnt->s.number;
 						traceEnt->client->shockTime = level.time + SHOCK_TIME;
-					}
-					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
-					)
+					}	
+					if ( traceEnt->client->ps.powerups[PW_CLOAKED] )
 					{//disable cloak temporarily
 						Jedi_Decloak( traceEnt );
 						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}		
-					if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] //&& !saberBlocked
-					)
+					}
+					if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
 					{//disable cloak temporarily
 						Sphereshield_Off( traceEnt );
 						traceEnt->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
-					}	
-		
+					}
+					if ( traceEnt->client->ps.powerups[PW_OVERLOADED] )
+					{//disable cloak temporarily
+						Overload_Off( traceEnt );
+						traceEnt->client->overloadToggleTime = level.time + Q_irand( 3000, 10000 );
+					}
+					if ( traceEnt->client->jetPackOn )
+					{//disable cloak temporarily
+						Jetpack_Off(traceEnt);
+						traceEnt->client->jetPackToggleTime = level.time + Q_irand( 3000, 10000 );
+					}		
 				}
 		}
 	}
@@ -2623,9 +2646,20 @@ void Lasersupport_Fire( gentity_t *self )
 		}
 
 
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
 				{
-					damage = 0;
+					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
+					{
+						
+					}
+					else
+					{
+					damage = 0;						
+					}
+				}
+				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				{
+					damage = 0;						
 				}
 
 	//			if (modPowerLevel != -1)
@@ -2636,7 +2670,7 @@ void Lasersupport_Fire( gentity_t *self )
 
 				}
 				//[ForceSys]
-	//			saberBlocked = OJP_BlockLightning(self, traceEnt, impactPoint, dmg);
+	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
 				if (damage //&& !saberBlocked
 				)
@@ -2688,19 +2722,7 @@ void Lasersupport_Fire( gentity_t *self )
 					if ( traceEnt->client->ps.stats[STAT_HEALTH]+ traceEnt->client->ps.stats[STAT_ARMOR]-damage < 1 )
 					{//electrocution effect
 						traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
-					}					
-					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Jedi_Decloak( traceEnt );
-						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}			
-					if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Sphereshield_Off( traceEnt );
-						traceEnt->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
-					}		
+					}						
 		
 				}
 		}
@@ -2831,9 +2853,20 @@ void Orbitalstrike_Fire( gentity_t *self )
 				}
 		}
 
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) || traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
 				{
-					damage = 0;
+					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
+					{
+						
+					}
+					else
+					{
+					damage = 0;						
+					}
+				}
+				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				{
+					damage = 0;						
 				}
 
 	//			if (modPowerLevel != -1)
@@ -2844,7 +2877,7 @@ void Orbitalstrike_Fire( gentity_t *self )
 
 				}
 				//[ForceSys]
-	//			saberBlocked = OJP_BlockLightning(self, traceEnt, impactPoint, dmg);
+	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
 				if (damage //&& !saberBlocked
 				)
@@ -2895,18 +2928,7 @@ void Orbitalstrike_Fire( gentity_t *self )
 					}
 					//[ForceSys]
 					//don't do the electrical effect unless we didn't block with the saber.
-					if ( traceEnt->client->ps.powerups[PW_CLOAKED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Jedi_Decloak( traceEnt );
-						traceEnt->client->cloakToggleTime = level.time + Q_irand( 3000, 10000 );
-					}		
-					if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] //&& !saberBlocked
-					)
-					{//disable cloak temporarily
-						Sphereshield_Off( traceEnt );
-						traceEnt->client->sphereshieldToggleTime = level.time + Q_irand( 3000, 10000 );
-					}			
+			
 		
 				}
 		}
@@ -3100,7 +3122,7 @@ void ItemUse_SquadTeam(gentity_t *ent)
 	{
 gentity_t *SquadTeam3 = ent->client->SquadTeam3;	
 
-	if(!SquadTeam3 || !SquadTeam3->inuse || !SquadTeam3->client || SquadTeam3->activator != ent)
+	if(!SquadTeam3 || !SquadTeam3->inuse || !SquadTeam3->client || (!SquadTeam3->originalactivator))
 	{
 		if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_1)
 			{
@@ -3137,8 +3159,8 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			}
 		if ( SquadTeam3 && SquadTeam3->client )
 		{//set it to my team
-			SquadTeam3->s.owner = SquadTeam3->r.ownerNum = ent->s.number;
-			SquadTeam3->activator = ent;
+			SquadTeam3->s.owner = SquadTeam3->r.ownerNum = ent->s.number;	
+			SquadTeam3->originalactivator = ent;
 			//SquadTeam3->NPC->goalEntity is being cleared after we spawn
 			SquadTeam3->NPC->goalEntity = SquadTeam3->client->leader = ent;
 			SquadTeam3->NPC->behaviorState = BS_FOLLOW_LEADER;
@@ -3283,7 +3305,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 	{
 		gentity_t *SquadTeam2 = ent->client->SquadTeam2;	
 
-	if(!SquadTeam2 || !SquadTeam2->inuse || !SquadTeam2->client || SquadTeam2->activator != ent)
+	if(!SquadTeam2 || !SquadTeam2->inuse || !SquadTeam2->client || ( !SquadTeam2->originalactivator))
 	{
 		if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_1)
 			{
@@ -3320,7 +3342,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		if ( SquadTeam2 && SquadTeam2->client )
 		{//set it to my team
 			SquadTeam2->s.owner = SquadTeam2->r.ownerNum = ent->s.number;
-			SquadTeam2->activator = ent;
+			SquadTeam2->originalactivator = ent;
 			//SquadTeam2->NPC->goalEntity is being cleared after we spawn
 			SquadTeam2->NPC->goalEntity = SquadTeam2->client->leader = ent;
 			SquadTeam2->NPC->behaviorState = BS_FOLLOW_LEADER;
@@ -3457,7 +3479,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 	}
 	gentity_t *SquadTeam = ent->client->SquadTeam;	
 
-	if(!SquadTeam || !SquadTeam->inuse || !SquadTeam->client || SquadTeam->activator != ent)
+	if(!SquadTeam || !SquadTeam->inuse || !SquadTeam->client || (!SquadTeam->originalactivator))
 	{
 		if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_1)
 			{
@@ -3493,8 +3515,8 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			}
 		if ( SquadTeam && SquadTeam->client )
 		{//set it to my team
-			SquadTeam->s.owner = SquadTeam->r.ownerNum = ent->s.number;
-			SquadTeam->activator = ent;			
+			SquadTeam->s.owner = SquadTeam->r.ownerNum = ent->s.number;	
+			SquadTeam->originalactivator = ent;
 			//SquadTeam->NPC->goalEntity is being cleared after we spawn
 			SquadTeam->NPC->goalEntity = SquadTeam->client->leader = ent;
 			SquadTeam->NPC->behaviorState = BS_FOLLOW_LEADER;

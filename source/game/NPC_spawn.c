@@ -825,7 +825,7 @@ void NPC_SetMiscDefaultData( gentity_t *ent )
 
 
 	if ( (ent->client->NPC_class == CLASS_SEEKER || ent->client->NPC_class == CLASS_SQUADTEAM )
-		&& ent->activator )
+		&& ent->originalactivator )
 	{//assume my teams are already set correctly
 	}
 	else
@@ -1466,9 +1466,9 @@ void NPC_Begin (gentity_t *ent)
 	if ( ent->s.m_iVehicleNum )
 	{//I'm an NPC in a vehicle (or a vehicle), I already have owner set
 	}
-	else if ( (client->NPC_class == CLASS_SEEKER || client->NPC_class == CLASS_SQUADTEAM ) && ent->activator != NULL )
+	else if ( (client->NPC_class == CLASS_SEEKER || client->NPC_class == CLASS_SQUADTEAM ) && ent->originalactivator != NULL )
 	{//somebody else "owns" me
-		ent->s.owner = ent->r.ownerNum = ent->activator->s.number;
+		ent->s.owner = ent->r.ownerNum = ent->originalactivator->s.number;
 	}
 	else
 	{

@@ -89,6 +89,9 @@ extern void AIMod_Jump ( bot_state_t *bs );
 #ifndef MAX_STASIS_DISTANCE
 #define MAX_STASIS_DISTANCE 512
 #endif
+#ifndef MAX_BLINDING_DISTANCE
+#define MAX_BLINDING_DISTANCE 512
+#endif
 //Guts of the HYBRID Bot's AI - Based on TAB adapted for the project.
 void HYBRID_StandardBotAI(bot_state_t *bs, float thinktime)
 {
@@ -677,8 +680,7 @@ void HYBRID_StandardBotAI(bot_state_t *bs, float thinktime)
 		else
 		*/
 		//[/NewGameTypes][EnhancedImpliment]
-		if(bs->cur_ps.fd.forceSide == FORCE_LIGHTSIDE || bs->cur_ps.fd.forceSide == FORCE_DARKSIDE)
-		{
+
 			//do this above all things
 			if ((bs->cur_ps.fd.forcePowersKnown & (1 << FP_PUSH)) && (bs->doForcePush > level.time || bs->cur_ps.fd.forceGripBeingGripped > level.time) && level.clients[bs->client].ps.fd.forcePower > forcePowerNeeded[level.clients[bs->client].ps.fd.forcePowerLevel[FP_PUSH]][FP_PUSH] /*&& InFieldOfVision(bs->viewangles, 50, a_fo)*/)
 			{
@@ -775,7 +777,7 @@ void HYBRID_StandardBotAI(bot_state_t *bs, float thinktime)
 
 
 				
-		}
+		
 
 		if (!UsetheForce)
 		{ //try neutral powers

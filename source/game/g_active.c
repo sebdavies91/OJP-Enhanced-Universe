@@ -4521,7 +4521,7 @@ void ClientThink_real( gentity_t *ent ) {
 		case GENCMD_FORCE_HEAL:
 			if (ent->client->skillLevel[SK_HEALA] == FORCE_LEVEL_2)
 			{
-			ForceMidichlorian( ent );
+			ForceRegeneration( ent );
 			}
 			else
 			{
@@ -4564,7 +4564,7 @@ void ClientThink_real( gentity_t *ent ) {
 		case GENCMD_FORCE_RAGE:
 			if (ent->client->skillLevel[SK_RAGEA] == FORCE_LEVEL_2)
 			{
-			ForceExtreme( ent );
+			ForceValor( ent );
 			}
 			else
 			{
@@ -4574,7 +4574,7 @@ void ClientThink_real( gentity_t *ent ) {
 		case GENCMD_FORCE_PROTECT:
 			if (ent->client->skillLevel[SK_PROTECTA] == FORCE_LEVEL_2)
 			{
-			ForceBarrier(ent);
+			ForceDeathfield(ent);
 			}
 			else
 			{
@@ -4584,7 +4584,7 @@ void ClientThink_real( gentity_t *ent ) {
 		case GENCMD_FORCE_ABSORB:
 			if (ent->client->skillLevel[SK_ABSORBA] == FORCE_LEVEL_2)
 			{
-			ForceDissipate(ent);
+			ForceDeathsight(ent);
 			}
 			else
 			{
@@ -4594,18 +4594,18 @@ void ClientThink_real( gentity_t *ent ) {
 		case GENCMD_FORCE_HEALOTHER:
 			if (ent->client->skillLevel[SK_STASISA] == FORCE_LEVEL_2)
 			{
-			ForceDeathSight(ent);
+			ForceInsanity(ent);
 			}
 			else
 			{
-			ForceFreeze(ent);
+			ForceStasis(ent);
 			}
 
 			break;
 		case GENCMD_FORCE_FORCEPOWEROTHER:
 			if (ent->client->skillLevel[SK_DESTRUCTIONA] == FORCE_LEVEL_2)
 			{
-			ForceBurst(ent);
+			ForceBlinding(ent);
 			}
 			else
 			{

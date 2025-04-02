@@ -2464,6 +2464,7 @@ typedef enum {
 	, FLAG_RAGE2
 	, FLAG_PUSH2
 	, FLAG_PULL2
+	, FLAG_DESTRUCTION2
 	//[/DodgeSys]
 } userInt3Flags_t;
 

@@ -1743,21 +1743,22 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	
 	//Must not be me
 	if ( enemy->client && enemy->client->ps.powerups[PW_CLOAKED] )
-			{	if( enemy->client->skillLevel[SK_CLOAK] == FORCE_LEVEL_3)
-				{
-				return qfalse;
-				}
-				else
-				{	
+			{	
 				if(!(enemy->client->ps.eFlags & EF_FIRING) && !(enemy->client->ps.eFlags & EF_ALT_FIRING))
 				{
 				return qfalse;
 				}
-				}
 			}	
 
 
-
+	//Must not be me
+	if ( enemy->client && self->client->blindingTime > level.time )
+			{					
+				if(!(enemy->client->ps.eFlags & EF_FIRING) && !(enemy->client->ps.eFlags & EF_ALT_FIRING))
+				{
+				return qfalse;
+				}
+			}
 
 	//Must not be deleted
 	if ( enemy->inuse == qfalse )
@@ -1773,104 +1774,115 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	
 	
 	
-	if(self->NPC && self->NPC->charmedTime > level.time)
+	if(self->NPC && enemy->client && self->NPC->charmedTime > level.time)
 	{
-					
-		if ( self->activator == enemy)
-			{
-			return qfalse;
-			}
-		if (enemy->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
-			{
-			return qfalse;
-			}
-		if (enemy->activator)
+		if ( self->corruptionactivator)
 		{
-		if (enemy->activator == self->activator)
+		if ( self->corruptionactivator == enemy)
 			{
 			return qfalse;
 			}
-		if (enemy->activator->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
+		if ((g_gametype.integer != GT_POWERDUEL && enemy->client->sess.sessionTeam == self->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->client->sess.duelTeam == self->corruptionactivator->client->sess.duelTeam) )
+			{
+			return qfalse;
+			}
+		if (enemy->corruptionactivator)
+		{
+		if (enemy->corruptionactivator == self->corruptionactivator)
+			{
+			return qfalse;
+			}
+		if ((g_gametype.integer != GT_POWERDUEL && enemy->corruptionactivator->client->sess.sessionTeam == self->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->corruptionactivator->client->sess.duelTeam == self->corruptionactivator->client->sess.duelTeam) )
 			{
 			return qfalse;
 			}
 		}
 			return qtrue;
+		}
 	}
-	if(enemy->NPC && enemy->NPC->charmedTime > level.time)
+	if(enemy->NPC && self->client && enemy->NPC->charmedTime > level.time)
 	{
-		if ( enemy->activator == self)
+		if ( enemy->corruptionactivator)
+		{
+		if ( enemy->corruptionactivator == self)
 			{
 			return qfalse;
 			}
-//		if (self->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
+//		if ((g_gametype.integer != GT_POWERDUEL && self->client->sess.sessionTeam == enemy->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->client->sess.duelTeam == enemy->corruptionactivator->client->sess.duelTeam) )
 //			{
 //			return qfalse;
 //			}
-		if (self->activator)
+		if (self->corruptionactivator)
 		{
-		if (self->activator == enemy->activator)
+		if (self->corruptionactivator == enemy->corruptionactivator)
 			{
 			return qfalse;
 			}
-//		if (self->activator->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
+//		if ((g_gametype.integer != GT_POWERDUEL && self->corruptionactivator->client->sess.sessionTeam == enemy->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->corruptionactivator->client->sess.duelTeam == enemy->corruptionactivator->client->sess.duelTeam) )
 //			{
 //			return qfalse;
 //			}
 		}
 			return qtrue;	
+		}
 	}
 
 	
 	
 	if(self->client && enemy->client && (self->client->NPC_class == CLASS_SEEKER || self->client->NPC_class == CLASS_SQUADTEAM))
 	{
-					
-		if ( self->activator == enemy)
+		if ( self->originalactivator)
+		{					
+		if ( self->originalactivator == enemy)
 			{
 			return qfalse;
 			}
-		if (enemy->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
+		if ((g_gametype.integer != GT_POWERDUEL && enemy->client->sess.sessionTeam == self->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->client->sess.duelTeam == self->originalactivator->client->sess.duelTeam) )
 			{
 			return qfalse;
 			}
-		if (enemy->activator)
+		if (enemy->originalactivator)
 		{
-		if (enemy->activator == self->activator)
+		if (enemy->originalactivator == self->originalactivator)
 			{
 			return qfalse;
 			}
-		if (enemy->activator->client->sess.sessionTeam == self->activator->client->sess.sessionTeam)
+		if ((g_gametype.integer != GT_POWERDUEL && enemy->originalactivator->client->sess.sessionTeam == self->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->originalactivator->client->sess.duelTeam == self->originalactivator->client->sess.duelTeam))
 			{
 			return qfalse;
 			}
 		}
 
+		}
+			return qtrue;	
 	}
 	
 	if( self->client && enemy->client && (enemy->client->NPC_class == CLASS_SEEKER || enemy->client->NPC_class == CLASS_SQUADTEAM))
 	{
-					
-		if ( enemy->activator == self)
+		if ( enemy->originalactivator)
+		{					
+		if ( enemy->originalactivator == self)
 			{
 			return qfalse;
 			}
-		if (self->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
+		if ((g_gametype.integer != GT_POWERDUEL && self->client->sess.sessionTeam == enemy->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->client->sess.duelTeam == enemy->originalactivator->client->sess.duelTeam) )
 			{
 			return qfalse;
 			}
-		if (self->activator)
+		if (self->originalactivator)
 		{
-		if (self->activator == enemy->activator)
+		if (self->originalactivator == enemy->originalactivator)
 			{
 			return qfalse;
 			}
-		if (self->activator->client->sess.sessionTeam == enemy->activator->client->sess.sessionTeam)
+		if ((g_gametype.integer != GT_POWERDUEL && self->originalactivator->client->sess.sessionTeam == enemy->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->originalactivator->client->sess.duelTeam == enemy->originalactivator->client->sess.duelTeam) )
 			{
 			return qfalse;
 			}
 		}
 
+		}
+			return qtrue;	
 	}
 	//[/SeekerItemNpc]
 

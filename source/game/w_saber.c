@@ -242,8 +242,7 @@ int BasicDodgeCosts[MOD_MAX] =
 	50,		//MOD_FREEZER_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	50,		//MOD_ION_EXPLOSION,	//death by player's seeker droid.	
 	50,		//MOD_ION_EXPLOSION_SPLASH,	//death by player's seeker droid.
-	100,		//MOD_FORCE_DESTRUCTION,	//death by player's seeker droid.	
-	100,		//MOD_FORCE_BURST,	//death by player's seeker droid.
+	-1,		//MOD_FORCE_DESTRUCTION,	//death by player's seeker droid.	
 	//[/SeekerItemNPC]
 	//MOD_MAX
 };
@@ -892,7 +891,7 @@ GAME_INLINE qboolean G_CheckLookTarget( gentity_t *ent, vec3_t	lookAngles, float
 			gentity_t	*lookCent = &g_entities[ent->client->renderInfo.lookTarget];
 			if ( lookCent )
 			{
-				if ( lookCent->client->ps.powerups[PW_CLOAKED] )
+				if (lookCent->client && lookCent->client->ps.powerups[PW_CLOAKED] )
 					return qfalse;  					 
 				
 				if ( lookCent != ent->enemy )
@@ -3995,8 +3994,7 @@ int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, 
 			atk->methodOfDeath == MOD_CONC ||
 			atk->methodOfDeath == MOD_CONC_ALT ||
 			atk->methodOfDeath == MOD_BRYAR_PISTOL_ALT ||
-			atk->methodOfDeath == MOD_FORCE_DESTRUCTION ||
-			atk->methodOfDeath == MOD_FORCE_BURST) )
+			atk->methodOfDeath == MOD_FORCE_DESTRUCTION) )
 	{//can't block this stuff with a saber
 		return 0;
 	}

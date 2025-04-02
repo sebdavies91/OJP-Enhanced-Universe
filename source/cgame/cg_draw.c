@@ -8434,6 +8434,10 @@ int cgYsalTime = 0;
 int cgYsalFadeTime = 0;
 float cgYsalFadeVal = 0;
 
+int cgBlindingTime = 0;
+int cgBlindingFadeTime = 0;
+float cgBlindingFadeVal = 0;
+
 qboolean gCGHasFallVector = qfalse;
 vec3_t gCGFallVector;
 
@@ -8804,7 +8808,7 @@ void CGCam_DoFade(void);
 //[/CoOp]
 static void CG_Draw2DScreenTints( void )
 {
-	float			rageTime, rageRecTime, absorbTime, protectTime, ysalTime;
+	float			rageTime, rageRecTime, absorbTime, protectTime, blindingTime , ysalTime;
 	vec4_t			hcolor;
 
 	//[CoOp]
@@ -8816,6 +8820,41 @@ static void CG_Draw2DScreenTints( void )
 	{
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_RAGE))
 		{
+			if(cg.snap->ps.userInt3 & (1 << FLAG_RAGE2))
+			{
+			if (!cgRageTime)
+			{
+				cgRageTime = cg.time;
+			}
+			
+			rageTime = (float)(cg.time - cgRageTime);
+			
+			rageTime /= 9000;
+			
+			if (rageTime < 0)
+			{
+				rageTime = 0;
+			}
+			if (rageTime > 0.15)
+			{
+				rageTime = 0.15;
+			}
+			
+			hcolor[3] = rageTime;
+			hcolor[0] = 0;
+			hcolor[1] = 0.7;
+			hcolor[2] = 0.7;
+			
+			if (!cg.renderingThirdPerson)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			
+			cgRageFadeTime = 0;
+			cgRageFadeVal = 0;				
+			}
+			else
+			{
 			if (!cgRageTime)
 			{
 				cgRageTime = cg.time;
@@ -8845,9 +8884,80 @@ static void CG_Draw2DScreenTints( void )
 			}
 			
 			cgRageFadeTime = 0;
-			cgRageFadeVal = 0;
+			cgRageFadeVal = 0;				
+			}
 		}
 		else if (cgRageTime)
+		{
+		if (cg.snap->ps.userInt3 & (1 << FLAG_RAGE2))
+		{
+			if (!cgRageFadeTime)
+			{
+				cgRageFadeTime = cg.time;
+				cgRageFadeVal = 0.15;
+			}
+			
+			rageTime = cgRageFadeVal;
+			
+			cgRageFadeVal -= (cg.time - cgRageFadeTime)*0.000005;
+			
+			if (rageTime < 0)
+			{
+				rageTime = 0;
+			}
+			if (rageTime > 0.15)
+			{
+				rageTime = 0.15;
+			}
+			
+			if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+			{
+				float checkRageRecTime = rageTime;
+				
+				if (checkRageRecTime < 0.15)
+				{
+					checkRageRecTime = 0.15;
+				}
+				
+				hcolor[3] = checkRageRecTime;
+				hcolor[0] = 0.2;
+				hcolor[1] = checkRageRecTime;
+				hcolor[2] = checkRageRecTime;
+				if (hcolor[1] < 0.2)
+				{
+					hcolor[1] = 0.2;
+				}
+				if (hcolor[2] < 0.2)
+				{
+					hcolor[2] = 0.2;
+				}
+			}
+			else
+			{
+				hcolor[3] = rageTime;
+				hcolor[0] = 0;
+				hcolor[1] = 0.7;
+				hcolor[2] = 0.7;
+			}
+			
+			if (!cg.renderingThirdPerson && rageTime)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			else
+			{
+				if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+				{
+					hcolor[3] = 0.15;
+					hcolor[0] = 0.2;
+					hcolor[1] = 0.2;
+					hcolor[2] = 0.2;
+					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+				}
+				cgRageTime = 0;
+			}			
+		}
+		else
 		{
 			if (!cgRageFadeTime)
 			{
@@ -8909,9 +9019,12 @@ static void CG_Draw2DScreenTints( void )
 					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
 				}
 				cgRageTime = 0;
-			}
+			}			
+		}
 		}
 		else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
+		{
+		if (cg.snap->ps.userInt3 & (1 << FLAG_RAGE2))
 		{
 			if (!cgRageRecTime)
 			{
@@ -8942,9 +9055,45 @@ static void CG_Draw2DScreenTints( void )
 			}
 			
 			cgRageRecFadeTime = 0;
-			cgRageRecFadeVal = 0;
+			cgRageRecFadeVal = 0;			
+		}
+		else
+		{
+			if (!cgRageRecTime)
+			{
+				cgRageRecTime = cg.time;
+			}
+			
+			rageRecTime = (float)(cg.time - cgRageRecTime);
+			
+			rageRecTime /= 9000;
+			
+			if (rageRecTime < 0.15)//0)
+			{
+				rageRecTime = 0.15;//0;
+			}
+			if (rageRecTime > 0.15)
+			{
+				rageRecTime = 0.15;
+			}
+			
+			hcolor[3] = rageRecTime;
+			hcolor[0] = 0.2;
+			hcolor[1] = 0.2;
+			hcolor[2] = 0.2;
+			
+			if (!cg.renderingThirdPerson)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			
+			cgRageRecFadeTime = 0;
+			cgRageRecFadeVal = 0;			
+		}
 		}
 		else if (cgRageRecTime)
+		{
+		if (cg.snap->ps.userInt3 & (1 << FLAG_RAGE2))
 		{
 			if (!cgRageRecFadeTime)
 			{
@@ -8977,11 +9126,82 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgRageRecTime = 0;
+			}			
+		}
+		else
+		{
+			if (!cgRageRecFadeTime)
+			{
+				cgRageRecFadeTime = cg.time;
+				cgRageRecFadeVal = 0.15;
 			}
+			
+			rageRecTime = cgRageRecFadeVal;
+			
+			cgRageRecFadeVal -= (cg.time - cgRageRecFadeTime)*0.000005;
+			
+			if (rageRecTime < 0)
+			{
+				rageRecTime = 0;
+			}
+			if (rageRecTime > 0.15)
+			{
+				rageRecTime = 0.15;
+			}
+			
+			hcolor[3] = rageRecTime;
+			hcolor[0] = 0.2;
+			hcolor[1] = 0.2;
+			hcolor[2] = 0.2;
+			
+			if (!cg.renderingThirdPerson && rageRecTime)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			else
+			{
+				cgRageRecTime = 0;
+			}			
+		}
 		}
 		
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_ABSORB))
 		{
+			if(cg.snap->ps.userInt3 & (1 << FLAG_ABSORB2))
+			{
+			if (!cgAbsorbTime)
+			{
+				cgAbsorbTime = cg.time;
+			}
+			
+			absorbTime = (float)(cg.time - cgAbsorbTime);
+			
+			absorbTime /= 9000;
+			
+			if (absorbTime < 0)
+			{
+				absorbTime = 0;
+			}
+			if (absorbTime > 0.15)
+			{
+				absorbTime = 0.15;
+			}
+			
+			hcolor[3] = absorbTime/2;
+			hcolor[0] = 0.7;
+			hcolor[1] = 0.35;
+			hcolor[2] = 0;
+			
+			if (!cg.renderingThirdPerson)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			
+			cgAbsorbFadeTime = 0;
+			cgAbsorbFadeVal = 0;				
+			}
+			else
+			{
 			if (!cgAbsorbTime)
 			{
 				cgAbsorbTime = cg.time;
@@ -9011,10 +9231,48 @@ static void CG_Draw2DScreenTints( void )
 			}
 			
 			cgAbsorbFadeTime = 0;
-			cgAbsorbFadeVal = 0;
+			cgAbsorbFadeVal = 0;				
+			}
 		}
 		else if (cgAbsorbTime)
 		{
+			if(cg.snap->ps.userInt3 & (1 << FLAG_ABSORB2))
+			{
+			if (!cgAbsorbFadeTime)
+			{
+				cgAbsorbFadeTime = cg.time;
+				cgAbsorbFadeVal = 0.15;
+			}
+			
+			absorbTime = cgAbsorbFadeVal;
+			
+			cgAbsorbFadeVal -= (cg.time - cgAbsorbFadeTime)*0.000005;
+			
+			if (absorbTime < 0)
+			{
+				absorbTime = 0;
+			}
+			if (absorbTime > 0.15)
+			{
+				absorbTime = 0.15;
+			}
+			
+			hcolor[3] = absorbTime/2;
+			hcolor[0] = 0.7;
+			hcolor[1] = 0.35;
+			hcolor[2] = 0;
+			
+			if (!cg.renderingThirdPerson && absorbTime)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			else
+			{
+				cgAbsorbTime = 0;
+			}				
+			}
+			else
+			{
 			if (!cgAbsorbFadeTime)
 			{
 				cgAbsorbFadeTime = cg.time;
@@ -9046,11 +9304,47 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgAbsorbTime = 0;
+			}				
 			}
 		}
 		
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_PROTECT))
 		{
+			if(cg.snap->ps.userInt3 & (1 << FLAG_PROTECT2))
+			{
+			if (!cgProtectTime)
+			{
+				cgProtectTime = cg.time;
+			}
+			
+			protectTime = (float)(cg.time - cgProtectTime);
+			
+			protectTime /= 9000;
+			
+			if (protectTime < 0)
+			{
+				protectTime = 0;
+			}
+			if (protectTime > 0.15)
+			{
+				protectTime = 0.15;
+			}
+			
+			hcolor[3] = protectTime/2;
+			hcolor[0] = 0.35;
+			hcolor[1] = 0;
+			hcolor[2] = 0.7;
+			
+			if (!cg.renderingThirdPerson)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			
+			cgProtectFadeTime = 0;
+			cgProtectFadeVal = 0;				
+			}
+			else
+			{
 			if (!cgProtectTime)
 			{
 				cgProtectTime = cg.time;
@@ -9080,10 +9374,48 @@ static void CG_Draw2DScreenTints( void )
 			}
 			
 			cgProtectFadeTime = 0;
-			cgProtectFadeVal = 0;
+			cgProtectFadeVal = 0;				
+			}
 		}
 		else if (cgProtectTime)
 		{
+			if(cg.snap->ps.userInt3 & (1 << FLAG_PROTECT2))
+			{
+			if (!cgProtectFadeTime)
+			{
+				cgProtectFadeTime = cg.time;
+				cgProtectFadeVal = 0.15;
+			}
+			
+			protectTime = cgProtectFadeVal;
+			
+			cgProtectFadeVal -= (cg.time - cgProtectFadeTime)*0.000005;
+			
+			if (protectTime < 0)
+			{
+				protectTime = 0;
+			}
+			if (protectTime > 0.15)
+			{
+				protectTime = 0.15;
+			}
+			
+			hcolor[3] = protectTime/2;
+			hcolor[0] = 0.35;
+			hcolor[1] = 0;
+			hcolor[2] = 0.7;
+			
+			if (!cg.renderingThirdPerson && protectTime)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			else
+			{
+				cgProtectTime = 0;
+			}				
+			}
+			else
+			{
 			if (!cgProtectFadeTime)
 			{
 				cgProtectFadeTime = cg.time;
@@ -9115,9 +9447,104 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgProtectTime = 0;
+			}						
 			}
 		}
-		
+		if(cg_entities[cg.snap->ps.clientNum].teamPowerEffectTime > cg.time && cg_entities[cg.snap->ps.clientNum].teamPowerType == 8)
+		{
+			
+			blindingTime = (float)(cg.time - cgBlindingTime);
+			
+			blindingTime /= 9000;
+			
+			if (blindingTime < 0)
+			{
+				blindingTime = 0;
+			}
+			if (blindingTime > 0.15)
+			{
+				blindingTime = 0.15;
+			}
+			
+			hcolor[3] = 1.0;
+			hcolor[0] = 1.0;
+			hcolor[1] = 1.0;
+			hcolor[2] = 1.0;
+			
+
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+
+			
+			cgBlindingFadeTime = 0;
+			cgBlindingFadeVal = 0;				
+			
+			if (!cgBlindingTime)
+			{
+				cgBlindingTime = cg.time;
+			}
+			
+			blindingTime = (float)(cg.time - cgBlindingTime);
+			
+			blindingTime /= 9000;
+			
+			if (blindingTime < 0)
+			{
+				blindingTime = 0;
+			}
+			if (blindingTime > 0.15)
+			{
+				blindingTime = 0.15;
+			}
+			
+			hcolor[3] = 1.0;
+			hcolor[0] = 1.0;
+			hcolor[1] = 1.0;
+			hcolor[2] = 1.0;
+			
+
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+
+			
+			cgBlindingFadeTime = 0;
+			cgBlindingFadeVal = 0;				
+			
+		}
+		else if (cgBlindingTime)
+		{
+			if (!cgBlindingFadeTime)
+			{
+				cgBlindingFadeTime = cg.time;
+				cgBlindingFadeVal = 0.15;
+			}
+			
+			blindingTime = cgBlindingFadeVal;
+			
+			cgBlindingFadeVal -= (cg.time - cgBlindingFadeTime)*0.000005;
+			
+			if (blindingTime < 0)
+			{
+				blindingTime = 0;
+			}
+			if (blindingTime > 0.15)
+			{
+				blindingTime = 0.15;
+			}
+			
+			hcolor[3] = 1.0;
+			hcolor[0] = 1.0;
+			hcolor[1] = 1.0;
+			hcolor[2] = 1.0;
+			
+			if ( blindingTime)
+			{
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+			}
+			else
+			{
+				cgBlindingTime = 0;
+			}						
+			
+		}
 		if (cg.snap->ps.rocketLockIndex != ENTITYNUM_NONE && (cg.time - cg.snap->ps.rocketLockTime) > 0)
 		{
 			CG_DrawRocketLocking( cg.snap->ps.rocketLockIndex, cg.snap->ps.rocketLockTime );
@@ -9255,6 +9682,10 @@ static void CG_Draw2D( void ) {
 		cgProtectFadeTime = 0;
 		cgProtectFadeVal = 0;
 
+		cgBlindingTime = 0;
+		cgBlindingFadeTime = 0;
+		cgBlindingFadeVal = 0;
+
 		cgYsalTime = 0;
 		cgYsalFadeTime = 0;
 		cgYsalFadeVal = 0;
@@ -9358,7 +9789,7 @@ static void CG_Draw2D( void ) {
 			{
 				drawSelect = 3;
 			}
-	if ((cg.delaySelectTime)<cg.time)	// Time is up for the HUD to display
+	if (cg.delaySelectTime <cg.time )	// Time is up for the HUD to display
 	{
 			switch(drawSelect)
 			{
@@ -9366,7 +9797,10 @@ static void CG_Draw2D( void ) {
 				CG_DrawInvenSelect();
 				break;
 			case 2:
+				if (cg.snap->ps.weaponTime <=0)
+				{
 				CG_DrawWeaponSelect();
+				}
 				break;
 			case 3:
 				CG_DrawForceSelect();
