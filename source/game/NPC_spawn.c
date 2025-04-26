@@ -434,103 +434,388 @@ void NPC_SetMiscDefaultData( gentity_t *ent )
 		WP_InitForcePowers( ent );
 		WP_SpawnInitForcePowers(ent); //rww
 	}
+	
+	
+	
+		if(ent->client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_3 && ent->client->ps.weapon == WP_BRYAR_PISTOL)
+		{
+			ent->client->ps.eFlags |= EF_DUAL_WEAPONS;
+		}
+		if(ent->client->skillLevel[SK_OLD] >= FORCE_LEVEL_3 && ent->client->ps.weapon == WP_BRYAR_OLD)
+		{
+			ent->client->ps.eFlags |= EF_DUAL_WEAPONS;
+		}
+		if(ent->client->skillLevel[SK_WRIST] >= FORCE_LEVEL_3 && ent->client->ps.weapon == WP_STUN_BATON)
+		{
+			ent->client->ps.eFlags |= EF_DUAL_WEAPONS;
+		}
+		
+		
+		
+		
+		if(ent->client->skillLevel[SK_WRIST] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_STUN_BATON)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}		
+		if(ent->client->skillLevel[SK_PISTOL] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_BRYAR_PISTOL)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_BLASTER] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_BLASTER)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_DISRUPTOR] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_DISRUPTOR)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_REPEATER] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_REPEATER)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_DEMP2] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_DEMP2)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_FLECHETTE] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_FLECHETTE)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_CONCUSSION] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_CONCUSSION)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_ROCKET] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_ROCKET_LAUNCHER)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_THERMAL] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_THERMAL)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}			
+		if(ent->client->skillLevel[SK_TRIPMINE] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_TRIP_MINE)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		if(ent->client->skillLevel[SK_OLD] < FORCE_LEVEL_2 && ent->client->ps.weapon == WP_BRYAR_OLD)
+		{
+			ent->client->ps.eFlags2 |= EF2_NOALTFIRE;
+		}	
+		
+		
+		if(ent->client->skillLevel[SK_WRIST] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_WRISTA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_STUN_BATON)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_WRIST] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_WRISTA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_STUN_BATON)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_WRIST] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_WRISTB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_STUN_BATON)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+		
+		
+		if(ent->client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_PISTOLA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_BRYAR_PISTOL)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_PISTOLA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_BRYAR_PISTOL)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_PISTOLB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_BRYAR_PISTOL)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+		
+		
+		
 
-	//[ExpSys] 
-	//initialize skill levels since the NPCs kick out of InitForcePowers early.
-	for(i=0; i < NUM_SKILLS; i++)
-	{
-		ent->client->skillLevel[i] = 0;
-	}
+		if(ent->client->skillLevel[SK_BLASTER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_BLASTERA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_BLASTER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_BLASTER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_BLASTERA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_BLASTER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_BLASTER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_BLASTERB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_BLASTER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
 
-	//allocate the NPC's skills based on their weapon selection
-	if(ent->client->ps.weapon == WP_STUN_BATON)
+		
+
+
+		if(ent->client->skillLevel[SK_DISRUPTOR] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DISRUPTORA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_DISRUPTOR)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_DISRUPTOR] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DISRUPTORA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_DISRUPTOR)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_DISRUPTOR] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DISRUPTORB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_DISRUPTOR)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+
+
+		
+		
+		if(ent->client->skillLevel[SK_BOWCASTER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_BOWCASTERA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_BOWCASTER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_BOWCASTER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_BOWCASTERA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_BOWCASTER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_BOWCASTER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_BOWCASTERB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_BOWCASTER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+
+
+		
+
+		if(ent->client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_REPEATERA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_REPEATER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_REPEATERA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_REPEATER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_REPEATERB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_REPEATER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}		
+		
+	
+	
+	
+	
+		if(ent->client->skillLevel[SK_DEMP2] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DEMP2A] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_DEMP2)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_DEMP2] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DEMP2A] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_DEMP2)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_DEMP2] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DEMP2B] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_DEMP2)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+		
+		
+
+
+		if(ent->client->skillLevel[SK_FLECHETTE] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_FLECHETTEA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_FLECHETTE)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_FLECHETTE] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_FLECHETTEA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_FLECHETTE)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_FLECHETTE] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_FLECHETTEB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_FLECHETTE)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+		
+
+
+
+		if(ent->client->skillLevel[SK_CONCUSSION] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_CONCUSSIONA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_CONCUSSION)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_CONCUSSION] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_CONCUSSIONA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_CONCUSSION)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_CONCUSSION] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_CONCUSSIONB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_CONCUSSION)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+		
+		
+
+		if(ent->client->skillLevel[SK_ROCKET] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_ROCKETA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_ROCKET_LAUNCHER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_ROCKET] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_ROCKETA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_ROCKET_LAUNCHER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_ROCKET] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_ROCKETB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_ROCKET_LAUNCHER)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+
+
+
+		if(ent->client->skillLevel[SK_THERMAL] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_THERMALA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_THERMAL)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_THERMAL] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_THERMALA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_THERMAL)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_THERMAL] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_THERMALB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_THERMAL)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}
+		
+		if(ent->client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_TRIPMINEA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_TRIP_MINE)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_TRIPMINEA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_TRIP_MINE)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_TRIPMINEB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_TRIP_MINE)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}		
+
+		if(ent->client->skillLevel[SK_DETPACK] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DETPACKA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_DET_PACK)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}
+		else if(ent->client->skillLevel[SK_DETPACK] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DETPACKA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_DET_PACK)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}
+		else if(ent->client->skillLevel[SK_DETPACK] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_DETPACKB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_DET_PACK)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}	
+
+		
+		if(ent->client->skillLevel[SK_OLD] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_OLDA] == FORCE_LEVEL_2 && ent->client->ps.weapon == WP_BRYAR_OLD)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_2;
+		}					
+		else if(ent->client->skillLevel[SK_OLD] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_OLDA] == FORCE_LEVEL_3 && ent->client->ps.weapon == WP_BRYAR_OLD)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_3;
+		}			
+		else if(ent->client->skillLevel[SK_OLD] >= FORCE_LEVEL_1 && ent->client->skillLevel[SK_OLDB] == FORCE_LEVEL_1 && ent->client->ps.weapon == WP_BRYAR_OLD)
+		{
+			ent->client->ps.eFlags |= EF_WP_OPTION_4;
+		}	
+
+
+	if (ent->client->ps.fd.forcePowerSelected == FP_PUSH && ent->client->skillLevel[SK_PUSHA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_PUSH] >= FORCE_LEVEL_1)
 	{
-		ent->client->skillLevel[SK_WRIST] = FORCE_LEVEL_2;
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
 	}
-	if(ent->client->ps.weapon == WP_BRYAR_PISTOL)
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_PULL && ent->client->skillLevel[SK_PULLA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_PULL] >= FORCE_LEVEL_1)
 	{
-		ent->client->skillLevel[SK_PISTOL] = FORCE_LEVEL_2;
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_HEAL && ent->client->skillLevel[SK_HEALA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_HEAL] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_PROTECT && ent->client->skillLevel[SK_PROTECTA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_PROTECT] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_ABSORB && ent->client->skillLevel[SK_ABSORBA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_ABSORB] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_TELEPATHY && ent->client->skillLevel[SK_TELEPATHYA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_TELEPATHY] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_TEAM_HEAL && ent->client->skillLevel[SK_STASISA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_TEAM_HEAL] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_GRIP && ent->client->skillLevel[SK_GRIPA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_GRIP] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_LIGHTNING && ent->client->skillLevel[SK_LIGHTNINGA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_LIGHTNING] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_DRAIN && ent->client->skillLevel[SK_DRAINA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_DRAIN] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_RAGE && ent->client->skillLevel[SK_RAGEA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_RAGE] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}
+	
+	if (ent->client->ps.fd.forcePowerSelected == FP_TEAM_FORCE && ent->client->skillLevel[SK_DESTRUCTIONA] == FORCE_LEVEL_2 && ent->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;
+	}		
+	
+		
+	if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_FLAMETHROWER) && ent->client->skillLevel[SK_FLAMETHROWERA] == FORCE_LEVEL_2 && ent->client->skillLevel[SK_FLAMETHROWER] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_FLAMETHROWER) && ent->client->skillLevel[SK_FLAMETHROWERA] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_FLAMETHROWER] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;	
+	}
+		
+	if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_ELECTROSHOCKER) && ent->client->skillLevel[SK_ELECTROSHOCKERA] == FORCE_LEVEL_2 && ent->client->skillLevel[SK_ELECTROSHOCKER] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_ELECTROSHOCKER) && ent->client->skillLevel[SK_ELECTROSHOCKERA] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_ELECTROSHOCKER] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;	
+	}		
+
+	if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_2 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_1 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_2 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_2;
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;	
+	}
+	else if(ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SQUADTEAM) && ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_3 && ent->client->skillLevel[SK_SQUADTEAM] >= FORCE_LEVEL_1)
+	{
+	ent->client->ps.eFlags |= EF_HI_OPTION_3;
+	ent->client->ps.eFlags |= EF_FP_OPTION_2;	
 	}	
-	if(ent->client->ps.weapon == WP_BLASTER)
-	{
-		ent->client->skillLevel[SK_BLASTER] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_DISRUPTOR)
-	{
-		ent->client->skillLevel[SK_DISRUPTOR] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_BOWCASTER)
-	{
-		ent->client->skillLevel[SK_BOWCASTER] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_REPEATER)
-	{
-		ent->client->skillLevel[SK_REPEATER] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_DEMP2)
-	{
-		ent->client->skillLevel[SK_DEMP2] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_FLECHETTE)
-	{
-		ent->client->skillLevel[SK_FLECHETTE] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_CONCUSSION)
-	{
-		ent->client->skillLevel[SK_CONCUSSION] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER)
-	{
-		ent->client->skillLevel[SK_ROCKET] = FORCE_LEVEL_2;
-	}
-
-	if(ent->client->ps.weapon == WP_THERMAL)
-	{
-		ent->client->skillLevel[SK_THERMAL] = FORCE_LEVEL_2;
-	}
-
-	if(ent->client->ps.weapon == WP_TRIP_MINE)
-	{
-		ent->client->skillLevel[SK_TRIPMINE] = FORCE_LEVEL_2;
-	}
-	if(ent->client->ps.weapon == WP_DET_PACK)
-	{
-		ent->client->skillLevel[SK_DETPACK] = FORCE_LEVEL_2;
-	}
-
-
-	if(ent->client->ps.weapon == WP_BRYAR_OLD)
-	{
-		ent->client->skillLevel[SK_OLD] = FORCE_LEVEL_2;
-	}
-
-
-	//[/ExpSys]
-
-	//[StanceSelection]
-	//add stance skills for NPCS
-	if(ent->client->ps.fd.forcePowerLevel[FP_SABER_OFFENSE] > 0)
-	{
-		int count;
-		//just bump all the NPC's other saber styles to their saber offense skill level
-		for(count = SK_BLUESTYLE; count <= SK_STAFFSTYLE; count++)
-		{
-			ent->client->skillLevel[count] = ent->client->ps.fd.forcePowerLevel[FP_SABER_OFFENSE];
-		}
-		/*
-		if(ent->client->saber[0].model[0] && ent->client->saber[1].model[0])
-		{
-			ent->client->skillLevel[SK_DUALSTYLE] = ent->client->ps.fd.forcePowerLevel[FP_SABER_OFFENSE];
-		}
-		else if (ent->client->saber[0].numBlades > 1
-			&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] ))
-		{
-			ent->client->skillLevel[SK_STAFFSTYLE] = ent->client->ps.fd.forcePowerLevel[FP_SABER_OFFENSE];
-		}
-		*/
-	}
-	//[/StanceSelection]
-
 	//[DodgeSys]
 	//determine DodgeMax since NPCs kick out of InitForcePowers early.
 	DetermineDodgeMax(ent);

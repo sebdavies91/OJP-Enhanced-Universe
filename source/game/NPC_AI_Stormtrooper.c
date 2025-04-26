@@ -189,11 +189,14 @@ enum
 
 static void ST_Speech( gentity_t *self, int speechType, float failChance )
 {//racc - do voice stuff
+	if (!self)
+	{
+		return;
+	}
 	if ( random() < failChance )
 	{
 		return;
 	}
-
 	if ( failChance >= 0 )
 	{//a negative failChance makes it always talk
 		if ( self->NPC->group )

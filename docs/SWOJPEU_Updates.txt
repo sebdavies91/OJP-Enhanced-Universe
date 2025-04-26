@@ -1,0 +1,1100 @@
+UPDATES
+
+Update 1 12/08/2020
+
+1)Replaced the DC-15S Blaster Carbine with the A280 Blaster Rifle since the former was too similar to the E-11 blaster rifle and the DC-15A Repeater Rifle and always felt a rebel rifle was always necessary.
+
+2)Changed Secondary Fire of the former to become the alternative to the E-11
+
+3)Repaired wookie bowcaster zoom to be available at all skill levels as previously done for all the pistols
+
+4)Added new character models such as bx droid, embo, bib fortuna, jedi hunter droid, scuba trooper, starkiller, 9th sister, jedi temple guard
+
+5)Balanced weapons a bit more (damage fire rate)
+
+6)Changed starting weapons in Jedimaster to match those of a clone trooper during order 66
+
+
+
+Update 2 15/08/2020
+
+1) Force Drain repaired now it will affect all npcs, not just the force user ones or the bots and will not push enemies like lightning anymore
+
+2)Balanced Coop missions by removing scripts since most missions perform better without them, they will be readded in the future
+
+3) New characters (Bo Katan, Luminara, Tarkin, Krennic, Thrawn, black trooper, flame trooper...)
+
+
+
+Update 3 22/08/2020
+
+1) Force Protect improved can now deflect more blaster depending on the level
+
+2)Force Absorb improved with level 2 better leveled
+
+3)Bacta Canister Health increased to 50 and to 100 in the case of the large one. Created a third level which gives you both so that gunners can better counter the force heal of force users
+
+4)Flamethrower now burns dead bodies in a similar way as lightning electrifies them and drain surrounds the body with red light
+
+4)Added missing JK2 assets
+
+5)Added missing textures of some maps
+
+
+
+Update 4 11/09/2020
+
+1)Added saberthrow for most saberstaffs like for Darth Maul in BF2
+
+2)Changed both the Westar and Dl44 pistols secondary fire with both now stunning instead of damaging, the dl44 having more fire rate with charging ability and the westar less fire rate with no charging.
+
+3)Repaired Baktoid Blaster/Rocket Gauntlet so that the glitch at the centre of the screen is not there anymore
+
+4)Repaired weapons projectile velocities
+
+5)Added very high playermodels, maps, npcs, shaders, vehicles and q3heads limits to improve the stability of the game with the game behaving well when playing against 32 players
+
+6)Added many saber models
+
+
+
+Update 5 02/10/2020
+
+1)Repaired all health, shields, force, dodge, fuel and battery bars with several levels ranging from 100 to 500 hp and sp for the health and shields (upgraded through abilities) or 0 to 250fp and dp for the force and dodge (upgraded through force sight) or 0 to 250 for the fuel and battery (upgraded through jetpack, flamethrower or cloak)
+
+2)Fixed saberthrow for the missing base saberstaffs
+
+3)Fixed gun bots classes. These are as follows depending on the faction (mercenary faction classes are mixed between these)
+
+Assault: E11 (Empire and Confederacy) or A280 (Rebellion and Republic)
+
+Support: Dc15 (Rebellion and Republic) or T21 (Empire and Confederacy)
+
+Officer: 1x dl 44 (Rebellion and Confederacy) or 1x Westar (Empire and Republic)
+
+Specialist: Bowcaster (Rebellion and Confederacy) or Disruptor (Empire and Republic)
+
+Enforcer: Wrist Gauntlet (Rebellion and Confederacy) or Concussion (Empire and Republic)
+
+Aerial: E11 and jetpack (4 previous factions) or 2x dl44 and jetpack (some mercenaries such as Jango Fett, bo Katan or Jaster Mereeel)
+
+Infiltrator: 2x dl 44 (All factions)
+
+Demolition: Rocket Launcher (All factions)
+
+4)Fixed some weapons damage and speed like for the concussion, rocket launcher or the grenades to be more competitive
+
+5)Removed other games limits
+
+
+
+Update 6 03/10/2020
+
+1)Fixed the Concussion for the Enforcer class
+
+2)Added 2x Westar pistols for the infiltrator (Republic and Empire)
+
+3)Fixed the bots list
+
+
+
+Update 7 18/10/2020
+
+1)Fixed Force Drain and at all levels with proper animations, effects and sound (no more lightning effects at low levels)
+
+2)Fixed Force Lightning with sound
+
+3)Fixed Force Grip Level 1 which was previously bugged
+
+4)Rescaled the damage and firerate of all weapons to achieve more balance
+
+5)Rescaled the force powers to achieve more balance
+
+
+
+Update 8 26/10/2020
+
+1)Added Dual handed flamethrower at level 3 (Shae Vizla style from SWTOR) as well as damage levels to the flamethrower
+
+2)Force drain can now be stopped by force absorb in a similar way to lightning with the hand and with the saber so that sith are not invincible
+
+3)Made the game completely limitless (now 4096 player heads, 256 vehicles, 1024 maps, 256 sp maps, 2048 demos and movies)
+
+4)Fixed many bugs in cooperative, now it will be rare for the game to crash
+
+
+
+Update 9 06/11/2020
+
+1)New Ability: Dioxis Gas Emitter with several damage, gas levels and dual handed at level 3 like the flamethrower. it uses the fuel bar (keep f pressed once the item has been chosen)
+
+2) New Ability: Grapple hook to move around the maps (keep h pressed while using melee)
+
+3) Mindtrick fully repaired, now it works on npcs as well as bots, it will fully convert npcs at level 3 and distract them at lower levels while it will distract bots at all levels
+
+4)Added the possibility of including friendly bots in cooperative/singleplayer to help in completing the missions
+
+5)Saber Animations Improved including the ones from OJP1.3
+
+
+
+Update 10 23/01/2021
+
+1)Improved the profile menus
+
+2)Created 2 different versions
+
+Version: Expanded, which includes the OJP fundamental assets previously mentioned as well as the KOTF expansion with all new the characters (from the old republic and sith empire up to the first order and resistance), new bots (characters with different list colors according to the faction: old republic white, sith empire black, republic pink, confederacy blue, rebellion red, empire green, bounty hunters cyan, pirates yellow, civilians cyan, mandalorians yellow, the resistance red and the first order green), new ffa, duel, ctf and siege maps (all KOTF maps), sabers (all KOTF sabers) and vehicles (all KOTF vehicles).
+
+Version: Standard, which includes the OJP fundamental assets previously mentioned with no extra characters, bots, maps or vehicles.
+
+
+
+Update 11 05/04/2021
+
+1) Seeker Droid has been made unlimited and hence after destroying one the next one can be deployed.
+
+2) Sentry has been made unlimited and multiple can be deployed at once.
+
+3) Medpacks are unlimited and act like force heal but for gunners with 2 levels small bacta provides 25hp and large provides 50 hp like force heal 1 and 3.
+
+4) Force field has been made unlimited and hence multiple shields can be deployed at once.
+
+5) Improved Health and Shield abilities with 250 hp and sp given as standard to players and bots, level 1 giving 500 hp and sp, level 2 giving 750 hp and sp and level 3 giving 1000 hp and sp.
+
+6) Improved effects of flamethrower and dioxis gas when firing them with 2 hands with a larger flame or cloud.
+
+7) Removed bots selection from pre game menu since this bugged the bots and maps, these must be always added ingame from now on.
+
+8) Improved menus
+
+
+
+Remaster 02/05/2021
+
+1)Completely rewritten the source code using razorace OJP Enhanced source code to which all the changes that appeared in OJP Enhanced Universe Source code have been applied allowing to correct many different bugs that both that appeared in the mod before and hence making it far more stable with no crashes apart from the previously mentioned freeze only when joining duel with autojoin off.
+
+2)Added Orbital Strike as a new ability where lasers will be dropping from the sky killing everything in front of you which makes it an ideal ability for officers
+
+3)Gametypes: all very stable as noticed after testing team ctf and cty with 20 bots, no weapons spawning in any types of game as all is determined by skills setup apart from jedimaster where you have all guns to fight the jedimaster or holocron where you only have a lightsaber and need to obtain skills through holocrons
+
+4)Health, Shield, Force, Battery and Fuel bars: fully fixed for all the gametypes apart from Siege where classes need to be redefined
+
+5)Dual sabers: once one of them is thrown and stuck in a wall the other wont turn off
+
+6)Bots: far more clever than before through the improved versions in razoraces version
+
+7)Improved Menus for bots spawning
+
+8)Many other changes already forgotten
+
+
+
+Update 12 03/05/2021 (Small but Important Fix)
+
+1)Fixed force bar not showing properly when killed
+
+2)Fixes saberstaff throw when using single blade styles
+
+3)Removed electric effect of Orbital Strike
+
+
+
+Update 13 05/05/2021 (Last small fix until next proper release)
+
+1)Fixed the unlimited seeker droid skill as it was not properly ported from the non remastered version
+
+2)Reduced the number of vehicles in the expanded version to the most important in Star wars
+
+
+
+Update 14 09/05/2021 (Mini Fix)
+
+1)Increased Max_game_chars and reorganised the pk3 files to avoid errors in the maps in the expanded version, many crashes resolves.
+
+
+
+Update 15 02/06/2021 (Mini Fix)
+
+1)Solved some issues with the code such as incorrect assignment of detpack at low levels as well as available bowcaster scope when no abilities selection are available for siege.
+
+
+
+Update 16 10/10/2021 (Large Improvement)
+
+1)New Gadget: Shield generator with 3 battery levels which makes the gunner such as a sniper immune to damage.
+
+2)Fixed Gadget: Cloak now makes bots and npcs ignore the player when on.
+
+3)Fixed Gadget: Orbital Strike made appear further away and now drops from the top of the sky with the character no longer turning yellow.
+
+4)Fixed Gadget: Grapple Hook and weapons can now be fired at the same time with the grapple hook no longer reproducing the flying animation.
+
+5)Duel autojoin: Duel automatically forces the player to join in the game.
+
+6)Rebalanced Weapons: Secondary Westar fire changed to rapid mode, Reduced fire rate of Blaster Gauntlet, some other weapons damaged and fire rate changed.
+
+7)Rebalanced Force Powers: Some powers like speed and jump have been improved. Force protect damage debounce increased
+
+8)Fixed the team force balance: Now when on th game will not check for team disparities allowing to play in asymmetric teams.
+
+9) Improved Effects: Flamethrower and Dioxis gas now produce larger clouds when in melee
+
+10)Fixed menus: Now when playing hybrid weapons and gadgets are all now limited to level 1 due to the use of force
+
+11)Fixed siege fp and dp bars: temporarilly using the old system
+
+Many other changed I cant even remember
+
+
+
+Update 17 14/10/2021 (Small Fix)
+
+1)Fixed menus: When playing with force (Jedi/Sith) both the health and shields abilities will not be limited to level 1 as opposed to weapons and gadgets which are limited for hybrids
+
+
+
+Update 18 15/10/2021 (Small Fix)
+
+1)Fixed force power: Force lightning is now available while jumping in the air in a similar way as Force drain.
+
+
+
+Update 19 22/12/2021 (Large Improvement)
+
+1)Redefined all weapons levels:
+
+-DL-44 Pistol: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x pistols.
+
+-Westar-34 Pistol: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x pistols.
+
+-E-11 Blaster Rifle: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x damage (primary and secondary fire).
+
+-A-280 Blaster RIfle: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x damage (primary and secondary fire).
+
+-DX-6 Disruptor Rifle: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x damage (primary and secondary fire).
+
+-Bowcaster Rifle: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x damage (primary fire).
+
+-Dc-15A Repeater Rifle: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 3x shots (primary and secondary fire).
+
+-T-21 Repeater Rifle: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 3x shots (primary and secondary fire). (FIXED PRIMARY FIRE SOUND)
+
+-Concussion Rifle: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x shots (primary fire).
+
+-Rocket Launcher: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x shots (primary fire).
+
+-Blaster/Rocket Gauntlet: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x gauntlets.
+
+-Thermal Detonator: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = 2x shots (primary and secondary fire).
+
+-Trip Mine: Level 1= only primary fire available. Level 2 = primary and secondary fire available. Level 3 = (not used).
+
+-Detpack: Level 1=primary and secondary fire available. Level 2 = (not used). Level 3 = (not used).
+
+2) Redefined all gadgets levels.
+
+-Jetpack: Level 1=standard. Level 2 = less gravity and more fuel. Level 3 = less gravity and more fuel.
+
+-Grapple Hook: Level 1=standard. Level 2 = 2x faster fire. Level 3 = 3x faster fire.
+
+-Flamethrower: Level 1=standard. Level 2 = more damage and more fuel. Level 3 = more damage and more fuel (2x handed in melee).
+
+-Dioxis Gas: Level 1=standard. Level 2 = more damage and more fuel. Level 3 = more damage and more fuel (2x handed in melee).
+
+-Orbital Strike: Level 1=standard. Level 2 = more damage and more battery. Level 3 = more damage and more battery (2x handed in melee).
+
+-Cloak Generator: Level 1=standard. Level 2 = more battery. Level 3 =more battery, ignored by AI even when firing.
+
+-Shield Generator: Level 1=25% damage absorption. Level 2 = 50% damage absorption and more battery. Level 3 = immune and more battery.
+
+-EWEB Blaster Cannon: Level 1=standard. Level 2 = 2x damage. Level 3 = 3x damage (FIXED BOLT NOT APPEARING).
+
+-Sentry Turret: Level 1=standard. Level 2 = 2x damage. Level 3 = 3x damage.
+
+-Forcefield: Level 1=standard. Level 2 = 2x damage dodge. Level 3 = 3x damage dodge.
+
+3) Fixed the random crashes in some of the cooperative maps and the other game modes.
+
+4) Readjusted all NPCS (Cooperative and KOTF) health according to the new weapons configuration.
+
+5)Other improvements that I cant remember.
+
+
+
+Update 20 23/01/2022 (Large Fix and Improvement)
+
+1)New Overload gadget with several levels allowing to increase the weapons fire rate ranging from mildly faster to super fast with new working sounds.
+
+2)Expanded the bacta skill to 3 levels to perfectly counter the force heal used by jedi
+
+3)New working sounds for the shield generator gadget
+
+4)Fixed the crashes in the trip mine missions such as mercenary activity or artus top, now most mission work properly
+
+5)Fixed the crashes caused by the forcefield gadget when spawning it
+
+6)Mind trick does not force the user anymore to deactivate the saber
+
+7)Fixed many characters that were not previously working
+
+
+
+Update 21 02/02/2022 (Small Fix)
+
+1)Fixed the crashes to desktop of most JKA missions with only some JK2 missions crashing
+
+
+
+Update 22 14/03/2022 (Expansion and Improvements)
+
+1)New Force Stasis with several duration as well as radius levels which paralyzes the oponents and now includes also the 360 degrees. Everytime this force is used the paralysis counter is reset.
+
+2)New Force Destruction with several damage levels including 2 handed which fires a dark side projectile to the oponents.
+
+3)Fixed Force Protect which now protects from all damage apart from force powers.
+
+4) Foxed Force Absorb which now protects from all force powers with its corresponding button f5 now working.
+
+5)Fixed Force Mind trick which now includes also the 360 degrees for bots and now only confuses npcs rather than convert them.
+
+6)Improved Overload gadget effects and sounds.
+
+7)Merged the enforcer and demolition classes into just the enforcer where some allegiances will be carrying concussion, some the rocket launcher and all robots will be carrying the gauntlets.
+
+8)Reduced the number of pk3 files to improve the loading speed.
+
+9)Removed all skins which were bugged or crashed the game.
+
+10)Improved the weapon models of the Dc-15 and T-21 rifles.
+
+11) Mildly reduced both the defence and force regeneration speed.
+
+12) DL-44 and Westar-34 pistols blaster colour is now orange.
+
+13)Fixed explosion effects for all explosives etc.
+
+14)Fixed the Yavin 1 map which was previously not working with the right light.
+
+15)Added a few extra story maps into coop.
+
+16)Fixed all the menus now correcly displaying the correct terms in the controls and setup
+
+
+
+Update 23 16/03/2022 (Fix)
+
+1)Fixed Force Mind Trick which was bugged in the previous release
+
+
+
+Update 24 22/03/2022 (Fixes)
+
+1)Removed the annoying random bubbleshield appearing when holstering weapons.
+
+2)Improved force stasis code by now also denying the use of any force power or gadget when frozen
+
+3)Changed the games defaults of some cvars to improve the user friendliness of the mod prior to playing: colour sabers are now displayed on everyone by default, holstered weapons are now not shown by default, the default movie sabe style is shown by default, the 2 views of the guns are now shown by default, the grapple hook is enabled by default, the minimum experience level is 300 and the maximum experience level is 600.
+
+4)Fixed the description of some buttons in the controls
+
+
+
+Update 25 28/03/2022 (Fixes)
+
+1)Fixed the first person view of both the dl44 and w34 now displaying correctly.
+
+2)Fixed the items in in the siege gametype which can be used in any new maps. Since there are no levels for the items in siege, they all behave as level 1 items from the other gametypes
+
+3) Weapons in the siege gametypes all behave as level 1 weapons from the other gametypes
+
+4)Fixed the regeneration of the fuel and cloak bars in siege, with all bars maximised independent of the class
+
+5)Gun bots no longer need to be spawned with initiate mastery level or Jedi with higher mastery level since they all now follow the configuration files. Hence regardless of gunner or jedi Normal bots with jedi master skill work best
+
+
+
+Update 26 04/06/2022 (Improvements and Fixes)
+
+1) New ability: Agility which makes you move a bit faster although not as fast as with force speed. Perfect to move around.
+
+2) New ability: Strength which makes the melee attacks deal more damage. Perfect for beasts
+
+3) Fixed Sphereshield. Now it will protect from all damage excluding force powers at low levels but at level 3 it will also protect from force powers.
+
+4) Fixed force drain at low levels which will now decrease force points
+
+5) Improved the menus both with new options like view, music, crosshair, optimize or suicide to adjust the different settings and improved arrangements.
+
+6) Fixed all the Jedi and Sith classes with now 6 sith assasin classes, 6 sith lord classes, 6 jedi knight classes and 6 jedi master classes. All of them focusing on different force powers mainly 1 neutral and 1 dark or light in addition to the speed jump and saber skills. Hence Palpatine will focus on lightning, vader on grip, nihilus on drain, maul on rage while others like obi wan will focus on mind trick...
+
+7) Improved the force lightning effects now being cleaner.
+
+
+
+Update 27 25/06/2022 (Improvements and Fixes)
+
+1) Improvement: Added variable health and armor to bots through the skill. Hence bots with initiate skill will have 100hp/sp while bots with jedimaster skill will have 999hp/sp with the skills in between ranging between the mentioned hp/sp values.
+
+2) Fixed the bug that made the player super strong when acquiring health and armor abilities.
+
+3) Fixed bug with wrist gauntlet altfire which made it less powerful.
+
+4) Corrected extreme fatigue gunners after jumping just a few times.
+
+5) Increased damage of force destruction splash.
+
+6) Modified basic health and armor now being 100hp/sp, health and armor abilities level 1 will have 250hp/sp, health and armor abilities level 2 will have 500hp/sp, health and armor abilities level 3 will have 999hp/sp.
+
+7) Corrected force,dodge,fuel and battery bars in all gametypes. Basic values will be 100 when not dictated by skills.
+
+8) Matched the hp/sp of basic npcs with that of basic bots. Hence both bots and npcs are now typically killed with the same amount of shots.
+
+9) Fixed displaced profile menu.
+
+10) In the expanded version made all the ffa maps available in team ffa.
+
+
+
+Update 28 12/08/2022 (Big Improvements and Fixes)
+
+1)No colors restrictions forced in team gametypes either during selection or while playing
+
+2)Added items for bots through the bot files enabling the creation of multi types of classes which have now being expanded with bots using them randomly
+
+assault: level 2 e-11/a280 + level 1 thermal + level 2 bacta
+support: level 2 dc-15/t-21/gauntlet + level 1 thermal + level 1 eweb/overload
+officer: level 2 w-34/dl-44 + level 1 all explosives + level 1 sentry
+specialist: level 2 dx6/bowcaster + level 1 trip mine + level 1 seeker
+demolition: level 2 PLX-2-rocket/concussion + level 1 detpack
+aerial: level 3 e11/a280 (some 2-34/dl-44 exceptions) + level 1 jetpack + level 1 flamethrower
+enforcer: level 3 dc-15/t-21 + level 1 thermal + level 1 dioxisgas
+infiltrator: level 3 w-34/dl-44 + level 1 trip mine + level 1 cloak
+marksman: level 3 dx6/bowcaster + level 1 trip mine + level 1 sphereshield
+heavy demolition: level 3 PLX-2-rocket/concussion + level 1 detpack + level 1 orbital strike
+
+3) Improved the AI of both bots and npcs both now being more aggresive and clever with dual and staff users actively using their styles
+
+4) Added strength and agility to bots as part of the skill like previously with the health and armor
+
+5) Fully matched the health and armor between npcs and bots and are now killed with the same number of shots
+
+6) Fixed bots list all now using the correct weapons
+
+7) Fixed force stasis not freezing properly in certain circumstances
+
+8) Corrected Korriban 2 saber parry crash bug
+
+9) Fixed CTF and CTY not spawning flags or ysalamiri
+
+10) Improved memory limits of the game greatly reducing lag and lack of effects in large maps with many bots
+
+11) Improved the stability of the game with now less crashes
+
+12) Increased the number of customized player slots for selection
+
+13) Many bugs already forgotten have been fixed
+
+
+
+Update 29 27/09/2022 (Big Improvements and Fixes)
+
+1) New squad team gadget, which allows you to command a squad team of a chosen faction being either rebellion, empire, mercenaries, republic or confederacy (last 2 only in expanded) using the use button with the ability selected. Such a gadget can be used to to support the character in the maps. 3 levels available ranging from 1 to 3 troops being spawned.
+
+2) New vehicle mount gadget (separate menu), which allows to spawn a vehicle chosen. Such vehicle can be used to move around the maps .
+
+3) Improved Seeker droid now including 3 levels which dictate dire rate, the seeker droid has been made a full stunner not producing any damage but knocking out enemies to counter force stasis from force users.
+
+4)Removed Jedi/Merc limitations and now combinations such as 2 westars, blacksaber and jetpack are possible to play vizla or Mandalore.
+
+5) Fixed some bugs in the code that causes crashes in certain maps.
+
+6) Fixed npc dual and staff users which were not properly fixed in a similar way as previously done with bots.
+
+
+
+Update 30 29/09/2022 (Small Fix)
+
+1) Fixed the seeker droid which was bugged in the previous release
+
+
+
+Update 31 04/10/2022 (Small Fixes)
+
+1) Fixed the use of items in bots with specialists not spamming the game with force fields and aerials now using their flamethrowers
+
+2) Adjusted all the gunner bot files so that standard classes (assault, support, officer, specialist, demolition) have at least level 2 of their corresponding gadget while advanced classes (aerial, enforcer, infiltrator, marksman, heavy demolition) have in many cases level 3 of their corresponding gadget
+
+3) Fixed the bots list so that all bots have properly assigned their corresponding class
+
+4) Made the dual weapons muzzle points closer to increase the chance of hitting the target with both bolts
+
+
+
+Update 32 16/10/2022 (Important Fixes)
+
+1) Fixed the squadteam gadget which was crashing the game when facing bots, now the squads will always follow the player when pressing use on a non enemy and will attack an enemy when pressing use on them
+
+2) Fixed the bots in FFA, DUEL, POWERDUEL, HOLOCRON and JEDIMASTER as these were not attacking each other in the previous release.
+
+3) Fixed the A280 blaster rifle which was playing unexpected effects when using alt fire
+
+
+
+Update 33 05/05/2023 (A few fixes)
+
+May the 4th be with You
+
+1) Fixed Force Grip which now produces higher damage at higher levels, 2 grips should be enough to kill a normal bot/npc.
+
+2) Fixed Force absorb which now includes both a passive and an active version. It will block any force power in passive mode at the expense of the dodge bar. The blocking will not affect the dodge bar if the active mode is on. Force powers cost less to absorb now.
+
+3) Reduced dodge points and force points cost for the saber.
+
+4) Fixed CTF and CTY modes which were not respawning the flags and the ysalamiri.
+
+6) No gadgets rather than health and shield boosters will spawn in any map as previously done with the weapons to prevent from breaking the skills setup.
+
+7) Flamethrower can now be used together with the saber
+
+8) Fixed orbital strike shader
+
+9) Changed bots configuration. Enforcer now uses sphereshield instead of dioxis gas. Infiltrator now uses dioxis gas instead of cloak. Marksman now uses cloak instead of sphereshield.
+
+
+
+Update 34 29/09/2023 (Big improvements)
+
+1)New jetpack rocket gadget which fires a rocket at the target fired while pressing crouch + use (c + enter)
+
+2)New 2 handed force push at force level 3 in melee including the corresponding effects
+
+3)New 2 handed force pull at level 3 in melee including the corresponding effects
+
+4)New 2 handed force grip at level 3 in melee including the corresponding effects
+
+5)Force grip can now be combined properly both single and 2 handed with force push force pull force lightning force drain or force destruction
+
+6)Force lightning can now be combined properly both single and 2 handed with force drain
+
+7)Added the squadteam gadget to the assault class bots according to the faction
+
+8)Fixed the squadteam gadget behavior including a shorter distance to leader
+
+9)Fixed npc teams with respect to bots including for the seeker droid and squadteam
+
+10)Fixed the seeker and squadteam causing losses in the score
+
+11)Fixed NPCs so that they dont lose locked enemies
+
+12)Increased damage of remote droid (training mission)
+
+13)Fixed force usage of bots with now being able to use any force power according to the configuration
+
+14)Fixed bots so that they dont lose locked enemies
+
+15)Fixed spectator menu which can now advance both forward and backwards when bots are present
+
+16)Fixed items bar which can now advance both forward and backwards without getting stuck
+
+17)Fixed force regeneration not working under certain occasions
+
+18)Fixed the g_damage error obtained in MP by excluding null targets
+
+
+
+Update 35 19/11/2023 (Big improvements)
+
+1)New Droideka special character which can roll and fire, selected through the character tab.
+
+2)New Jetpacks including Mitrinomon Z6 (metal and blue), Merr-Sonn JT-12 (metal and white), Imperial Remnant RT Space an Rocket boots
+
+3)New burning effect on targets when using the flamethrower
+
+4)New choking effect on targets when using the dioxis gas
+
+5)New knockdown effect on targets when using the orbital strike
+
+6)Force protect fix protecting Jedi/Sith against the previous flamethrower, dioxis gas or orbital strike effects
+
+7)Sphereshield gadget fix protecting Gunners against the previous flamethrower, dioxis gas or orbital strike effects
+
+8)Added specific jetpacks to the corresponding bots
+
+
+
+Update 36 26/11/2023 (Fixes)
+
+1)Crashes resulting from the Vehicle Mount gadget fixed with it correctly spawning the vehicle.
+
+2)Crashes resulting from the Remote Training Droid fixed with these correctly identifying the enemies
+
+
+
+Large Update 06/05/2024
+
+1)Added many new force powers totaling 25+ force powers.
+
+2)Added many new weapons totaling 60+ weapons.
+
+3)Added many new items totaling 20+ items.
+
+4)A huge amount of changes difficult to remember
+
+
+
+Update 38 07/05/2024 (Fixes)
+
+1)The bugs resulting in the collapse of the force powers menu have been removed.
+
+
+
+Update 39 14/05/2024 (Fixes)
+
+1)Fixed force repulsion/attraction configuration, now allowing to configure explode and pull as well as implode and push independently.
+
+2)Fixed flags necessary to animate single player/cooperative map animations.
+
+3)Fixed fighter vehicles not exploding at low speeds such as during take off or landing.
+
+
+
+Update 40 21/05/2024
+
+1)Fixed projectile and sound effects for all weapons which were previously getting randomly mixed.
+
+2)Made the Mark I Assault Droid a Special Character instead of a vehicle together with the droideka and replaced its corresponding vehicle slot by the bantha.
+
+3)Increased the fire rate of the SBD gauntlet making it more efficient.
+
+3)Changed some menu names.
+
+4)Fixed the Skiff vehicle not spawning
+
+5)Fixed some bot configurations such as the deathtrooper.
+
+
+
+Update 41 31/05/2024
+
+1)Made the mod and source code compatible in all platforms with lots of bugs and crashes fixes thanks to the coder Ensiform.
+
+2)Transformed the solution from debug to final
+
+3)Added specific icons to each squad team type including empire, rebellion, mercenaries, confederacy, republic, and mandalorians.
+
+4)New lightning, judgement, drain, and sever effects and sounds.
+
+5)No force grip color effects.
+
+6)Fixed empire incinerator bot not carrying flamethrower and bot list in the standard version.
+
+
+
+Update 42 11/07/2024
+
+1)Increased the duration of force grip and force grasp according to the level in a similar way as for force rage.
+
+2)Fixed force explode and implode effects always spawning now.
+
+3)Increased explode and implode pushpower and decreased push and pull pushpower.
+
+4)Fixed duel autojoin which caused in the other gametypes an automatic spawn.
+
+5)Fixed stun baton crash when using dual stun batons.
+
+6)Automatic force and dodge regeneration while walking like with the fuel and battery which also improves the saber bots fighting.
+
+7)force and dodge now regenerate points at the same speed.
+
+8)Changed cost of force powers with neutral force powers such as force speed and force jump being cheap as opposed to other force powers.
+
+9)Flame, dioxis and ice throwers and cr24 flame and cr25 ice carbines can now disable cloak and overload for a brief period of time.
+
+10)Electro, laser and orbital throwers and demp2 and dc-17p ion carbines can now disable cloak and sphereshield for a brief period of time.
+
+11)Force lightning can now disable cloak and sphereshield for a brief period of time.
+
+12)Force drain can now disable sphereshield and overload for a brief period of time.
+
+13)Jedi/sith bots rearranged to 10 types of Jedi Knight/Sith Assasin or Jedi Master/Sith Lord classes for each faction specialising in a light/dark force power and another neutral force power.
+
+14)Bots can now use the new powers depending on the bot (Example: Kreia can fire sever force, Plo koon can fire electric judgement, Anakin can perform grasp, Darth Plagueis can use midichlorian manipulation).
+
+15)Fixed bots list and added more warrior type bots.
+
+16)Added vader, yoda, han solo, purge trooper, shore trooper, tank trooper, revan as skins and bots.
+
+17)Changed cr-1, acp, pmg, and lj-70 weapon icons to be different from the default used previously.
+
+18)Increased damage and health of droideka and Mark-1 droid special characters.
+
+
+
+Update 43 20/07/2024 (Fixes)
+
+1) Fixed npc files preventing crashes in most coop missions (korriban I still pending) and other game types where these are present.
+
+2) Readjusted health of certain npcs to meet difficulty expectations.
+
+3) Removed most common warnings in the console making it look cleaner.
+
+4) Fixed effects and shader files that were not being properly loaded for certain flashes such as the emplaced turret.
+
+
+
+Update 44 24/07/2024 (Fixes to annoying bugs)
+
+1) Fixed force powers menus which were resetting themselves after playing for some time which now remain fixed in a similar way as the light and heavy weapons or items and other items menus.
+
+2) Fixed new force powers subtype selection options (grasp, judgement, sever ...) being set to 0 in the force powers menus if force see is less than level 1 in a similar way as with the main force powers.
+
+3) Removed automatic autojoin in jedimaster gametype with automatic autojoin remaining only in the duel and holocron gametypes.
+
+
+
+Update 45 30/07/2024
+
+1) Added cyan saber to the selection menu now becomuing a standard saber color as blue, green, yellow.
+
+2) Introduced turrets as a skill part of the selectable vehicles which can rotate 360 degrees although are not movable.
+
+3) Increased damage of the crack associated with force grip and hence one attack with 2 handed grip at level 3 will kill most npcs and initiate bots.
+
+4) Dodge and then force are removed while being attacked by Force sever rather than both simultaneously.
+
+5) Increased force destruction and force burst damage and splash damage and hence one attack should kill most npcs and initiate bots.
+
+6) Fixed cloak, sphereshield, and overload items in the jedimaster and siege gametypes which were dissapearing from the inventory.
+
+7) Fixed bacta and shieldbooster items in the duel and powerduel gametypes which were dissapearing from the inventory.
+
+8) Items are not allowed in saber only games in a similar way as the weapons and force powers.
+
+9) Reduced saber attack cost to half while using force rage or force extreme making them more useful.
+
+10) Reduced saber dodge cost for saber attacks from 20 to 10 in a similar way as for other weapons.
+
+11) Removed the flame/ice/dioxis/ion effects from throwers,carbines and explosives penetrating the sphereshield or force protect or force barrier.
+
+12) Corrected blue saber making it more blue.
+
+
+
+Update 46 14/08/2024
+
+1) Fixed powerduel exit to main menu randomly occuring when adding bots.
+
+2) Fixed the powerduel crash to desktop when not including a client with a saber.
+
+3) Voting while in spec mode has been set as default giving more freedom while playing a match.
+
+4) Expanded the music menu by including 90+ songs from both JK2 and JKA.
+
+5) Improved the appearance of all the menus including external and internal.
+
+6) The fuel and battery bars are now not shown in spectator mode.
+
+7) No saber drops have been set as default to avoid the issue of bots sometimes not picking up their dropped hilts.
+
+8) Increased default background knockback from 150 to 175 as it was originally affecting push, pull, explode, and implode.
+
+9) Added the missions tatooine crash investigation and okofo capture remnant officer tier 2 missions to the cooperative gametype which are included in the Base folder.
+
+10) Increased damage and ammo of the droideka.
+
+11) Modified health of npcs such as protocol droids, probe, and wampa to 500 and for the rancor, sand creature, droideka, and mark 1 droids to 1000.
+
+12) Fixed all the textures of all JK2 maps such as skies, terrains, mirrors, etc... which are now included in the Base folder.
+
+13) Improved textures in all JKA maps not only in the OJPEU Expanded version but also in OJPEU Standard version leading to an increase in size in the latter which are now included in the Base folder.
+
+14) Improved the order of the ffa, team, ctf, duel, powerduel and siege gametypes maps lists according to the movies and legacy in the OJPEU Expanded version.
+
+
+
+Update 47 15/08/2024 (small fix to last night large fix)
+
+1) Fixed the skin team color button in game which was not working in the previous release
+
+
+
+Update 48 19/08/2024
+
+1) Fixed the saber dodge cost for all the different weapons with heavier weapons costing more to dodge.
+
+2) Increased the non attack damage of the lightsaber from 10 to 50 killing most npcs and bots faster after naturally touching them with the lightsaber.
+
+3) Fixed mods of death messages for the flame and ice carbines as well as the flame and dioxis grenades, mines and bombs which were previously showing question marks.
+
+4) Improved the appearance of the in game view, optimize and crosshair menus as well as the profile force menu making them look more organised.
+
+5) Vchat is now available also in cooperative gametype.
+
+6) Readded the missions scripts present in the expanded version into the standard version.
+
+7) Remanagement of the pk3 files making skins in the characters selection menu and in game menu appear more organised according to the corresponding faction.
+
+8) Removed the textures pk3 file from the ojpenhanced folder repeated in the standard version which now only appears in the base folder.
+
+
+
+Update 49 29/08/2024
+
+
+1) Reduced the velocity of blaster bolts and projectiles from all light and heavy weapons to make them more visible.
+
+2) Reduced the velocity of the projectiles associated with force destruction and force burst to make them more visible.
+
+3) Improved the grapple hook firing with the the hook and cable now appearing immeadiately after pressing the associated button instead of just appearing after getting stuck.
+
+4) Increased force rage and force extreme firing speed which were not occuring as fast as they should for each of the force power levels.
+
+5) Increased overload firing speed which was not occuring as fast as it should for each of the item levels.
+
+6) Fixed g_weaponsdisable cvar to disable weapons including only melee, only sabers, sabers & melee, no explosives, and all weapons which can be set in the server rules menu.
+
+7) Fixed g_forcepowerdisable cvar to disable force powers including no force, only jump, neutral powers, and all powers which can be set in the server rules menu.
+
+8) Created g_itemdisable cvar to disable items including no items, grapple & jetpacks, grapple & jetpacks & vehicles, no vehicles, and all items to include a similar option for the items as for the weapons and force powers which can also be set in the server rules menu.
+
+9) UI menus disabling like with force see and force offense now apply to the types of force powers, weapons and items with options getting shown when selecting at least level 1 of the corresponding force power, weapon, or item.
+
+10) UI menus removal applies to the previously mentioned cvars when these are applied, removing the corresponding force powers, weapons or items options from the menus.
+11) Improved the server rules menu presentation.
+
+12) Fully optimized the classes in the siege gametype mode including assault, heavy weapons, demolition, scout and tech following a similar classes setup as the bots.
+
+13) In the absence of item skills the fuel and battery bars wont be shown unless equipping the corresponding item.
+
+14) In the absence of force see the force and dodge bars wont be shown unless equipping a lightsaber.
+
+15) Made sure there is at least 100 of fuel or battery whenever equiping any of the items that use them despite not having level 1 of such item such as when using the cmd give all after enabling cheats.
+
+16) Made sure there is at least 100 of force and dodge whenever equiping a lightsaber despite not having level 1 of force see such as when disabling all weapons apart from the sabers.
+
+17) Corrected the menu cost of the strength and agility abilities.
+
+18) Corrected the menu cost of force repulsion, force attraction, force telepathy, force incapacitation, force enhancement, and force focus.
+
+19) Corrected the menu cost of the stun baton, blaster carbine and sniper rifle.
+
+20) Corrected the menu cost of grapple, jetpack, cloak, sphereshield, overload.
+
+
+
+Update 50 18/09/2024
+
+1) Fully adapted OJP to the siege gametype with abilities, force powers, weapons, items, and vehicles fully included as in other gametypes being now configurable in the classes files through skills
+
+2) Expanded the maximum number of siege classes to 256
+
+3) Fixed several wrong conditions which were preventing from properly doing many of the special combinations of forward saber attack moves
+
+4) Reduced dodge saber cost increase when walking and when jumping using dual sabers
+
+5) Introduced a new stat known as STAT_MAX_ARMOR which makes the amount of armor in the game completely independent from the amount of health and hence now large armor with low health is possible with force heal, force midichlorian manipulation, the Bacta Canister, and the Shield Booster always functioning according to the correspoding max health and max armor.
+
+6) Health and armor in the siege gametype are now configurable in the classes files either through the classical parameters (start_health, max_armor...) or skills
+
+7) Remade the siege classes and teams in all maps including different combinations with original era characters (both versions) and prequel era characters (only expanded version) in a similar way as the bots classes.
+
+8) Fixed grenade (thermal detonator) return bolts issue
+
+9) Fixed victim force gripped and force grasped animations at all levels always choking or floating while being gripped or grasped
+
+10) Fixed the parry animation
+
+11) Improved the bots lists with more combinations including the aerial sbd
+
+12) Fixed names of all items loading prior to being in the game
+
+
+
+Update 51 28/09/2024
+
+1) Fixed the force powers cycle now letting time for the force flags to load making the force icons loading look more neat.
+
+2) Added detailed names for all the force powers appearing in the force powers cycle.
+
+3) Fixed the weapons cycle now letting time for the weapon flags to load making the weapons icons loading look more neat.
+
+4) Added detailed names for all the weapons appearing in the weapons cycle.
+
+5) Fixed the inventory cycle now letting time for the item flags to load making the items icons loading look more neat.
+
+6) Added detailed names for all the items appearing in the inventory cycle.
+
+7) Replaced the cloak icon with a more appropriate one.
+
+8) Modified the colors and size of several item icons.
+
+9) Improved the light weapons, heavy weapons, explosives, items and other items menu descriptions.
+
+
+
+Update 52 05/10/2024
+
+1)Increased MAX_POOL_SIZE, MAX_CG_SHARED_BUFFER_SIZE, MAX_G_SHARED_BUFFER_SIZE MEM_POOL_SIZE and POOLSIZE allowing more memory in the maps, preventing visual effects such as blaster bolts from dissapearing in large maps or when many shooter bots are present.
+
+2)Evolved Force Curse into Force Insanity with players, bots and NPCs now also playing an insanity animation under its effects.
+
+3)Players, bots and NPCs now get frozen with their last animation rather than change their animation while being affected by force stasis.
+
+4)NPCs now get rid of the corruption resulting from force corruption when damaged in a similar way as with confusion resulting from force confusion.
+
+5)Changed the order of bots in the expanded version.
+
+
+
+Update 53 07/10/2024
+
+1) Fixed the crash caused by the insanity animation playing in non humanoid entities and vehicles with the insanity animation now playing only in humanoid entities.
+
+2) Fixed the issue with blackening maps and flickering models introduced by mistake in the last release as a result of very high memory values which are now lower although higher than in the other previous releases improving maps memory.
+
+
+
+Update 54 15/10/2024
+
+1) Squad Teams for each faction will now always follow You everywhere instead of getting lost with these surrounding You in a triangular formation for escorting purposes
+
+2) Fixed players fighting rotation in the duel and powerduel gametypes now properly switching players when a player loses
+
+3) Force Stasis now properly freezes opponents preventing any running animation
+
+4) Fixed the crash due to Jedi bots using force grasp
+
+5) Fixed the Nar Shadaa Streets, Artus Mine and Byss crash due to NPCInfo being Null within the NPC_Stormtrooper.c file and NPC being Null within the NPC_utils
+
+6) Partially fixed Korriban 1 crash due to an NPCInfo and NPC being Null within the NPC.c file
+
+7) Removed the spawning invulnerability green sphere and the ysalamiri capture invulnerability spheres which looked similar to the sphereshield item
+
+8) Modified the default value of minimum experience points from 300 to 400
+
+9) Restored stun baton weapon ready animations to the original
+
+10) Compiled the game as final rather than final debug
+
+
+
+Update 55 18/10/2024
+
+1) Fixed the random crashes in the siege gametype
+
+
+
+Update 56 15/11/2024
+
+1) Restored the saber parrying functions as in the original OJP Enhanced 1.2
+
+2) Force corruption now works with bots and not just npcs with these attacking other bots not in the force user team.
+
+3) Force confusion and Force corruption can not be deactivated through damage anymore.
+
+4) Created individual electrocution effects for Force lightning (purple), Force judgement (green).
+
+5) Created individual electrocution effects for the Electroshock item (yellow) in addition to the ion carbines and other effects (blue).
+
+6) Created individual freezing effect when using the icethrower or ice carbine.
+
+7) The Laser beam item now disintegrates the enemy before killing him.
+
+8) Force destruction and force burst projectiles cant be dodged anymore.
+
+9) Force stasis and Force insanity effects will switch off in npcs when killed.
+
+10) Added different sounds to the force barrier and force protect hits.
+
+11) Moved the backpack rocket, special character and squadteam functions to the force file to be more efficient.
+
+12) Renamed Force extreme to Force valor as the light side version of Force rage in the SW lore.
+
+
+
+Updates 57 and 58 03/04/2025
+
+1) Added 2 executing options either OJP_Enhanced_Vanilla or OJP_Enhanced_OpenJK with servers being displayed in the latter option.
+
+2) Added force dark aura with a purple first person view, specific sounds, a dark cloud surrounding you. It electrifies and slows down enemies in 3D at all force power levels causing more damage at higher force power levels.
+
+3) Added force deadly sight with an orange first person view, specific sounds, red eyes. It dissintegrates enemies in front at all force power levels causing more damage at higher force power levels.
+
+4) Added force regeneration which increases the force power and dodge without any force points cost.
+
+5) Added force blinding with a disabling effect on the opponent and flags. Enemies dont attack unless firing weapons at all levels.
+
+6) Improved force destruction with more damage dealt on the opponent, flags, animations and other specific visual effects.
+
+7) Improved force judgement with no damage dealt although pushing the opponent, including flags, animations and other specific visual effects.
+
+8) Improved force confusion by allowing to turn it on/off in both bots and npcs including a specific activator. Enemies stop attacking you and it occurs in 3D at force power level 3.
+
+9) Improved force corruption by allowing to turn it on/off in both bots and npcs including a specific activator and improved ally/enemy conditions in all gametypes. Enemies are brought temporarily into your team attacking their own original team and it occurs in 3D at force power level 3.
+
+10) Improved force stasis by allowing to turn it on/off in both bots and npcs including a specific activator. Enemies are completely frozen with a specifric animation preventing jumps and it occurs in 3D at force power level 3.
+
+11) Improved force insanity by allowing to turn it on/off in both bots and npcs including a specific activator. Enemies are made mad with a specifric animation causing them damage and it occurs in 3D at force power level 3.
+
+12) Improved force absorption which fully protects of all force powers in 3D in a passive way.
+
+13) Improved force protection which fully protects of all damage except force powers in 3D in a passive way.
+
+14) Improved force explode which is stronger than push, deals damage, occurs in 3D and includes specific animations.
+
+15) Improved force implode which is stronger than pull, deals damage, occurs in 3D and includes specific animations.
+
+16) Improved force valor reducing damage received to 0.66 and adding a cyan first person view and electrocution effect.
+
+17) Improved force rage increasing the damage done to 1.5.
+
+18) If the user has the same force power level as the attacker this allows to absorb the power in an active way using the hands or saber to stop them.
+
+19) Reorganised the effects for drain, lightning, judgement, deathfield, deathsight, stasis and insanity.
+
+20) Corrected force/weapon/item icon on time loading.
+
+21) Fixed the bug where force powers dissapeared from the menu after spawning.
+
+22) Modified the force powers cost of all the force powers.
+
+23) Jedi npcs should be in principle able to use force regeneration, force deathfield and force deadly sight.
+
+24) All force powers can be accessed by bots from any side as all can now be light or dark.
+
+25) Mildly improved bots temporary waypoints.
+
+26) Removed many bugs that caused many crashes when playing with many bots in all gametypes.
+
+27) The eweb blaster cannon is now used by bots also at closer distances.
+
+28) Improved the squad team including a specific type of activator to control it better, and improved ally/enemy conditions in all gametypes.
+
+29) Improved the seeker droid including a specific type of activator to control it better, and improved ally/enemy conditions in all gametypes.
+
+30) The cloak generator now only works unless firing weapons at all levels.
+
+31) The flamethrower, Dioxis Thrower, Ice thrower, beam projector and orbital strike dont disable the cloak, sphereshield, overload or jetpack anymore.
+
+32) The electroshocker, force lightning, force judgement, DEMP2, DC-17P, ion grenade, mine and bomb disable the cloak, sphereshield, overload or jetpack.
+
+33) Immunity to The flamethrower, Dioxis Thrower, Ice thrower, beam projector and orbital strike items when sphereshield and force protection are active.
+
+34) Improved the stun baton with correct 3d animations.
+
+35) Improved the ACP array gun by removing the electrocution effects being caused when firing and exploding the grenades.
+
+36) improved some of the bots configurations with all of them having weapons and in the case of force users better force combinations.
+
+37) Removed the vehicle shared functions message.
+
+38) Removed most of the speed and damage messages.
+
+
+
+P.S. Set the server max rate to 25000 or set the ultrafast option in the in game optimize tab for a smooth game experience.
+
+PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
+
+THANK YOU VERY MUCH TO THE CURRENT AND OLD MEMBERS OF THE JK COMMUNITY, OJP, MB2, Open JK, KOTF AND JKG TEAMS. WITHOUT YOU, STAR WARS OPEN JEDI PROJECT ENHANCED EXPANDED WOULD NOT BE A REALITY. ALL OF YOU CAN CONSIDER YOURSELVES TO BE COAUTHORS OF THIS VERSION OF STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE.!!!!!!!!!!!!!

@@ -636,9 +636,9 @@ void WP_SaberSetDefaults( saberInfo_t *saber )
 
 	saber->saberFlags |= SFL_NOT_ACTIVE_BLOCKING;
 
-	strcpy(saber->name, "default");
+	strcpy(saber->name, DEFAULT_SABER);
 	strcpy(saber->fullName, "lightsaber");
-	strcpy(saber->model, "models/weapons2/saber_reborn/saber_w.glm");
+	strcpy(saber->model, DEFAULT_SABER_MODEL);
 	saber->skin = 0;
 	saber->soundOn = BG_SoundIndex( "sound/weapons/saber/enemy_saber_on.wav" );
 	saber->soundLoop = BG_SoundIndex( "sound/weapons/saber/saberhum3.wav" );

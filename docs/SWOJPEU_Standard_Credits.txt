@@ -1,0 +1,302 @@
+============================================================================================================================================================================================================
+SW OJP ENHANCED UNIVERSE STANDARD CREDITS
+============================================================================================================================================================================================================
+
+THANK YOU VERY MUCH TO THE CURRENT AND OLD MEMBERS OF THE JK COMMUNITY, OJP, KOTF, MB2, Open JK, AND JKG TEAMS. 
+WITHOUT YOU, STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE WOULD NOT BE A REALITY. 
+ALL OF YOU CAN CONSIDER YOURSELVES TO BE COAUTHORS OF STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE.
+
+============================================================================================================================================================================================================
+GAMETYPES
+============================================================================================================================================================================================================
+
+Gametype	/	Author
+
+Cooperative/Single Player	/	OJP Team & Mandalore1st
+Free for All	/	Raven Software & OJP Team & Mandalore1st
+Jedi Master	/	OJP Team & Mandalore1st
+Holocron Free for All	/	OJP Team & Mandalore1st
+Duel	/	Raven Software & OJP Team & Mandalore1st
+Powerfuel	/	Raven Software & OJP Team & Mandalore1st
+Team Free for All	/	Raven Software & OJP Team & Mandalore1st
+Capture the Flag	/	Raven Software & OJP Team & Mandalore1st
+Capture the Ysamalmiri	/	OJP Team & Mandalore1st
+Siege	/	Raven Software & OJP Team & Mandalore1st
+
+============================================================================================================================================================================================================
+MAPS
+============================================================================================================================================================================================================
+
+Map	/	Model	/	Author
+
+Tatooine Crash Investigation	/	t2_CoT	/	zahar
+Okofo Capture Remnant Officer	/	t2_Port	/	zahar
+
+
+============================================================================================================================================================================================================
+SKINS
+============================================================================================================================================================================================================
+
+Skin	/	Model	/	Author
+
+Battle Droid	/	battledroid	/	Master_Ibonek
+Clone Trooper P1	/	cloneclassic	/	neomarz1
+Mandalorian	/	ini	/	Mhoker
+Super Battle Droid	/	sbd	/	Chairwalker
+
+============================================================================================================================================================================================================
+ABILITIES
+============================================================================================================================================================================================================
+
+Ability	/	Author
+Health	/	Mandalore1st
+Armor	/	Mandalore1st
+Strength	/	Mandalore1st
+Agility	/	Mandalore1st
+
+============================================================================================================================================================================================================
+FORCE POWERS
+============================================================================================================================================================================================================
+
+Force Power	/	Author
+
+Jump	/	Raven Software & Mandalore1st
+Speed	/	Raven Software & Mandalore1st
+See	/	Raven Software & Mandalore1st
+Push	/	Raven Software & Mandalore1st
+Explode	/	 Mandalore1st
+Pull	/	Raven Software & Mandalore1st
+Implode	/	 Mandalore1st
+Heal	/	Raven Software & Mandalore1st
+Regeneration	/	 Mandalore1st
+Grip	/	Raven Software & Mandalore1st
+Grasp	/	 Mandalore1st
+Protect	/	Raven Software & Mandalore1st
+Dark Aura	/	 Mandalore1st
+Absorb	/	Raven Software & Mandalore1st
+Deadly Sight	/	 Mandalore1st
+Lightning	/	Raven Software & Mandalore1st
+Judgement	/	 Mandalore1st
+Drain	/	Raven Software & Mandalore1st
+Sever	/	 Mandalore1st
+Confusion	/	Raven Software & Mandalore1st
+Corruption	/	 Mandalore1st
+Stasis	/	 Mandalore1st
+Insanity	/	 Mandalore1st
+Rage	/	Raven Software & Mandalore1st
+Valor	/	 Mandalore1st
+Destruction	/	 Mandalore1st
+Blinding	/	 Mandalore1st
+Force Icons	/	 Angel Soul & Mandalore1st 	
+
+============================================================================================================================================================================================================
+SABER SKILLS
+============================================================================================================================================================================================================
+
+Saber Skills	/	Author
+
+Fast	/	Raven Software & OJP Team
+Medium	/	Raven Software & OJP Team
+Strong	/	Raven Software & OJP Team
+Fast-Medium	/	OJP Team
+Medium-Strong	/	OJP Team
+Dual	/	Raven Software & OJP Team
+Staff	/	Raven Software & OJP Team
+Defend	/	Raven Software & OJP Team
+Throw	/	Raven Software& OJP Team & Mandalore1st
+
+============================================================================================================================================================================================================
+LIGHTSABERS
+============================================================================================================================================================================================================
+
+Lightsaber	/	Model	/	Author
+
+Gaderffi	/	gaderffi	/	Laisum
+Gaderffi Staff	/	Gaffi_Staff	/	Laisum
+
+============================================================================================================================================================================================================
+WEAPONS
+============================================================================================================================================================================================================
+
+Weapon	/	Model	/	Author
+
+K-16 Blaster Pistol	/	briar_pistol	/	Raven Software & Kahn D'halaine
+S5-H Blaster Pistol	/	s5_heavy_pistol	/	MBII Team  & Mandalore1st
+Blaster-Ion Gauntlet	/	-	/	MBII Team  & Mandalore1st
+Blaster-Rocket Gauntlet	/	concussion_new	/	MBII Team  & Mandalore1st
+DL-44 Blaster Pistol	/	blaster_pistol	/	AshuraDX
+DH-17 Blaster Pistol	/	dh-17	/	MBII Team  & Mandalore1st
+DC-17 Blaster Pistol	/	dc-17	/	MBII Team  & Mandalore1st
+W-34 Blaster Pistol	/	westar_if	/	Iniry  & Mandalore1st
+E-11 Blaster Rifle	/	blaster_r	/	AshuraDX
+A280 Blaster Rifle	/	a280	/	MBII Team  & Mandalore1st
+DC-15S Blaster Rifle	/	dc-15s	/	AshuraDX  & Mandalore1st
+E-5B Blaster Rifle	/	sad_e5	/	KhorneSyrup & Mandalore1st
+Bowcaster Carbine	/	bowcaster	/	Raven Software & Kahn D'halaine
+EE-3 Blaster Carbine	/	ee-3	/	MBII Team  & Mandalore1st
+Bowcaster-W Carbine	/	wbowcaster	/	MBII Team  & Mandalore1st
+CO Blaster Carbine	/	canderous_blaster	/	MBII Team  & Mandalore1st
+DEMP2 Ion Carbine	/	demp2	/	Raven Software & Kahn D'halaine
+CR-24 Flame Carbine	/	CR-24_flamerifle	/	MBII Team  & Mandalore1st
+DC-17P Ion Carbine	/	DC-17P	/	MBII Team  & Mandalore1st
+CR-25 Ice Carbine	/	CR-25_icerifle	/	MBII Team  & Mandalore1st
+Stun Baton	/	stun_baton	/	Raven Software
+DXR-6 Disruptor Rifle	/	disruptor	/	Raven Software & Kahn D'halaine
+Cycler Projectile Rifle	/	tusken_rifle	/	MBII Team  & Mandalore1st
+DLT-20A Laser Rifle	/	DLT20a	/	MBII Team  & Mandalore1st
+E-5S Disruptor Rifle	/	proj_rifle	/	MBII Team  & Mandalore1st
+TL-50 Repeater Rifle	/	heavy_repeater	/	Raven Software
+DLT-18 Repeater Rifle	/	dlt-18_repeater	/	MBII Team  & Mandalore1st
+DC-15A Repeater Rifle	/	dc-15a	/	MBII Team  & Mandalore1st
+T-21 Repeater Rifle	/	t-21	/	Monsoontide  & Mandalore1st
+FC-1 Shotgun	/	golan_arms	/	Raven Software & Kahn D'halaine
+CR-1 Shotgun	/	CR-1_cannon	/	MBII Team  & Mandalore1st
+DBA Array Gun	/	DoubleBarrel_ArrayGun	/	JKG Team  & Mandalore1st
+ACP Array Gun	/	ACP_ArrayGun	/	JKG Team  & Mandalore1st
+Stouker Concussion Cannon	/	stouker	/	Raven Software & Kahn D'halaine
+Z-6 Rotary Cannon	/	z6_rotary	/	MBII Team  & Mandalore1st
+Z-12 Rotary Cannon	/	minigun	/	MBII Team  & Mandalore1st
+LJ-70 Concussion Cannon	/	LJ-70_ConcRifle	/	JKG Team  & Mandalore1st
+PLX-2M Rocket Launcher	/	merr_sonn	/	Raven Software & Kahn D'halaine
+MG Grenade Launcher	/	Packered_MortarGun	/	JKG Team & Mandalore1st
+PLX1 Rocket Launcher	/	cw_launcher	/	MBII Team  & Mandalore1st
+E60R Rocket Launcher	/	e60r_launcher	/	MBII Team & Mandalore1st
+Thermal Detonator	/	thermal	/	Raven Software & Kahn D'halaine
+Flame Detonator	/	plasma	/	MBII Team  & Mandalore1st
+Dioxis Detonator	/	sonic_detonator	/	MBII Team  & Mandalore1st
+Ion Detonator	/	V-59_Concussion	/	MBII Team  & Mandalore1st
+Thermal Mine	/	trip_mine	/	Raven Software
+Flame Mine	/	trip_mine	/	Mandalore1st
+Dioxis Mine	/	trip_mine	/	Mandalore1st
+Ion Mine	/	trip_mine	/	Mandalore1st
+Thermal Bomb	/	detpack	/	Raven Software
+Flame Bomb	/	detpack	/	Mandalore1st
+Dioxis Bomb	/	detpack	/	Mandalore1st
+Ion Bomb	/	detpack	/	Mandalore1st
+
+============================================================================================================================================================================================================
+ITEMS
+============================================================================================================================================================================================================
+
+Item	/	Author
+
+Bacta Canister	/	Raven Software & Mandalore1st
+Shield Booster	/	Mandalore1st
+TD2.3 Electrobinoculars	/	Raven Software & Mandalore1st
+Grapple Hook	/	Raven Software & Mandalore1st
+Force Field Projector	/	Raven Software & Mandalore1st
+Training Remote	/	Raven Software & Mandalore1st
+Sentry Turret	/	Raven Software & Mandalore1st
+E-Web Blaster Cannon	/	Raven Software & Mandalore1st
+Flamethrower	/	OJP Team & Mandalore1st
+Dioxisthrower	/	Mandalore1st
+Icethrower	/	Mandalore1st
+Electroshocker	/	Mandalore1st
+Beam Projector	/	Mandalore1st
+Orbital Strike	/	Mandalore1st
+Cloak Generator	/	Raven Software & Mandalore1st
+Shield Generator	/	Mandalore1st
+Overload	/	Mandalore1st
+Z-6 Metal Jetpack	/	Raven Software & OJP Team
+Z-6 Blue Jetpack	/	Raven Software & OJP Team & Mandalore1st
+RT Spacepack	/	Raven Software & Mandalore1st
+JT-12 Metal Jetpack	/	JKG Team & Mandalore1st
+JT-12 White Jetpack	/	Mandalore1st
+Rocketboots	/	Mandalore1st
+Backpack Rocket	/	Mandalore1st
+Rebellion Squad Team	/	Mandalore1st
+Empire Squad Team	/	Mandalore1st
+Mercenaries Squad Team	/	Mandalore1st
+Confederacy Squad Team	/	Mandalore1st
+Republic Squad Team	/	Mandalore1st
+Mandalorian Squad Team	/	Mandalore1st
+Vehicle Mount	/	Mandalore1st
+
+============================================================================================================================================================================================================
+VEHICLES
+============================================================================================================================================================================================================
+
+Vehicle	/	Model	/	Author
+
+AAT Tank	/	aat_hat	/	
+Acklay	/	acklay_mst	/	
+Anakin Skywalker Astromech	/	ani-droid	/	 Zymotico
+Anakin Skywalker Podracer	/	anakins_pod	/	jack - sith lord
+Anakin Skywalker Speeder	/	aspeedervm	/	neomarz1 
+ARC-170 Starfighter	/	arc-170	/	minilogoguy18
+AT-AT Walker	/	atat	/	Circa 
+AT-PT Walker	/	atpt	/	Light Ninja
+AT-TE Walker	/	atte	/	Psyk0Sith
+AT-TE Walker II	/	attevm	/	Psyk0Sith
+A-Wing Starfighter	/	a-wing	/	Astromash and Manquesa
+Bantha	/	bantha	/	Mars Marshall
+Boba Fett Firespray-31	/	slave1-beta	/	Manquesa
+B-Wing Starfighter	/	b-wing	/	Hatrus and Manquesa
+Cargo Skiff	/	skiff_veh	/	AshuraDX
+Delta-7 Jedi Starfighter	/	jsfighter	/	
+Dewback	/	dewback	/	
+Droid Tri-Fighter	/	droidtf	/	Inyri Forge
+Droideka Destroyer Droid	/	droideka	/	OJP Team
+Eopie	/	eopie	/	OJP Team
+Eta-2 Jedi Starfighter II	/	manq-jsf	/	Zymotico
+Glider	/	glider	/	Helena Revan 
+Hailfire Droid	/	hailfire_droid	/	Duncan_10158
+Hyena Droid Bomber	/	droidfighter	/	PR-0927/Majin Revan
+Hyena Droid Bomber	/	droidfighter2	/	PR-0927/Majin Revan
+Imperial Speeder	/	speeder_bike_dun	/	Monsoontide
+Jango Fett Firespray-31	/	slave1_jango	/	Maxleof
+Low Altitude Assault Transport	/	gunshipvm	/	Mars Marshall
+Low Altitude Assault Transport II	/	gunshipyoda	/	Mars Marshall
+Luke Skywalker Speeder	/	lukespeeder	/	neomarz1 
+Mace Windu Astromech	/	windu-droid	/	 Zymotico
+Mark I Assault Droid	/	mark1	/	Averus Retruthan
+N1 Starfighter	/	n1_mst	/	Monsoontide
+Obiwan Kenobi Astromech	/	obi-droid	/	 Zymotico
+Obiwan Kenobi Astromech II	/	r4	/	
+Ravensclaw	/	ravensclawvm	/	Mars Marshall
+Republic Shuttle	/	republicshuttle	/	
+Sebulba Podracer	/	sebulba_pod	/	Duncan_10158
+Sith Speeder	/	sithspeeder_mst	/	Monsoontide
+STAP Speeder	/	stap_mst	/	OJP Team
+Swoop	/	swoop	/	Raven Software, MagSul
+T-47 Snowspeeder	/	snow-speeder-tfp	/	Darth Alex 
+Tie Advanced X1	/	tie-advanced	/	Raven Software, NeoMarz1 and Manquesa
+Tie Defender	/	tie-defender	/	Lord Hatrus
+Tie Incerceptor	/	tie_interceptor	/	7IM and Michael 'Chang Khan' Gummelt
+Trade Federation Shuttle	/	tfshuttle	/	
+Twin Pod Cloud Car	/	twin_pod	/	Monsoontide
+V-19 Starfighter	/	v-19	/	Zymotico
+Vehicle	/	Model	/	Author
+Vulture Droid Fighter	/	droid_fighter	/	Hatrus
+V-Wing Starfighter	/	v-wing	/	minilogoguy18
+YT-1300 Cargo Freighter	/	YT-1300	/	Raven Software and Manquesa
+Y-Wing Starbomber	/	y-wing	/	Manquesa and Andy 867
+Zam Wesell Speeder	/	zamspeeder	/	Mars Marshall
+	/	laserturret1	/	
+	/	laserturret2	/	
+	/	turbolaser_tower	/	
+
+============================================================================================================================================================================================================
+MENUS
+============================================================================================================================================================================================================
+
+Outer Game Menus	/	OJP Team
+Inner Game Menus	/	OJP Team & Mandalore1st
+Hud	/	OJP Team & Mandalore1st
+
+============================================================================================================================================================================================================
+BOTS, NPCS & SIEGE CLASSES
+============================================================================================================================================================================================================
+
+Bots	/	Mandalore1st
+NPCs	/	Raven Software & Mandalore1st
+Siege Classes	/	Raven Software & Mandalore1st
+
+============================================================================================================================================================================================================
+TEXTURES
+============================================================================================================================================================================================================
+
+Missing Map Textures	/	OJP Team
+Texture Overhaul	/	Mr.Zz 
+
+

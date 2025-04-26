@@ -3131,7 +3131,6 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		else if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_2)
 			{
 		SquadTeam3 = NPC_SpawnType( ent, "squadreb", va("player%iSquadTeam3", ent->s.number), qfalse );
-		SquadTeam3->client->ps.eFlags |= EF_WP_OPTION_2;
 			}	
 		else if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_3)
 			{
@@ -3141,17 +3140,14 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_1)
 			{
 		SquadTeam3 = NPC_SpawnType( ent, "squadcis", va("player%iSquadTeam3", ent->s.number), qfalse );
-		SquadTeam3->client->ps.eFlags |= EF_WP_OPTION_4;
 			}
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_2)
 			{
 		SquadTeam3 = NPC_SpawnType( ent, "squadrep", va("player%iSquadTeam3", ent->s.number), qfalse );
-		SquadTeam3->client->ps.eFlags |= EF_WP_OPTION_3;
 			}	
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_3)
 			{
 		SquadTeam3 = NPC_SpawnType( ent, "squadman", va("player%iSquadTeam3", ent->s.number), qfalse );
-		SquadTeam3->client->ps.eFlags |= EF_WP_OPTION_2;
 			}
 		else
 			{
@@ -3314,7 +3310,6 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		else if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_2)
 			{
 		SquadTeam2 = NPC_SpawnType( ent, "squadreb", va("player%iSquadTeam2", ent->s.number), qfalse );
-		SquadTeam2->client->ps.eFlags |= EF_WP_OPTION_2;
 			}	
 		else if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_3)
 			{
@@ -3323,17 +3318,14 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_1)
 			{
 		SquadTeam2 = NPC_SpawnType( ent, "squadcis", va("player%iSquadTeam2", ent->s.number), qfalse );
-		SquadTeam2->client->ps.eFlags |= EF_WP_OPTION_4;
 			}
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_2)
 			{
 		SquadTeam2 = NPC_SpawnType( ent, "squadrep", va("player%iSquadTeam2", ent->s.number), qfalse );
-		SquadTeam2->client->ps.eFlags |= EF_WP_OPTION_3;
 			}	
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_3)
 			{
 		SquadTeam2 = NPC_SpawnType( ent, "squadman", va("player%iSquadTeam2", ent->s.number), qfalse );
-		SquadTeam2->client->ps.eFlags |= EF_WP_OPTION_2;
 			}
 		else
 			{
@@ -3488,7 +3480,6 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		else if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_2)
 			{
 		SquadTeam = NPC_SpawnType( ent, "squadreb", va("player%iSquadTeam", ent->s.number), qfalse );
-		SquadTeam->client->ps.eFlags |= EF_WP_OPTION_2;
 			}	
 		else if(ent->client->skillLevel[SK_SQUADTEAMA] == FORCE_LEVEL_3)
 			{
@@ -3497,17 +3488,14 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_1)
 			{
 		SquadTeam = NPC_SpawnType( ent, "squadcis", va("player%iSquadTeam", ent->s.number), qfalse );
-		SquadTeam->client->ps.eFlags |= EF_WP_OPTION_4;
 			}
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_2)
 			{
 		SquadTeam = NPC_SpawnType( ent, "squadrep", va("player%iSquadTeam", ent->s.number), qfalse );
-		SquadTeam->client->ps.eFlags |= EF_WP_OPTION_3;
 			}	
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_3)
 			{
 		SquadTeam = NPC_SpawnType( ent, "squadman", va("player%iSquadTeam", ent->s.number), qfalse );
-		SquadTeam->client->ps.eFlags |= EF_WP_OPTION_2;
 			}
 		else
 			{

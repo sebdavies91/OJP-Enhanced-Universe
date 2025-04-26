@@ -411,7 +411,7 @@
 		{
 			name				startserver_button
 			group				playbuttons
-			text				"CREATE"
+			text				"Create Game"
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				0 150 120 24

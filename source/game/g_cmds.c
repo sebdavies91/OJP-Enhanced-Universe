@@ -1847,7 +1847,7 @@ qboolean G_SetSaber(gentity_t *ent, int saberNum, char *saberName, qboolean sieg
 
 	if ( saberNum == 0 && (Q_stricmp( "none", truncSaberName ) == 0 || Q_stricmp( "remove", truncSaberName ) == 0) )
 	{ //can't remove saber 0 like this
-        strcpy(truncSaberName, "Kyle");
+        strcpy(truncSaberName, DEFAULT_SABER);
 	}
 
 	//Set the saber with the arg given. If the arg is
@@ -1857,7 +1857,7 @@ qboolean G_SetSaber(gentity_t *ent, int saberNum, char *saberName, qboolean sieg
 	if (!ent->client->saber[0].model[0])
 	{
 		assert(0); //should never happen!
-		strcpy(ent->client->sess.saberType, "none");
+		strcpy(ent->client->sess.saberType, DEFAULT_SABER);
 	}
 	else
 	{

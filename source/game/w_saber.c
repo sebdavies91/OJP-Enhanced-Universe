@@ -2690,14 +2690,6 @@ GAME_INLINE int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float
 	//we treat torsoTimer as the point in the animation (closer it is to attackAnimLength, closer it is to beginning)
 	currentPoint = self->client->ps.torsoTimer;
 
-	if (peakPoint > currentPoint)
-	{
-		peakDif = (peakPoint - currentPoint);
-	}
-	else
-	{
-		peakDif = (currentPoint - peakPoint);
-	}
 
 	damageFactor = (float)((currentPoint/peakPoint));
 	if (damageFactor > 1)
@@ -7630,6 +7622,7 @@ void WP_SaberStartMissileBlockCheck( gentity_t *self, usercmd_t *ucmd  )
 			continue;
 		if ( !(ent->inuse) )
 			continue;
+
 		if ( ent->s.eType != ET_MISSILE && !(ent->s.eFlags&EF_MISSILE_STICK) )
 		{//not a normal projectile
 			gentity_t *pOwner;
@@ -7645,7 +7638,12 @@ void WP_SaberStartMissileBlockCheck( gentity_t *self, usercmd_t *ucmd  )
 			{
 				continue; //not valid cl owner
 			}
-
+			
+			if (pOwner->client->sess.sessionTeam == TEAM_SPECTATOR ||
+				pOwner->client->tempSpectate >= level.time)
+			{ // 74145: ignore specs
+				continue;
+			}
 			if (!pOwner->client->ps.saberEntityNum ||
 				//[SaberSys]
 				//!pOwner->client->ps.saberInFlight ||
@@ -7667,7 +7665,9 @@ void WP_SaberStartMissileBlockCheck( gentity_t *self, usercmd_t *ucmd  )
 				else if(PM_SaberInStart(pOwner->client->ps.saberMove) 
 					|| PM_SaberInTransition(pOwner->client->ps.saberMove) )
 				{//preparing to attack
-					swingBlockQuad = InvertQuad(saberMoveData[pOwner->client->ps.saberMove].endQuad);
+					// 74145: Ignore windup / transition, happens too often.
+				        //swingBlockQuad = InvertQuad(saberMoveData[pOwner->client->ps.saberMove].endQuad);
+					continue;						
 				}
 				else
 				{//not attacking
@@ -8030,7 +8030,12 @@ GAME_INLINE qboolean CheckThrownSaberDamaged(gentity_t *saberent, gentity_t *sab
 	float veclen;
 	gentity_t *te;
 
-	if (saberOwner && saberOwner->client && saberOwner->client->ps.saberAttackWound > level.time)
+	if (!saberOwner || !saberOwner->client)
+	{
+		return qfalse;
+	}
+
+	if (saberOwner->client->ps.saberAttackWound > level.time)
 	{
 		return qfalse;
 	}
@@ -8952,7 +8957,7 @@ void WP_SaberAddG2Model( gentity_t *saberent, const char *saberModel, qhandle_t 
 	}
 	else
 	{
-		saberent->s.modelindex = G_ModelIndex( "models/weapons2/saber/saber_w.glm" );
+		saberent->s.modelindex = G_ModelIndex( DEFAULT_SABER_MODEL );
 	}
 	//FIXME: use customSkin?
 	trap_G2API_InitGhoul2Model( &saberent->ghoul2, saberModel, saberent->s.modelindex, saberSkin, 0, 0, 0 );

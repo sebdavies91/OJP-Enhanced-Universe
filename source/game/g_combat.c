@@ -2619,6 +2619,21 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 	int			actualMOD = meansOfDeath;
 	//[/Asteroids]
 
+	if ( self->client->ps.pm_type == PM_DEAD ) 
+	{
+		return;
+	}
+
+	if ( level.intermissiontime ) 
+	{
+		return;
+	}
+
+	if ( !attacker )
+	{
+		return;
+	}
+	
 	//[SeekerItemNPC]
 	if(attacker->NPC && attacker->client->NPC_class == CLASS_SEEKER && meansOfDeath == MOD_SEEKER)
 	{//attacker was a player's seeker item

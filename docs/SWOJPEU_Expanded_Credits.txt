@@ -1,0 +1,1025 @@
+============================================================================================================================================================================================================
+SW OJP ENHANCED UNIVERSE EXPANDED CREDITS
+============================================================================================================================================================================================================
+
+THANK YOU VERY MUCH TO THE CURRENT AND OLD MEMBERS OF THE JK COMMUNITY, OJP, KOTF, MB2, Open JK, AND JKG TEAMS. 
+WITHOUT YOU, STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE WOULD NOT BE A REALITY. 
+ALL OF YOU CAN CONSIDER YOURSELVES TO BE COAUTHORS OF STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE.
+
+============================================================================================================================================================================================================
+GAMETYPES
+============================================================================================================================================================================================================
+
+Gametype	/	Author
+
+Cooperative/Single Player	/	OJP Team & Mandalore1st
+Free for All	/	Raven Software & OJP Team & Mandalore1st
+Jedi Master	/	OJP Team & Mandalore1st
+Holocron Free for All	/	OJP Team & Mandalore1st
+Duel	/	Raven Software & OJP Team & Mandalore1st
+Powerfuel	/	Raven Software & OJP Team & Mandalore1st
+Team Free for All	/	Raven Software & OJP Team & Mandalore1st
+Capture the Flag	/	Raven Software & OJP Team & Mandalore1st
+Capture the Ysamalmiri	/	OJP Team & Mandalore1st
+Siege	/	Raven Software & OJP Team & Mandalore1st
+
+============================================================================================================================================================================================================
+MAPS
+============================================================================================================================================================================================================
+
+Map	/	Model	/	Author
+
+Alderaan Bomb	/	siege_bomb	/	J3rk
+Alderaan Country	/	arrevanous	/	AngelModder
+Alderaan Hangar	/	alderaan	/	Deejv
+Alderaan Palace Wars	/	ctf_palace	/	Dad*Mad 
+Alzoc 3 Capital	/	alzoc3_capital	/	Krattle
+Alzoc 3 Enclave	/	alzoc3_enclave	/	Sehkola
+Asteroid Smuggler	/	smuggler	/	Hexodious
+Bespin Carbon Chamber	/	duel_carbonchamber	/	
+Bespin Carbon City	/	carboncity	/	LivingDeadJedi
+Bespin Cloud City	/	cloudcity	/	Immenor 
+Bespin Jedi Home	/	jedi_home	/	Stone
+Carrack Cruiser	/	carrack	/	Merrick 
+Chandrila Apcotyl Temple	/	apcotyl_temple	/	jashugan
+Confederacy Laboratories I	/	cislabsv1	/	Knux 
+Confederacy Laboratories II	/	cislabsV2	/	Juggernut 
+Corellia Hangar	/	corellia	/	L-5-R, Profcorron 
+Coruscant Bar	/	coruscant_bar	/	=tom= 
+Coruscant Battle	/	boc	/	Orbitius and Hatrus 
+Coruscant Battle	/	siege_boc	/	DarthNormaN
+Coruscant Day	/	coruscant_adventures_day	/	Sith-J-Cull
+Coruscant Dex Club	/	dex_club	/	Sith-J-Cull
+Coruscant Invisible Hand I	/	ffa_boc	/	Orbitius and Hatrus
+Coruscant Invisible Hand II	/	invisible_hand	/	Sith-J-Cull
+Coruscant Jedi Archives	/	jedi_archives	/	Sevker
+Coruscant Jedi Council	/	jedicouncilgcx	/	Griffinclaw
+Coruscant Jedi Temple	/	duel_jeditemple	/	Lwkill, Wettergren, =tom=, ACiDuS
+Coruscant Jedi Temple Inside	/	jedi_temple_inside	/	=tom=, ACiDuS
+Coruscant Jedi Temple Outside	/	jedi_temple_outside	/	several sided sid
+Coruscant Night	/	coruscant_adventures_night	/	Sith-J-Cull
+Coruscant Padme Home	/	padme_home	/	Sith-J-Cull
+Coruscant Palpatine Office	/	palpatine_office	/	Sith-J-Cull
+Coruscant Palpatine Rooftop	/	palpatinerooftop	/	JamyzGenius
+Coruscant Speedway	/	coruscant_speedway	/	Sith-J-Cull
+Coruscant The Republic Senate	/	senate	/	Sith-J-Cull
+Coruscant Undercity	/	coruscantuc	/	Szico VII
+Coruscant Vader Chamber	/	vader_chamber	/	Sith-J-Cull
+Dantooine Enclave	/	enclave	/	Smoke, MaceCrusherMadunusus, Plasma
+Dantooine Enclave Duel	/	duel_dantooine	/	Plasma
+Dantooine Estate	/	dantooine_estate	/	SMoKE_89
+Death Star	/	deathstar	/	Frost, Lindsey
+Death Star Emperor Throne	/	emperor_throne	/	Nw0 Deadlock 
+Death Star Trench	/	deathstar_trench	/	Darth Zappa
+Doomgiver Star Destroyer	/	doomgiver	/	Raven Sofware 
+Dromund Kaas Sith Council I	/	sithcouncilv2	/	Kahn
+Dromund Kaas Sith Council II	/	sithcouncilv3	/	Kahn
+Earth Arctic	/	arctic	/	Juggernut
+Earth Atlantica	/	atlantica	/	Szico VII
+Earth Atlantica RPG	/	atlantica_rpg	/	Szico VII
+Earth Blueice Nightfall	/	blueice_nightfall	/	Szico VII
+Earth Blueice Twilight	/	blueice_twilight	/	Szico VII
+Earth Casa de los Parias	/	casa_de_los_parias	/	Orbitius
+Earth Country Academy	/	countryacademy	/	ShroomDuck
+Earth Forest House	/	forest_house	/	Lil_binger, Ook
+Earth Jurancor Park	/	jurancor_park	/	Sith-J-Cull
+Earth Mountain Keep	/	mountainkeep	/	=tom=
+Earth Nowhere	/	nowhere	/	Cye
+Earth Resident Evil Mansion	/	remansion	/	Plasma
+Earth Sirens Enclave	/	sirens_enclave	/	HiddenSpy
+Earth Stargate	/	stargate	/	Sith-J-Cull
+Earth Surf	/	surf	/	ook
+Endor Bunker	/	siege_endor_bunker	/	Monsoontide
+Endor Comm Tower	/	commtower	/	Immenor 
+Endor Land Battle	/	ffa_endor	/	Yzmo
+Endor Shield Generator	/	siege_endor_shieldgen	/	Monsoontide
+Endor Space Battle	/	battleofendor	/	Tim 
+Endor Village	/	siege_endor_village	/	Monsoontide
+Eravana Freighter	/	eravana	/	Plasma
+Felucia The Lost Spider	/	the_lost_spider	/	
+Firefly Cruiser	/	serenity	/	Spineless
+Firefly Cruiser RPG	/	serenity_rp	/	Spineless
+Geonosis Arena	/	arena	/	Lindsey
+Geonosis Battle	/	battleofgeonosis	/	Tim 
+Geonosis Battle	/	siege_geo	/	J3rk
+Geonosis Canyons	/	geocanyons	/	Lindsey
+Geonosis Hangar	/	geonosis_hangar	/	Cur-Gan Javaa
+Geonosis Investigation	/	ffa_geonosis	/	Izzy 
+Harrower Dreadnought	/	tor_dreadnought	/	Wettergren
+Hoth Battle	/	battleforhoth	/	Darth Alex 
+Hoth Echo Base	/	echobase	/	echobase
+Ilum Frozen Temple	/	frozen_temple	/	ZidZabre
+Imperial 1 Star Destroyer	/	sdestroyer	/	Plasma
+Imperial 1 Star Destroyer Duel	/	duel_sdestroyer	/	Plasma
+Jakku Battle	/	jakku	/	Plasma
+Kamino Armory	/	kamino	/	Plasma, Darth NormaN, MaceCrusherMadunusus
+Kamino Facility	/	kamino_ffa	/	Sith-J-Cull
+Kamino Platform	/	duel_kamino	/	Plasma, Darth NormaN, MaceCrusherMadunusus
+Kashyyyk Battle	/	kashyyyk	/	Sith-J-Cull
+Kessel Base	/	lunarbase	/	Chairwalker
+Korriban Ancient Outpost	/	ancient_outpost	/	Livingdeadjedi
+Korriban Duel	/	duel_korriban	/	
+Korriban Ragnos Arena	/	korriban_ragnosarena	/	Spaghetti
+Korriban Ruins	/	korriban	/	Vic Hatecraft
+Korriban Sith Academy	/	korriban_academy	/	Oobah
+Korriban The Lost Temple	/	the_lost_temple	/	MeusH
+Korriban Undergrounds	/	korriban_undergrounds	/	Chairwalker
+Malachor 5 Expedition	/	expedition	/	Acrobat
+Malachor V Trayus Academy	/	malachor	/	Droid
+Manaan Complex	/	manaan	/	PyroTechnics
+Mustafar Duel	/	duel_mustafar	/	Plasma
+Mustafar Lava I	/	mustafar_area1	/	Sith-J-Cull
+Mustafar Lava II	/	mustafar	/	Plasma
+Mustafar Vader Castle	/	RO_Vader_Castle	/	GPChannel
+Mygeeto Battle	/	mygeeto	/	J3rk
+Mygeeto Battle	/	siege_mygeeto	/	J3rk
+Mygeeto Battle	/	siege_hotfo	/	J3rk
+Naboo Chamber	/	naboo_chamber	/	Master_Jin 
+Naboo Crystal Swamp	/	naboo_crystal_sanctuary	/	Sith-J-Cull
+Naboo Duel of the Fates	/	duel_dotf	/	LivingDeadJedi
+Naboo Hangar	/	naboohangar	/	Ritual
+Naboo Hills	/	naboohills	/	Darth Zappa
+Naboo Otoh Gunga	/	otoh_gunga	/	TakiJap
+Naboo Palace	/	nabooPalace	/	Lindsey
+Naboo Theed	/	naboo_theed	/	Naboo_Theed
+Naboo Theed Streets I	/	naboo_streets	/	Sith-J-Cull
+Naboo Theed Streets II	/	theed_streets	/	Sith-J-Cull
+Naboo Throne Room	/	dotf	/	LivingDeadJedi
+Okofo Capture Remnant Officer	/	t2_Port	/	zahar
+Ord Mantell RPG	/	rpg_baseattack	/	Toshik
+Ord Mantell Streets	/	ord_mantell	/	Cydon Prax
+Ravager Star Destroyer Duel	/	ravager	/	MaceCrusherMadunusus
+Ravager Star Destroyer Revan	/	revan	/	
+Raxus Prime Hangar	/	raxus	/	redsaurus
+Ruusan Valley of the Jedi	/	votj	/	Plasma
+Scarif Battle	/	RO_Scarif	/	Plasma
+Space Race	/	spacerace	/	Agent Jones
+Starforge	/	starforge	/	Shadriss, MaceCrusherMadunusus, Inyri
+Starkiller Base	/	starkiller_base	/	Plasma
+Starkiller Base Duel	/	duel_starkiller_base	/	Plasma
+Starkiller Snow Facility	/	snowfacility	/	redsaurus
+Sullust Lava	/	siege_h3h2b	/	J3rk
+Sullust Mine	/	siege_mine	/	J3rk
+Supremacy Snoke Throne	/	snoke_throne	/	JKnewGuy
+Tantive IV Corvette	/	tantiveIV	/	LivingDeadJedi
+Taris Horizons	/	taris_horizons	/	MaceCrusherMadunusus 
+Taris Streets	/	taris	/	Cydon Prax
+Tatooine Boonta Eve	/	boonta_eve	/	Sith-J-Cull
+Tatooine City	/	tatooine	/	Sith-J-Cull, MaceCrusherMadunusus
+Tatooine Crash Investigation	/	t2_CoT	/	zahar
+Tatooine Dune Sea	/	dunesea	/	Plasma
+Tatooine Escape	/	siege_usm	/	J3rk
+Tatooine Jabba Palace Day	/	jabba_day	/	Sith-J-Cull
+Tatooine Jabba Palace Duel	/	duel_jabba	/	LivingDeadJedi, MaceCrusherMadunusus
+Tatooine Jabba Palace Sunset	/	jabba_sunset	/	Sith-J-Cull
+Tatooine Luke Home	/	tatooine_outpost	/	LouTranch
+Tatooine Millenium Falcon	/	falcon_desert	/	Sith-J-Cull
+Tatooine Mos Eisley Cantina	/	cantina_int	/	Krattle
+Tatooine Mos Eisley Spaceport	/	cantina	/	Krattle
+Tatooine Mos Espa City	/	mos_espa	/	
+Tatooine Mos Espa Outskirts	/	mos_espa_outskirts	/	Several Sided Sid
+Tatooine Mos Kreetle City	/	mos_kreetle	/	Sith-J-Cull
+Tatooine Outskirts	/	tatooineduel	/	Tim
+Tatooine RPG	/	tatooine_rpg	/	MageC
+Tatooine Sarlacc Pit	/	sarlacc	/	LivingDeadJedi
+Tatooine Tusken Camp	/	tusken_camp	/	Plasma
+Trade Federation Ship I	/	tradefed	/	Plasma
+Trade Federation Ship II	/	ffa_tradefed	/	CommanderKEEN
+Utapau Battle	/	utapau	/	Sith-J-Cull
+Utapau Platform	/	duel_utapau	/	Frost, Teelos 
+Venator Cruiser Bridge	/	duel_rcbridge	/	
+Venator Cruiser Datacore	/	duel_datacore	/	
+Venator Cruiser Detention	/	duel_detention	/	
+Venator Cruiser Hall	/	republiccruiser	/	MaceCrusherMadunusus
+Venator Cruiser Hangar C	/	rc_hangarc	/	Droidee, MaceCrusherMadunusus
+Yavin 4 Battle	/	battlefront_yavin	/	Sith-J-Cull
+Yavin 4 Battle	/	siege_yavin4	/	BiD-One
+Yavin 4 Battlegrounds	/	yavin_battle	/	YooD4
+Yavin 4 Duel	/	duel_yavin4	/	Darth NormaN
+Yavin 4 Jedi Sanctuary	/	jedi_sanctuary	/	Pauken
+Yavin 4 Jedi Sanctuary	/	renaissance_academy_day	/	Ganseki
+Yavin 4 Jungle Temple	/	jungle_temple	/	Zarbomba
+Yavin 4 Massassi Temple II	/	massassi	/	Gabriel
+Yavin 4 Renaissance Academy Night	/	renaissance_academy_night	/	Ganseki
+Yavin 4 Requiem Sanctuary	/	requiem_sanctuary	/	Xenon_7
+Yavin 4 The Academy II	/	the_academy_v2	/	Virtue
+Yavin 4 The Academy III	/	the_academy_v3	/	Virtue
+Yavin Training Grounds	/	t3home2	/	
+
+============================================================================================================================================================================================================
+SKINS
+============================================================================================================================================================================================================
+
+Skin	/	Model	/	Author
+
+4-Lom	/	4lom	/	oddjob
+Aayla Secura	/	femaayla	/	Mars Marshall
+Abednedo Male	/	Abednedo	/	
+Aden Null	/	aden	/	Mhoker
+Adi Gallia	/	AdiGallia	/	Kualan
+Admiral Ackbar	/	ackbar	/	Moooa
+Admiral Rieek	/	Admiral_Rieek	/	Moooa
+Admiral Thrawn	/	thrawn	/	Kualan
+Agen Kolar	/	agen_kolar	/	Tompa9
+Agent Kallus	/	AgentKallus	/	Kualan
+Ahsoka Tano	/	AhsokaV3	/	Hirmanator
+Alderaan Guard	/	AlderaanGuard	/	Kualan
+Alloysius Kallig	/	kallig	/	Jeff
+Alora III	/	alora3	/	CommanderPeral
+Alora IV	/	alora4	/	CommanderPeral
+Anakin Skywalker II	/	anakin_ep2	/	Tompa9
+Anakin Skywalker III	/	Anakin	/	Tompa9
+Anakin Skywalker Kid	/	anakin_kid	/	
+Aqualish Male	/	Aqualish_Jedi	/	
+Arcann	/	Arcann	/	RevanKnight
+Asajj Ventress	/	Asajj_NS	/	Kualan
+Asajj Ventress II	/	AssajjCW	/	Monsoontide and Psyk0Sith
+Asajj Ventress III	/	Ventress	/	Kualan
+Ashara Zavros	/	Ashara_Zavros	/	
+Asharad Hett	/	asharad_hett	/	Spanki, HapSlash
+AT AT Pilot	/	atat_pilot	/	TK-962
+AT ST Pilot	/	atst_pilot	/	Monsoontide
+Atin Omega	/	Atin	/	 Mhoker
+Atris	/	Atris	/	DarthStiv
+Atton Rand	/	Atton	/	DarthStiv
+Aurra Sing	/	aurrasing	/	Mars Marshall
+Aviar	/	aviar	/	Spanki, HapSlash
+Bail Organa	/	BailOrgana	/	Kualan
+Barriss Offee	/	barriss_offee	/	Kualan
+Battle C3PO	/	battle3po	/	oddjob
+Battle Droid	/	battledroid	/	Master_Ibonek
+Baze Malbus	/	baze	/	Claim
+Bib Fortuna	/	bibfortuna	/	Langerd
+Bith	/	bith	/	Mat Gaunt.
+Black Sun Mercenary	/	BlackSunMerc	/	Kualan
+Bo Katan	/	bokatan	/	Jeff
+Bodhi Rook	/	bodhi	/	Claim
+Bossk	/	Bossk	/	Kualan
+Bothan	/	bothan	/	Langerd
+Boushh	/	boushh	/	oddjob
+Brianna	/	Brianna	/	DarthStiv
+Brick	/	Brick	/	
+Bultar Swan	/	bultar	/	Jeff
+Buzz Droid	/	buzzdroid	/	
+BX Droid	/	bxdroid	/	Noob
+C1 10P	/	chopper	/	Jeff
+C3PO	/	c3po	/	Macman
+C3PO Battle	/	bd_c3po	/	oddjob
+Cad Bane	/	cadbane	/	Hirmanator
+Cade Skywalker	/	cade_skywalker	/	Spanki, HapSlash
+Calo Nord	/	calo	/	The Unguided
+Canderous Ordo	/	canderous	/	
+Captain Phasma	/	CaptainPhasma	/	Kualan
+Carth Onasi	/	Carth	/	DarthStiv
+Cassian Andor	/	cassian	/	GPChannel
+Chadra Fan	/	kabe	/	
+Chewbacca II	/	chewbacca_bespin	/	eMZet
+Chirrut Imwe	/	chirrut	/	Claim
+Cin Drallig	/	cin_drallig	/	Tompa9
+Clone ARC Trooper 501	/	501starc	/	Kualan
+Clone ARC Trooper P1	/	arc	/	
+Clone ARC Trooper P2	/	arcsremade	/	Laam'inui
+Clone ARF Trooper P1	/	ARFPack/phaseI	/	Jeff
+Clone ARF Trooper P2	/	ARFPack/phaseII	/	Jeff
+Clone Boil	/	Boil	/	JAWSFreelao 
+Clone Captain Keeli	/	Captain_Keeli	/	JAWSFreelao
+Clone Commander Bakara	/	clonebacara	/	neomarz1
+Clone Commander Bly	/	CommanderBly	/	 JAWSFreelao
+Clone Commander Bolton	/	CommanderBolton	/	Kualan
+Clone Commander Cody	/	cody	/	neomarz1
+Clone Commander Doom	/	CommanderDoom	/	 JAWSFreelao
+Clone Commander Falco	/	CommanderFalco	/	Kualan
+Clone Commander Fil	/	CommanderFil	/	 JAWSFreelao
+Clone Commander Fox	/	CommanderFox	/	Kualan
+Clone Commander Frenken	/	CommanderFrenken	/	Kualan
+Clone Commander Hound	/	CommanderHound	/	 JAWSFreelao
+Clone Commander Jet 	/	CommanderJet	/	 JAWSFreelao
+Clone Commander Keller	/	comkeller	/	
+Clone Commander Killik	/	CommanderKillik	/	Kualan
+Clone Commander Ponds	/	Commander_Ponds	/	JAWSFreelao
+Clone Commander Rawls	/	CommanderRawls	/	Kualan
+Clone Commander Sohn	/	CommanderSohn	/	Kualan
+Clone Commander Stone	/	CommanderStone	/	 JAWSFreelao
+Clone Commander Thire	/	CommanderThire	/	 JAWSFreelao
+Clone Commander Thorn	/	CommanderThorn	/	JAWSFreelao
+Clone Commander Trackshot	/	CommanderTrackshot	/	Kualan
+Clone Commander Trauma	/	CommanderTrauma	/	JAWSFreelao
+Clone Commando	/	cloneultcom	/	neomarz1
+Clone Commando P2	/	clonerc2	/	Rebas14
+Clone Echo	/	Echo	/	 JAWSFreelao
+Clone Fives	/	Fives	/	 JAWSFreelao
+Clone Fives 501	/	501stFives	/	Kualan
+Clone Fixer	/	Fixer	/	Sithani
+Clone Flame Trooper	/	FlameTrooper	/	JAWSFreelao
+Clone Fox	/	Fox	/	JAWSFreelao
+Clone Gregor	/	Gregor	/	Barricade24
+Clone Jet Trooper	/	clonecody	/	neomarz1
+Clone Jet Trooper 501	/	501stjp	/	Kualan
+Clone Marine	/	clonecommander	/	neomarz1
+Clone Navy	/	CloneNaval	/	Kualan
+Clone Para Trooper	/	clonetrooper_ab	/	neomarz1
+Clone Para Trooper 212	/	cbe	/	neomarz1
+Clone Pilot P1	/	clonepilot	/	 Robin 'Izanagi' Molde
+Clone Recon Trooper 501	/	501sta	/	Kualan
+Clone Recon Trooper 91ST 	/	91stReconCorps	/	JAWSFreelao
+Clone Scorch	/	Scorch	/	Sithani
+Clone Scout Trooper	/	clone_scout	/	Weedsmoker
+Clone Scuba Trooper	/	aqua_trooper	/	JAWSFreelao
+Clone Sev	/	Sev	/	Sithani
+Clone Trainee	/	CloneTrainees	/	JAWSFreelao
+Clone Trooper 41ST P1	/	41stEliteCorps	/	JAWSFreelao
+Clone Trooper 501 P1	/	501stPack	/	Kualan
+Clone Trooper 501 P2	/	501stct	/	Kualan
+Clone Trooper 91ST P2	/	91stPhase2	/	JAWSFreelao
+Clone Trooper P1	/	cloneclassic	/	neomarz1
+Clone Trooper P2	/	cloneultima	/	neomarz1
+Clone Trooper Poncho	/	ClonePoncho	/	Kualan
+Clone Unarmored	/	CloneCivvies	/	JAWSFreelao
+Clone Waxer	/	Waxer	/	JAWSFreelao 
+Coleman Trebor	/	coleman_trebor	/	Tompa9
+Corr Omega	/	corr	/	Mhoker
+CorUnderPol	/	CorUnderPol	/	
+Count Dooku	/	dooku	/	HapSlash
+Crix Madine	/	crixmadine	/	Infinity Blade
+D 0T	/	d0t	/	Daedra
+Darman Omega	/	darman	/	 Mhoker
+Darth Bane	/	darth_bane	/	Spanki, HapSlash
+Darth Krayt	/	darth_krayt	/	Spanki, HapSlash
+Darth Kruhl	/	darth_kruhl	/	Spanki, HapSlash
+Darth Larith	/	Lord_Larith	/	
+Darth Malak	/	malak	/	DarthViper107
+Darth Marr	/	darth_marr	/	
+Darth Maul	/	maulvm	/	Mars Marshall
+Darth Maul Cybernetic	/	cybernetic_maul	/	Hoodz
+Darth Maul II	/	maulvms	/	Mars Marshall
+Darth Maul III	/	darthmaul	/	Broken-Hope
+Darth Maul Robed	/	maulvmr	/	Mars Marshall
+Darth Nihilus	/	nihilus	/	DarthStiv
+Darth Revan	/	swtorrevan	/	
+Darth Revan II	/	revan	/	Almighty Gir
+Darth Sidious 	/	lord_sidious	/	Scrounger
+Darth Sidious II	/	sidious	/	Hirmanator
+Darth Sidious III	/	palpatine_emperor	/	Hirmanator
+Darth Sion	/	sion	/	JamyzGenius
+Darth Starkiller	/	lord_stalker	/	GustavoPredador
+Darth Starkiller Aren	/	Starkiller_Arena	/	dark_apprentice
+Darth Starkiller Arm	/	Starkiller_Armor	/	dark_apprentice
+Darth Starkiller Clone	/	Starkiller_Clone	/	dark_apprentice
+Darth Starkiller Dark	/	Starkiller_Dark	/	dark_apprentice
+Darth Starkiller II	/	sith_stalker	/	GustavoPredador
+Darth Starkiller Tie	/	Starkiller_TIE	/	dark_apprentice
+Darth Traya	/	darthtraya	/	DarthStiv
+Darth Vader	/	vadervmm	/	Mars Marshall
+Darth Vader II	/	am_vader	/	GustavoPredador
+Darth Vitiate	/	Valkorion	/	Jeff
+Death Trooper	/	Death_Trooper	/	Scerendo
+Dengar	/	Dengar	/	Kualan
+Depa Billaba	/	depabillaba	/	Kualan
+Devaronian	/	devaronian	/	AshuraDX
+Deviant	/	DeviantMando	/	Dark_Diablos
+Din Djarin	/	dindjarin	/	GustavoPredador
+Director Krennic	/	Krennic	/	Kualan
+Dorak	/	Dorak	/	The Unguided
+Durge	/	durge	/	Sinsta
+Eeth Koth	/	eeth_koth	/	Tompa9
+Eighth Brother	/	8thbrother	/	Jeff
+El-Les	/	El-Lesk	/	
+Even Piell	/	EvenPiell	/	Kualan
+Ewok	/	ewok	/	Jamesh2
+Exar Kun	/	exar_kun	/	Spanki, HapSlash
+Exile	/	Exile	/	The Unguided
+Ezra Bridger	/	Ezra	/	dark_apprentice
+Ezra Bridger II	/	EzraBridger	/	dark_apprentice
+Ezra Bridger III	/	ezra_s3	/	
+Fi Omega	/	fi	/	Mhoker
+Fifth Brother	/	5thbrother	/	Jeff
+Finis Valorum	/	Valorum	/	Kualan
+Finn	/	Finn_TFA	/	Scerendo
+Finn II	/	Finn_TLJ	/	Scerendo
+Finn III	/	FN-2187	/	Brownjor10
+Galen Erso	/	galen	/	Kualan
+Gamorrean	/	gamorrean	/	HapSlash
+Garazeb Orrelios	/	zeb	/	
+Garindan	/	Garindan	/	The Unguided 
+Gee	/	Gee	/	Moooa
+General Grievous	/	griev2	/	Mars Marshall
+General Grievous 4 Arms	/	grfour	/	MLZ
+General Grievous II	/	griev	/	Mars Marshall
+General Hux	/	Hux	/	Scerendo
+General Veers	/	veers	/	EPV
+Geonosian	/	Geonosian	/	Sebastian Barz (Sebcrea)
+Gotab Delta	/	Gotab	/	 Mhoker
+GOTO	/	GOTO	/	
+Gungan	/	gungan	/	Gamemaster
+Halsey	/	MasterHalsey	/	JAWSFreelao 
+Han Solo	/	han_anh	/	Major Clod
+Han Solo II	/	han_esb	/	Major Clod
+Han Solo III	/	han_roj	/	Major Clod
+Heavy Mandalorian	/	mandalorian_heavy	/	Zander_Nao
+Hego Damask	/	plagueis	/	Hirmanator
+Hera Syndulla	/	hera	/	 Jeff
+HK-47	/	Hk47	/	DarthStiv
+HK-50	/	hk50	/	DarthStiv
+HK-51	/	hk51	/	DarthStiv
+Hondo Ohnaka	/	hondo	/	Jeff
+Human Mercenary II	/	human_merc2	/	GenericUsername29
+Human Youngling	/	youngling	/	neomarz1
+IG 88	/	IG88_shiny	/	Last_Wish
+Ijaat Delta	/	ijaat	/	Mhoker
+Ima Gun Di	/	imagundi	/	JAWSFreelao
+Imperial Assasin	/	impassassin	/	GoodJawa
+Imperial Commando	/	imperialcommando	/	
+Imperial Gunner	/	impgunner	/	Barricade24
+Imperial Sniper	/	imperial_sniper	/	
+Imperial Worker	/	imperial_worker	/	Barricade24
+Inferno Trooper	/	inferno	/	Encritary
+Inquisitor	/	TheInquisitor	/	Kualan
+Inquisitor II	/	TheInquisitor2	/	Kualan
+Ithorian	/	ithorian	/	The Unguided
+Ithorian II	/	Itho	/	The Unguided
+Ithorian Jedi Male	/	IthorianJedi	/	
+Jabba The Hutt	/	JabbaTheHutt	/	[OTF]Lord XepHiroTH
+Jagged Fel	/	jagged_fel	/	Spanki, HapSlash
+Jaing Null	/	jaing	/	Mhoker
+Jango Fett	/	jango_fett	/	GustavoPredador
+Jar Jar Binks	/	jarjar	/	Major Clod
+Jawa II	/	jawa2	/	TiM
+Jek Tono Porkins	/	porkins	/	
+Jocasta Nu	/	Jocasta_Nu	/	
+Jolee Bindo	/	Jolee_bindo	/	Jeff
+Juno Eclipse	/	juno_eclipse	/	NumberWan
+Jyn Erso	/	jyn	/	GPChannel
+K3PO	/	k3po	/	Kylo Ren
+Kal Delta	/	kal	/	 Mhoker
+Kanan Jarrus	/	Kanan	/	Kahzmat
+Kanan Jarrus II	/	Kanan_s3	/	
+Ki Adi Mundi	/	ki_adi	/	Psyk0Sith
+Kit Fisto	/	kit_fisto	/	 JAWSFreelao
+Komrk Null	/	komrk	/	 Mhoker
+Kreia	/	Kreia	/	DarthStiv
+Kyle Katarn II	/	kyle2	/	CommanderPeral
+Kyle Katarn III	/	kyle3	/	CommanderPeral
+Kyle Katarn IV	/	kyle4	/	CommanderPeral
+Kylo Ren	/	kylo_tfa	/	Kualan
+Kyp Durron	/	kyp_durron	/	Spanki, HapSlash
+Lama Su	/	lamasu	/	 Zeke Mass
+Lando Calrissian II	/	lando_calrissian	/	Tompa9
+Lando Calrissian Jabba	/	lando_jabba	/	Tompa9
+Leia Organa	/	leia_anh	/	StingRay
+Leia Organa	/	Leia_TFA	/	dark_apprentice
+Leia Organa Bounty	/	leia_bh	/	StingRay
+Leia Organa Hoth	/	leia_hoth	/	StingRay
+Leia Organa II	/	leia_esb	/	StingRay
+Leia Organa Jabba	/	leia_slave	/	StingRay
+Liutenant Female	/	FO_Female	/	
+Liutenant Lyste	/	LtLyste	/	Kualan
+Liutenant Male	/	FO_Male	/	
+Ludo Kressh	/	ludo_kressh	/	DarthJava
+Luke Skywalker	/	luke_crait	/	GPChannel
+Luke Skywalker Dago	/	Luke_ESB_Dago	/	dark_apprentice
+Luke Skywalker Hoth	/	luke_hoth	/	dark_apprentice
+Luke Skywalker II	/	luke_anh	/	dark_apprentice
+Luke Skywalker II	/	Luke_TFA	/	GPChannel
+Luke Skywalker III	/	Luke_ESB	/	dark_apprentice
+Luke Skywalker IV	/	luke_rotj	/	dark_apprentice
+Luke Skywalker Pilot	/	luke_pilot	/	dark_apprentice
+Luke Skywalker V	/	luke_yavin	/	dark_apprentice
+Luminara Unduli	/	luminara	/	Mars Marshall
+Mace Windu	/	mace_windu	/	Kualan
+Magnaguard	/	magnaguard	/	Mars Marshall
+Malak	/	Malek	/	DarthStiv
+Mandalore The Preserver	/	mandalore	/	
+Mandalorian	/	ini	/	Mhoker
+Mara Jade	/	mara	/	Lilandra
+Mara Jade II	/	MaraJade	/	DT
+Mara Jade Jump	/	mara_jumpsuit	/	DT
+Mark 3 Droid	/	mark3	/	
+Marka Ragnos	/	Lord_Ragnos	/	Xioth
+Mas Amedda	/	MasAmedda	/	
+Meetra Surik	/	Meetra_surik	/	
+Mereel Null	/	mereel	/	Mhoker
+Mira	/	mira	/	
+Mission Vao	/	Mission	/	DarthStiv
+Moff Tarkin	/	Tarkin	/	Kualan
+Mother Talzin	/	MotherTalzin	/	
+Munin Delta	/	munin	/	 Mhoker
+Mustafarian	/	mustafarian	/	
+Naboo Captain Typho	/	CaptainTypho	/	Kualan
+Naboo Guard	/	nabooguard	/	
+Naboo Handmaiden	/	handmaiden	/	Liberty Ashford
+Naboo Palace	/	naboopalace	/	
+Naboo Quarsh Panaka	/	panaka	/	
+Naboo Trooper	/	naboo	/	
+Naga Sadow	/	nagasadow	/	Brownjor10
+Nahdar Vebb	/	Nahdar	/	JAWSFreelao
+Neocrusader Marine	/	mandalorian	/	AshuraDX
+Neocrusader Scout	/	manda_et	/	AshuraDX
+New Republic Vanguard	/	NewRepGuard	/	Jeff
+Niner Omega	/	niner	/	 Mhoker
+Noghri II	/	noghri2	/	RO Agent Smith
+Nomi Sunrider	/	Nomi_sunrider	/	Spanki, HapSlash
+Nute Gunray	/	gunray	/	Wytchking/Wector
+Nute Gunray II	/	gunrayep3	/	Wytchking/Wector 
+Obi Wan Kenobi	/	obiwan_ep1	/	Tompa9
+Obi Wan Kenobi II	/	obiwan_ep2	/	Tompa9
+Obi Wan Kenobi III	/	obiwan_ep3	/	Tompa9
+Old Republic Soldier	/	Oldrepsold	/	DarthStiv
+Old Republic Trooper	/	republictrooper	/	MarsMarshall
+Ootyr	/	ootyr	/	Tyrael64
+Opo Chano	/	OpoChano	/	
+Oppo Rancisis	/	MasterRancisis	/	Kualan
+Ordo Null	/	ordo	/	 Mhoker
+Padme Amidala	/	Padme_v2	/	Liberty Ashford
+Padme Amidala Dress	/	Padme_Green	/	StingRay
+Padme Amidala II	/	padme_ep2	/	StingRay
+Plo Koon	/	NewPlo	/	neomarz1
+Poe Dameron	/	Poe_TFA	/	Scerendo
+Poggle the Lesser	/	Poggle	/	
+Ponda Baba	/	ponda_baba	/	Mark Lubbers
+Praetorian Guard	/	praetorian_guard	/	PreFXDesigns
+Pre Vizsla	/	previzsla	/	
+Pre Vizsla II	/	vizsla	/	
+Prudii Null	/	prudii	/	 Mhoker
+Purge Trooper	/	purge_trooper	/	Tompa9
+Queen Amidala	/	queen_amidala	/	Liberty Ashford
+Qui Gon Ginn	/	quigon	/	yasuakiNk
+Quinlan Vos	/	qvos	/	Aaron Smith
+R2 B1	/	r2b1	/	ZanderNao
+R2 D2	/	r2d2	/	ZanderNao
+R2 D2 Dago	/	r2d2_dagobah	/	ZanderNao
+R2 KT	/	r2kt	/	ZanderNao
+R3 PO	/	r3po	/	ZanderNao
+Ra-7	/	ra7	/	Randy Malott
+Rab-24	/	rab-24	/	Chairwalker
+Rahm Kota	/	Kota	/	Onlycorndog
+Rahm Kota II	/	kota2	/	Onlycorndog
+Rakata	/	Rakata	/	DarthStiv
+Rako Hardeen	/	Rako_Hardeen	/	
+Rebel Commando	/	rebel_commando	/	
+Rebel Guerrilla	/	rebel_guerilla	/	
+Rebel Honor Guard	/	Rebel_Honor_Guard	/	
+Rebel Mercenary	/	merc_kyle	/	Infinity Blade
+Rebel Vanguard II	/	rebel_vanguard	/	Jeff
+Reborn II	/	reborn2	/	CommanderPeral
+Redath Gom	/	RedathGom	/	Scoundrel
+Rey Skywalker	/	Rey_TFA	/	dark_apprentice
+Rey Skywalker II	/	Rey_TLJ	/	dark_apprentice
+Rig Nema	/	RigNema	/	Kualan
+Rocket Trooper	/	rockettrooper	/	Innocent Bystander
+Rodian Female	/	female_rodian	/	WizardMKBK
+Rosh Penin II	/	rosh_penin2	/	CommanderPeral
+Royal Guard	/	Royalguard	/	dog95
+Rugor Nass	/	bossnass	/	Lervish
+Rune Haako	/	rune	/	Wytchking/Wector 
+Rune Haako II	/	runeep3	/	Wytchking/Wector 
+Ruusaan Delta	/	ruusaan	/	 Mhoker
+Sabine Wren	/	sabine	/	Hunter33
+Saesse Tiin	/	saesee_tiin	/	Tompa9
+Sand Trooper	/	sandtrooper	/	HapSlash
+Saul Karath	/	saul_karath	/	Galactic Legacy
+Savage Opress	/	Savage_Opress	/	Tempust85
+Scourge	/	scourge	/	
+Scout Trooper	/	biker_scout	/	Monsoontide
+Sebulba	/	sebulba	/	Duncan_10158
+Selkath	/	Selkath	/	DarthStiv
+Senate Commando	/	SenateCommando	/	 JAWSFreelao
+Senator Aang	/	SenatorAang	/	Kualan
+Senator Ask	/	SenatorAsk	/	Kualan
+Senator Blount	/	SenatorBlount	/	Kualan
+Senator Chuchi	/	SenatorChuchi	/	Kualan
+Senator Concorkill	/	SenatorConcorkill	/	Kualan
+Senator Ithorian	/	SenatorIthorian	/	Kualan
+Senator Mothma	/	SenatorMothma	/	Kualan
+Senator Saam	/	SenatorSaam	/	Kualan
+Senator Tikkes	/	SenatorTikkes	/	Kualan
+Senator Tills	/	SenatorTills	/	Kualan
+Serra Keto	/	serraketo	/	Neomarz and Kurt Libengood
+Seventh Sister	/	7thsister	/	Jeff
+Shaak Ti	/	shaaktfu	/	Kualan
+Shaak Ti II	/	shaakti	/	Kualan
+Shaak Youngling	/	youngshak	/	neomarz1
+Shadow Trooper	/	shadowtrooper	/	Scerendo
+Shae Vizsla	/	shaevizsla	/	
+Shatele Shan	/	Sateleshan	/	Jeff
+Sheev Palpatine	/	palpatine_ep3	/	Toshi
+Shock Trooper	/	mbmandyfem	/	Xin2121
+Shock Trooper	/	stshock	/	 Barricade24
+Shore Trooper	/	Shoretrooper	/	Scerendo
+Shu Mai	/	shu_mai	/	
+Sidon Ithano	/	SidonIthano	/	Kualan
+Sith Commander	/	sithcommander	/	Galactic Legacy
+Sith Eradicator	/	sith_eradicator	/	Mongol The Unwise
+Sith Master	/	Sith_Master	/	
+Sith Officer	/	sithofficer	/	DarthStiv
+Sith Trooper	/	sithtrooper_tor	/	Mongol The Unwise
+Sith Trooper II	/	sithtrooper	/	DarthStiv
+Sith Warrior	/	sithwarrior	/	DarthStiv
+Snoke	/	snoke	/	PreFXDesigns 
+Snoova	/	snoova	/	Major Clod
+Snow Trooper II	/	snowtrooper2	/	
+Storm Elite Trooper	/	stblack	/	 Barricade24
+Storm Pilot	/	stormpilot	/	
+Storm Trooper FO	/	stormtrooper_tfa	/	Tempust85
+Storm Trooper II	/	stormtrooper2	/	CommanderPeral
+Stormie Han Solo	/	stormie_han	/	Rayce
+Stormie Han Solo	/	stormie_luke	/	Rayce
+Sugi	/	Sugi	/	Kualan
+Sullustan	/	sullustan	/	 Scerendo
+Super Battle Droid	/	sbd	/	Chairwalker
+Swoop Gang	/	Swoopgang	/	Nick Aikenhead (Kahn)
+SWTOR Sith	/	SWTOR_Sith	/	
+T3 H8	/	T3h8	/	DarthStiv
+T3 M4	/	T3m4	/	DarthStiv
+Tactical Droid	/	tactical_droid	/	
+Talia	/	Talia	/	DarthStiv
+Tank Trooper	/	shoretrooper/tank	/	Scerendo
+Tarados Gon	/	TaradosGon	/	St. Scoundrel
+Tavion II	/	tavion_new	/	
+TC 14	/	tc14	/	
+Temple Guard	/	JediTempleGuard	/	Kualan
+Terpfen	/	Terpfen	/	Moooa
+Thexan	/	Thexan	/	RevanKnight
+Tiplee	/	st_tiplee	/	Scerendo
+Tor Delta	/	tor	/	 Mhoker
+Tsui Choi	/	TsuiChoi	/	
+Tulak Hord	/	Tulak_Hord	/	Jeff
+Tusken II	/	tusken2	/	Major Clod
+Ulic Qeldroma	/	ulic_qeldroma	/	Spanki, HapSlash
+Vandar Tokare	/	Vandar	/	DarthStiv
+Vandar Tokare Ghost	/	Vandar_ghost	/	DarthStiv
+Vaylin	/	Vaylin	/	RevanKnight
+Venku Delta	/	venku	/	Mhoker
+Visas Marr	/	visas	/	DarthStiv
+Vrook Lamar	/	Vrook	/	The Unguided
+Vrook Lamar	/	Vrook_kotor	/	The Unguided
+Walon Vau	/	walon_vau	/	 Mhoker
+Wat Tambor	/	wat_tambor	/	Kurtis 'KMan' Smith/Psyk0Sith
+Watto	/	watto	/	Hans Moleman
+Wookie	/	wookiee	/	Major Clod
+Wookie II	/	wookieev2	/	Major Clod
+Wullf Yularen	/	Wullf_Yularen	/	
+Yarael Poof	/	yarael	/	Mars Marshall & PsykOSith & Nomad
+Yoda	/	yodavm	/	neomarz
+Yoda II	/	T_Yoda_MP	/	Toshi
+Yuthura	/	yuthura	/	
+Zaalbar	/	Zaalbar	/	Corel
+Zam Wesell	/	zam	/	neomarz1
+Zao	/	MasterZao	/	Kualan
+Zhar Lestin	/	zhar	/	The Unguided
+Zuckuss	/	zuckuss	/	Scouttrooper
+	/	UJP_human	/	DarthStiv
+	/	UJP_quara	/	DarthStiv
+	/	UJP_quarren	/	DarthStiv
+	/	UJP_twilek	/	DarthStiv
+
+============================================================================================================================================================================================================
+ABILITIES
+============================================================================================================================================================================================================
+
+Ability	/	Author
+Health	/	Mandalore1st
+Armor	/	Mandalore1st
+Strength	/	Mandalore1st
+Agility	/	Mandalore1st
+
+============================================================================================================================================================================================================
+FORCE POWERS
+============================================================================================================================================================================================================
+
+Force Power	/	Author
+
+Jump	/	Raven Software & Mandalore1st
+Speed	/	Raven Software & Mandalore1st
+See	/	Raven Software & Mandalore1st
+Push	/	Raven Software & Mandalore1st
+Explode	/	 Mandalore1st
+Pull	/	Raven Software & Mandalore1st
+Implode	/	 Mandalore1st
+Heal	/	Raven Software & Mandalore1st
+Regeneration	/	 Mandalore1st
+Grip	/	Raven Software & Mandalore1st
+Grasp	/	 Mandalore1st
+Protect	/	Raven Software & Mandalore1st
+Dark Aura	/	 Mandalore1st
+Absorb	/	Raven Software & Mandalore1st
+Deadly Sight	/	 Mandalore1st
+Lightning	/	Raven Software & Mandalore1st
+Judgement	/	 Mandalore1st
+Drain	/	Raven Software & Mandalore1st
+Sever	/	 Mandalore1st
+Confusion	/	Raven Software & Mandalore1st
+Corruption	/	 Mandalore1st
+Stasis	/	 Mandalore1st
+Insanity	/	 Mandalore1st
+Rage	/	Raven Software & Mandalore1st
+Valor	/	 Mandalore1st
+Destruction	/	 Mandalore1st
+Blinding	/	 Mandalore1st
+Force Icons	/	 Angel Soul & Mandalore1st 	
+
+============================================================================================================================================================================================================
+SABER SKILLS
+============================================================================================================================================================================================================
+
+Saber Skills	/	Author
+
+Fast	/	Raven Software & OJP Team
+Medium	/	Raven Software & OJP Team
+Strong	/	Raven Software & OJP Team
+Fast-Medium	/	OJP Team
+Medium-Strong	/	OJP Team
+Dual	/	Raven Software & OJP Team
+Staff	/	Raven Software & OJP Team
+Defend	/	Raven Software & OJP Team
+Throw	/	Raven Software& OJP Team & Mandalore1st
+
+============================================================================================================================================================================================================
+LIGHTSABERS
+============================================================================================================================================================================================================
+
+Lightsaber	/	Model	/	Author
+
+Aayla Secura	/	aayla_secura	/	Revan Dark
+Adi Gallia	/	saber_Common-Jedi	/	Revan Dark
+Ahsoka Tano	/	w_AhsokaADX	/	AshuraDX
+Ahsoka Tano Short	/	w_AhsokaADX	/	AshuraDX
+Ahsoka Tano Old	/	ahsoka	/	Rooxon
+Ahsoka Tano Old Short	/	ahsoka	/	Rooxon
+Anakin Skywalker Ep2	/	saber_anakinEp2	/	Revan Dark
+Anakin Skywalker Ep3	/	saber_anakinEp3	/	Revan Dark
+Asajj Ventress	/	saber_vosa	/	Revan Dark
+Asajj Ventress Staff	/	saber_asajj	/	Revan Dark
+Ashara Zavros	/	ashara	/	
+Axe	/	axe2	/	Rooxon
+Bastila Shan	/	Bastila	/	Khaliban
+Centurion	/	tor_sabers	/	Jose Carlos
+Clone Assasin	/	arc_shiv	/	
+Coleman Trebor	/	coleman	/	Revan Dark
+Commando Droid	/	vibrosword_BX	/	Rooxon
+Darksaber	/	MandDarkSaber	/	Jose Carlos
+Darth Bandon	/	Bandon	/	Khaliban
+Darth Bane	/	curbane	/	
+Darth Malak	/	Malak	/	Khaliban
+Darth Malgus	/	saber_malgus	/	Revan Dark
+Darth Maul Staff	/	saber_DarthMaul	/	Revan Dark
+Darth Maul Rebels	/	w_MaulRebs	/	Revan Dark
+Darth Maul Single	/	saber_DarthMaul_single	/	Revan Dark
+Darth Nihilus	/	nihilus	/	Jose Carlos
+Darth Revan	/	saber_revan	/	Rooxon
+Darth Sidious	/	saber_Darth-Sidious	/	Revan Dark
+Darth Tyranus	/	saber_Count-Dooku	/	Revan Dark
+Darth Vader	/	saber_VaderEp5	/	Revan Dark
+Depa Billaba	/	saber_depabillaba	/	Plasma
+Desann	/	saber_desann	/	Raven Software
+Electrostaff	/	electrostaff	/	Darth Dizzy 
+Even Piell	/	saber_evenpiell	/	Plasma
+Exar Kun	/	exkun	/	Rooxon
+Ezra Bridger S3	/	ezra2	/	Rooxon
+Ezra Bridger	/	ezra	/	Rooxon
+Gaderffi	/	gaderffi	/	Laisum
+Gaderffi Staff	/	Gaffi_Staff	/	Laisum
+Galen Marek	/	GalenMarek_s	/	AshuraDX
+Gamorrean Axe	/	gamorreanaxe	/	Rooxon
+General Grievous Left	/	grievous4_sword_l	/	MLZ
+General Grievous Right	/	grievous4_sword_r	/	MLZ
+Inquisitor Staff	/	inquisitor	/	Rooxon
+Inquisitor	/	inquisitor	/	Rooxon
+Jedi Temple Guard	/	templeguard	/	Rooxon
+Jolee Bindo	/	Jolee	/	Khaliban
+Juhani	/	Juhani	/	Khaliban
+Kanan Jarrus	/	kanan	/	Rooxon
+Ki Adi Mundi	/	saber_14	/	Revan Dark
+Kit Fisto Ep1	/	saber_fisto	/	Revan Dark
+Kit Fisto Ep2	/	saber_13	/	Revan Dark
+Kylo Ren	/	ren	/	Plasma
+Lord Kallig	/	kallig	/	
+Lord Scourge	/	scourge	/	
+Luke Skywalker Ep5	/	saber_anakinEp3	/	Revan Dark
+Luke Skywalker Ep6	/	saber_LukeSkywalkerEp6	/	Revan Dark
+Mace Windu Ep1	/	Windu_Ep1	/	Revan Dark
+Mace Windu Ep2	/	saber_maceWindu	/	Revan Dark
+Mace	/	mace1	/	Rooxon
+Mara Jade	/	saber_mara	/	Omega1
+Obi Wan Kenobi Ep1	/	saber_ObiwanEp1	/	Revan Dark
+Obi Wan Kenobi Ep3	/	saber_ObiWanEp3	/	Revan Dark
+Obi Wan Kenobi Ep4	/	Obiwan_Ep4	/	Revan Dark
+Oppo Rancisis	/	oposab	/	Rooxon
+Plo Koon Ep1	/	saber_15	/	Revan Dark
+Plo Koon Ep2	/	Prequel1	/	Revan Dark
+Qui Gon Jinn	/	saber_Quigon-	/	Revan Dark
+Quinlan Vos	/	qvsab	/	Revan Dark
+Rahm Kota	/	saber_kota	/	HOUOU
+Revan	/	0_revan	/	Rooxon
+Rey Quarterstaff	/	reys_quarterstaff	/	Plasma
+Royal Guard	/	forcepike	/	Laisum
+Saessee Tiin	/	Prequel1	/	Revan Dark
+Satele Shan	/	tor_sabers	/	Jose Carlos
+Savage Opress	/	opress	/	Jose Carlos
+Shaak Ti	/	saber_Common-Jedi	/	Revan Dark
+Sith Soldier	/	saber_sithsoldier	/	Darth Shiftee
+Starkiller	/	saber_st4lk3r	/	Darth Shiftee
+Tulak Hord	/	thord	/	Rooxon
+Vandar	/	Vandar	/	
+Vanguard Staff	/	tor_sabers	/	Jose Carlos
+Vanguard	/	tor_sabers	/	Jose Carlos
+Yarael Poof	/	saber_yarelpoof	/	Plasma
+Yoda	/	saber_YodaEp3	/	Revan Dark
+Zallow	/	tor_sabers	/	Jose Carlos
+Short Sword	/	sword	/	Rooxon
+Long Sword	/	sword	/	Rooxon
+Sword Staff	/	sword	/	Rooxon
+Vibro Sword	/	vibro	/	Rooxon
+Vibro Blade	/	vibro	/	Rooxon
+Vibro Sword Sith	/	vibro	/	Rooxon
+Vibro Sword Mandalorian	/	saber_cyberninja	/	Rooxon
+Vibro Blade	/	vibro	/	Rooxon
+Wookiee Blade	/	wook_db	/	Rooxon
+Spear	/	spear3	/	Rooxon
+Vibro-Axe	/	spear2	/	Rooxon
+
+============================================================================================================================================================================================================
+WEAPONS
+============================================================================================================================================================================================================
+
+Weapon	/	Model	/	Author
+
+K-16 Blaster Pistol	/	briar_pistol	/	Raven Software & Kahn D'halaine
+S5-H Blaster Pistol	/	s5_heavy_pistol	/	MBII Team  & Mandalore1st
+Blaster-Ion Gauntlet	/	-	/	MBII Team  & Mandalore1st
+Blaster-Rocket Gauntlet	/	concussion_new	/	MBII Team  & Mandalore1st
+DL-44 Blaster Pistol	/	blaster_pistol	/	AshuraDX
+DH-17 Blaster Pistol	/	dh-17	/	MBII Team  & Mandalore1st
+DC-17 Blaster Pistol	/	dc-17	/	MBII Team  & Mandalore1st
+W-34 Blaster Pistol	/	westar_if	/	Iniry  & Mandalore1st
+E-11 Blaster Rifle	/	blaster_r	/	AshuraDX
+A280 Blaster Rifle	/	a280	/	MBII Team  & Mandalore1st
+DC-15S Blaster Rifle	/	dc-15s	/	AshuraDX  & Mandalore1st
+E-5B Blaster Rifle	/	sad_e5	/	KhorneSyrup & Mandalore1st
+Bowcaster Carbine	/	bowcaster	/	Raven Software & Kahn D'halaine
+EE-3 Blaster Carbine	/	ee-3	/	MBII Team  & Mandalore1st
+Bowcaster-W Carbine	/	wbowcaster	/	MBII Team  & Mandalore1st
+CO Blaster Carbine	/	canderous_blaster	/	MBII Team  & Mandalore1st
+DEMP2 Ion Carbine	/	demp2	/	Raven Software & Kahn D'halaine
+CR-24 Flame Carbine	/	CR-24_flamerifle	/	MBII Team  & Mandalore1st
+DC-17P Ion Carbine	/	DC-17P	/	MBII Team  & Mandalore1st
+CR-25 Ice Carbine	/	CR-25_icerifle	/	MBII Team  & Mandalore1st
+Stun Baton	/	stun_baton	/	Raven Software
+DXR-6 Disruptor Rifle	/	disruptor	/	Raven Software & Kahn D'halaine
+Cycler Projectile Rifle	/	tusken_rifle	/	MBII Team  & Mandalore1st
+DLT-20A Laser Rifle	/	DLT20a	/	MBII Team  & Mandalore1st
+E-5S Disruptor Rifle	/	proj_rifle	/	MBII Team  & Mandalore1st
+TL-50 Repeater Rifle	/	heavy_repeater	/	Raven Software
+DLT-18 Repeater Rifle	/	dlt-18_repeater	/	MBII Team  & Mandalore1st
+DC-15A Repeater Rifle	/	dc-15a	/	MBII Team  & Mandalore1st
+T-21 Repeater Rifle	/	t-21	/	Monsoontide  & Mandalore1st
+FC-1 Shotgun	/	golan_arms	/	Raven Software & Kahn D'halaine
+CR-1 Shotgun	/	CR-1_cannon	/	MBII Team  & Mandalore1st
+DBA Array Gun	/	DoubleBarrel_ArrayGun	/	JKG Team  & Mandalore1st
+ACP Array Gun	/	ACP_ArrayGun	/	JKG Team  & Mandalore1st
+Stouker Concussion Cannon	/	stouker	/	Raven Software & Kahn D'halaine
+Z-6 Rotary Cannon	/	z6_rotary	/	MBII Team  & Mandalore1st
+Z-12 Rotary Cannon	/	minigun	/	MBII Team  & Mandalore1st
+LJ-70 Concussion Cannon	/	LJ-70_ConcRifle	/	JKG Team  & Mandalore1st
+PLX-2M Rocket Launcher	/	merr_sonn	/	Raven Software & Kahn D'halaine
+MG Grenade Launcher	/	Packered_MortarGun	/	JKG Team & Mandalore1st
+PLX1 Rocket Launcher	/	cw_launcher	/	MBII Team  & Mandalore1st
+E60R Rocket Launcher	/	e60r_launcher	/	MBII Team & Mandalore1st
+Thermal Detonator	/	thermal	/	Raven Software & Kahn D'halaine
+Flame Detonator	/	plasma	/	MBII Team  & Mandalore1st
+Dioxis Detonator	/	sonic_detonator	/	MBII Team  & Mandalore1st
+Ion Detonator	/	V-59_Concussion	/	MBII Team  & Mandalore1st
+Thermal Mine	/	trip_mine	/	Raven Software
+Flame Mine	/	trip_mine	/	Mandalore1st
+Dioxis Mine	/	trip_mine	/	Mandalore1st
+Ion Mine	/	trip_mine	/	Mandalore1st
+Thermal Bomb	/	detpack	/	Raven Software
+Flame Bomb	/	detpack	/	Mandalore1st
+Dioxis Bomb	/	detpack	/	Mandalore1st
+Ion Bomb	/	detpack	/	Mandalore1st
+
+============================================================================================================================================================================================================
+ITEMS
+============================================================================================================================================================================================================
+
+Item	/	Author
+
+Bacta Canister	/	Raven Software & Mandalore1st
+Shield Booster	/	Mandalore1st
+TD2.3 Electrobinoculars	/	Raven Software & Mandalore1st
+Grapple Hook	/	Raven Software & Mandalore1st
+Force Field Projector	/	Raven Software & Mandalore1st
+Training Remote	/	Raven Software & Mandalore1st
+Sentry Turret	/	Raven Software & Mandalore1st
+E-Web Blaster Cannon	/	Raven Software & Mandalore1st
+Flamethrower	/	OJP Team & Mandalore1st
+Dioxisthrower	/	Mandalore1st
+Icethrower	/	Mandalore1st
+Electroshocker	/	Mandalore1st
+Beam Projector	/	Mandalore1st
+Orbital Strike	/	Mandalore1st
+Cloak Generator	/	Raven Software & Mandalore1st
+Shield Generator	/	Mandalore1st
+Overload	/	Mandalore1st
+Z-6 Metal Jetpack	/	Raven Software & OJP Team
+Z-6 Blue Jetpack	/	Raven Software & OJP Team & Mandalore1st
+RT Spacepack	/	Raven Software & Mandalore1st
+JT-12 Metal Jetpack	/	JKG Team & Mandalore1st
+JT-12 White Jetpack	/	Mandalore1st
+Rocketboots	/	Mandalore1st
+Backpack Rocket	/	Mandalore1st
+Rebellion Squad Team	/	Mandalore1st
+Empire Squad Team	/	Mandalore1st
+Mercenaries Squad Team	/	Mandalore1st
+Confederacy Squad Team	/	Mandalore1st
+Republic Squad Team	/	Mandalore1st
+Mandalorian Squad Team	/	Mandalore1st
+Vehicle Mount	/	Mandalore1st
+
+============================================================================================================================================================================================================
+VEHICLES
+============================================================================================================================================================================================================
+
+Vehicle	/	Model	/	Author
+
+AAT Tank	/	aat_hat	/	
+Acklay	/	acklay_mst	/	
+Anakin Skywalker Astromech	/	ani-droid	/	 Zymotico
+Anakin Skywalker Podracer	/	anakins_pod	/	jack - sith lord
+Anakin Skywalker Speeder	/	aspeedervm	/	neomarz1 
+ARC-170 Starfighter	/	arc-170	/	minilogoguy18
+AT-AT Walker	/	atat	/	Circa 
+AT-PT Walker	/	atpt	/	Light Ninja
+AT-TE Walker	/	atte	/	Psyk0Sith
+AT-TE Walker II	/	attevm	/	Psyk0Sith
+A-Wing Starfighter	/	a-wing	/	Astromash and Manquesa
+Bantha	/	bantha	/	Mars Marshall
+Boba Fett Firespray-31	/	slave1-beta	/	Manquesa
+B-Wing Starfighter	/	b-wing	/	Hatrus and Manquesa
+Cargo Skiff	/	skiff_veh	/	AshuraDX
+Delta-7 Jedi Starfighter	/	jsfighter	/	
+Dewback	/	dewback	/	
+Droid Tri-Fighter	/	droidtf	/	Inyri Forge
+Droideka Destroyer Droid	/	droideka	/	OJP Team
+Eopie	/	eopie	/	OJP Team
+Eta-2 Jedi Starfighter II	/	manq-jsf	/	Zymotico
+Glider	/	glider	/	Helena Revan 
+Hailfire Droid	/	hailfire_droid	/	Duncan_10158
+Hyena Droid Bomber	/	droidfighter	/	PR-0927/Majin Revan
+Hyena Droid Bomber	/	droidfighter2	/	PR-0927/Majin Revan
+Imperial Speeder	/	speeder_bike_dun	/	Monsoontide
+Jango Fett Firespray-31	/	slave1_jango	/	Maxleof
+Low Altitude Assault Transport	/	gunshipvm	/	Mars Marshall
+Low Altitude Assault Transport II	/	gunshipyoda	/	Mars Marshall
+Luke Skywalker Speeder	/	lukespeeder	/	neomarz1 
+Mace Windu Astromech	/	windu-droid	/	 Zymotico
+Mark I Assault Droid	/	mark1	/	Averus Retruthan
+N1 Starfighter	/	n1_mst	/	Monsoontide
+Obiwan Kenobi Astromech	/	obi-droid	/	 Zymotico
+Obiwan Kenobi Astromech II	/	r4	/	
+Ravensclaw	/	ravensclawvm	/	Mars Marshall
+Republic Shuttle	/	republicshuttle	/	
+Sebulba Podracer	/	sebulba_pod	/	Duncan_10158
+Sith Speeder	/	sithspeeder_mst	/	Monsoontide
+STAP Speeder	/	stap_mst	/	OJP Team
+Swoop	/	swoop	/	Raven Software, MagSul
+T-47 Snowspeeder	/	snow-speeder-tfp	/	Darth Alex 
+Tie Advanced X1	/	tie-advanced	/	Raven Software, NeoMarz1 and Manquesa
+Tie Defender	/	tie-defender	/	Lord Hatrus
+Tie Incerceptor	/	tie_interceptor	/	7IM and Michael 'Chang Khan' Gummelt
+Trade Federation Shuttle	/	tfshuttle	/	
+Twin Pod Cloud Car	/	twin_pod	/	Monsoontide
+V-19 Starfighter	/	v-19	/	Zymotico
+Vehicle	/	Model	/	Author
+Vulture Droid Fighter	/	droid_fighter	/	Hatrus
+V-Wing Starfighter	/	v-wing	/	minilogoguy18
+YT-1300 Cargo Freighter	/	YT-1300	/	Raven Software and Manquesa
+Y-Wing Starbomber	/	y-wing	/	Manquesa and Andy 867
+Zam Wesell Speeder	/	zamspeeder	/	Mars Marshall
+	/	laserturret1	/	
+	/	laserturret2	/	
+	/	turbolaser_tower	/	
+
+============================================================================================================================================================================================================
+MENUS
+============================================================================================================================================================================================================
+
+Outer Game Menus	/	OJP Team
+Inner Game Menus	/	OJP Team & Mandalore1st
+Hud	/	OJP Team & Mandalore1st
+
+============================================================================================================================================================================================================
+BOTS, NPCS & SIEGE CLASSES
+============================================================================================================================================================================================================
+
+Bots	/	Mandalore1st
+NPCs	/	Raven Software & Mandalore1st
+Siege Classes	/	Raven Software & Mandalore1st
+
+============================================================================================================================================================================================================
+TEXTURES
+============================================================================================================================================================================================================
+
+Missing Map Textures	/	OJP Team
+Texture Overhaul	/	Mr.Zz 
+
+

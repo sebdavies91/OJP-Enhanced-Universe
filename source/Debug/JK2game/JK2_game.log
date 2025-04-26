@@ -2,7 +2,7 @@
   ai_hybrid.c
   ai_main.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(2642,12): warning C4101: 'EnemyOrigin': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7107,9): warning C4101: 'fwd': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7131,9): warning C4101: 'fwd': unreferenced local variable
   ai_tab.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_tab.c(4067,9): warning C4101: 'fwd': unreferenced local variable
   ai_util.c
@@ -31,18 +31,18 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_client.c
   g_cmds.c
   g_combat.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5777,7): warning C4013: 'WP_AbsorbConversion' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5781,7): warning C4013: 'OJP_BlockFocus' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5679,8): warning C4101: 'max': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5792,7): warning C4013: 'WP_AbsorbConversion' undefined; assuming extern returning int
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5796,7): warning C4013: 'OJP_BlockFocus' undefined; assuming extern returning int
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5694,8): warning C4101: 'max': unreferenced local variable
   g_crash.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_crash.c(281,59): warning C4113: 'BOOL (__stdcall *)(LPSTR,DWORD,PVOID)' differs in parameter lists from 'PSYM_ENUMMODULES_CALLBACK'
   g_dynmusic.c
   g_exphysics.c
   g_ICARUScb.c
   g_items.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4183,6): warning C4101: 'shots': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4181,10): warning C4101: 'angs': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4182,6): warning C4101: 'i': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4171,6): warning C4101: 'shots': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4169,10): warning C4101: 'angs': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4170,6): warning C4101: 'i': unreferenced local variable
   g_log.c
   g_main.c
   g_mem.c
@@ -113,6 +113,7 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   NPC_senses.c
   NPC_sounds.c
   NPC_spawn.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(319,6): warning C4101: 'i': unreferenced local variable
   NPC_stats.c
   NPC_utils.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_utils.c(195,3): warning C4033: 'NPC_UpdateAngles' must return a value

@@ -1472,90 +1472,109 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 													 
 	key = "model";
 	model = Info_ValueForKey( botinfo, key );
-	if ( !*model ) {
-		model = "kyle/default";
-	}
+				 
+	if ( !*model )	model = DEFAULT_MODEL"/default";
+  
 	Info_SetValueForKey( userinfo, key, model );
 
-/*	key = "headmodel";
-	headmodel = Info_ValueForKey( botinfo, key );
-	if ( !*headmodel ) {
-		headmodel = model;
-	}
-	Info_SetValueForKey( userinfo, key, headmodel );
-	key = "team_headmodel";
-	Info_SetValueForKey( userinfo, key, headmodel );
-*/
-	key = "gender";
+	key = "sex";
+											  
+					 
+					
+  
+												 
+						
+												 
+  
+				
 	s = Info_ValueForKey( botinfo, key );
-	if ( !*s ) {
-		s = "male";
-	}
-	Info_SetValueForKey( userinfo, "sex", s );
+	if ( !*s )	s = Info_ValueForKey( botinfo, "gender" );
+	if ( !*s )	s = "male";
+  
+	Info_SetValueForKey( userinfo, key, s );
 
 	key = "color1";
 	s = Info_ValueForKey( botinfo, key );
-	if ( !*s ) {
-		s = "4";
-	}
+	if ( !*s )	s = "4";
+		  
+  
 	Info_SetValueForKey( userinfo, key, s );
 
 	key = "color2";
 	s = Info_ValueForKey( botinfo, key );
-	if ( !*s ) {
-		s = "4";
-	}
+	if ( !*s )	s = "4";
+		  
+  
 	Info_SetValueForKey( userinfo, key, s );
 
 	key = "saber1";
 	s = Info_ValueForKey( botinfo, key );
-	if ( !*s ) {
-		s = "single_1";
-	}
+	if ( !*s )	s = DEFAULT_SABER;
+				 
+  
 	Info_SetValueForKey( userinfo, key, s );
 
 	key = "saber2";
 	s = Info_ValueForKey( botinfo, key );
-	if ( !*s ) {
-		s = "none";
-	}
+	if ( !*s )	s = "none";
 	Info_SetValueForKey( userinfo, key, s );
 
-	s = Info_ValueForKey(botinfo, "personality");
-	if (!*s )
-	{
-		Info_SetValueForKey( userinfo, "personality", "botfiles/default.jkb" );
-	}
-	else
-	{
-		Info_SetValueForKey( userinfo, "personality", s );
-	}
+	key = "forcepowers";
+	s = Info_ValueForKey( botinfo, key );
+	if ( !*s )	s = DEFAULT_FORCEPOWERS;
+	Info_SetValueForKey( userinfo, key, s );
 
-	//[DuelGuns][EnhancedImpliment]
-	/*
-//	if(1)//f_dualguns.integer)
-//	{
-		key = "dualgun";
-		s = Info_ValueForKey(botinfo, key);
-		if (*s)
-		{
-			gunoption = atoi(s);
-		}
-		if(gunoption>0)
-			bot_dualguns = qtrue;
-//	}
+	key = "cg_predictItems";
+	s = Info_ValueForKey( botinfo, key );
+	if ( !*s )	s = "1";
+	Info_SetValueForKey( userinfo, key, s );
 
-	firearm = Info_ValueForKey( botinfo, "firearm");
-	if (!*firearm)
-	{
-		Info_SetValueForKey( userinfo, "firearm", botname );
-	}
-	else
-	{
-		Info_SetValueForKey( userinfo, "firearm", firearm);
-	}
-	*/
-	//[/DuelGuns][EnhancedImpliment]
+	key = "char_color_red";
+	s = Info_ValueForKey( botinfo, key );
+	if ( !*s )	s = "255";
+	Info_SetValueForKey( userinfo, key, s );
+
+	key = "char_color_green";
+	s = Info_ValueForKey( botinfo, key );
+	if ( !*s )	s = "255";
+			 
+  
+	Info_SetValueForKey( userinfo, key, s );
+
+	key = "char_color_blue";
+	s = Info_ValueForKey( botinfo, key );
+	if ( !*s )	s = "255";
+  
+																		 
+  
+	 
+  
+	Info_SetValueForKey( userinfo, key, s );
+  
+
+								
+   
+							 
+	
+	key = "teamtask";
+	s = Info_ValueForKey( botinfo, key );
+	if ( !*s )	s = "0";
+	Info_SetValueForKey( userinfo, key, s );
+					   
+   
+				 
+						
+	
+
+	key = "personality";
+	s = Info_ValueForKey( botinfo, key );
+	if ( !*s )	s = "botfiles/default.jkb";
+  
+													  
+  
+	 
+  
+	Info_SetValueForKey( userinfo, key, s );
 
 	//[RGBSabers]
 	key = "rgb_saber1";
@@ -1717,6 +1736,7 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 
 		G_ReadSessionData( bot->client );
 		ClientUserinfoChanged( clientNum );
+ 
 	}
 
 	if (g_gametype.integer == GT_DUEL ||
@@ -1857,7 +1877,7 @@ void Svcmd_BotList_f( void ) {
 		}
 		strcpy(model, Info_ValueForKey( g_botInfos[i], "model" ));
 		if ( !*model ) {
-			strcpy(model, "kyle/default");
+			strcpy(model, DEFAULT_MODEL"/default");
 		}
 		strcpy(personality, Info_ValueForKey( g_botInfos[i], "personality"));
 		if (!*personality ) {
@@ -1880,9 +1900,7 @@ static void G_SpawnBots( char *botList, int baseDelay ) {
 	int			delay;
 	char		bots[MAX_INFO_VALUE];
 
-	podium1 = NULL;
-	podium2 = NULL;
-	podium3 = NULL;
+
 
 	skill = trap_Cvar_VariableValue( "g_spSkill" );
 	if( skill < 1 ) {

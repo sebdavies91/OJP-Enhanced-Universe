@@ -1408,18 +1408,18 @@ void SP_worldspawn( void )
 	{
 		int defSkin;
 
-		trap_G2API_InitGhoul2Model(&precachedKyle, "models/players/kyle/model.glm", 0, 0, -20, 0, 0);
+		trap_G2API_InitGhoul2Model(&precachedKyle, "models/players/" DEFAULT_MODEL "/model.glm", 0, 0, -20, 0, 0);
 
 		if (precachedKyle)
 		{
-			defSkin = trap_R_RegisterSkin("models/players/kyle/model_default.skin");
+			defSkin = trap_R_RegisterSkin("models/players/" DEFAULT_MODEL "/model_default.skin");
 			trap_G2API_SetSkin(precachedKyle, 0, defSkin, defSkin);
 		}
 	}
 
 	if (!g2SaberInstance)
 	{
-		trap_G2API_InitGhoul2Model(&g2SaberInstance, "models/weapons2/saber/saber_w.glm", 0, 0, -20, 0, 0);
+		trap_G2API_InitGhoul2Model(&g2SaberInstance, DEFAULT_SABER_MODEL, 0, 0, -20, 0, 0);
 
 		if (g2SaberInstance)
 		{

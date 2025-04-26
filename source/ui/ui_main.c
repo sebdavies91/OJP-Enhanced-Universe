@@ -3336,6 +3336,17 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 	return 0;
 }
 
+static void UI_DrawPlayerName(rectDef_t *rect, float scale, vec4_t color, int textStyle,int iMenuFont) 
+{
+	int value = uiInfo.playerIndex;
+	const char *text = "";
+	if (value >= uiInfo.playerCount) {
+		value = 0;
+	}
+	text = uiInfo.playerNames[value];
+	Text_Paint(rect->x, rect->y, scale, color, text, 0, 0, textStyle,iMenuFont);
+}
+
 static void UI_DrawBotName(rectDef_t *rect, float scale, vec4_t color, int textStyle,int iMenuFont) 
 {
 	int value = uiInfo.botIndex;
@@ -3842,6 +3853,9 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
 			break;
 		case UI_OPPONENT_NAME:
 			UI_DrawOpponentName(&rect, scale, color, textStyle, iMenuFont);
+			break;
+		case UI_PLAYERNAME:
+			UI_DrawPlayerName(&rect, scale, color, textStyle,iMenuFont);
 			break;
 		case UI_BOTNAME:
 			UI_DrawBotName(&rect, scale, color, textStyle,iMenuFont);
@@ -4685,6 +4699,39 @@ static qboolean UI_OpponentName_HandleKey(int flags, float *special, int key) {
   return qfalse;
 }
 
+
+static qboolean UI_PlayerName_HandleKey(int flags, float *special, int key) {
+  if (key == A_MOUSE1 || key == A_MOUSE2 || key == A_ENTER || key == A_KP_ENTER) {
+//		int game = trap_Cvar_VariableValue("g_gametype");
+		int value = uiInfo.playerIndex;
+
+		if (key == A_MOUSE2) {
+			value--;
+		} else {
+			value++;
+		}
+
+		/*
+		if (game >= GT_TEAM) {
+			if (value >= uiInfo.characterCount + 2) {
+				value = 0;
+			} else if (value < 0) {
+				value = uiInfo.characterCount + 2 - 1;
+			}
+		} else {
+		*/
+			if (value >= uiInfo.playerCount/* + 2*/) {
+				value = 0;
+			} else if (value < 0) {
+				value = uiInfo.playerCount/* + 2*/ - 1;
+			}
+		//}
+		uiInfo.playerIndex = value;
+    return qtrue;
+  }
+  return qfalse;
+}
+
 static qboolean UI_BotName_HandleKey(int flags, float *special, int key) {
   if (key == A_MOUSE1 || key == A_MOUSE2 || key == A_ENTER || key == A_KP_ENTER) {
 //		int game = trap_Cvar_VariableValue("g_gametype");
@@ -4947,6 +4994,9 @@ static qboolean UI_OwnerDrawHandleKey(int ownerDraw, int flags, float *special, 
 			break;
 		case UI_OPPONENT_NAME:
 			UI_OpponentName_HandleKey(flags, special, key);
+			break;
+		case UI_PLAYERNAME:
+			return UI_PlayerName_HandleKey(flags, special, key);
 			break;
 		case UI_BOTNAME:
 			return UI_BotName_HandleKey(flags, special, key);
@@ -6637,6 +6687,8 @@ static void UI_RunMenuScript(char **args)
 				//trap_Cmd_ExecuteText( EXEC_APPEND, va("addbot \"%s\" %i %s\n", UI_GetBotNameByNumber(uiInfo.botIndex), uiInfo.skillIndex+1, (uiInfo.redBlue == 0) ? "Red" : "Blue") );
 			//[/TABBot]
 			}
+			UI_GetNumBots();
+			Menu_SetFeederSelection(NULL, FEEDER_ALLBOTS, 0, NULL);
 		} else if (Q_stricmp(name, "addFavorite") == 0) 
 		{
 			if (ui_netSource.integer != AS_FAVORITES) 
@@ -8720,6 +8772,9 @@ static int UI_FeederCount(float feederID)
 			}
 			return uiInfo.playerCount;
 
+		case FEEDER_ALLBOTS:
+			return UI_GetNumBots();
+			
 		case FEEDER_TEAM_LIST:
 			if (uiInfo.uiDC.realTime > uiInfo.playerRefresh) 
 			{
@@ -9170,6 +9225,10 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 	} else if (feederID == FEEDER_PLAYER_LIST) {
 		if (index >= 0 && index < uiInfo.playerCount) {
 			return uiInfo.playerNames[index];
+		}
+	} else if (feederID == FEEDER_ALLBOTS) {
+		if (index >= 0 && index < UI_GetNumBots()) {
+			return UI_GetBotNameByNumber(index);
 		}
 	} else if (feederID == FEEDER_TEAM_LIST) {
 		if (index >= 0 && index < uiInfo.myTeamCount) {
@@ -10032,6 +10091,8 @@ qboolean UI_FeederSelection(float feederFloat, int index, itemDef_t *item)
 	  }
 	} else if (feederID == FEEDER_PLAYER_LIST) {
 		uiInfo.playerIndex = index;
+	} else if (feederID == FEEDER_ALLBOTS) {
+		uiInfo.botIndex = index;
 	} else if (feederID == FEEDER_TEAM_LIST) {
 		uiInfo.teamIndex = index;
 	} else if (feederID == FEEDER_MODS) {

@@ -4569,17 +4569,17 @@ Called before every level change or subsystem restart
 =================
 */
 
+
 //[DynamicMemory_Vehicles]
 void BG_VehicleUnloadParms( void );
 //[/DynamicMemory_Vehicles]
-
 void CG_Shutdown( void ) 
 {
 	BG_ClearAnimsets(); //free all dynamic allocations made through the engine
 
-//[DynamicMemory_Vehicles]
+	//[DynamicMemory_Vehicles]
 	BG_VehicleUnloadParms();
-//[/DynamicMemory_Vehicles]
+	//[/DynamicMemory_Vehicles]
 
     CG_DestroyAllGhoul2();
 

@@ -2068,7 +2068,7 @@ Don't place this
 	{
 		"weapon_saber", 
 		"sound/weapons/w_pkup.wav",
-        { "models/weapons2/saber/saber_w.glm",
+        { DEFAULT_SABER_MODEL,
 		0, 0, 0},
 /* view */		"models/weapons2/saber/saber_w.md3",
 /* icon */		"gfx/hud/w_icon_lightsaber",
@@ -4281,7 +4281,9 @@ qboolean BG_IsUsingMediumWeap (playerState_t *ps)
 	switch(ps->weapon)
 	{
 	case WP_BLASTER:
-	case WP_DISRUPTOR:
+	case WP_BOWCASTER:
+	case WP_DEMP2:
+	case WP_STUN_BATON:
 		return qtrue;
 	default:
 		return qfalse;
@@ -4299,7 +4301,6 @@ qboolean BG_IsUsingHeavyWeap (playerState_t *ps)
 	case WP_CONCUSSION:				
 	case WP_ROCKET_LAUNCHER:
 	case WP_FLECHETTE:
-	case WP_BOWCASTER:
 		return qtrue;
 	default:
 		return qfalse;

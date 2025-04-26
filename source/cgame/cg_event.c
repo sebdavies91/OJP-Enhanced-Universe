@@ -208,9 +208,11 @@ static void CG_Obituary( entityState_t *ent ) {
 	ci = &cgs.clientinfo[target];
 
 	if ( attacker < 0 || attacker >= MAX_CLIENTS ) {
+
 		//[Asteroids]
 		//attacker = ENTITYNUM_WORLD;
 		//[/Asteroids]
+
 		attackerInfo = NULL;
 	} else {
 		attackerInfo = CG_ConfigString( CS_PLAYERS + attacker );
@@ -713,6 +715,13 @@ clientkilled:
 			{
 				message = (char *)CG_GetStringEdString("MP_INGAME", message);
 			}
+ 
+				  
+ 
+	
+ 
+				 
+ 
 
 			CG_Printf( "%s ", targetName);
 			if ( targetVehName[0] )
@@ -1936,6 +1945,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				enemyClient->saber[0].blade[0].trail.tip, flashPoint, tempPoint);
 			*/
 
+			/*
+			// 74145: Removed by OpenJK?	 						   
 			if (cg.mInRMG)
 			{
 				trace_t tr;
@@ -1954,6 +1965,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				}
 			}
 			else
+			*/
 			{
 				cullPass = qtrue;
 			}
@@ -2851,7 +2863,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 						*/
 						//[/NewSaberEffects]
 					}
-				}
+				
+				/*
 				if (cg.mInRMG)
 				{
 					trace_t tr;
@@ -2875,7 +2888,8 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				}
 
 				if (cullPass)
-				{
+				*/
+
 					vec3_t fxDir;
 
 					VectorCopy(es->angles, fxDir);
@@ -2914,6 +2928,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_SABER_CLASHFLARE:
 		DEBUGNAME("EV_SABER_CLASHFLARE");
 		{
+		/*
 			qboolean cullPass = qfalse;
 
 			if (cg.mInRMG)
@@ -2943,6 +2958,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				cg_saberFlashTime = cg.time-50;
 				VectorCopy( es->origin, cg_saberFlashPos );
 			}
+			*/
+
+				cg_saberFlashTime = cg.time-50;
+				VectorCopy( es->origin, cg_saberFlashPos );
+
 			trap_S_StartSound ( es->origin, -1, CHAN_WEAPON, trap_S_RegisterSound( va("sound/weapons/saber/saberhitwall%i", Q_irand(1, 3)) ) );
 		}
 		break;

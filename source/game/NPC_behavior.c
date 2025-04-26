@@ -1136,10 +1136,18 @@ void NPC_BSJump (void)
 
 //		Com_Printf("apex is %4.2f percent from p1: ", (xy-z)*0.5/xy*100.0f);
 
-		xy -= z;
-		xy *= 0.5;
+		// Don't need to set apex xy if NPC is jumping directly up.
+		if ( xy > 0.0f )
+		{
+			xy -= z;
+			xy *= 0.5;
+
+		  
+			
+  
+			assert(xy > 0);
+		}
 		
-		assert(xy > 0);
 
 		VectorMA( p1, xy, dir, apex );
 		apex[2] += apexHeight;

@@ -5932,7 +5932,7 @@ void ForceTelepathy(gentity_t *self)
 void ForceInsanity(gentity_t *self)
 {
 	int modPowerLevel = -1;
-	int INSANITY_TIME = 2500;
+	int INSANITY_TIME = 5000;
 	trace_t tr;
 	vec3_t tto, thispush_org, a;
 	vec3_t mins, maxs, fwdangles, forward, right, center;
@@ -12127,7 +12127,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	}
 	}
 	
-	if (self->NPC && self->NPC->charmedTime > level.time && self->corruptionactivator && ((!(self->corruptionactivator->client->ps.fd.forcePowersActive & (1 << FP_TELEPATHY)) || self->corruptionactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
+	if (self->NPC && self->NPC->charmedTime > level.time && self->corruptionactivator && ((!(self->corruptionactivator->client->ps.fd.forcePowersActive & (1 << FP_TELEPATHY)) && self->NPC->charmedTime <= level.time || self->corruptionactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
 		{
 		npcteam_t	savTeam = self->client->enemyTeam;
 		self->client->enemyTeam = self->client->playerTeam;
@@ -12141,7 +12141,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 		}
 
 		}
-	else if (self->client && self->client->corruptedTime > level.time && self->corruptionactivator && ((!(self->corruptionactivator->client->ps.fd.forcePowersActive & (1 << FP_TELEPATHY)) || self->corruptionactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
+	else if (self->client && self->client->corruptedTime > level.time && self->corruptionactivator && ((!(self->corruptionactivator->client->ps.fd.forcePowersActive & (1 << FP_TELEPATHY)) || self->client->corruptedTime <= level.time || self->corruptionactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
 		{
 		self->client->corruptedTime = 0;
 		self->corruptionactivator=NULL;			
@@ -12150,7 +12150,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 	
 
 	
-	if (self->NPC && self->NPC->confusionTime > level.time && self->confusionactivator && ((!(self->confusionactivator->client->ps.fd.forcePowersActive & (1 << FP_TELEPATHY)) || self->confusionactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
+	if (self->NPC && self->NPC->confusionTime > level.time && self->confusionactivator && ((!(self->confusionactivator->client->ps.fd.forcePowersActive & (1 << FP_TELEPATHY)) || self->NPC->confusionTime <= level.time || self->confusionactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
 		{
 		self->NPC->confusionTime = 0;	
 		self->confusionactivator=NULL;	
@@ -12164,7 +12164,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 	
 
-	if(self->client && self->client->insanityTime > level.time && self->insanityactivator  && ((!(self->insanityactivator->client->ps.fd.forcePowersActive & (1 << FP_TEAM_HEAL)) || self->insanityactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
+	if(self->client && self->client->insanityTime > level.time && self->insanityactivator  && ((!(self->insanityactivator->client->ps.fd.forcePowersActive & (1 << FP_TEAM_HEAL)) || self->client->insanityTime <= level.time || self->insanityactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
 	{
 		gentity_t	*tent;
 		tent = G_TempEntity(self->r.currentOrigin, EV_FORCE_INSANITY);
@@ -12178,7 +12178,7 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 
 
 	
-	if(self->client && self->client->stasisTime > level.time && self->stasisactivator  && ((!(self->stasisactivator->client->ps.fd.forcePowersActive & (1 << FP_TEAM_HEAL)) || self->stasisactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
+	if(self->client && self->client->stasisTime > level.time && self->stasisactivator  && ((!(self->stasisactivator->client->ps.fd.forcePowersActive & (1 << FP_TEAM_HEAL)) || self->client->stasisTime <= level.time || self->stasisactivator->client->ps.stats[STAT_HEALTH] <= 0 ) || BG_HasYsalamiri(g_gametype.integer, &self->client->ps)))
 	{
 		gentity_t	*tent;
 		tent = G_TempEntity(self->r.currentOrigin, EV_FORCE_STASIS);

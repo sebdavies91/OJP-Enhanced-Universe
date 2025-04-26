@@ -80,8 +80,7 @@
 			visible				1
 			decoration
 		}
-
-
+		
 			itemDef 
 		{
 			name				gametypefield
@@ -89,18 +88,53 @@
 			text				@MENUS_NAME1
 			ownerdraw			UI_BOTNAME
 //[TABBot]
-			rect				290 75 236 20 
-			//rect				290 75 236 30 
+			rect				285 75 230 20 
+			//rect				285 75 230 30 
 //[TABBot]
-			textalign			ITEM_ALIGN_RIGHT		
-			textalignx			80
-			textaligny			0   
+			textalign			0
+			textalignx			5
+			textaligny			-2
 			font				2
-			textscale			.7
-			forecolor			0.8 0.8 0.8 1
-			border				0
-			bordercolor			0 0 0 0
+			textscale			.7 
+			forecolor			1 1 1 1
+			decoration
 			visible				1 
+			action
+			{
+				play			"sound/interface/button1.wav" ; 
+			}
+
+		}
+
+		itemDef 
+		{
+			name				gametypefield
+			rect				275 95 200 200
+			style				WINDOW_STYLE_FILLED
+			type				ITEM_TYPE_LISTBOX
+			elementwidth		120
+			elementheight		15
+			elementtype			LISTBOX_TEXT
+			feeder				FEEDER_ALLBOTS
+			border				1
+			bordercolor			0 0 0 1
+			backcolor			0 0 0 0.6
+			outlinecolor		.1 .1 .7 .5
+			font				2
+			textaligny			12
+			textscale			.8
+			forecolor			.615 .615 .956 1
+			visible				1
+			mouseEnter 
+			{ 
+				fadein message_arena ; 
+				setitemcolor gametypefield bordercolor 0 0.4 0.8 1 
+			} 
+			mouseExit 
+			{ 
+				fadeout message_arena ; 
+				setitemcolor gametypefield bordercolor 0 0 0 1 
+			}
 			action
 			{
 				play			"sound/interface/button1.wav" ; 
@@ -115,8 +149,8 @@
 			text				@MENUS_TEAM
 			ownerdraw			UI_REDBLUE
 //[TABBot]
-			rect				290 95 236 20 
-			//rect				290 95 236 30 
+			rect				245 305 236 20 
+			//rect				245 305 236 30 
 //[/TABBot]
 			textalign			ITEM_ALIGN_RIGHT	
 			textalignx			80
@@ -151,8 +185,8 @@
 			text				@MENUS_SKILL1
 			ownerdraw			UI_BOTSKILL
 //[TABBot]
-			rect				290 115 236 20 
-			//rect				290 115 236 30 
+			rect				245 320 236 20 
+			//rect				245 320 236 30 
 //[/TABBot]
 			textalign			ITEM_ALIGN_RIGHT	
 			textalignx			80
@@ -188,7 +222,7 @@
 //[/AotCAI]
 
 			}
-			rect				290 135 236 20
+			rect				245 335 236 20
 	   		textalign			ITEM_ALIGN_RIGHT
 			textalignx			80
 			textaligny			0
@@ -215,7 +249,7 @@
 			type				1
 			style				WINDOW_STYLE_EMPTY
 
-			rect				285 175 200 30 
+			rect				385 320 200 30 
 			textalignx			80
 			textaligny			2
 			font				2

@@ -1898,7 +1898,7 @@ void WPTouchRoutine(bot_state_t *bs)
 #endif
 
 	if (bs->isCamper && bot_camp.integer && (BotIsAChickenWuss(bs) || BotCTFGuardDuty(bs) || bs->isCamper == 2) && ((bs->wpCurrent->flags & WPFLAG_SNIPEORCAMP) || (bs->wpCurrent->flags & WPFLAG_SNIPEORCAMPSTAND)) &&
-		bs->cur_ps.weapon != WP_SABER && bs->cur_ps.weapon != WP_MELEE )
+		bs->cur_ps.weapon != WP_SABER && bs->cur_ps.weapon != WP_MELEE && bs->cur_ps.weapon != WP_STUN_BATON)
 	{ //if we're a camper and a chicken then camp
 		if (bs->wpDirection)
 		{
@@ -1926,7 +1926,7 @@ void WPTouchRoutine(bot_state_t *bs)
 		}
 
 	}
-	else if ((bs->cur_ps.weapon == WP_SABER  || bs->cur_ps.weapon == WP_MELEE) &&
+	else if ((bs->cur_ps.weapon == WP_SABER  || bs->cur_ps.weapon == WP_STUN_BATON || bs->cur_ps.weapon == WP_MELEE) &&
 		bs->isCamping > level.time)
 	{ //don't snipe/camp with a melee weapon, that would be silly
 		bs->isCamping = 0;
@@ -3069,6 +3069,29 @@ gentity_t *GetNearestBadThing(bot_state_t *bs)
 				factor = 0;
 			}
 
+			if (ent->s.weapon == WP_DET_PACK &&
+				(ent->r.ownerNum == bs->client ||
+				(ent->r.ownerNum > 0 && ent->r.ownerNum < MAX_CLIENTS &&
+				g_entities[ent->r.ownerNum].client && OnSameTeam(&g_entities[bs->client], &g_entities[ent->r.ownerNum]))) )
+			{ //don't be afraid of your own detpacks or your teammates' detpacks
+				factor = 0;
+			}
+
+			if (ent->s.weapon == WP_TRIP_MINE &&
+				(ent->r.ownerNum == bs->client ||
+				(ent->r.ownerNum > 0 && ent->r.ownerNum < MAX_CLIENTS &&
+				g_entities[ent->r.ownerNum].client && OnSameTeam(&g_entities[bs->client], &g_entities[ent->r.ownerNum]))) )
+			{ //don't be afraid of your own trip mines or your teammates' trip mines
+				factor = 0;
+			}
+
+			if (ent->s.weapon == WP_THERMAL &&
+				(ent->r.ownerNum == bs->client ||
+				(ent->r.ownerNum > 0 && ent->r.ownerNum < MAX_CLIENTS &&
+				g_entities[ent->r.ownerNum].client && OnSameTeam(&g_entities[bs->client], &g_entities[ent->r.ownerNum]))) )
+			{ //don't be afraid of your own thermals or your teammates' thermals
+				factor = 0;
+			}
 			if (glen < bestdist*factor && BotPVSCheck(bs->origin, ent->s.pos.trBase))
 			{
 				trap_Trace(&tr, bs->origin, NULL, NULL, ent->s.pos.trBase, bs->client, MASK_SOLID);
@@ -5740,7 +5763,7 @@ int ShouldSecondaryFire(bot_state_t *bs)
 	{
 		return 1;
 	}
-	else if (weap == WP_STUN_BATON && bs->frame_Enemy_Len < 500 && bs->frame_Enemy_Len > 250)
+	else if (weap == WP_STUN_BATON  && bs->frame_Enemy_Len < 128)
 	{
 		return 1;
 	}
@@ -7004,6 +7027,7 @@ int BotWeaponBlockable(int weapon)
 	switch (weapon)
 	{
 					
+	case WP_STUN_BATON:
 	case WP_MELEE:
 		return 0;
 	//[NewWeapons][EnhancedImpliment]

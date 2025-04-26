@@ -112,7 +112,7 @@
 #define FEEDER_MOVES_TITLES					0x2a			// move titles for the data pad moves screen
 #define FEEDER_SABER_SINGLE_INFO			0x2b			// saber single
 #define FEEDER_SABER_STAFF_INFO				0x2c			// saber staff
-
+#define FEEDER_ALLBOTS						0x2d			// saber staff
 // display flags
 #define CG_SHOW_BLUE_TEAM_HAS_REDFLAG     0x00000001
 #define CG_SHOW_RED_TEAM_HAS_BLUEFLAG     0x00000002
@@ -450,6 +450,7 @@
 #define UI_FORCE_RANK_STASISA 398
 #define UI_FORCE_RANK_PUSHA 399
 #define UI_FORCE_RANK_PULLA 400
+#define UI_PLAYERNAME 401
 //[/StanceSelection]
 //[/ExpSys]
 

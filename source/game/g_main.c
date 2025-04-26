@@ -1584,10 +1584,10 @@ G_ShutdownGame
 extern void G_SaveBanIP( void );
 //[/AdminCommands]
 
+
 //[DynamicMemory_Vehicles]
 void BG_VehicleUnloadParms( void );
 //[/DynamicMemory_Vehicles]
-
 void G_ShutdownGame( int restart ) {
 	int i = 0;
 	gentity_t *ent;

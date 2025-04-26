@@ -145,6 +145,8 @@ stringID_table_t BSETTable[] =
 
 extern stringID_table_t WPTable[];
 extern stringID_table_t FPTable[];
+extern stringID_table_t HoldableTable[];
+extern stringID_table_t SKTable[];
 
 char	*TeamNames[TEAM_NUM_TEAMS] = 
 {
@@ -868,6 +870,24 @@ void NPC_Precache ( gentity_t *spawner )
 			}
 			continue;
 		}
+		
+		if (!Q_stricmp(token, "item"))
+		{
+			int curIt;
+
+			if (COM_ParseString(&p, &value))
+			{
+				continue;
+			}
+
+			curIt = GetIDForString( HoldableTable, value );
+
+			if (curIt > HI_NONE && curIt < HI_NUM_HOLDABLE)
+			{
+				RegisterItem(BG_FindItemForHoldable((holdable_t)curIt));
+			}
+			continue;
+		}
 	}
 
 	// If we're not a vehicle, then an error here would be valid...
@@ -1168,7 +1188,7 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 	else
 	{
 		int fp;
-
+		int sk;
 		p = NPCParms;
 		COM_BeginParseSession(NPCFile);
 
@@ -2663,7 +2683,27 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				}
 				//Other unique behaviors/numbers that are currently hardcoded?
 			}
+			
+			//New NPC/jedi stats:
+			//starting item
+			if ( !Q_stricmp( token, "item" ) ) 
+			{
+				int it;
 
+				if ( COM_ParseString( &p, &value ) ) 
+				{
+					continue;
+				}
+				//FIXME: need to precache the weapon, too?  (in above func)
+				it = GetIDForString( HoldableTable, value );
+				if ( it >= HI_NONE && it <= HI_NUM_HOLDABLE )///*HI_SEEKER*/HI_MEDPAC ) //?!
+				{
+					NPC->client->ps.stats[STAT_HOLDABLE_ITEMS] |= ( 1 << it );
+
+				}
+				continue;
+			}
+			
 			//force powers
 			fp = GetIDForString( FPTable, token );
 			if ( fp >= FP_FIRST && fp < NUM_FORCE_POWERS )
@@ -2782,6 +2822,31 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				continue;
 			}
 
+
+			//skills
+			sk = GetIDForString( SKTable, token );
+			if ( sk >= SK_JETPACK && sk < NUM_SKILLS )
+			{
+				if ( COM_ParseInt( &p, &n ) ) 
+				{
+					SkipRestOfLine( &p );
+					continue;
+				}
+				//FIXME: need to precache the fx, too?  (in above func)
+				//cap
+				if ( n > 5 )
+				{
+					n = 5;
+				}
+				else if ( n < 0 )
+				{
+					n = 0;
+				}
+				NPC->client->skillLevel[sk] = n;
+				continue;
+			}
+			
+			
 			// saberColor
 			if ( !Q_stricmp( token, "saberColor" ) ) 
 			{
@@ -3556,7 +3621,8 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				*/
 				continue;
 			}
-
+			
+			
 			if ( !parsingPlayer )
 			{
 				Com_Printf( "WARNING: unknown keyword '%s' while parsing '%s'\n", token, NPCName );
@@ -3625,7 +3691,7 @@ Ghoul2 Insert Start
 		if (npcSaber1 == 0)
 		{ //use "kyle" for a default then
 			npcSaber1 = G_ModelIndex("@Kyle");
-			WP_SaberParseParms( "Kyle", &NPC->client->saber[0] );
+			WP_SaberParseParms( DEFAULT_SABER, &NPC->client->saber[0] );
 		}
 
 		NPC->s.npcSaber1 = npcSaber1;

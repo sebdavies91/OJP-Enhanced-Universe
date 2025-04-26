@@ -30,6 +30,14 @@ typedef enum {
 //incompatiable with previous versions of OJP Basic or Enhanced (on individual basis).
 #define CURRENT_OJPENHANCED_CLIENTVERSION		"OJP Enhanced Universe"
 //[/ClientPlugInDetect]
+#define DEFAULT_SABER			"Kyle"
+#define DEFAULT_SABER_STAFF		"dual_1"
+#define DEFAULT_SABER_MODEL		"models/weapons2/saber/saber_w.glm"
+#define	DEFAULT_MODEL			"kyle"
+#define DEFAULT_MODEL_FEMALE	"jan"
+
+#define DEFAULT_REDTEAM_NAME	"Empire"
+#define DEFAULT_BLUETEAM_NAME	"Rebellion"
 
 #define	STEPSIZE		18
 

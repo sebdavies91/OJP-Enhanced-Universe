@@ -1,0 +1,124 @@
+============================================================================================================================================================================================================
+SW OJP ENHANCED UNIVERSE EXPANDED
+============================================================================================================================================================================================================
+
+This mod is capable of satisfying everyone's Star Wars dreams
+
+Please re download the mod latest version. https://www.moddb.com/mods/star-wars-open-jedi-project-enhanced-universe/downloads/star-wars-open-jedi-project-enhanced-universe-expanded
+
+PLEASE SUBSCRIBE AND RATE THE MOD!!!.
+
+Star Wars OJP Enhanced emerged many years ago as a project to boost the capabilities of JKA. After many years of additional work such capabilities have been increased in Star Wars OJP Enhanced Universe enabling a complete Star Wars experience. Such capabilities include:
+
+Special Character:
+
+Mark I Assault Droid.
+Droideka Destroyer Droid.
+
+Abilities:
+
+Health.
+Armor.
+Strength.
+Agility.
+
+Force Powers:
+
+Basic Powers (Jump,Speed,See).
+Kinetic Powers (Push, Explode, Pull, Implode).
+Lightsaber Skills (Fast, Medium, Strong, Fast-Medium, Medium-Strong, Dual, Staff, Defend, Throw).
+
+Other Force Powers:
+
+Miscellaneous Powers (Heal, Regeneration).
+Telekinetic Powers (Grip, Grasp).
+Status Powers (Protect, Dark Aura, Absorb, Deadly Sight).
+Energy Powers (Lightning, Judgement, Drain, Sever).
+Influence Powers (Confusion, Corruption, Stasis, Insanity).
+Other Status & Energy Powers (Rage, Valor, Destruction, Blinding).
+
+Lightsaber:
+
+Single, dual and staff sabers.
+Blue, green, yellow, purple, orange, cyan, red, white, black, multicolor, and RGB colors.
+
+Light Weapons:
+
+Other Pistols/Gauntlets (K-16, S5-H, B-I, B-R).
+Blaster Pistols (DL-44, DH-17, DC-17, W-34).
+Blaster Rifles (E-11, A280, DC-15S, E-5B).
+Blaster Carbines (BC, EE-3, BC-W, CO).
+Ion/Flame/Ice Carbines (DEMP2, DC-24, DC-17P, CR-25).
+Stun Baton.
+
+Heavy Weapons:
+
+Sniper Rifles (DXR-6, Cycler, DLT-20A, E-5S).
+Repeater Rifles (TL-50, DLT-18, DC-15A, T-21).
+Shot/Array Guns (FC-1, CR-1, DBA, ACP).
+Conc/Rotary Cannons (Stouker, Z-6, Z-12, LJ-70).
+Rocket/Grenade Launchers (PLX-2M, PMG, PLX-1, E-60R).
+
+Explosives:
+
+Grenades (Thermal, Flame, Dioxis, Ion).
+Mines (Thermal, Flame, Dioxis, Ion).
+Bombs (Thermal, Flame, Dioxis, Ion).
+
+Items:
+
+Standard Items (Bacta Canister, Shield Booster, TD2.3 Electrobinoculars, Grapple Hook).
+Advanced Items (Force Field Projector, Training remote, Sentry Turret, E-Web Blaster Cannon).
+Standard & Advanced Throwers (Flame, Dioxis, Ice, Electro, Beam, Orbital).
+Status Change (Cloak Generator, Shield Generator, Overload).
+
+Other Items:
+
+Jetpacks (Z-6M, Z-6B, RT Space, JT-12M, JT-12W, RB).
+Backpack Rockets (Thermal, Flame, Concussion).
+Squad Teams (Empire, Rebellion, Mercenaries, Confederacy, Republic, Mandalorian).
+
+Vehicles:
+
+Vehicle Mount (74-Z, Tauntaun, Swoop-MP, AT-ST, Landspeeder, Rancor, AT-AT, Snowspeeder, Skiff, TIE Fighter, X-Wing, TIE Interceptor, TIE Bomber, Y-Wing, A-Wing, T-4A, YT-1300, Ravensclaw, Stap, Swoop, Eopie, AAT, AT-PT, Bantha, Hailfire, AT-TE, N-1, Vulture, ARC-170, Tri-Fighter, Hyena, V-Wing, Delta-7, STHPD, LAAT, Firespray-31N, XX-9 TL, Projectile, Conc).
+
+Bots:
+
+Classes setup including (Assault, Support, Officer, Specialist, Aerial, Gunner, Infiltrator, Hunter, Enforcer, Demolition, Grenadier, Incinerator, Freezer, Warrior, Jedi Knight, Jedi Master, Sith Assasin, and Sith Lord.
+
+NPCS:
+
+Adjusted in the cooperative gametype.
+
+Gametypes:
+
+Cooperative/Single Player
+Free for All
+Jedi Master
+Holocron
+Duel,
+Powerduel,
+Team Free for All
+Capture the Flag
+Capture the Ysalamiri
+Siege.
+
+Classes:
+
+Fully customizable free class in all gametypes except in the Holocron Free for All (only force class) and Siege (fixed classes) gametypes.
+
+Maps:
+
+All JK2 and JKA maps.
+
+Textures:
+
+Higher definition textures.
+
+Version:
+
+Expanded, which includes the Star Wars OJP Enhanced Universe fundamental assets and certain KOTF expansion assets such as new characters (all KOTF characters), new maps (all KOTF maps), and new sabers (all KOTF sabers).
+
+THANK YOU VERY MUCH TO THE CURRENT AND OLD MEMBERS OF THE JK COMMUNITY, OJP, KOTF, MB2 Open JK, and JKG TEAMS. 
+WITHOUT YOU, STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE WOULD NOT BE A REALITY. 
+ALL OF YOU CAN CONSIDER YOURSELVES TO BE COAUTHORS OF STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE.
