@@ -1,0 +1,1 @@
+start jamp.exe +set fs_game ojpenhanced
