@@ -19,8 +19,10 @@ Abilities:
 
 Health.
 Armor.
-Strength.
+Power.
+Resistance.
 Agility.
+Strength.
 
 Force Powers:
 
@@ -41,29 +43,30 @@ Lightsaber:
 
 Single, dual and staff sabers.
 Blue, green, yellow, purple, orange, cyan, red, white, black, multicolor, and RGB colors.
+Many saber hilts including exotic such as Grievous saber hilts and single saberstaff.
 
 Light Weapons:
 
-Other Pistols/Gauntlets (K-16, S5-H, B-I, B-R).
-Blaster Pistols (DL-44, DH-17, DC-17, W-34).
-Blaster Rifles (E-11, A280, DC-15S, E-5B).
-Blaster Carbines (BC, EE-3, BC-W, CO).
+Other Pistols/Gauntlets (K-16, S5-H, SC-10, B-B, B-I, B-R).
+Blaster Pistols (DL-44, DH-17, DC-17, W-34, G-44, SE-44C).
+Blaster Rifles (E-11, A280, DC-15S, E-5B, EL-16, F-11D).
+Blaster Carbines (BC, EE-3, BC-W, CO, BC-M, ST-C).
 Ion/Flame/Ice Carbines (DEMP2, DC-24, DC-17P, CR-25).
-Stun Baton.
+Batons/Other Melee (Baton).
 
 Heavy Weapons:
 
-Sniper Rifles (DXR-6, Cycler, DLT-20A, E-5S).
-Repeater Rifles (TL-50, DLT-18, DC-15A, T-21).
-Shot/Array Guns (FC-1, CR-1, DBA, ACP).
-Conc/Rotary Cannons (Stouker, Z-6, Z-12, LJ-70).
-Rocket/Grenade Launchers (PLX-2M, PMG, PLX-1, E-60R).
+Sniper Rifles (DXR-6, DLT-20A, DC-15X, E-5S, Cycler, PSG).
+Repeater Rifles (TL-50, DLT-18, DC-15A, T-21, DC-17M, FWMB-10).
+Shot/Array Guns (FC-1, K-16S, DBA, ACP, CR-1, S-22).
+Conc/Rotary Cannons (Stouker, LJ-70, Pulse, Sonic, Z-6, Z-12).
+Rocket/Grenade Launchers (PLX-2M, MML, PLX-1, E-60R, MG-T, MG-F).
 
 Explosives:
 
-Grenades (Thermal, Flame, Dioxis, Ion).
-Mines (Thermal, Flame, Dioxis, Ion).
-Bombs (Thermal, Flame, Dioxis, Ion).
+Grenades (Thermal, Flame, Dioxis, Ion, Sonic, Flash).
+Mines (Thermal, Flame, Dioxis, Ion, Sonic, Flash).
+Bombs (Thermal, Flame, Dioxis, Ion, Sonic Flash).
 
 Items:
 
@@ -74,17 +77,17 @@ Status Change (Cloak Generator, Shield Generator, Overload).
 
 Other Items:
 
-Jetpacks (Z-6M, Z-6B, RT Space, JT-12M, JT-12W, RB).
+Jetpacks (Z-6M, Z-6B, Back, JT-12M, JT-12W, CT-20, RT-SB, RT-SW, RB).
 Backpack Rockets (Thermal, Flame, Concussion).
-Squad Teams (Empire, Rebellion, Mercenaries, Confederacy, Republic, Mandalorian).
+Squad Teams (Empire, Rebellion, Mercenaries, Confederacy, Republic, Mandalorian, Sith Empire, Old Republic, Civilians).
 
 Vehicles:
 
-Vehicle Mount (74-Z, Tauntaun, Swoop-MP, AT-ST, Landspeeder, Rancor, AT-AT, Snowspeeder, Skiff, TIE Fighter, X-Wing, TIE Interceptor, TIE Bomber, Y-Wing, A-Wing, T-4A, YT-1300, Ravensclaw, Stap, Swoop, Eopie, AAT, AT-PT, Bantha, Hailfire, AT-TE, N-1, Vulture, ARC-170, Tri-Fighter, Hyena, V-Wing, Delta-7, STHPD, LAAT, Firespray-31N, XX-9 TL, Projectile, Conc).
+Vehicle Mount (74-Z, Tauntaun, Swoop-MP, AT-ST, Landspeeder, Rancor, AT-AT, Snowspeeder, Skiff, TIE Fighter, X-Wing, TIE Interceptor, TIE Bomber, Y-Wing, A-Wing, T-4A, YT-1300, Ravensclaw, Stap, Swoop, Eopie, AAT, AT-PT, Bantha, Hailfire, AT-TE, N-1, Vulture, ARC-170, Tri-Fighter, Hyena, V-Wing, Delta-7, STHPD, LAAT, Firespray-31N).
 
 Bots:
 
-Classes setup including (Assault, Support, Officer, Specialist, Aerial, Gunner, Infiltrator, Hunter, Enforcer, Demolition, Grenadier, Incinerator, Freezer, Warrior, Jedi Knight, Jedi Master, Sith Assasin, and Sith Lord.
+Classes setup including (Assault, Support, Officer, Specialist, Aerial, Gunner, Infiltrator, Hunter, Enforcer, Demolition, Grenadier, Incinerator, Pestifier, Freezer, Warrior, Jedi Knight, Jedi Master, Sith Assasin, and Sith Lord.
 
 NPCS:
 

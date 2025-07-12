@@ -1093,6 +1093,118 @@ Updates 57 and 58 03/04/2025
 
 
 
+Update 59 26/04/2025
+
+1) Added documentation text files to the mod including Credits, Readme, Contents and Updates for both SWOJPEU Standard and Expanded
+
+2) Improved the user friendliness of the Add Bot menu including a full list of the bots rather than single names making their spawn much easier.
+
+3) Mildly improved the call vote menu
+
+4) Fixed the crash during the Stormtrooper speech in Kejim 2
+
+5) Included all the abilities, force powers, weapons, items, and vehicles for the NPCS in a similar way as for clients and bots
+
+6) Modified all npc files with force users focusing in certain force powers and gunners using a wider variety of weapons 
+
+7) Fixed the force insanity time which was canceling the insanity effects
+
+8) Fully improved and alphabetically reordered bots lists in both SWOJPEU Standard and Expanded versions.
+
+9) Bots wont be afraid of their own grenades, mines or bombs
+
+10) Bots can now use the stun baton to attack in short distances
+
+11) Corrected some visual effects regarding muzzleflash, torso and legs frames, sabers and gender (default male is kyle while default female is jan) information
+
+12) Performed some fixes to the dying function so that you cant be killed under intermission or if there isnt an attacker
+
+13) Added severals skins including old republic trooper, sith trooper, sith eradicator, aayla secura, flame trooper, din djarin, heavy mandalorian, rebel vanguard with camo, inferno squad and new republic vanguard.
+
+14) Improved the executables these now being faster with a custom OJP icon
+
+
+
+Update 59 26/04/2025
+
+1) Fixed all warnings appearing when compiling the game.
+
+2) Exotic saber combinations such as grievous or dual lightstaffs or a lightstaff and a single saber are now possible.
+
+3) Simplified the number of effects for faster gameplay.
+
+4) Added Power new ability which increases the damage caused.
+
+5) Added Resistance new ability which reduced the damage received.
+
+6) Added SC-10 Blaster Pistol and Blaster-Blaster Gauntlet with the corresponding skills, firing and trail functions, animations, effects, names, icons and menu options.
+
+7) Added G-44 and SE-44C Blaster Pistols with the corresponding skills, firing and trail functions, animations, effects, names, icons, and menu options.
+
+8) Added EL-16 and F-11D Blaster Rifles with the corresponding skills, firing and trail functions, animations, effects, names, icons, and menu options.
+
+9) Added BC-M and STC Blaster Carbines with the corresponding skills, firing and trail functions, animations, effects, names, icons, and menu options.
+
+10) Made CR-25 a Dioxis Carbine and Added CX-50 Ice Carbine with the corresponding skills, firing and trail functions, animations, effects , names, icons, and menu options.
+
+11) Added DC-15X Laser Rifle and PSG Disruptor Rifle with the corresponding skills, firing and trail functions, animations, effects , names, icons, and menu options.
+
+12) Added DC-17M and FWMB-10 Repeater Rifles with the corresponding skills, firing and trail functions, animations, effects , names, icons, and menu options.
+
+13) Added K-16S and S-22 Shotguns with the corresponding skills, firing and trail functions, animations, effects, names, icons, and menu options.
+
+14) Added Pulse and Sonic Cannons with the corresponding skills, firing and trail functions, animations, effects, names, icons, and menu options.
+
+15) Added Sonic and Flash Grenades with the corresponding skills, firing and trail functions, animations, effects , names, icons, and menu options.
+
+16) Added Sonic and Flash Mines with the corresponding skills, firing and trail functions, animations, effects, names, icons, and menu options.
+
+17) Added Sonic and Flash Bombs with the corresponding skills, firing and trail functions, animations, effects, names, icons, and menu options.
+
+18) Added white screen effect when being flashed similar to force blinding.
+
+19) Added headache effect when being sounded similar to force insanity.
+
+20) corrected models of gauntlets where the axis were visible.
+
+21) modified trails of some of the previous weapons.
+
+22) Added Back Jetpack with the corresponding skills, effects, and menu options.
+
+23) Added Clonetrooper Jetpack with the corresponding skills, effects, and menu options.
+
+24) Added Rockettrooper White Jetpack with the corresponding skills, effects, and menu options.
+
+25) repaired jetpack functions of rocket trooper spacepack and added the corresponding functions for the new jetpacks.
+
+26) Added Sith Empire Squad Team with the corresponding skills, names, icons, and menu options.
+
+27) Added Old Republic Squad Team with the corresponding skills, names, icons, and menu options.
+
+28) Added Civilians Squad Team with the corresponding skills, names, icons, and menu options.
+
+29) Improved squad team conditions now better detecting enemies even in non team modes.
+
+30) Fixed force corruption not switching off in npcs when inactive.
+
+31) Improved the corrupted conditions now better detecting enemies even in non team modes. 
+
+32) Included inthe bots list the pestifier class similar to the incinerator class but uses the dioxisthrower and grenade.
+
+33) Improved bots list adding grievous with his 4 sabers and kreia with a lightstaff and a single saber.
+
+34) Included a single saberstaff in the list of sabers.
+
+35) Adapted new abilities, new weapons, jetpacks, and squad teams to bots.
+
+36) Adapted new abilities, new weapons, jetpacks, and squad teams to npcs.
+
+37) Adapted new abilities, new weapons, jetpacks, and squad teams to siege classes.
+
+38) Added the old republic trooper as well as the sith empire trooper models as part of the squad teams.
+
+
+
 P.S. Set the server max rate to 25000 or set the ultrafast option in the in game optimize tab for a smooth game experience.
 
 PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
