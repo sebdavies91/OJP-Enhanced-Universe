@@ -835,10 +835,14 @@ typedef enum {
 	EFFECT_EXPLOSION_TRIPMINE2,
 	EFFECT_EXPLOSION_TRIPMINE3,
 	EFFECT_EXPLOSION_TRIPMINE4,	
+	EFFECT_EXPLOSION_TRIPMINE5,	
+	EFFECT_EXPLOSION_TRIPMINE6,	
 	EFFECT_EXPLOSION_DETPACK,
 	EFFECT_EXPLOSION_DETPACK2,
 	EFFECT_EXPLOSION_DETPACK3,
 	EFFECT_EXPLOSION_DETPACK4,
+	EFFECT_EXPLOSION_DETPACK5,
+	EFFECT_EXPLOSION_DETPACK6,
 	EFFECT_EXPLOSION_FLECHETTE,
 	EFFECT_STUNHIT,
 	EFFECT_EXPLOSION_DEMP2ALT,
@@ -971,8 +975,10 @@ typedef enum {
 	HT_ELECTROSHOCKERA,
 	HT_JETPACKA,
 	HT_JETPACKB,
+	HT_JETPACKC,
 	HT_SQUADTEAMA,
 	HT_SQUADTEAMB,
+	HT_SQUADTEAMC,
 	HT_NUM_TYPE
 } itemtypes_t;
 
@@ -1164,6 +1170,8 @@ typedef enum {
 	EV_BURNED,
 	EV_FROZEN,
 	EV_SHOCKED,
+	EV_SOUNDED,
+	EV_FLASHED,
 	EV_GIB_PLAYER,			// gib a previously living player
 	EV_SCOREPLUM,			// score plum
 
@@ -1389,17 +1397,23 @@ typedef enum {
 	//[/Asteroids]
 	//[SeekerItemNPC]
 	MOD_SEEKER,	//death by player's seeker droid.
-	MOD_INCINERATOR,
+	MOD_FLAME,
 	MOD_DIOXIS,
-	MOD_FREEZER,
-	MOD_INCINERATOR_EXPLOSION,
-	MOD_INCINERATOR_EXPLOSION_SPLASH,
+	MOD_ICE,
+	MOD_SONIC,
+	MOD_FLASH,	
+	MOD_FLAME_EXPLOSION,
+	MOD_FLAME_EXPLOSION_SPLASH,
 	MOD_DIOXIS_EXPLOSION,
 	MOD_DIOXIS_EXPLOSION_SPLASH,
-	MOD_FREEZER_EXPLOSION,
-	MOD_FREEZER_EXPLOSION_SPLASH,
+	MOD_ICE_EXPLOSION,
+	MOD_ICE_EXPLOSION_SPLASH,
 	MOD_ION_EXPLOSION,
 	MOD_ION_EXPLOSION_SPLASH,
+	MOD_SONIC_EXPLOSION,
+	MOD_SONIC_EXPLOSION_SPLASH,
+	MOD_FLASH_EXPLOSION,
+	MOD_FLASH_EXPLOSION_SPLASH,
 	MOD_FORCE_DESTRUCTION,
 	//[/SeekerItemNPC]
 	//AURELIO: when/if you put this back in, remember to make a case for it in all the other places where
@@ -2012,6 +2026,10 @@ extern int WeaponReadyAnim5[WP_NUM_WEAPONS];
 extern int WeaponAttackAnim5[WP_NUM_WEAPONS];
 extern int WeaponReadyAnim7[WP_NUM_WEAPONS];
 extern int WeaponAttackAnim7[WP_NUM_WEAPONS];
+extern int WeaponReadyAnim9[WP_NUM_WEAPONS];
+extern int WeaponAttackAnim9[WP_NUM_WEAPONS];
+extern int WeaponReadyAnim11[WP_NUM_WEAPONS];
+extern int WeaponAttackAnim11[WP_NUM_WEAPONS];
 //[DualPistols]
 extern int WeaponReadyAnim2[WP_NUM_WEAPONS];
 extern int WeaponAttackAnim2[WP_NUM_WEAPONS];
@@ -2021,6 +2039,10 @@ extern int WeaponReadyAnim6[WP_NUM_WEAPONS];
 extern int WeaponAttackAnim6[WP_NUM_WEAPONS];
 extern int WeaponReadyAnim8[WP_NUM_WEAPONS];
 extern int WeaponAttackAnim8[WP_NUM_WEAPONS];
+extern int WeaponReadyAnim10[WP_NUM_WEAPONS];
+extern int WeaponAttackAnim10[WP_NUM_WEAPONS];
+extern int WeaponReadyAnim12[WP_NUM_WEAPONS];
+extern int WeaponAttackAnim12[WP_NUM_WEAPONS];
 //[/DualPistols]
 
 extern int forcePowerDarkLight[NUM_FORCE_POWERS];

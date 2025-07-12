@@ -30,7 +30,7 @@ void FX_DEMP2_ProjectileThink2( centity_t *cent, const struct weaponInfo_s *weap
 		forward[2] = 1.0f;
 	}
 
-	trap_FX_PlayEffectID( cgs.effects.fireProjectileEffect, cent->lerpOrigin, forward, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.demp2ProjectileEffect, cent->lerpOrigin, forward, -1, -1 );
 
 	
 }
@@ -56,6 +56,32 @@ void FX_DEMP2_ProjectileThink4( centity_t *cent, const struct weaponInfo_s *weap
 		forward[2] = 1.0f;
 	}
 
+	trap_FX_PlayEffectID( cgs.effects.fireProjectileEffect, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_DEMP2_ProjectileThink5( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.dioxisProjectileEffect, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_DEMP2_ProjectileThink6( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.iceProjectileEffect, cent->lerpOrigin, forward, -1, -1 );
 
 	
@@ -73,7 +99,7 @@ void FX_DEMP2_HitWall( vec3_t origin, vec3_t normal )
 
 void FX_DEMP2_HitWall2( vec3_t origin, vec3_t normal )
 {
-	trap_FX_PlayEffectID( cgs.effects.fireWallImpactEffect, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.demp2WallImpactEffect, origin, normal, -1, -1 );
 }
 
 void FX_DEMP2_HitWall3( vec3_t origin, vec3_t normal )
@@ -82,6 +108,16 @@ void FX_DEMP2_HitWall3( vec3_t origin, vec3_t normal )
 }
 
 void FX_DEMP2_HitWall4( vec3_t origin, vec3_t normal )
+{
+	trap_FX_PlayEffectID( cgs.effects.fireWallImpactEffect, origin, normal, -1, -1 );
+}
+
+void FX_DEMP2_HitWall5( vec3_t origin, vec3_t normal )
+{
+	trap_FX_PlayEffectID( cgs.effects.dioxisWallImpactEffect, origin, normal, -1, -1 );
+}
+
+void FX_DEMP2_HitWall6( vec3_t origin, vec3_t normal )
 {
 	trap_FX_PlayEffectID( cgs.effects.iceWallImpactEffect, origin, normal, -1, -1 );
 }
@@ -98,7 +134,7 @@ void FX_DEMP2_HitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid )
 
 void FX_DEMP2_HitPlayer2( vec3_t origin, vec3_t normal, qboolean humanoid )
 {
-	trap_FX_PlayEffectID( cgs.effects.fireFleshImpactEffect, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.demp2FleshImpactEffect, origin, normal, -1, -1 );
 }
 
 void FX_DEMP2_HitPlayer3( vec3_t origin, vec3_t normal, qboolean humanoid )
@@ -108,9 +144,18 @@ void FX_DEMP2_HitPlayer3( vec3_t origin, vec3_t normal, qboolean humanoid )
 
 void FX_DEMP2_HitPlayer4( vec3_t origin, vec3_t normal, qboolean humanoid )
 {
-	trap_FX_PlayEffectID( cgs.effects.iceFleshImpactEffect, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.fireFleshImpactEffect, origin, normal, -1, -1 );
 }
 
+void FX_DEMP2_HitPlayer5( vec3_t origin, vec3_t normal, qboolean humanoid )
+{
+	trap_FX_PlayEffectID( cgs.effects.dioxisFleshImpactEffect, origin, normal, -1, -1 );
+}
+
+void FX_DEMP2_HitPlayer6( vec3_t origin, vec3_t normal, qboolean humanoid )
+{
+	trap_FX_PlayEffectID( cgs.effects.iceFleshImpactEffect, origin, normal, -1, -1 );
+}
 /*
 ---------------------------
 FX_DEMP2_AltBeam

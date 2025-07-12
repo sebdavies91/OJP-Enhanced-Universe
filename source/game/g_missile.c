@@ -480,14 +480,18 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			//[Asteroids]
 			ent->methodOfDeath != MOD_TURBLAST &&
 			ent->methodOfDeath != MOD_TARGET_LASER &&
-			ent->methodOfDeath != MOD_INCINERATOR_EXPLOSION &&
-			ent->methodOfDeath != MOD_INCINERATOR_EXPLOSION_SPLASH &&
+			ent->methodOfDeath != MOD_FLAME_EXPLOSION &&
+			ent->methodOfDeath != MOD_FLAME_EXPLOSION_SPLASH &&
 			ent->methodOfDeath != MOD_DIOXIS_EXPLOSION &&
 			ent->methodOfDeath != MOD_DIOXIS_EXPLOSION_SPLASH &&
-			ent->methodOfDeath != MOD_FREEZER_EXPLOSION &&
-			ent->methodOfDeath != MOD_FREEZER_EXPLOSION_SPLASH &&
+			ent->methodOfDeath != MOD_ICE_EXPLOSION &&
+			ent->methodOfDeath != MOD_ICE_EXPLOSION_SPLASH &&
 			ent->methodOfDeath != MOD_ION_EXPLOSION &&
 			ent->methodOfDeath != MOD_ION_EXPLOSION_SPLASH &&
+			ent->methodOfDeath != MOD_SONIC_EXPLOSION &&
+			ent->methodOfDeath != MOD_SONIC_EXPLOSION_SPLASH &&
+			ent->methodOfDeath != MOD_FLASH_EXPLOSION &&
+			ent->methodOfDeath != MOD_FLASH_EXPLOSION_SPLASH &&
 			ent->methodOfDeath != MOD_FORCE_DESTRUCTION )
 			//[/Asteroids]
 		{

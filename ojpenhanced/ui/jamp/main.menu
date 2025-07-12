@@ -86,7 +86,7 @@
 		{
 			name				mainvideo
 			style				WINDOW_STYLE_SHADER
-			rect				90 60 455 380
+			rect				90 95 455 310
 			background			"ojp/menu/mainvideo"
 			forecolor			1 1 1 1
 			visible				1

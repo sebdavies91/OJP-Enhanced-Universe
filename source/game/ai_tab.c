@@ -4064,7 +4064,6 @@ void TAB_HigherBotAI(bot_state_t *bs)
 //Guts of the TAB Bot's AI
 void TAB_StandardBotAI(bot_state_t *bs, float thinktime)
 {
-	vec3_t	fwd; 
 	qboolean UsetheForce = qfalse;
 
 	//Reset the action states

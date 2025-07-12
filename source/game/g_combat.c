@@ -632,6 +632,8 @@ extern gentity_t *WP_DropThermal( gentity_t *ent );
 extern gentity_t *WP_DropThermal2( gentity_t *ent );
 extern gentity_t *WP_DropThermal3( gentity_t *ent );
 extern gentity_t *WP_DropThermal4( gentity_t *ent );
+extern gentity_t *WP_DropThermal5( gentity_t *ent );
+extern gentity_t *WP_DropThermal6( gentity_t *ent );
 //[/CoOp]
 void TossClientItems( gentity_t *self ) {
 	gitem_t		*item;
@@ -797,21 +799,29 @@ void TossClientItems( gentity_t *self ) {
 		if ( weapon == WP_THERMAL && self->client->ps.torsoAnim == BOTH_ATTACK10 )
 		{//we were getting ready to throw the thermal, drop it! 
 			self->client->ps.weaponChargeTime = level.time - FRAMETIME;//so it just kind of drops it
-			if(self->client->ps.eFlags & EF_WP_OPTION_2)
+			if(self->client->ps.eFlags & EF_WP_OPTION_2 && self->client->ps.eFlags & EF_WP_OPTION_4)
 			{
-			dropped = WP_DropThermal2( self );		
+			dropped = WP_DropThermal6( self );		
 			}
-			else if(self->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(self->client->ps.eFlags & EF_WP_OPTION_2 && self->client->ps.eFlags & EF_WP_OPTION_3)
 			{
-			dropped = WP_DropThermal3( self );		
+			dropped = WP_DropThermal5( self );		
 			}
 			else if(self->client->ps.eFlags & EF_WP_OPTION_4)
 			{
 			dropped = WP_DropThermal4( self );		
 			}
-			else
+			else if(self->client->ps.eFlags & EF_WP_OPTION_3)
+			{
+			dropped = WP_DropThermal3( self );		
+			}
+			else if(self->client->ps.eFlags & EF_WP_OPTION_2)
 			{
 			dropped = WP_DropThermal2( self );		
+			}
+			else
+			{
+			dropped = WP_DropThermal( self );		
 			}
 			item = NULL;
 		}
@@ -1146,17 +1156,23 @@ char	*modNames[MOD_MAX] = {
 	"MOD_COLLISION",	
 	"MOD_VEH_EXPLOSION",	
 	"MOD_SEEKER",
-	"MOD_INCINERATOR",
+	"MOD_FLAME",
 	"MOD_DIOXIS",
-	"MOD_FREEZER",
-	"MOD_INCINERATOR_EXPLOSION",
-	"MOD_INCINERATOR_EXPLOSION_SPLASH",
+	"MOD_ICE",
+	"MOD_SONIC",
+	"MOD_FLASH",
+	"MOD_FLAME_EXPLOSION",
+	"MOD_FLAME_EXPLOSION_SPLASH",
 	"MOD_DIOXIS_EXPLOSION",
 	"MOD_DIOXIS_EXPLOSION_SPLASH",
-	"MOD_FREEZER_EXPLOSION",
-	"MOD_FREEZER_EXPLOSION_SPLASH",
+	"MOD_ICE_EXPLOSION",
+	"MOD_ICE_EXPLOSION_SPLASH",
 	"MOD_ION_EXPLOSION",
 	"MOD_ION_EXPLOSION_SPLASH",
+	"MOD_SONIC_EXPLOSION",
+	"MOD_SONIC_EXPLOSION_SPLASH",
+	"MOD_FLASH_EXPLOSION",
+	"MOD_FLASH_EXPLOSION_SPLASH",
 	"MOD_FORCE_DESTRUCTION",
 };
 
@@ -3116,6 +3132,8 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 	self->client->shockTime = 0;	
 	self->client->toxicTime = 0;
+	self->client->sonicTime = 0;
+	self->client->flashTime = 0;
 	
 	self->client->backpackrocketTime = 0;
 	self->client->specialcharacterSpawn = 0;
@@ -3126,6 +3144,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	self->client->repulseTime = 0;	
 	self->client->deathfieldbubbledamageTime = 0;
 	self->client->deathsightbubbledamageTime = 0;
+	self->client->semiTime = 0;
 		//[SeekerItemNpc]
 
 	//[/SeekerItemNpc]
@@ -3599,14 +3618,14 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 			//[FullDismemberment]
 			//weapon dismemberment so saber isn't the only one :)
-			if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_TURBLAST) || (meansOfDeath == MOD_FLECHETTE) || (meansOfDeath == MOD_FLECHETTE_ALT_SPLASH) || (meansOfDeath == MOD_CONC_ALT) || (meansOfDeath == MOD_THERMAL_SPLASH) || (meansOfDeath == MOD_INCINERATOR_EXPLOSION_SPLASH)|| (meansOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH) || (meansOfDeath == MOD_FREEZER_EXPLOSION_SPLASH)  || (meansOfDeath == MOD_ION_EXPLOSION_SPLASH) || (meansOfDeath == MOD_TRIP_MINE_SPLASH) || (meansOfDeath == MOD_TIMED_MINE_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_CRUSH) || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
+			if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_TURBLAST) || (meansOfDeath == MOD_FLECHETTE) || (meansOfDeath == MOD_FLECHETTE_ALT_SPLASH) || (meansOfDeath == MOD_CONC_ALT) || (meansOfDeath == MOD_THERMAL_SPLASH) || (meansOfDeath == MOD_FLAME_EXPLOSION_SPLASH)|| (meansOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH) || (meansOfDeath == MOD_ICE_EXPLOSION_SPLASH)  || (meansOfDeath == MOD_ION_EXPLOSION_SPLASH) || (meansOfDeath == MOD_SONIC_EXPLOSION_SPLASH) || (meansOfDeath == MOD_FLASH_EXPLOSION_SPLASH) || (meansOfDeath == MOD_TRIP_MINE_SPLASH) || (meansOfDeath == MOD_TIMED_MINE_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_CRUSH) || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
 			//if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
 			{ //update the anim on the actual skeleton (so bolt point will reflect the correct position) and then check for dismem
 				G_UpdateClientAnims(self, 1.0f);
 				G_CheckForDismemberment(self, attacker, self->pos1, damage, anim, qfalse);
 			}
 			//GIBBING!!! making use of g_checkforblowing up - Wahoo
-			if (meansOfDeath == MOD_ROCKET || (meansOfDeath == MOD_ROCKET_SPLASH) || (meansOfDeath == MOD_ROCKET_HOMING) || (meansOfDeath == MOD_ROCKET_HOMING_SPLASH) || (meansOfDeath == MOD_THERMAL) || (meansOfDeath == MOD_INCINERATOR_EXPLOSION) || (meansOfDeath == MOD_DIOXIS_EXPLOSION) || (meansOfDeath == MOD_FREEZER_EXPLOSION) || (meansOfDeath == MOD_ION_EXPLOSION) || (meansOfDeath == MOD_DET_PACK_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_TRIGGER_HURT) || (meansOfDeath == MOD_LAVA))
+			if (meansOfDeath == MOD_ROCKET || (meansOfDeath == MOD_ROCKET_SPLASH) || (meansOfDeath == MOD_ROCKET_HOMING) || (meansOfDeath == MOD_ROCKET_HOMING_SPLASH) || (meansOfDeath == MOD_THERMAL) || (meansOfDeath == MOD_FLAME_EXPLOSION) || (meansOfDeath == MOD_DIOXIS_EXPLOSION) || (meansOfDeath == MOD_ICE_EXPLOSION) || (meansOfDeath == MOD_ION_EXPLOSION) || (meansOfDeath == MOD_SONIC_EXPLOSION_SPLASH) || (meansOfDeath == MOD_FLASH_EXPLOSION_SPLASH) || (meansOfDeath == MOD_DET_PACK_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_TRIGGER_HURT) || (meansOfDeath == MOD_LAVA))
 			{
 				G_UpdateClientAnims(self, 1.0f);
 				G_CheckForblowingup(self, attacker, self->pos1, damage, anim, qfalse);
@@ -5676,7 +5695,8 @@ extern qboolean gSiegeRoundBegun;
 int gPainMOD = 0;
 int gPainHitLoc = -1;
 vec3_t gPainPoint;
-
+extern qboolean OJP_BlockFocus(gentity_t *attacker, gentity_t *defender, int dpBlockCost, forcePowers_t forcePower, qboolean forcePowerVariation);
+extern int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacker, int atPower, int atPowerLevel, int atForceSpent);
 extern int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
 //[CloakingVehicles]
 extern void G_ToggleVehicleCloak(playerState_t *ps);
@@ -5691,7 +5711,6 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	int			save;
 	int			asave;
 	int			knockback;
-	int			max;
 	int			subamt = 0;
 	float		famt = 0;
 	float		hamt = 0;
@@ -5789,7 +5808,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			return;				
 		}
-		if (WP_AbsorbConversion(targ->client, targ->client->ps.fd.forcePowerLevel[FP_ABSORB], attacker, FP_TEAM_FORCE, attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE], forcePowerNeeded[attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE]][FP_TEAM_FORCE])!=-1)
+		if (WP_AbsorbConversion(targ, targ->client->ps.fd.forcePowerLevel[FP_ABSORB], attacker, FP_TEAM_FORCE, attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE], forcePowerNeeded[attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE]][FP_TEAM_FORCE])!=-1)
 		{
 			return;			
 		}
@@ -5800,7 +5819,62 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 	}
 	
-	
+	if ( !(dflags & DAMAGE_NO_PROTECTION) ) 
+	{//rage overridden by no_protection
+		if (targ && targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_RAGE)))
+		{
+			if(targ->client->ps.userInt3 & (1 << FLAG_RAGE2))
+			{
+			damage *= 2/3;
+			}
+			else
+			{
+				
+			}
+		}
+	}
+		if (attacker && attacker->client && (attacker->client->ps.fd.forcePowersActive & (1 << FP_RAGE)))
+		{
+			if(attacker->client->ps.userInt3 & (1 << FLAG_RAGE2))
+			{
+
+			}
+			else
+			{
+			damage *= 3/2;				
+			}
+		}
+
+
+		if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_3))
+		{
+			damage *= 1/2;
+		}
+		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_2))
+		{
+			damage *= 2/3;
+		}
+		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_1))
+		{
+			damage *= 3/4;
+		}		
+		
+		
+		
+		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_3))
+		{
+			damage *= 2;				
+		}
+		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_2))
+		{
+			damage *= 3/2;				
+		}
+		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_1))
+		{
+			damage *= 4/3;				
+		}
+
+		
 	if (mod == MOD_DEMP2 && targ && targ->inuse && targ->client)
 	{
 		int	ELECTROCUTION_TIME = 2500;
@@ -5812,7 +5886,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 	}
 
-	if (mod == MOD_INCINERATOR && targ && targ->inuse && targ->client)
+	if (mod == MOD_FLAME && targ && targ->inuse && targ->client)
 	{
 		int	BURN_TIME = 2500;	
 		if ( targ->client->burnTime  < (level.time + BURN_TIME/2) )
@@ -5840,7 +5914,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 	}	
-	if (mod == MOD_FREEZER && targ && targ->inuse && targ->client)
+	if (mod == MOD_ICE && targ && targ->inuse && targ->client)
 	{
 		int	FREEZE_TIME = 2500;	
 		if ( targ->client->freezeTime  < (level.time + FREEZE_TIME/2) )
@@ -5865,17 +5939,25 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 					targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
 					targ->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
 					targ->client->ps.saberBlocked = BLOCKED_NONE;
-					if (targ->client->ps.eFlags & EF_WP_OPTION_2)
+					if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_4)
 					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim11[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					}
+					else if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim9[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					}
+					else if (targ->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
 					else if (targ->client->ps.eFlags & EF_WP_OPTION_3)
 					{
 					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim5[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_4)
+					else if (targ->client->ps.eFlags & EF_WP_OPTION_2)
 					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
 					else
 					{
@@ -5886,8 +5968,29 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 	}
+
+	if (mod == MOD_SONIC && targ && targ->inuse && targ->client)
+	{
+		int	SONIC_TIME = 2500;	
+		if ( targ->client->sonicTime  < (level.time + SONIC_TIME/2) )
+		{//electrocution effect
+			{//don't do this to fighters
+				targ->client->sonicTime = level.time + SONIC_TIME;
+			}
+		}
+	}	
+	if (mod == MOD_FLASH && targ && targ->inuse && targ->client)
+	{
+		int	FLASH_TIME = 2500;	
+		if ( targ->client->flashTime  < (level.time + FLASH_TIME/2) )
+		{//electrocution effect
+			{//don't do this to fighters
+				targ->client->flashTime = level.time + FLASH_TIME;
+			}
+		}
+	}	
 	
-	if ((mod == MOD_INCINERATOR_EXPLOSION || mod == MOD_INCINERATOR_EXPLOSION_SPLASH)&& targ && targ->inuse && targ->client)
+	if ((mod == MOD_FLAME_EXPLOSION || mod == MOD_FLAME_EXPLOSION_SPLASH)&& targ && targ->inuse && targ->client)
 	{
 		int	BURN_TIME = 2500;	
 		if ( targ->client->burnTime  < (level.time + BURN_TIME/2) )
@@ -5915,7 +6018,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 	}
-	if ((mod == MOD_FREEZER_EXPLOSION || mod == MOD_FREEZER_EXPLOSION_SPLASH)&& targ && targ->inuse && targ->client)
+	if ((mod == MOD_ICE_EXPLOSION || mod == MOD_ICE_EXPLOSION_SPLASH)&& targ && targ->inuse && targ->client)
 	{
 		int	FREEZE_TIME = 2500;	
 		if ( targ->client->freezeTime  < (level.time + FREEZE_TIME/2) )
@@ -5940,17 +6043,25 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 					targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
 					targ->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
 					targ->client->ps.saberBlocked = BLOCKED_NONE;
-					if (targ->client->ps.eFlags & EF_WP_OPTION_2)
+					if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_4)
 					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim11[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					}
+					else if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim9[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					}
+					else if (targ->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
 					else if (targ->client->ps.eFlags & EF_WP_OPTION_3)
 					{
 					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim5[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_4)
+					else if (targ->client->ps.eFlags & EF_WP_OPTION_2)
 					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
 					else
 					{
@@ -5969,7 +6080,30 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 	}
-	
+	if ((mod == MOD_SONIC_EXPLOSION || mod == MOD_SONIC_EXPLOSION_SPLASH)&& targ && targ->inuse && targ->client)
+	{
+		int	SONIC_TIME = 2500;	
+		if ( targ->client->sonicTime  < (level.time + SONIC_TIME/2) )
+		{//electrocution effect
+			{//don't do this to fighters
+				targ->client->sonicTime = level.time + SONIC_TIME;
+			}
+		}
+	}	
+	if ((mod == MOD_FLASH_EXPLOSION || mod == MOD_FLASH_EXPLOSION_SPLASH)&& targ && targ->inuse && targ->client)
+	{
+		int	FLASH_TIME = 2500;	
+		if ( targ->client->flashTime  < (level.time + FLASH_TIME/2) )
+		{//electrocution effect
+			{//don't do this to fighters
+					gentity_t	*tent;
+					tent = G_TempEntity(targ->r.currentOrigin, EV_FLASHED);
+					tent->s.eventParm = DirToByte(dir);
+					tent->s.owner = targ->s.number;
+					targ->client->flashTime = level.time + FLASH_TIME;
+			}
+		}
+	}	
 	if (g_gametype.integer == GT_SIEGE &&
 		!gSiegeRoundBegun)
 	{ //nothing can be damaged til the round starts.
@@ -6091,14 +6225,18 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			mod != MOD_VEH_EXPLOSION &&
 			//[/Asteroids]
 			mod != MOD_TRIGGER_HURT &&
-			mod != MOD_INCINERATOR_EXPLOSION &&
-			mod != MOD_INCINERATOR_EXPLOSION_SPLASH &&
+			mod != MOD_FLAME_EXPLOSION &&
+			mod != MOD_FLAME_EXPLOSION_SPLASH &&
 			mod != MOD_DIOXIS_EXPLOSION &&
 			mod != MOD_DIOXIS_EXPLOSION_SPLASH &&
-			mod != MOD_FREEZER_EXPLOSION &&
-			mod != MOD_FREEZER_EXPLOSION_SPLASH &&
+			mod != MOD_ICE_EXPLOSION &&
+			mod != MOD_ICE_EXPLOSION_SPLASH &&
 			mod != MOD_ION_EXPLOSION &&
 			mod != MOD_ION_EXPLOSION_SPLASH &&
+			mod != MOD_SONIC_EXPLOSION &&
+			mod != MOD_SONIC_EXPLOSION_SPLASH &&
+			mod != MOD_FLASH_EXPLOSION &&
+			mod != MOD_FLASH_EXPLOSION_SPLASH &&
 			mod != MOD_FORCE_DESTRUCTION )
 		{
 			if ( mod != MOD_MELEE || !G_HeavyMelee( attacker ) )
@@ -6391,14 +6529,18 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			case MOD_TRIP_MINE_SPLASH:
 			case MOD_TIMED_MINE_SPLASH:
 			case MOD_DET_PACK_SPLASH:
-			case MOD_INCINERATOR_EXPLOSION:
-			case MOD_INCINERATOR_EXPLOSION_SPLASH:
+			case MOD_FLAME_EXPLOSION:
+			case MOD_FLAME_EXPLOSION_SPLASH:
 			case MOD_DIOXIS_EXPLOSION:
 			case MOD_DIOXIS_EXPLOSION_SPLASH:
-			case MOD_FREEZER_EXPLOSION:
-			case MOD_FREEZER_EXPLOSION_SPLASH:
+			case MOD_ICE_EXPLOSION:
+			case MOD_ICE_EXPLOSION_SPLASH:
 			case MOD_ION_EXPLOSION:
 			case MOD_ION_EXPLOSION_SPLASH:
+			case MOD_SONIC_EXPLOSION:
+			case MOD_SONIC_EXPLOSION_SPLASH:
+			case MOD_FLASH_EXPLOSION:
+			case MOD_FLASH_EXPLOSION_SPLASH:
 				damage *= 1.00;
 				break;
 			}
@@ -7079,7 +7221,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	if (take) 
 	{
 		if (targ->client && targ->s.number < MAX_CLIENTS &&
-			(mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH))
+			(mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT ))
 		{ //uh.. shock them or something. what the hell, I don't know.
             if (targ->client->ps.weaponTime <= 0)
 			{ //yeah, we were supposed to be beta a week ago, I don't feel like
@@ -7095,7 +7237,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 		if (targ->client && targ->s.number < MAX_CLIENTS &&
-			(mod == MOD_INCINERATOR))
+			(mod == MOD_FLAME))
 		{ //uh.. shock them or something. what the hell, I don't know.
             if (targ->client->ps.weaponTime <= 0)
 			{ //yeah, we were supposed to be beta a week ago, I don't feel like
@@ -7127,7 +7269,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 		if (targ->client && targ->s.number < MAX_CLIENTS &&
-			(mod == MOD_FREEZER))
+			(mod == MOD_ICE))
 		{ //uh.. shock them or something. what the hell, I don't know.
             if (targ->client->ps.weaponTime <= 0)
 			{ //yeah, we were supposed to be beta a week ago, I don't feel like
@@ -7142,6 +7284,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				}
 			}
 		}
+
 		if ( !(dflags & DAMAGE_NO_PROTECTION) ) 
 		{//rage overridden by no_protection
 			if (targ->client && (targ->client->ps.fd.forcePowersActive & (1 << FP_RAGE)) && (inflictor->client || attacker->client))

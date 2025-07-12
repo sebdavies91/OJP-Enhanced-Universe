@@ -3791,29 +3791,28 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 		}
 
 		//handle saber activation/deactivation based on the style transition
-		if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0]
-			&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[1] ) )
+		if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0])
 		{//using dual sabers
-			if(selectLevel != SS_DUAL && ent->client->ps.saberHolstered == 0 && !ent->client->ps.saberInFlight)
+			if(selectLevel != SS_DUAL && selectLevel != SS_STAFF && ent->client->ps.saberHolstered == 0 && !ent->client->ps.saberInFlight)
 			{//not using dual style, turn off the other blade
 				G_Sound(ent, CHAN_AUTO, ent->client->saber[1].soundOff);
 				ent->client->ps.saberHolstered = 1;
 			}
-			else if(selectLevel == SS_DUAL && ent->client->ps.saberHolstered == 1 && !ent->client->ps.saberInFlight)
+			else if((selectLevel == SS_DUAL || selectLevel == SS_STAFF)&& ent->client->ps.saberHolstered == 1 && !ent->client->ps.saberInFlight)
 			{
 				G_Sound(ent, CHAN_AUTO, ent->client->saber[1].soundOn);
 				ent->client->ps.saberHolstered = 0;
 			}
 		}
-		else if (ent->client->saber[0].numBlades > 1
+		else if (ent->client->saber[0].numBlades > 1 
 			&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] ) )
 		{ //use staff stance then.
-			if(selectLevel != SS_STAFF && ent->client->ps.saberHolstered == 0 && !ent->client->ps.saberInFlight)
+			if(selectLevel != SS_STAFF && selectLevel != SS_DUAL && ent->client->ps.saberHolstered == 0 && !ent->client->ps.saberInFlight)
 			{
 				G_Sound(ent, CHAN_AUTO, ent->client->saber[0].soundOff);
 				ent->client->ps.saberHolstered = 1;
 			}
-			else if(selectLevel == SS_STAFF && ent->client->ps.saberHolstered == 1 && !ent->client->ps.saberInFlight)
+			else if((selectLevel == SS_STAFF || selectLevel == SS_DUAL) && ent->client->ps.saberHolstered == 1 && !ent->client->ps.saberInFlight)
 			{
 					G_Sound(ent, CHAN_AUTO, ent->client->saber[0].soundOn);
 					ent->client->ps.saberHolstered = 0;

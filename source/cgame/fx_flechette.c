@@ -16,22 +16,9 @@ void FX_FlechetteProjectileThink( centity_t *cent, const struct weaponInfo_s *we
 	{
 		forward[2] = 1.0f;
 	}
-	if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
-	{
-	trap_FX_PlayEffectID( cgs.effects.flechetteShotEffect2, cent->lerpOrigin, forward, -1, -1 );
-	}
-	else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
-	{
-	trap_FX_PlayEffectID( cgs.effects.flechetteShotEffect3, cent->lerpOrigin, forward, -1, -1 );
-	}
-	else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
-	{
-	trap_FX_PlayEffectID( cgs.effects.flechetteShotEffect4, cent->lerpOrigin, forward, -1, -1 );
-	}
-	else
-	{
+
 	trap_FX_PlayEffectID( cgs.effects.flechetteShotEffect, cent->lerpOrigin, forward, -1, -1 );
-	}
+	
 	
 }
 void FX_FlechetteProjectileThink2( centity_t *cent, const struct weaponInfo_s *weapon )
@@ -74,6 +61,32 @@ void FX_FlechetteProjectileThink4( centity_t *cent, const struct weaponInfo_s *w
 
 	
 }
+void FX_FlechetteProjectileThink5( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.flechetteShotEffect5, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_FlechetteProjectileThink6( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.flechetteShotEffect6, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
 /*
 -------------------------
 FX_FlechetteWeaponHitWall
@@ -104,7 +117,7 @@ void FX_FlechetteWeaponHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoi
 
 /*
 -------------------------
-FX_FlechetteProjectileThink
+FX_FlechetteAltProjectileThink
 -------------------------
 */
 
@@ -157,7 +170,33 @@ void FX_FlechetteAltProjectileThink4( centity_t *cent, const struct weaponInfo_s
 		forward[2] = 1.0f;
 	}
 
-	trap_FX_PlayEffectID( cgs.effects.flechetteotherAltShotEffect, cent->lerpOrigin, forward, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.flechetteAltShotEffect2	, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_FlechetteAltProjectileThink5( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.flechetteShotEffect5, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_FlechetteAltProjectileThink6( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.flechetteAltShotEffect3, cent->lerpOrigin, forward, -1, -1 );
 
 	
 }

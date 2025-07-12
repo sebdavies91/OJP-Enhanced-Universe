@@ -252,5 +252,6 @@
     <None Include="JK2_cgame.def">
       <Filter>Header Files</Filter>
     </None>
+    <None Include="C:\Program Files (x86)\Windows Kits\10\Source\10.0.19041.0\ucrt\string\i386\strcat.asm" />
   </ItemGroup>
 </Project>

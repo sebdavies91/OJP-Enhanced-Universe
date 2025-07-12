@@ -1,10 +1,7 @@
 ﻿  ai_aotc.c
   ai_hybrid.c
   ai_main.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(2642,12): warning C4101: 'EnemyOrigin': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7131,9): warning C4101: 'fwd': unreferenced local variable
   ai_tab.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_tab.c(4067,9): warning C4101: 'fwd': unreferenced local variable
   ai_util.c
   ai_wpnav.c
   AnimalNPC.c
@@ -31,18 +28,11 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_client.c
   g_cmds.c
   g_combat.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5792,7): warning C4013: 'WP_AbsorbConversion' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5796,7): warning C4013: 'OJP_BlockFocus' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5694,8): warning C4101: 'max': unreferenced local variable
   g_crash.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_crash.c(281,59): warning C4113: 'BOOL (__stdcall *)(LPSTR,DWORD,PVOID)' differs in parameter lists from 'PSYM_ENUMMODULES_CALLBACK'
   g_dynmusic.c
   g_exphysics.c
   g_ICARUScb.c
   g_items.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4171,6): warning C4101: 'shots': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4169,10): warning C4101: 'angs': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4170,6): warning C4101: 'i': unreferenced local variable
   g_log.c
   g_main.c
   g_mem.c
@@ -72,8 +62,6 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_vehicles.c
   g_vehicleTurret.c
   g_weapon.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5855,8): warning C4101: 'rTime': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10554,6): warning C4101: 'count': unreferenced local variable
   Generating Code...
   Compiling...
   NPC.c
@@ -113,47 +101,16 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   NPC_senses.c
   NPC_sounds.c
   NPC_spawn.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(319,6): warning C4101: 'i': unreferenced local variable
   NPC_stats.c
   NPC_utils.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_utils.c(195,3): warning C4033: 'NPC_UpdateAngles' must return a value
   NPC_Vehicle.c
   q_math.c
   q_shared.c
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_utils.c(524): warning C4715: 'NPC_UpdateAngles': not all control paths return a value
   Compiling...
   SpeederNPC.c
   tri_coll_test.c
   w_force.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4175,55): warning C4133: 'function': incompatible types - from 'gclient_s *' to 'gentity_t *'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4298,9): warning C4101: 'end': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4313,9): warning C4101: 'dot': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4297,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5659,40): warning C4133: 'function': incompatible types - from 'gclient_s *' to 'gentity_t *'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5524,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5879,40): warning C4133: 'function': incompatible types - from 'gclient_s *' to 'gentity_t *'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5744,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6085,40): warning C4133: 'function': incompatible types - from 'gclient_s *' to 'gentity_t *'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5936,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6297,40): warning C4133: 'function': incompatible types - from 'gclient_s *' to 'gentity_t *'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6149,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6454,44): warning C4047: '>': 'gentity_t *' differs in levels of indirection from 'int'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6454,63): warning C4554: '&': check operator precedence for possible error; use parentheses to clarify precedence
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6644,13): warning C4101: 'aimingAt': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6632,9): warning C4101: 'dot1': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(7656,13): warning C4101: 'aimingAt': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10544,55): warning C4133: 'function': incompatible types - from 'gclient_s *' to 'gentity_t *'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10591,9): warning C4101: 'end': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10614,9): warning C4101: 'dot': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10590,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10737,55): warning C4133: 'function': incompatible types - from 'gclient_s *' to 'gentity_t *'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12281,6): warning C4013: 'BG_CrouchAnim' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12384,2): warning C4013: 'Q3_SetInvisible' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12386,9): warning C4013: 'G_IsRidingVehicle' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12393,25): warning C4013: 'NPC_SpawnType' undefined; assuming extern returning int
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12393,111): warning C4047: '=': 'gentity_t *' differs in levels of indirection from 'int'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12399,116): warning C4047: '=': 'gentity_t *' differs in levels of indirection from 'int'
   w_saber.c
   WalkerNPC.c
   Generating Code...

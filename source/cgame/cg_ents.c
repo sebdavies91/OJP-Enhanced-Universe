@@ -902,16 +902,16 @@ static void CG_General( centity_t *cent ) {
 
             cg_entities[clientNum].bolt1 = s1->number;
 
-            trap_G2API_GetBoltMatrix(cg_entities[clientNum].ghoul2, 0, cgs.clientinfo[clientNum].bolt_rhand, &boltMatrix, &cg_entities[clientNum].turAngles,
-                                      &cg_entities[clientNum].lerpOrigin, cg.time, cgs.gameModels, &cg_entities[clientNum].modelScale);
+            trap_G2API_GetBoltMatrix(cg_entities[clientNum].ghoul2, 0, cgs.clientinfo[clientNum].bolt_rhand, &boltMatrix, cg_entities[clientNum].turAngles,
+                                      cg_entities[clientNum].lerpOrigin, cg.time, cgs.gameModels, cg_entities[clientNum].modelScale);
 
             rHandPos[0] = boltMatrix.matrix[0][3];
             rHandPos[1] = boltMatrix.matrix[1][3];
             rHandPos[2] = boltMatrix.matrix[2][3];
 
-            BG_EvaluateTrajectory(&s1->pos, cg.time, &pos);
+            BG_EvaluateTrajectory(&s1->pos, cg.time, pos);
 
-            CG_TestLine(&rHandPos, &pos, 1, 0x000000u, 1);
+            CG_TestLine(rHandPos, pos, 1, 0x000000u, 1);
             return;
 	}
 	//END
@@ -2055,7 +2055,7 @@ Ghoul2 Insert Start
 
 		if (!doGrey)
 		{
-			trap_FX_PlayEffectID(cgs.effects.itemCone, ent.origin, uNorm, -1, -1);
+//			trap_FX_PlayEffectID(cgs.effects.itemCone, ent.origin, uNorm, -1, -1);
 		}
 	}
 
@@ -2548,6 +2548,8 @@ static void CG_Missile( centity_t *cent ) {
 //	int	col;
 
 	s1 = &cent->currentState;
+//	Com_Printf( "^3CL: %i\n", s1->otherEntityNum2 );
+//	Com_Printf( "^4CL-WP_name: %s\n", g_vehWeaponInfo[s1->otherEntityNum2].iShotFX );
 	if ( s1->weapon > WP_NUM_WEAPONS && s1->weapon != G2_MODEL_PART ) {
 		s1->weapon = 0;
 	}
@@ -2659,16 +2661,16 @@ static void CG_Missile( centity_t *cent ) {
 
             cg_entities[clientNum].bolt1 = s1->number;
 
-            trap_G2API_GetBoltMatrix(cg_entities[clientNum].ghoul2, 0, cgs.clientinfo[clientNum].bolt_rhand, &boltMatrix, &cg_entities[clientNum].turAngles,
-                                      &cg_entities[clientNum].lerpOrigin, cg.time, cgs.gameModels, &cg_entities[clientNum].modelScale);
+            trap_G2API_GetBoltMatrix(cg_entities[clientNum].ghoul2, 0, cgs.clientinfo[clientNum].bolt_rhand, &boltMatrix, cg_entities[clientNum].turAngles,
+                                      cg_entities[clientNum].lerpOrigin, cg.time, cgs.gameModels, cg_entities[clientNum].modelScale);
 
             rHandPos[0] = boltMatrix.matrix[0][3];
             rHandPos[1] = boltMatrix.matrix[1][3];
             rHandPos[2] = boltMatrix.matrix[2][3];
 
-            BG_EvaluateTrajectory(&s1->pos, cg.time, &pos);
+            BG_EvaluateTrajectory(&s1->pos, cg.time, pos);
 
-            CG_TestLine(&rHandPos, &pos, 1, 0x000000u, 1);
+            CG_TestLine(rHandPos, pos, 1, 0x000000u, 1);
             return;
 		
 	}
@@ -2726,26 +2728,51 @@ static void CG_Missile( centity_t *cent ) {
 	else if ( cent->currentState.eFlags & EF_ALT_FIRING )
 	{
 		// add trails
-		if ( weapon->altMissileTrailFunc || weapon->altMissileTrailFunc2 || weapon->altMissileTrailFunc3 || weapon->altMissileTrailFunc4)  
+
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4 )
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (weapon->altMissileTrailFunc6)
 		{
-			weapon->altMissileTrailFunc2( cent, weapon );			
+			weapon->altMissileTrailFunc6( cent, weapon );			
+		}			
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
 		{
-			weapon->altMissileTrailFunc3( cent, weapon );			
+		if (weapon->altMissileTrailFunc5)
+		{
+			weapon->altMissileTrailFunc5( cent, weapon );			
+		}				
 		}
 		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
+		if (weapon->altMissileTrailFunc4)
+		{
 			weapon->altMissileTrailFunc4( cent, weapon );			
+		}			
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+		if (weapon->altMissileTrailFunc3)
+		{
+			weapon->altMissileTrailFunc3( cent, weapon );			
+		}			
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		{
+		if (weapon->altMissileTrailFunc2)
+		{
+			weapon->altMissileTrailFunc2( cent, weapon );			
+		}				
 		}
 		else
 		{
+		if (weapon->altMissileTrailFunc)
+		{
 			weapon->altMissileTrailFunc( cent, weapon );			
+		}			
 		}
 
-		}
+
 
 		// add dynamic light
 		if ( weapon->altMissileDlight ) 
@@ -2770,26 +2797,51 @@ static void CG_Missile( centity_t *cent ) {
 	else
 	{
 		// add trails
-		if ( weapon->missileTrailFunc ||  weapon->missileTrailFunc2 ||  weapon->missileTrailFunc3 ||  weapon->missileTrailFunc4)  
+
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (weapon->missileTrailFunc6)
 		{
-			weapon->missileTrailFunc2( cent, weapon );			
+			weapon->missileTrailFunc6( cent, weapon );					
+		}	
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
 		{
-			weapon->missileTrailFunc3( cent, weapon );			
+		if (weapon->missileTrailFunc5)
+		{
+			weapon->missileTrailFunc5( cent, weapon );					
+		}			
 		}
 		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			weapon->missileTrailFunc4( cent, weapon );			
+		if (weapon->missileTrailFunc4)
+		{
+			weapon->missileTrailFunc4( cent, weapon );					
+		}				
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+		if (weapon->missileTrailFunc3)
+		{
+			weapon->missileTrailFunc3( cent, weapon );					
+		}			
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		{
+		if (weapon->missileTrailFunc2)
+		{
+			weapon->missileTrailFunc2( cent, weapon );					
+		}			
 		}
 		else
 		{
-			weapon->missileTrailFunc( cent, weapon );			
+		if (weapon->missileTrailFunc)
+		{
+			weapon->missileTrailFunc( cent, weapon );					
+		}				
 		}
 
-		}
+
 
 		// add dynamic light
 		if ( weapon->missileDlight ) 
@@ -2840,18 +2892,26 @@ Ghoul2 Insert End
 			{
 				if (s1->weapon == WP_THERMAL)
 				{
-					if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+					if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 					{
-					ent.hModel = weapon->altMissileModel2;
+					ent.hModel = weapon->altMissileModel6;
 					}
+					else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+					{
+					ent.hModel = weapon->altMissileModel5;
+					}
+					else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+					{
+					ent.hModel = weapon->altMissileModel4;
+					}	
 					else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 					{
 					ent.hModel = weapon->altMissileModel3;
 					}	
-					else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+					else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 					{
-					ent.hModel = weapon->altMissileModel4;
-					}					
+					ent.hModel = weapon->altMissileModel2;
+					}				
 					else	
 					{
 					ent.hModel = weapon->altMissileModel;
@@ -2866,18 +2926,26 @@ Ghoul2 Insert End
 			{
 				if (s1->weapon == WP_THERMAL)
 				{
-					if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+					if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 					{
-					ent.hModel = weapon->missileModel2;
-					}
-					else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
+					ent.hModel = weapon->missileModel6;
+					}	
+					else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
 					{
-					ent.hModel = weapon->missileModel3;
+					ent.hModel = weapon->missileModel5;
 					}	
 					else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
 					{
 					ent.hModel = weapon->missileModel4;
-					}					
+					}	
+					else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
+					{
+					ent.hModel = weapon->missileModel3;
+					}	
+					else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+					{
+					ent.hModel = weapon->missileModel2;
+					}				
 					else	
 					{
 					ent.hModel = weapon->missileModel;
@@ -3064,7 +3132,7 @@ Ghoul2 Insert End
 		vec3_t	beamOrg;
 
 		VectorMA( ent.origin, 8, ent.axis[0], beamOrg );// forward
-		trap_FX_PlayEffectID( cgs.effects.mTripMineLaster, beamOrg, ent.axis[0], -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.tripmineLaserFX, beamOrg, ent.axis[0], -1, -1 );
 	}
 }
 

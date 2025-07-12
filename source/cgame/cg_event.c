@@ -666,13 +666,13 @@ clientkilled:
 			vehMessage = qtrue;
 			break;
 		//[/SeekerItemNPC]
-		case MOD_INCINERATOR:
-			message = "KILLED_INCINERATOR";
+		case MOD_FLAME:
+			message = "KILLED_FLAME";
 			vehMessage = qtrue;
 			break;
-		case MOD_INCINERATOR_EXPLOSION:
-		case MOD_INCINERATOR_EXPLOSION_SPLASH:		
-			message = "KILLED_INCINERATOR_EXPLOSION";
+		case MOD_FLAME_EXPLOSION:
+		case MOD_FLAME_EXPLOSION_SPLASH:		
+			message = "KILLED_FLAME_EXPLOSION";
 			vehMessage = qtrue;
 			break;			
 		case MOD_DIOXIS:
@@ -684,18 +684,36 @@ clientkilled:
 			message = "KILLED_DIOXIS_EXPLOSION";
 			vehMessage = qtrue;
 			break;	
-		case MOD_FREEZER:
+		case MOD_ICE:
 			message = "KILLED_FREEZER";
 			vehMessage = qtrue;
 			break;
-		case MOD_FREEZER_EXPLOSION:
-		case MOD_FREEZER_EXPLOSION_SPLASH:		
+		case MOD_ICE_EXPLOSION:
+		case MOD_ICE_EXPLOSION_SPLASH:		
 			message = "KILLED_FREEZER_EXPLOSION";
 			vehMessage = qtrue;
 			break;
 		case MOD_ION_EXPLOSION:
 		case MOD_ION_EXPLOSION_SPLASH:		
-			message = "KILLED_FREEZER_EXPLOSION";
+			message = "KILLED_ION_EXPLOSION";
+			vehMessage = qtrue;
+			break;
+		case MOD_SONIC:
+			message = "KILLED_SONIC";
+			vehMessage = qtrue;
+			break;
+		case MOD_SONIC_EXPLOSION:
+		case MOD_SONIC_EXPLOSION_SPLASH:		
+			message = "KILLED_SONIC_EXPLOSION";
+			vehMessage = qtrue;
+			break;
+		case MOD_FLASH:
+			message = "KILLED_FLASH";
+			vehMessage = qtrue;
+			break;
+		case MOD_FLASH_EXPLOSION:
+		case MOD_FLASH_EXPLOSION_SPLASH:		
+			message = "KILLED_FLASH_EXPLOSION";
 			vehMessage = qtrue;
 			break;
 		case MOD_FORCE_DESTRUCTION:			
@@ -3016,7 +3034,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			{
 				break;
 			}
-			trap_FX_PlayEffectID(cgs.effects.mJediSpawn, pos, ang, -1, -1);
+			trap_FX_PlayEffectID(cgs.effects.mSpawn, pos, ang, -1, -1);
 
 			trap_S_StartSound (NULL, es->number, CHAN_AUTO, trap_S_RegisterSound( "sound/weapons/saber/saberon.wav" ) );
 
@@ -3051,17 +3069,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				VectorCopy(cg.lastFPFlashPoint, cent->currentState.origin2);
 			}
 		}
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-		FX_DisruptorMainShot2( cent->currentState.origin2, cent->lerpOrigin ); 				
+		FX_DisruptorMainShot6( cent->currentState.origin2, cent->lerpOrigin ); 	
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+		FX_DisruptorMainShot5( cent->currentState.origin2, cent->lerpOrigin ); 	
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+		FX_DisruptorMainShot4( cent->currentState.origin2, cent->lerpOrigin ); 	
 		}
 		else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
 		{
 		FX_DisruptorMainShot3( cent->currentState.origin2, cent->lerpOrigin ); 				
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-		FX_DisruptorMainShot4( cent->currentState.origin2, cent->lerpOrigin ); 	
+		FX_DisruptorMainShot2( cent->currentState.origin2, cent->lerpOrigin ); 				
 		}
 		else
 		{
@@ -3088,17 +3114,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				VectorCopy(cg.lastFPFlashPoint, cent->currentState.origin2);
 			}
 		}
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-		FX_DisruptorAltShot2( cent->currentState.origin2, cent->lerpOrigin, cent->currentState.shouldtarget ); 				
+		FX_DisruptorAltShot6( cent->currentState.origin2, cent->lerpOrigin, cent->currentState.shouldtarget );
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+		FX_DisruptorAltShot5( cent->currentState.origin2, cent->lerpOrigin, cent->currentState.shouldtarget );
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+		FX_DisruptorAltShot4( cent->currentState.origin2, cent->lerpOrigin, cent->currentState.shouldtarget );
 		}
 		else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
 		{
 		FX_DisruptorAltShot3( cent->currentState.origin2, cent->lerpOrigin, cent->currentState.shouldtarget );				
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-		FX_DisruptorAltShot4( cent->currentState.origin2, cent->lerpOrigin, cent->currentState.shouldtarget );
+		FX_DisruptorAltShot2( cent->currentState.origin2, cent->lerpOrigin, cent->currentState.shouldtarget ); 				
 		}
 		else
 		{
@@ -3521,17 +3555,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 
 			ByteToDir( es->eventParm, dir );
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			CG_MissileHitWall2(WP_CONCUSSION, es->owner, position, dir, IMPACTSOUND_DEFAULT, qtrue, 0);
+			CG_MissileHitWall6(WP_CONCUSSION, es->owner, position, dir, IMPACTSOUND_DEFAULT, qtrue, 0);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			CG_MissileHitWall5(WP_CONCUSSION, es->owner, position, dir, IMPACTSOUND_DEFAULT, qtrue, 0);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			CG_MissileHitWall4(WP_CONCUSSION, es->owner, position, dir, IMPACTSOUND_DEFAULT, qtrue, 0);
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			CG_MissileHitWall3(WP_CONCUSSION, es->owner, position, dir, IMPACTSOUND_DEFAULT, qtrue, 0);
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			CG_MissileHitWall4(WP_CONCUSSION, es->owner, position, dir, IMPACTSOUND_DEFAULT, qtrue, 0);
+			CG_MissileHitWall2(WP_CONCUSSION, es->owner, position, dir, IMPACTSOUND_DEFAULT, qtrue, 0);
 		}
 		else
 		{
@@ -3563,17 +3605,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else if (cent->currentState.eFlags & EF_ALT_FIRING)
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			CG_MissileHitPlayer2( es->weapon, position, dir, es->otherEntityNum, qtrue);
+			CG_MissileHitPlayer6( es->weapon, position, dir, es->otherEntityNum, qtrue);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			CG_MissileHitPlayer5( es->weapon, position, dir, es->otherEntityNum, qtrue);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			CG_MissileHitPlayer4( es->weapon, position, dir, es->otherEntityNum, qtrue);
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			CG_MissileHitPlayer3( es->weapon, position, dir, es->otherEntityNum, qtrue);
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			CG_MissileHitPlayer4( es->weapon, position, dir, es->otherEntityNum, qtrue);
+			CG_MissileHitPlayer2( es->weapon, position, dir, es->otherEntityNum, qtrue);
 		}
 		else
 		{
@@ -3582,17 +3632,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			CG_MissileHitPlayer2( es->weapon, position, dir, es->otherEntityNum, qfalse);
+			CG_MissileHitPlayer6( es->weapon, position, dir, es->otherEntityNum, qfalse);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			CG_MissileHitPlayer5( es->weapon, position, dir, es->otherEntityNum, qfalse);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			CG_MissileHitPlayer4( es->weapon, position, dir, es->otherEntityNum, qfalse);
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			CG_MissileHitPlayer3( es->weapon, position, dir, es->otherEntityNum, qfalse);
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			CG_MissileHitPlayer4( es->weapon, position, dir, es->otherEntityNum, qfalse);
+			CG_MissileHitPlayer2( es->weapon, position, dir, es->otherEntityNum, qfalse);
 		}
 		else
 		{
@@ -3623,17 +3681,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else if (cent->currentState.eFlags & EF_ALT_FIRING)
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qtrue, es->generic1);
+			CG_MissileHitWall6(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qtrue, es->generic1);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			CG_MissileHitWall5(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qtrue, es->generic1);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qtrue, es->generic1);
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			CG_MissileHitWall3(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qtrue, es->generic1);
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qtrue, es->generic1);
+			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qtrue, es->generic1);
 		}
 		else
 		{
@@ -3643,17 +3709,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2  && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qfalse, 0);
+			CG_MissileHitWall6(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qfalse, 0);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			CG_MissileHitWall5(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qfalse, 0);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qfalse, 0);
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			CG_MissileHitWall3(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qfalse, 0);
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qfalse, 0);
+			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_DEFAULT, qfalse, 0);
 		}
 		else
 		{
@@ -3683,17 +3757,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else if (cent->currentState.eFlags & EF_ALT_FIRING)
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qtrue, es->generic1);
+			CG_MissileHitWall6(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qtrue, es->generic1);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			CG_MissileHitWall5(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qtrue, es->generic1);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qtrue, es->generic1);
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			CG_MissileHitWall3(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qtrue, es->generic1);
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qtrue, es->generic1);
+			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qtrue, es->generic1);
 		}
 		else
 		{
@@ -3702,17 +3784,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		}
 		else
 		{
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2  && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qfalse, 0);
+			CG_MissileHitWall6(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qfalse, 0);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			CG_MissileHitWall5(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qfalse, 0);
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qfalse, 0);
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			CG_MissileHitWall3(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qfalse, 0);
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			CG_MissileHitWall4(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qfalse, 0);
+			CG_MissileHitWall2(es->weapon, 0, position, dir, IMPACTSOUND_METAL, qfalse, 0);
 		}
 		else
 		{
@@ -3739,28 +3829,40 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			eID = cgs.effects.mSparkExplosion;
 			break;
 		case EFFECT_EXPLOSION_TRIPMINE:
-			eID = cgs.effects.mThermalExplosionEffect;
+			eID = cgs.effects.thermalExplosionEffect;
 			break;
 		case EFFECT_EXPLOSION_TRIPMINE2:
-			eID = cgs.effects.mIncineraryExplosionEffect;
+			eID = cgs.effects.incineraryExplosionEffect;
 			break;
 		case EFFECT_EXPLOSION_TRIPMINE3:
-			eID = cgs.effects.mDioxisExplosionEffect;
+			eID = cgs.effects.dioxisExplosionEffect;
 			break;
 		case EFFECT_EXPLOSION_TRIPMINE4:
-			eID = cgs.effects.mIonExplosionEffect;
+			eID = cgs.effects.ionExplosionEffect	;
+			break;
+		case EFFECT_EXPLOSION_TRIPMINE5:
+			eID = cgs.effects.sonicExplosionEffect	;
+			break;
+		case EFFECT_EXPLOSION_TRIPMINE6:
+			eID = cgs.effects.flashExplosionEffect	;
 			break;
 		case EFFECT_EXPLOSION_DETPACK:
-			eID = cgs.effects.mThermalExplosionEffect;
+			eID = cgs.effects.thermalExplosionEffect;
 			break;
 		case EFFECT_EXPLOSION_DETPACK2:
-			eID = cgs.effects.mIncineraryExplosionEffect;
+			eID = cgs.effects.incineraryExplosionEffect;
 			break;
 		case EFFECT_EXPLOSION_DETPACK3:
-			eID = cgs.effects.mDioxisExplosionEffect;
+			eID = cgs.effects.dioxisExplosionEffect;
 			break;
 		case EFFECT_EXPLOSION_DETPACK4:
-			eID = cgs.effects.mIonExplosionEffect;
+			eID = cgs.effects.ionExplosionEffect	;
+			break;
+		case EFFECT_EXPLOSION_DETPACK5:
+			eID = cgs.effects.sonicExplosionEffect	;
+			break;
+		case EFFECT_EXPLOSION_DETPACK6:
+			eID = cgs.effects.flashExplosionEffect	;
 			break;
 		case EFFECT_EXPLOSION_FLECHETTE:
 			eID = cgs.effects.mFlechetteAltBlow;
@@ -4319,6 +4421,20 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
 		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
 		cg_entities[es->owner].itemPowerType = 2;
+		break;	
+
+	case EV_SOUNDED:
+		DEBUGNAME("EV_SOUNDED");
+		ByteToDir( es->eventParm, dir );
+		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
+		cg_entities[es->owner].itemPowerType = 3;
+		break;	
+	
+	case EV_FLASHED:
+		DEBUGNAME("EV_FLASHED");
+		ByteToDir( es->eventParm, dir );
+		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
+		cg_entities[es->owner].itemPowerType = 4;
 		break;	
 		
 	case EV_GIB_PLAYER:

@@ -44,7 +44,7 @@ void FX_DisruptorMainShot2( vec3_t start, vec3_t end )
 	trap_FX_AddLine( start, end, 0.1f, 6.0f, 0.0f, 
 							1.0f, 0.0f, 0.0f,
 							WHITE, WHITE, 0.0f,
-							150, trap_R_RegisterShader( "gfx/effects/yellowLine" ), 
+							150, trap_R_RegisterShader( "gfx/effects/purpleLine" ), 
 							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
 	
 
@@ -68,7 +68,7 @@ void FX_DisruptorMainShot3( vec3_t start, vec3_t end )
 	trap_FX_AddLine( start, end, 0.1f, 6.0f, 0.0f, 
 							1.0f, 0.0f, 0.0f,
 							WHITE, WHITE, 0.0f,
-							150, trap_R_RegisterShader( "gfx/effects/purpleLine" ), 
+							150, trap_R_RegisterShader( "gfx/effects/blueLine" ), 
 							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
 	
 
@@ -84,6 +84,56 @@ void FX_DisruptorMainShot3( vec3_t start, vec3_t end )
 //								400, cgi_R_RegisterShader( "gfx/effects/spiral" ), 0 );
 }
 void FX_DisruptorMainShot4( vec3_t start, vec3_t end )
+{
+//	vec3_t	dir;
+//	float	len;
+
+	
+	trap_FX_AddLine( start, end, 0.1f, 6.0f, 0.0f, 
+							1.0f, 0.0f, 0.0f,
+							WHITE, WHITE, 0.0f,
+							150, trap_R_RegisterShader( "gfx/effects/redLine" ), 
+							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
+	
+
+
+//	VectorSubtract( end, start, dir );
+//	len = VectorNormalize( dir );
+
+//	FX_AddCylinder( start, dir, 5.0f, 5.0f, 0.0f,
+//								5.0f, 5.0f, 0.0f,
+//								len, len, 0.0f,
+//								1.0f, 1.0f, 0.0f,
+//								WHITE, WHITE, 0.0f,
+//								400, cgi_R_RegisterShader( "gfx/effects/spiral" ), 0 );
+}
+
+void FX_DisruptorMainShot5( vec3_t start, vec3_t end )
+{
+//	vec3_t	dir;
+//	float	len;
+
+	
+	trap_FX_AddLine( start, end, 0.1f, 6.0f, 0.0f, 
+							1.0f, 0.0f, 0.0f,
+							WHITE, WHITE, 0.0f,
+							150, trap_R_RegisterShader( "gfx/effects/yellowLine" ), 
+							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
+	
+
+
+//	VectorSubtract( end, start, dir );
+//	len = VectorNormalize( dir );
+
+//	FX_AddCylinder( start, dir, 5.0f, 5.0f, 0.0f,
+//								5.0f, 5.0f, 0.0f,
+//								len, len, 0.0f,
+//								1.0f, 1.0f, 0.0f,
+//								WHITE, WHITE, 0.0f,
+//								400, cgi_R_RegisterShader( "gfx/effects/spiral" ), 0 );
+}
+
+void FX_DisruptorMainShot6( vec3_t start, vec3_t end )
 {
 //	vec3_t	dir;
 //	float	len;
@@ -145,7 +195,7 @@ void FX_DisruptorAltShot2( vec3_t start, vec3_t end, qboolean fullCharge )
 	trap_FX_AddLine( start, end, 0.1f, 10.0f, 0.0f, 
 							1.0f, 0.0f, 0.0f,
 							WHITE, WHITE, 0.0f,
-							175, trap_R_RegisterShader( "gfx/effects/yellowLine" ), 
+							175, trap_R_RegisterShader( "gfx/effects/purpleLine" ), 
 							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
 	
 	
@@ -170,7 +220,7 @@ void FX_DisruptorAltShot3( vec3_t start, vec3_t end, qboolean fullCharge )
 	trap_FX_AddLine( start, end, 0.1f, 10.0f, 0.0f, 
 							1.0f, 0.0f, 0.0f,
 							WHITE, WHITE, 0.0f,
-							175, trap_R_RegisterShader( "gfx/effects/purpleLine" ), 
+							175, trap_R_RegisterShader( "gfx/effects/blueLine" ), 
 							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
 	
 	
@@ -187,6 +237,56 @@ void FX_DisruptorAltShot3( vec3_t start, vec3_t end, qboolean fullCharge )
 	}
 }
 void FX_DisruptorAltShot4( vec3_t start, vec3_t end, qboolean fullCharge )
+{
+
+
+	
+	trap_FX_AddLine( start, end, 0.1f, 10.0f, 0.0f, 
+							1.0f, 0.0f, 0.0f,
+							WHITE, WHITE, 0.0f,
+							175, trap_R_RegisterShader( "gfx/effects/redLine" ), 
+							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
+	
+	
+	if ( fullCharge )
+	{
+		vec3_t	YELLER={0.8f,0.7f,0.0f};
+
+		// add some beef
+		trap_FX_AddLine( start, end, 0.1f, 7.0f, 0.0f, 
+							1.0f, 0.0f, 0.0f,
+							YELLER, YELLER, 0.0f,
+							150, trap_R_RegisterShader( "gfx/misc/whiteline2" ), 
+							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
+	}
+}
+
+void FX_DisruptorAltShot5( vec3_t start, vec3_t end, qboolean fullCharge )
+{
+
+
+	
+	trap_FX_AddLine( start, end, 0.1f, 10.0f, 0.0f, 
+							1.0f, 0.0f, 0.0f,
+							WHITE, WHITE, 0.0f,
+							175, trap_R_RegisterShader( "gfx/effects/yellowLine" ), 
+							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
+	
+	
+	if ( fullCharge )
+	{
+		vec3_t	YELLER={0.8f,0.7f,0.0f};
+
+		// add some beef
+		trap_FX_AddLine( start, end, 0.1f, 7.0f, 0.0f, 
+							1.0f, 0.0f, 0.0f,
+							YELLER, YELLER, 0.0f,
+							150, trap_R_RegisterShader( "gfx/misc/whiteline2" ), 
+							FX_SIZE_LINEAR | FX_ALPHA_LINEAR );
+	}
+}
+
+void FX_DisruptorAltShot6( vec3_t start, vec3_t end, qboolean fullCharge )
 {
 
 

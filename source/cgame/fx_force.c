@@ -22,7 +22,7 @@ FX_ForceSevered
 void FX_ForceSevered(vec3_t origin, vec3_t dir)
 {
 	VectorScale(dir, -1.0, dir);
-	trap_FX_PlayEffectID(cgs.effects.ForceSevered, origin, dir, -1, -1);
+	trap_FX_PlayEffectID(cgs.effects.forceSevered, origin, dir, -1, -1);
 }	
 /*
 -------------------------
@@ -44,7 +44,7 @@ FX_ForceRegenerated
 void FX_ForceRegenerated(vec3_t origin, vec3_t dir)
 {
 	VectorScale(dir, -1.0, dir);
-	trap_FX_PlayEffectID(cgs.effects.ForceRegenerated, origin, dir, -1, -1);
+	trap_FX_PlayEffectID(cgs.effects.forceRegenerated, origin, dir, -1, -1);
 }
 
 /*

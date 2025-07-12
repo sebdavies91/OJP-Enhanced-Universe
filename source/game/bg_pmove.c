@@ -282,17 +282,25 @@ animNumber_t PM_INLINE PM_GetWeaponReadyAnim(void)
 {
 	if (pm->ps->eFlags & EF_DUAL_WEAPONS)
 	{
-		if (pm->ps->eFlags & EF_WP_OPTION_2)
+		if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4)
 		{
-		return WeaponReadyAnim4[pm->ps->weapon];
+		return WeaponReadyAnim12[pm->ps->weapon];
+		}
+		else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3)
+		{
+		return WeaponReadyAnim10[pm->ps->weapon];
+		}
+		else if (pm->ps->eFlags & EF_WP_OPTION_4)
+		{
+		return WeaponReadyAnim8[pm->ps->weapon];
 		}
 		else if (pm->ps->eFlags & EF_WP_OPTION_3)
 		{
 		return WeaponReadyAnim6[pm->ps->weapon];
 		}
-		else if (pm->ps->eFlags & EF_WP_OPTION_4)
+		else if (pm->ps->eFlags & EF_WP_OPTION_2)
 		{
-		return WeaponReadyAnim8[pm->ps->weapon];
+		return WeaponReadyAnim4[pm->ps->weapon];
 		}
 		else
 		{
@@ -301,17 +309,25 @@ animNumber_t PM_INLINE PM_GetWeaponReadyAnim(void)
 	}
 	else
 	{
-		if (pm->ps->eFlags & EF_WP_OPTION_2)
+		if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4)
 		{
-		return WeaponReadyAnim3[pm->ps->weapon];
+		return WeaponReadyAnim11[pm->ps->weapon];
+		}
+		else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3)
+		{
+		return WeaponReadyAnim9[pm->ps->weapon];
+		}
+		else if (pm->ps->eFlags & EF_WP_OPTION_4)
+		{
+		return WeaponReadyAnim7[pm->ps->weapon];
 		}
 		else if (pm->ps->eFlags & EF_WP_OPTION_3)
 		{
 		return WeaponReadyAnim5[pm->ps->weapon];
 		}
-		else if (pm->ps->eFlags & EF_WP_OPTION_4)
+		else if (pm->ps->eFlags & EF_WP_OPTION_2)
 		{
-		return WeaponReadyAnim7[pm->ps->weapon];
+		return WeaponReadyAnim3[pm->ps->weapon];
 		}
 		else
 		{
@@ -6405,6 +6421,8 @@ extern int WeaponReadyLegsAnim[WP_NUM_WEAPONS];
 extern int WeaponReadyLegsAnim3[WP_NUM_WEAPONS];
 extern int WeaponReadyLegsAnim5[WP_NUM_WEAPONS];
 extern int WeaponReadyLegsAnim7[WP_NUM_WEAPONS];
+extern int WeaponReadyLegsAnim9[WP_NUM_WEAPONS];
+extern int WeaponReadyLegsAnim11[WP_NUM_WEAPONS];
 
 //rww - slowly back out of slope leg anims, to prevent skipping between slope anims and general jittering
 int PM_LegsSlopeBackTransition(int desiredAnim)
@@ -6633,17 +6651,25 @@ static void PM_Footsteps( void ) {
 							}
 							else
 							{
-								if (pm->ps->eFlags & EF_WP_OPTION_2)
+								if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4)
 								{
-								PM_ContinueLegsAnim(PM_LegsSlopeBackTransition(WeaponReadyLegsAnim3[pm->ps->weapon]));
+								PM_ContinueLegsAnim(PM_LegsSlopeBackTransition(WeaponReadyLegsAnim11[pm->ps->weapon]));
+								}
+								else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3)
+								{
+								PM_ContinueLegsAnim(PM_LegsSlopeBackTransition(WeaponReadyLegsAnim9[pm->ps->weapon]));
+								}
+								else if (pm->ps->eFlags & EF_WP_OPTION_4)
+								{
+								PM_ContinueLegsAnim(PM_LegsSlopeBackTransition(WeaponReadyLegsAnim7[pm->ps->weapon]));
 								}
 								else if (pm->ps->eFlags & EF_WP_OPTION_3)
 								{
 								PM_ContinueLegsAnim(PM_LegsSlopeBackTransition(WeaponReadyLegsAnim5[pm->ps->weapon]));
 								}
-								else if (pm->ps->eFlags & EF_WP_OPTION_4)
+								else if (pm->ps->eFlags & EF_WP_OPTION_2)
 								{
-								PM_ContinueLegsAnim(PM_LegsSlopeBackTransition(WeaponReadyLegsAnim7[pm->ps->weapon]));
+								PM_ContinueLegsAnim(PM_LegsSlopeBackTransition(WeaponReadyLegsAnim3[pm->ps->weapon]));
 								}
 								else
 								{
@@ -7607,28 +7633,8 @@ void PM_FinishWeaponChange( void ) {
 	pm->ps->eFlags &= ~EF_WP_OPTION_4;
 	
 
-	
-	if(weapon == WP_STUN_BATON 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_WRISTA] == FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_WP_OPTION_2;
-	}
 
-	else if(weapon == WP_STUN_BATON 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_WRISTA] == FORCE_LEVEL_3)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_WP_OPTION_3;
-	}
-
-	else if(weapon == WP_STUN_BATON 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_WRISTB] == FORCE_LEVEL_1)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_WP_OPTION_4;
-	}
-
-
-
-	else if(weapon == WP_BRYAR_PISTOL 
+	if(weapon == WP_BRYAR_PISTOL 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOLA] == FORCE_LEVEL_2)
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags |= EF_WP_OPTION_2;
@@ -7646,7 +7652,21 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
-
+	else if(weapon == WP_BRYAR_PISTOL 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOLB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_BRYAR_PISTOL 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOLB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
 
 	else if(weapon == WP_BLASTER 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTERA] == FORCE_LEVEL_2)
@@ -7666,7 +7686,21 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
-
+	else if(weapon == WP_BLASTER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTERB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_BLASTER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTERB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
 
 	else if(weapon == WP_DISRUPTOR
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTOR] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTORA] == FORCE_LEVEL_2)
@@ -7686,7 +7720,21 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 	
-
+	else if(weapon == WP_DISRUPTOR
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTOR] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTORB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_DISRUPTOR
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTOR] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTORB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
 	
 	else if(weapon == WP_BOWCASTER 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BOWCASTER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_BOWCASTERA] == FORCE_LEVEL_2)
@@ -7706,7 +7754,21 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
-
+	else if(weapon == WP_BOWCASTER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BOWCASTER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_BOWCASTERB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_BOWCASTER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BOWCASTER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_BOWCASTERB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
 
 	else if(weapon == WP_REPEATER 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATERA] == FORCE_LEVEL_2)
@@ -7726,6 +7788,19 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
+	else if(weapon == WP_REPEATER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATERB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_REPEATER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATERB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
 
 
 	
@@ -7747,8 +7822,21 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
+	else if(weapon == WP_DEMP2 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP2] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP2B] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_DEMP2 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP2] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP2B] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
 
-
+	
 	
 	else if(weapon == WP_FLECHETTE 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTE] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTEA] == FORCE_LEVEL_2)
@@ -7768,9 +7856,21 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 	
+	else if(weapon == WP_FLECHETTE 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTE] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTEB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
 
-
-
+	else if(weapon == WP_FLECHETTE 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTE] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTEB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
 	
 	else if(weapon == WP_CONCUSSION 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSION] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSIONA] == FORCE_LEVEL_2)
@@ -7787,6 +7887,20 @@ void PM_FinishWeaponChange( void ) {
 	else if(weapon == WP_CONCUSSION 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSION] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSIONB] == FORCE_LEVEL_1)
 	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+
+	else if(weapon == WP_CONCUSSION 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSION] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSIONB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_CONCUSSION 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSION] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSIONB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
@@ -7810,7 +7924,21 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
-
+	else if(weapon == WP_ROCKET_LAUNCHER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKETB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_ROCKET_LAUNCHER 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKETB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
 	
 	else if(weapon == WP_THERMAL 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMAL] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMALA] == FORCE_LEVEL_2)
@@ -7830,6 +7958,22 @@ void PM_FinishWeaponChange( void ) {
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
 
+	else if(weapon == WP_THERMAL 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMAL] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMALB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_THERMAL 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMAL] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMALB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+
+
+
 	else if(weapon == WP_TRIP_MINE
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINEA] == FORCE_LEVEL_2)
 	{//Changed weaps, add dual weaps
@@ -7847,6 +7991,22 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
+
+	else if(weapon == WP_TRIP_MINE
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINEB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+
+	else if(weapon == WP_TRIP_MINE
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINEB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+
+
 	
 	else if(weapon == WP_DET_PACK
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DETPACK] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DETPACKA] == FORCE_LEVEL_2)
@@ -7865,6 +8025,23 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
+	
+	else if(weapon == WP_DET_PACK
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DETPACK] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DETPACKB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_DET_PACK
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DETPACK] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_DETPACKB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
+	
 	else if(weapon == WP_BRYAR_OLD 
 		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_OLDA] == FORCE_LEVEL_2)
 	{//Changed weaps, add dual weaps
@@ -7882,6 +8059,23 @@ void PM_FinishWeaponChange( void ) {
 	{//Changed weaps, add dual weaps
 		pm->ps->eFlags |= EF_WP_OPTION_4;
 	}
+	
+	else if(weapon == WP_BRYAR_OLD
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_OLDB] == FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_3;
+	}
+	
+	else if(weapon == WP_BRYAR_OLD
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] >= FORCE_LEVEL_1 && g_entities[pm->ps->clientNum].client->skillLevel[SK_OLDB] == FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_WP_OPTION_2;
+		pm->ps->eFlags |= EF_WP_OPTION_4;
+	}
+	
+	
+	
 	else
 	{
 	pm->ps->eFlags &= ~EF_WP_OPTION_2;
@@ -8158,7 +8352,8 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				//[PistolLevel3]
 
 				//[PistolLevel3]
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+
+				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
 					#ifdef QAGAME
 										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
@@ -8173,7 +8368,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 
 				//[PistolLevel3]
 
-				else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
 					#ifdef QAGAME
 										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
@@ -8203,6 +8398,37 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 
 				//[PistolLevel3]
 
+				else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+					/*
+					#ifdef QAGAME
+										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
+					#else
+										)
+					#endif*/
+				{
+					charging = qfalse;
+					altFire = qtrue;
+				}
+				//[PistolLevel3]
+
+				//[PistolLevel3]
+
+
+				
+				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+					/*
+					#ifdef QAGAME
+										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
+					#else
+										)
+					#endif*/
+				{
+					charging = qtrue;
+					altFire = qtrue;
+				}
+				//[PistolLevel3]
+
+				//[PistolLevel3]
 				else if (pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
 					#ifdef QAGAME
@@ -8258,7 +8484,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				}
 				//[PistolLevel3]
 
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
 			#ifdef QAGAME
 								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
@@ -8266,11 +8492,37 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 								)
 			#endif*/
 				{
-					charging = qtrue;
+					charging = qfalse;
 					altFire = qtrue;
 				}
 				//[PistolLevel3]
 
+				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+					/*
+			#ifdef QAGAME
+								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
+			#else
+								)
+			#endif*/
+				{
+					charging = qfalse;
+					altFire = qtrue;
+				}
+				//[PistolLevel3]
+
+				else if (pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+					/*
+			#ifdef QAGAME
+								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
+			#else
+								)
+			#endif*/
+				{
+					charging = qfalse;
+					altFire = qtrue;
+				}
+				//[PistolLevel3]
+				
 
 				else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
@@ -8286,7 +8538,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				//[PistolLevel3]
 
 
-				else if (pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
 			#ifdef QAGAME
 								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
@@ -8294,7 +8546,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 								)
 			#endif*/
 				{
-					charging = qfalse;
+					charging = qtrue;
 					altFire = qtrue;
 				}
 				//[PistolLevel3]
@@ -8319,7 +8571,16 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 		//------------------
 		case WP_BOWCASTER:
 			// primary fire charges the weapon
-			if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ATTACK)
+
+			if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ATTACK)
+			{
+				charging = qfalse;
+			}
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ATTACK)
+			{
+				charging = qtrue;
+			}
+			else if (pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ATTACK)
 			{
 				charging = qfalse;
 			}
@@ -8327,7 +8588,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 			{
 				charging = qtrue;
 			}
-			else if (pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ATTACK)
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ATTACK)
 			{
 				charging = qfalse;
 			}
@@ -8349,7 +8610,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 					charging = qfalse;
 					altFire = qfalse;
 			}
-			else if(pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+			else if(pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 /*			#ifdef QAGAME
 					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET]>=FORCE_LEVEL_2)
 #else
@@ -8359,7 +8620,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 					charging = qfalse;
 					altFire = qtrue;
 			}
-			else if(pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+			else if(pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 /*			#ifdef QAGAME
 					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET]>=FORCE_LEVEL_2)
 #else
@@ -8378,6 +8639,26 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 			{	
 					PM_RocketLock(2048,qfalse);
 					charging = qtrue;
+					altFire = qtrue;
+			}
+			else if(pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+/*			#ifdef QAGAME
+					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET]>=FORCE_LEVEL_2)
+#else
+					)
+#endif*/
+			{	
+					charging = qfalse;
+					altFire = qtrue;
+			}
+			else if(pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+/*			#ifdef QAGAME
+					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET]>=FORCE_LEVEL_2)
+#else
+					)
+#endif*/
+			{	
+					charging = qfalse;
 					altFire = qtrue;
 			}
 			else if( pm->cmd.buttons & BUTTON_ALT_ATTACK)
@@ -8432,17 +8713,17 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				altFire = qfalse; // override default of not being an alt-fire
 				charging = qfalse;
 			}	
-			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 				/*			#ifdef QAGAME
 									&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP22]>=FORCE_LEVEL_1)
 				#else
 									)
 				#endif*/
-			{	
+			{
 				altFire = qtrue; // override default of not being an alt-fire
 				charging = qfalse;
-			}	
-			else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+			}
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 				/*			#ifdef QAGAME
 									&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP22]>=FORCE_LEVEL_1)
 				#else
@@ -8459,6 +8740,26 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 									)
 				#endif*/
 			{
+				altFire = qtrue; // override default of not being an alt-fire
+				charging = qfalse;
+			}			
+			else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+				/*			#ifdef QAGAME
+									&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP22]>=FORCE_LEVEL_1)
+				#else
+									)
+				#endif*/
+			{
+				altFire = qtrue; // override default of not being an alt-fire
+				charging = qfalse;
+			}
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
+				/*			#ifdef QAGAME
+									&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP22]>=FORCE_LEVEL_1)
+				#else
+									)
+				#endif*/
+			{	
 				altFire = qtrue; // override default of not being an alt-fire
 				charging = qfalse;
 			}
@@ -8497,7 +8798,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 					altFire = qfalse;
 				}
 			}
-			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ATTACK &&
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ATTACK &&
 				pm->ps->zoomMode == 1 &&
 				pm->ps->zoomLocked)
 				/*			#ifdef QAGAME
@@ -8510,7 +8811,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 					!pm->cmd.rightmove &&
 					pm->cmd.upmove <= 0)
 				{
-					charging = qfalse;
+					charging = qtrue;
 					altFire = qtrue;
 				}
 				else
@@ -8519,7 +8820,7 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 					altFire = qfalse;
 				}
 			}
-			else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ATTACK &&
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ATTACK &&
 				pm->ps->zoomMode == 1 &&
 				pm->ps->zoomLocked)
 				/*			#ifdef QAGAME
@@ -8555,6 +8856,50 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 					pm->cmd.upmove <= 0)
 				{
 					charging = qtrue;
+					altFire = qtrue;
+				}
+				else
+				{
+					charging = qfalse;
+					altFire = qfalse;
+				}
+			}
+			else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ATTACK &&
+				pm->ps->zoomMode == 1 &&
+				pm->ps->zoomLocked)
+				/*			#ifdef QAGAME
+								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTOR]>=FORCE_LEVEL_2)
+			#else
+								)
+			#endif*/
+			{
+				if (!pm->cmd.forwardmove &&
+					!pm->cmd.rightmove &&
+					pm->cmd.upmove <= 0)
+				{
+					charging = qfalse;
+					altFire = qtrue;
+				}
+				else
+				{
+					charging = qfalse;
+					altFire = qfalse;
+				}
+			}
+			else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ATTACK &&
+				pm->ps->zoomMode == 1 &&
+				pm->ps->zoomLocked)
+				/*			#ifdef QAGAME
+								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTOR]>=FORCE_LEVEL_2)
+			#else
+								)
+			#endif*/
+			{
+				if (!pm->cmd.forwardmove &&
+					!pm->cmd.rightmove &&
+					pm->cmd.upmove <= 0)
+				{
+					charging = qfalse;
 					altFire = qtrue;
 				}
 				else
@@ -9315,7 +9660,7 @@ static void PM_Weapon( void )
 
 	if ( pm_entSelf->s.NPC_class != CLASS_VEHICLE && pm->ps->m_iVehicleNum )
 	{ //riding a vehicle
-		if ( (veh = pm_entVeh) && veh->m_pVehicle && (veh->m_pVehicle->m_pVehicleInfo->type == VH_WALKER || veh->m_pVehicle->m_pVehicleInfo->type == VH_FIGHTER) )
+		if ( veh  && veh->m_pVehicle && (veh->m_pVehicle->m_pVehicleInfo->type == VH_WALKER || veh->m_pVehicle->m_pVehicleInfo->type == VH_FIGHTER) )
 		{//riding a walker/fighter
 			//keep saber off, do no weapon stuff at all!
 			pm->ps->saberHolstered = 2;
@@ -9801,17 +10146,25 @@ static void PM_Weapon( void )
 				if (((pm->ps->torsoAnim) == WeaponAttackAnim[pm->ps->weapon] || (pm->ps->torsoAnim) == WeaponAttackAnim3[pm->ps->weapon] || (pm->ps->torsoAnim) == WeaponAttackAnim5[pm->ps->weapon] || (pm->ps->torsoAnim) == WeaponAttackAnim7[pm->ps->weapon]) &&
 					(pm->ps->weaponTime-200) <= 0)
 				{
-					if (pm->ps->eFlags & EF_WP_OPTION_2)
+					if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4)
 					{
-					PM_StartTorsoAnim( WeaponReadyAnim3[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponReadyAnim11[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3)
+					{
+					PM_StartTorsoAnim( WeaponReadyAnim9[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					{
+					PM_StartTorsoAnim( WeaponReadyAnim7[pm->ps->weapon] );
 					}
 					else if (pm->ps->eFlags & EF_WP_OPTION_3)
 					{
 					PM_StartTorsoAnim( WeaponReadyAnim5[pm->ps->weapon] );
 					}
-					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					else if (pm->ps->eFlags & EF_WP_OPTION_2)
 					{
-					PM_StartTorsoAnim( WeaponReadyAnim7[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponReadyAnim3[pm->ps->weapon] );
 					}
 					else
 					{
@@ -9824,17 +10177,25 @@ static void PM_Weapon( void )
 				if (((pm->ps->torsoAnim) == WeaponAttackAnim[pm->ps->weapon] || (pm->ps->torsoAnim) == WeaponAttackAnim3[pm->ps->weapon] || (pm->ps->torsoAnim) == WeaponAttackAnim5[pm->ps->weapon] || (pm->ps->torsoAnim) == WeaponAttackAnim7[pm->ps->weapon])&&
 					(pm->ps->weaponTime-700) <= 0)
 				{
-					if (pm->ps->eFlags & EF_WP_OPTION_2)
+					if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4)
 					{
-					PM_StartTorsoAnim( WeaponReadyAnim3[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponReadyAnim11[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3)
+					{
+					PM_StartTorsoAnim( WeaponReadyAnim9[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					{
+					PM_StartTorsoAnim( WeaponReadyAnim7[pm->ps->weapon] );
 					}
 					else if (pm->ps->eFlags & EF_WP_OPTION_3)
 					{
 					PM_StartTorsoAnim( WeaponReadyAnim5[pm->ps->weapon] );
 					}
-					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					else if (pm->ps->eFlags & EF_WP_OPTION_2)
 					{
-					PM_StartTorsoAnim( WeaponReadyAnim7[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponReadyAnim3[pm->ps->weapon] );
 					}
 					else
 					{
@@ -10654,17 +11015,25 @@ static void PM_Weapon( void )
 		//[DualPistols]
 		if (pm->ps->eFlags & EF_DUAL_WEAPONS)
 		{
-					if (pm->ps->eFlags & EF_WP_OPTION_2)
+					if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4)
 					{
-					PM_StartTorsoAnim( WeaponAttackAnim4[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponAttackAnim12[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3)
+					{
+					PM_StartTorsoAnim( WeaponAttackAnim10[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					{
+					PM_StartTorsoAnim( WeaponAttackAnim8[pm->ps->weapon] );
 					}
 					else if (pm->ps->eFlags & EF_WP_OPTION_3)
 					{
 					PM_StartTorsoAnim( WeaponAttackAnim6[pm->ps->weapon] );
 					}
-					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					else if (pm->ps->eFlags & EF_WP_OPTION_2)
 					{
-					PM_StartTorsoAnim( WeaponAttackAnim8[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponAttackAnim4[pm->ps->weapon] );
 					}
 					else
 					{
@@ -10674,17 +11043,25 @@ static void PM_Weapon( void )
 			
 		else
 		{
-					if (pm->ps->eFlags & EF_WP_OPTION_2)
+					if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4)
 					{
-					PM_StartTorsoAnim( WeaponAttackAnim3[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponAttackAnim11[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3)
+					{
+					PM_StartTorsoAnim( WeaponAttackAnim9[pm->ps->weapon] );
+					}
+					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					{
+					PM_StartTorsoAnim( WeaponAttackAnim7[pm->ps->weapon] );
 					}
 					else if (pm->ps->eFlags & EF_WP_OPTION_3)
 					{
 					PM_StartTorsoAnim( WeaponAttackAnim5[pm->ps->weapon] );
 					}
-					else if (pm->ps->eFlags & EF_WP_OPTION_4)
+					else if (pm->ps->eFlags & EF_WP_OPTION_2)
 					{
-					PM_StartTorsoAnim( WeaponAttackAnim7[pm->ps->weapon] );
+					PM_StartTorsoAnim( WeaponAttackAnim3[pm->ps->weapon] );
 					}
 					else
 					{
@@ -10801,106 +11178,150 @@ static void PM_Weapon( void )
 		{
 			gentity_t *ent = &g_entities[pm->ps->clientNum];
 
-			if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =600;
 			}
-			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
-				addTime =325;
+				addTime =330;
 			}
 			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =260;
-			}			
-			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL )
+				addTime =300;
+			}	
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =200;
+			}
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =700;
+			}		
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL )
+				{
+				addTime =800;
 			}			
 	
 
-	
 
-			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
-				{
-				addTime =425;
-			}	
-			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =230;
-			}			
+			}	
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =500;
+			}
 			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =370;
+				addTime =360;
+			}
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =160;
 			}			
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+				{
+				addTime =430;
+			}				
 			else if(ent->client->ps.weapon == WP_BLASTER )
 				{
 				addTime =300;
 			}			
 			
+			
 
-
-
-			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2)
-				{
-				addTime =2000;
-			}			
-			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_3)
-				{
-				addTime =1000;
-			}			
-			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =1750;
+			}
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =2000;
+			}
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =1000;
+			}
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =750;
+			}	
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2)
+				{
+				addTime =1250;
 			}			
 			else if(ent->client->ps.weapon == WP_DISRUPTOR )
 				{
 				addTime =1500;
 			}			
 		
-			
 
-			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =600;
+				addTime =450;
+			}
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =1050;
+			}			
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =750;
 			}
 			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
-				addTime =1000;
+				addTime =900;
 			}
-			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
-				addTime =800;
+				addTime =600;
 			}
 			else if(ent->client->ps.weapon == WP_BOWCASTER )
 				{
 				addTime =1200;
 			}			
+
+
 			
-
-
-
-			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =130;
+				addTime =160;
+			}
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =1000;
+			}
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =300;
 			}
 			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
 				addTime =1200;
 			}
-			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
-				addTime =300;
+				addTime =130;
 			}
 			else if(ent->client->ps.weapon == WP_REPEATER )
 				{
 				addTime =1500;
 			}
 			
+
 		
-
-
-			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =50;
+			}
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =50;
+			}
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =50;
 			}
@@ -10908,7 +11329,7 @@ static void PM_Weapon( void )
 				{
 				addTime =200;
 			}
-			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =50;
 			}
@@ -10919,37 +11340,50 @@ static void PM_Weapon( void )
 
 
 
-			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =480;
+				addTime =1200;
 			}
-			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
-				addTime =1000;
+				addTime =500;
 			}
 			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =1200;
-
+				addTime =1400;
+			}
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =800;
+			}
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2)
+				{
+				addTime =900;
 			}
 			else if(ent->client->ps.weapon == WP_FLECHETTE )
 				{
-				addTime =1500;
+				addTime =2000;
 			}			
 			
 
-			
-			
-		
-			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2)
-				{
-				addTime =80;
-			}	
-			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_3)
+
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =60;
-			}	
+			}			
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =80;
+			}			
 			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =2000;
+			}			
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =500;
+			}	
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =4000;
 			}	
@@ -10957,45 +11391,59 @@ static void PM_Weapon( void )
 				{
 				addTime =3000;
 			}				
+
+
 			
-
-
-			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =1000;
-			}	
+			}
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =1000;
+			}
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =2000;
+			}		
 			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
 				addTime =4000;
 			}	
-			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =2000;
-			}	
+			}
 			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER )
 				{
 				addTime =3000;
 			}	
 
 
-			
-			
-		
+
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =3000;
+			}				
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =500;
+			}				
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =260;
+			}						
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =260;
+			}				
 			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =600;
 			}				
-			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_3)
-				{
-				addTime =400;
-			}				
-			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_4)
-				{
-				addTime =3000;
-			}				
 			else if(ent->client->ps.weapon == WP_BRYAR_OLD  )
 				{
-				addTime =700;
+				addTime =800;
 			}				
 			
 		/*	
@@ -11086,106 +11534,152 @@ static void PM_Weapon( void )
 		{
 			gentity_t *ent = &g_entities[pm->ps->clientNum];
 
-			if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2)
+
+
+			if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =600;
-			}
-			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			}	
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
 				addTime =500;
-			}
+			}	
 			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =400;
-			}			
-			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL )
+			}	
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =300;
+			}
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =700;
-			}			
-	
-
-	
-
-			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			}		
+			else if(ent->client->ps.weapon == WP_BRYAR_PISTOL )
 				{
-				addTime =650;
-			}	
-			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				addTime =800;
+			}			
+
+
+	
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =350;
-			}			
+			}	
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =750;
+			}		
 			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =550;
+			}		
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =250;
 			}			
+			else if(ent->client->ps.weapon == WP_BLASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+				{
+				addTime =650;
+			}		
 			else if(ent->client->ps.weapon == WP_BLASTER  )
 				{
 				addTime =450;
 			}			
+
+
 			
-
-
-
-			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2)
-				{
-				addTime =2000;
-			}			
-			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_3)
-				{
-				addTime =1000;
-			}			
-			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =1750;
+			}	
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =2000;
+			}	
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =1000;
+			}	
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =750;
 			}			
+			else if(ent->client->ps.weapon == WP_DISRUPTOR && ent->client->ps.eFlags & EF_WP_OPTION_2)
+				{
+				addTime =1250;
+			}					
 			else if(ent->client->ps.weapon == WP_DISRUPTOR  )
 				{
 				addTime =1500;
 			}			
-		
-			
 
-			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+
+		
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =600;
+				addTime =450;
+			}			
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =1050;
+			}			
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =750;
 			}
 			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
-				addTime =1000;
+				addTime =900;
 			}
-			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_BOWCASTER && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
-				addTime =800;
+				addTime =600;
 			}
 			else if(ent->client->ps.weapon == WP_BOWCASTER  )
 				{
 				addTime =1200;
 			}			
+
+
 			
-
-
-
-			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =300;
+			}
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
 				addTime =200;
+			}
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =350;
 			}
 			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
 				addTime =150;
 			}
-			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_REPEATER && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
-				addTime =300;
+				addTime =250;
 			}
 			else if(ent->client->ps.weapon == WP_REPEATER  )
 				{
 				addTime =100;
 			}
+
+
 			
-		
-
-
-			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =50;
+			}		
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =50;
+			}
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =50;
 			}
@@ -11193,7 +11687,7 @@ static void PM_Weapon( void )
 				{
 				addTime =350;
 			}
-			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_DEMP2 && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =50;
 			}
@@ -11204,37 +11698,50 @@ static void PM_Weapon( void )
 
 
 
-			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2)
-				{
-				addTime =480;
-			}
-			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_3)
-				{
-				addTime =1000;					
-
-			}
-			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =600;
 			}
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =500;
+			}
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =700;
+			}
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =800;					
+			}
+			else if(ent->client->ps.weapon == WP_FLECHETTE && ent->client->ps.eFlags & EF_WP_OPTION_2)
+				{
+				addTime =900;
+			}
 			else if(ent->client->ps.weapon == WP_FLECHETTE )
 				{
-				addTime =800;
+				addTime =1000;
 			}			
 			
 
-			
-			
-			
-			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2)
-				{
-				addTime =80;
-			}	
-			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_3)
+
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =60;
-			}	
+			}				
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =80;
+			}				
 			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =2000;
+			}				
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =500;
+			}	
+			else if(ent->client->ps.weapon == WP_CONCUSSION && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
 				addTime =4000;
 			}	
@@ -11242,20 +11749,28 @@ static void PM_Weapon( void )
 				{
 				addTime =3000;
 			}				
-			
 
-	
-			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2)
+
+			
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
 				addTime =1000;
-			}	
+			}
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =1000;
+			}
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =2000;
+			}		
 			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
 				addTime =4000;
 			}	
-			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
-				addTime =2000;
+				addTime =1000;
 			}	
 			else if(ent->client->ps.weapon == WP_ROCKET_LAUNCHER )
 				{
@@ -11263,23 +11778,30 @@ static void PM_Weapon( void )
 			}	
 
 
-			
-				
-			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2)
+
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =600;
+				addTime =300;
+			}	
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+				{
+				addTime =500;
 			}				
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_4)
+				{
+				addTime =400;
+			}							
 			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
 				addTime =400;
 			}				
-			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2)
 				{
-				addTime =200;
-			}				
+				addTime =600;
+			}					
 			else if(ent->client->ps.weapon == WP_BRYAR_OLD  )
 				{
-				addTime =700;
+				addTime =800;
 			}			
 			
 

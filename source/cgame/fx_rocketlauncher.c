@@ -28,7 +28,7 @@ FX_RocketHitWall
 
 void FX_RocketHitWall( vec3_t origin, vec3_t normal )
 {
-	trap_FX_PlayEffectID( cgs.effects.rocketExplosionEffect, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, normal, -1, -1 );
 }
 
 /*
@@ -39,7 +39,7 @@ FX_RocketHitPlayer
 
 void FX_RocketHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid )
 {
-	trap_FX_PlayEffectID( cgs.effects.rocketExplosionEffect, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, normal, -1, -1 );
 }
 
 /*

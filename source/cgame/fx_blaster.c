@@ -64,6 +64,34 @@ void FX_BlasterProjectileThink4( centity_t *cent, const struct weaponInfo_s *wea
 
 	
 }
+void FX_BlasterProjectileThink5( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+	
+
+	trap_FX_PlayEffectID( cgs.effects.purpleShotEffect, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_BlasterProjectileThink6( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+	
+
+	trap_FX_PlayEffectID( cgs.effects.redShotEffect, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
 /*
 -------------------------
 FX_BlasterAltFireThink

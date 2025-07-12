@@ -192,7 +192,7 @@ qboolean NPC_UpdateAngles ( qboolean doPitch, qboolean doYaw )
 	//Temporary Fix
 	if (!NPC)
 	{
-		return;
+		return qfalse;
 	}
 	// if angle changes are locked; just keep the current angles
 	// aimTime isn't even set anymore... so this code was never reached, but I need a way to lock NPC's yaw, so instead of making a new SCF_ flag, just use the existing render flag... - dmv

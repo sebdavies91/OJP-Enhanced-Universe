@@ -118,6 +118,55 @@ char *showWeaponsName4[] =
 	"TURRET5",//WT_TURRET
 	NULL
 };
+
+char *showWeaponsName5[] = 
+{
+	"NONE6",//WP_NONE
+	"STUN_BATON6",//WP_STUN_BATON
+	"MELEE6",//WP_MELEE
+	"SABER6",//WP_SABER
+	"BRYAR_PISTOL6",//WP_BRYAR_PISTOL
+	"BLASTER6",//WP_BLASTER
+	"DISRUPTOR6",//WP_DISRUPTOR
+	"BOWCASTER6",//WP_BOWCASTER
+	"REPEATER6",//WP_REPEATER
+	"DEMP26",//WP_DEMP2
+	"FLECHETTE6",//WP_FLECHETTE
+	"ROCKET_LAUNCHER6",//WP_ROCKET_LAUNCHER
+	"THERMAL6",//WP_THERMAL
+	"TRIP_MINE6",//WP_TRIP_MINE
+	"DET_PACK6",//WP_DET_PACK
+	"CONCUSSION6",//WP_CONCUSSION
+	"BRYAR_OLD6",//WP_BRYAR_OLD
+	"EMPLACED_GUN6",//WP_EMPLACED_GUN
+	"TURRET6",//WT_TURRET
+	NULL
+};
+
+char *showWeaponsName6[] = 
+{
+	"NONE7",//WP_NONE
+	"STUN_BATON7",//WP_STUN_BATON
+	"MELEE7",//WP_MELEE
+	"SABER7",//WP_SABER
+	"BRYAR_PISTOL7",//WP_BRYAR_PISTOL
+	"BLASTER7",//WP_BLASTER
+	"DISRUPTOR7",//WP_DISRUPTOR
+	"BOWCASTER7",//WP_BOWCASTER
+	"REPEATER7",//WP_REPEATER
+	"DEMP27",//WP_DEMP2
+	"FLECHETTE7",//WP_FLECHETTE
+	"ROCKET_LAUNCHER7",//WP_ROCKET_LAUNCHER
+	"THERMAL7",//WP_THERMAL
+	"TRIP_MINE7",//WP_TRIP_MINE
+	"DET_PACK7",//WP_DET_PACK
+	"CONCUSSION7",//WP_CONCUSSION
+	"BRYAR_OLD7",//WP_BRYAR_OLD
+	"EMPLACED_GUN7",//WP_EMPLACED_GUN
+	"TURRET7",//WT_TURRET
+	NULL
+};
+
 /*
 =================
 CG_RegisterItemVisuals
@@ -538,16 +587,67 @@ Ghoul2 Insert Start
 		if (ps)
 		{	// this player, in first person view
 			//gun.hModel = weapon->viewModel;
-			if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+			if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 			{
-
 				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dh-17/dh-17_FA.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/SE-44C/blaster_pistol.md3");
 				}
 				else if(cent->currentState.weapon == WP_BLASTER)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/a280/a280.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/f11d_blaster/blaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/psg/disruptor.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/STCompRifle/bowcaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/FWMB-10/heavy_repeater.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/CarboniteRifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/junglerifle/c_rifle.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/minigun/minigun.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/Packered_MortarGun/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/Stormi_TD/stormiTD.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/concussion_new/c_rifle.md3");
+				}
+				else
+				{
+				gun.hModel = weapon->viewModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/Glie-44/blaster_pistol.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/EL-16/blaster.md3");
 				}
 				else if(cent->currentState.weapon == WP_DISRUPTOR)
 				{
@@ -555,15 +655,15 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_BOWCASTER)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/ee-3/ee-3.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons/Bowcaster_heavy/model.md3");
 				}
 				else if(cent->currentState.weapon == WP_REPEATER)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dlt-18_repeater/dlt-18_repeater.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17m/dc-17m.md3");
 				}
 				else if(cent->currentState.weapon == WP_DEMP2)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-24_flamerifle/rifle.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-25_icerifle/rifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_FLECHETTE)
 				{
@@ -579,64 +679,11 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_THERMAL)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/plasma/plasma.md3");
-				}
-				else if(cent->currentState.weapon == WP_BRYAR_OLD)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/s5_heavy_pistol/s5_pistol.md3");
-				}
-				else
-				{
-				gun.hModel = weapon->viewModel;
-				}
-			
-			}
-			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
-			{
-
-				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17/dc-17.md3");
-				}
-				else if(cent->currentState.weapon == WP_BLASTER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15s/blaster.md3");
-				}
-				else if(cent->currentState.weapon == WP_DISRUPTOR)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/DLT20A/dlt20a.md3");
-				}
-				else if(cent->currentState.weapon == WP_BOWCASTER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/wbowcaster/wbowcaster1.md3");
-				}
-				else if(cent->currentState.weapon == WP_REPEATER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15a/dc-15a.md3");
-				}
-				else if(cent->currentState.weapon == WP_DEMP2)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17p/demp2.md3");
-				}
-				else if(cent->currentState.weapon == WP_FLECHETTE)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons/DoubleBarrel_ArrayGun/model.md3");
-				}
-				else if(cent->currentState.weapon == WP_CONCUSSION)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/minigun/minigun.md3");
-				}
-				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/cw_launcher/cw_launcher.md3");
-				}
-				else if(cent->currentState.weapon == WP_THERMAL)
-				{
 				gun.hModel = trap_R_RegisterModel("models/weapons2/sonic_detonator/sonic_det.md3");
 				}
 				else if(cent->currentState.weapon == WP_BRYAR_OLD)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/noweap.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/noweap/noweap.md3");
 				}
 				else
 				{
@@ -668,7 +715,7 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_DEMP2)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-25_icerifle/rifle.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-24_flamerifle/rifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_FLECHETTE)
 				{
@@ -676,7 +723,7 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_CONCUSSION)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons/LJ-70_ConcRifle/model.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/geonosian/sonicrifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
 				{
@@ -688,7 +735,113 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_BRYAR_OLD)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/concussion_new/c_rifle.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/noweap/noweap.md3");
+				}
+				else
+				{
+				gun.hModel = weapon->viewModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17/dc-17.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15s/blaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/clone_disruptor/clone_disruptor.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/wbowcaster/wbowcaster1.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15a/dc-15a.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17p/demp2.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/DoubleBarrel_ArrayGun/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/PulseCannon/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/cw_launcher/cw_launcher.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/fraggrenade/thermal.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/sc-10_holdout/sc-10_holdout.md3");
+				}
+				else
+				{
+				gun.hModel = weapon->viewModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+			{
+
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dh-17/dh-17_FA.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/a280/a280.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/DLT20A/dlt20a.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/ee-3/ee-3.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dlt-18_repeater/dlt-18_repeater.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/beamRIFLE/c_rifle.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/Bryar_Rifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/LJ-70_ConcRifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/MiniMag_launcher/launcher.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/plasma/plasma.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/s5_heavy_pistol/s5_pistol.md3");
 				}
 				else
 				{
@@ -704,16 +857,67 @@ Ghoul2 Insert Start
 		else
 		{
 			//gun.hModel = weapon->weaponModel;
-			if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+			if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 			{
-
 				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dh-17/dh-17_FA.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/SE-44C/blaster_pistol.md3");
 				}
 				else if(cent->currentState.weapon == WP_BLASTER)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/a280/a280.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/f11d_blaster/blaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/psg/disruptor.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/STCompRifle/bowcaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/FWMB-10/heavy_repeater.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/CarboniteRifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/junglerifle/c_rifle.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/minigun/minigun.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/Packered_MortarGun/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/Stormi_TD/stormiTD.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/concussion_new/c_rifle.md3");
+				}
+				else
+				{
+				gun.hModel = weapon->weaponModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2  && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/Glie-44/blaster_pistol.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/EL-16/blaster.md3");
 				}
 				else if(cent->currentState.weapon == WP_DISRUPTOR)
 				{
@@ -721,15 +925,15 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_BOWCASTER)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/ee-3/ee-3.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons/Bowcaster_heavy/model.md3");
 				}
 				else if(cent->currentState.weapon == WP_REPEATER)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dlt-18_repeater/dlt-18_repeater.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17m/dc-17m.md3");
 				}
 				else if(cent->currentState.weapon == WP_DEMP2)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-24_flamerifle/rifle.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-25_icerifle/rifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_FLECHETTE)
 				{
@@ -745,64 +949,11 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_THERMAL)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/plasma/plasma.md3");
-				}
-				else if(cent->currentState.weapon == WP_BRYAR_OLD)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/s5_heavy_pistol/s5_pistol.md3");
-				}
-				else
-				{
-				gun.hModel = weapon->weaponModel;
-				}
-			
-			}
-			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
-			{
-
-				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17/dc-17.md3");
-				}
-				else if(cent->currentState.weapon == WP_BLASTER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15s/blaster.md3");
-				}
-				else if(cent->currentState.weapon == WP_DISRUPTOR)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/DLT20A/dlt20a.md3");
-				}
-				else if(cent->currentState.weapon == WP_BOWCASTER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/wbowcaster/wbowcaster1.md3");
-				}
-				else if(cent->currentState.weapon == WP_REPEATER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15a/dc-15a.md3");
-				}
-				else if(cent->currentState.weapon == WP_DEMP2)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17p/demp2.md3");
-				}
-				else if(cent->currentState.weapon == WP_FLECHETTE)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons/DoubleBarrel_ArrayGun/model.md3");
-				}
-				else if(cent->currentState.weapon == WP_CONCUSSION)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/minigun/minigun.md3");
-				}
-				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
-				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/cw_launcher/cw_launcher.md3");
-				}
-				else if(cent->currentState.weapon == WP_THERMAL)
-				{
 				gun.hModel = trap_R_RegisterModel("models/weapons2/sonic_detonator/sonic_det.md3");
 				}
 				else if(cent->currentState.weapon == WP_BRYAR_OLD)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/noweap.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/noweap/noweap.md3");
 				}
 				else
 				{
@@ -834,7 +985,7 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_DEMP2)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-25_icerifle/rifle.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/CR-24_flamerifle/rifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_FLECHETTE)
 				{
@@ -842,7 +993,7 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_CONCUSSION)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons/LJ-70_ConcRifle/model.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/geonosian/sonicrifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
 				{
@@ -854,7 +1005,113 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_BRYAR_OLD)
 				{
-				gun.hModel = trap_R_RegisterModel("models/weapons2/concussion_new/c_rifle.md3");
+				gun.hModel = trap_R_RegisterModel("models/weapons2/noweap/noweap.md3");
+				}
+				else
+				{
+				gun.hModel = weapon->weaponModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17/dc-17.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15s/blaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/clone_disruptor/clone_disruptor.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/wbowcaster/wbowcaster1.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-15a/dc-15a.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dc-17p/demp2.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/DoubleBarrel_ArrayGun/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/PulseCannon/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/cw_launcher/cw_launcher.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/fraggrenade/thermal.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/sc-10_holdout/sc-10_holdout.md3");
+				}
+				else
+				{
+				gun.hModel = weapon->weaponModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+			{
+
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dh-17/dh-17_FA.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/a280/a280.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/DLT20A/dlt20a.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/ee-3/ee-3.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/dlt-18_repeater/dlt-18_repeater.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/beamRIFLE/c_rifle.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/Bryar_Rifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons/LJ-70_ConcRifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/MiniMag_launcher/launcher.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/plasma/plasma.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				gun.hModel = trap_R_RegisterModel("models/weapons2/s5_heavy_pistol/s5_pistol.md3");
 				}
 				else
 				{
@@ -963,17 +1220,63 @@ Ghoul2 Insert Start
 				VectorCopy( parent->lightingOrigin, barrel.lightingOrigin );
 				barrel.shadowPlane = parent->shadowPlane;
 				barrel.renderfx = parent->renderfx;
-
-			if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+			if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 			{
-
 				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dh-17/dh-17_FA.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/SE-44C/blaster_pistol.md3");
 				}
 				else if(cent->currentState.weapon == WP_BLASTER)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/a280/a280.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/f11d_blaster/blaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/psg/disruptor.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons/STCompRifle/bowcaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/FWMB-10/heavy_repeater.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons/CarboniteRifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{				
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/junglerifle/c_rifle.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/minigun/minigun.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons/Packered_MortarGun/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/concussion_new/c_rifle.md3");
+				}
+				else
+				{
+				barrel.hModel = weapon->barrelModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/Glie-44/blaster_pistol.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/EL-16/blaster.md3");
 				}
 				else if(cent->currentState.weapon == WP_DISRUPTOR)
 				{
@@ -981,18 +1284,18 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_BOWCASTER)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/ee-3/ee-3.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/Bowcaster_heavy/model.md3");
 				}
 				else if(cent->currentState.weapon == WP_REPEATER)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dlt-18_repeater/dlt-18_repeater.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-17m/dc-17m.md3");
 				}
 				else if(cent->currentState.weapon == WP_DEMP2)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/CR-24_flamerifle/rifle.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/CR-25_icerifle/rifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_FLECHETTE)
-				{
+				{				
 				//barrel.hModel = trap_R_RegisterModel("models/weapons2/CR-1_cannon/rifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_CONCUSSION)
@@ -1003,65 +1306,9 @@ Ghoul2 Insert Start
 				{
 				//barrel.hModel = trap_R_RegisterModel("models/weapons/Packered_MortarGun/model.md3");
 				}
-				else if(cent->currentState.weapon == WP_THERMAL)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/plasma/plasma.md3");
-				}
 				else if(cent->currentState.weapon == WP_BRYAR_OLD)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/s5_heavy_pistol/s5_pistol.md3");
-				}
-				else
-				{
-				barrel.hModel = weapon->barrelModel;
-				}
-			
-			}
-			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
-			{
-				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-17/dc-17.md3");
-				}
-				else if(cent->currentState.weapon == WP_BLASTER)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-15s/blaster.md3");
-				}
-				else if(cent->currentState.weapon == WP_DISRUPTOR)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/DLT20A/dlt20a.md3");
-				}
-				else if(cent->currentState.weapon == WP_BOWCASTER)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/wbowcaster/wbowcaster1.md3");
-				}
-				else if(cent->currentState.weapon == WP_REPEATER)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-15a/dc-15a.md3");
-				}
-				else if(cent->currentState.weapon == WP_DEMP2)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-17p/demp2.md3");
-				}
-				else if(cent->currentState.weapon == WP_FLECHETTE)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons/DoubleBarrel_ArrayGun/model.md3");
-				}
-				else if(cent->currentState.weapon == WP_CONCUSSION)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/minigun/minigun.md3");
-				}
-				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/cw_launcher/cw_launcher.md3");
-				}
-				else if(cent->currentState.weapon == WP_THERMAL)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/sonic_detonator/sonic_det.md3");
-				}
-				else if(cent->currentState.weapon == WP_BRYAR_OLD)
-				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/noweap.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/noweap/noweap.md3");
 				}
 				else
 				{
@@ -1093,7 +1340,7 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_DEMP2)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/CR-25_icerifle/rifle.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/CR-24_flamerifle/rifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_FLECHETTE)
 				{				
@@ -1101,7 +1348,7 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_CONCUSSION)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons/LJ-70_ConcRifle/model.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/geonosian/sonicrifle.md3");
 				}
 				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
 				{
@@ -1109,7 +1356,112 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_BRYAR_OLD)
 				{
-				//barrel.hModel = trap_R_RegisterModel("models/weapons2/concussion_new/c_rifle.md3");
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/noweap/noweap.md3");
+				}
+				else
+				{
+				barrel.hModel = weapon->barrelModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-17/dc-17.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-15s/blaster.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/clone_disruptor/clone_disruptor.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/wbowcaster/wbowcaster1.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-15a/dc-15a.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dc-17p/demp2.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons/DoubleBarrel_ArrayGun/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons/PulseCannon/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/cw_launcher/cw_launcher.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/sonic_detonator/sonic_det.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/sc-10_holdout/sc-10_holdout.md3");
+				}
+				else
+				{
+				barrel.hModel = weapon->barrelModel;
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+			{
+
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dh-17/dh-17_FA.md3");
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/a280/a280.md3");
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/DLT20A/dlt20a.md3");
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/ee-3/ee-3.md3");
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/dlt-18_repeater/dlt-18_repeater.md3");
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/beamRIFLE/c_rifle.md3");
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons/Bryar_Rifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons/LJ-70_ConcRifle/model.md3");
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/MiniMag_launcher/launcher.md3");
+				}
+				else if(cent->currentState.weapon == WP_THERMAL)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/plasma/plasma.md3");
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{
+				//barrel.hModel = trap_R_RegisterModel("models/weapons2/s5_heavy_pistol/s5_pistol.md3");
 				}
 				else
 				{
@@ -1127,7 +1479,195 @@ Ghoul2 Insert Start
 
 				AnglesToAxis( angles, barrel.axis );
 
-			if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+			if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else
+				{
+				CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else
+				{
+				CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BRYAR_OLD)
+				{				
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else
+				{
+				CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+			{
+				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BLASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DISRUPTOR)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_BOWCASTER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_REPEATER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_DEMP2)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_FLECHETTE)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_CONCUSSION)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
+				{
+				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+				else
+				{
+				CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
+				}
+			
+			}
+			else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 			{			
 				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
 				{
@@ -1167,98 +1707,6 @@ Ghoul2 Insert Start
 				}
 				else if(cent->currentState.weapon == WP_BRYAR_OLD)
 				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else
-				{
-				CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-			
-			}
-			else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
-			{
-				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_BLASTER)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_DISRUPTOR)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_BOWCASTER)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_REPEATER)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_DEMP2)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_FLECHETTE)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_CONCUSSION)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else
-				{
-				CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-			
-			}
-			else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
-			{
-				if(cent->currentState.weapon == WP_BRYAR_PISTOL)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_BLASTER)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_DISRUPTOR)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_BOWCASTER)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_REPEATER)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_DEMP2)
-				{
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_FLECHETTE)
-				{				
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_CONCUSSION)
-				{				
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_ROCKET_LAUNCHER)
-				{				
-				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
-				}
-				else if(cent->currentState.weapon == WP_BRYAR_OLD)
-				{				
 				//CG_PositionRotatedEntityOnTag( &barrel, parent/*&gun*/, /*weapon->weaponModel*/weapon->handsModel, "tag_barrel" );
 				}
 				else
@@ -1337,17 +1785,25 @@ Ghoul2 Insert End
 		if ( cent->currentState.weapon == WP_BRYAR_PISTOL )
 		{
 		val = ( cg.time - cent->currentState.constantLight ) * 0.001f;	
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
 			shader = cgs.media.redFrontFlash;
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			shader = cgs.media.purpleFrontFlash;
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			shader = cgs.media.yellowFrontFlash;
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			shader = cgs.media.blueFrontFlash;
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			shader = cgs.media.whiteFrontFlash;
+			shader = cgs.media.greenFrontFlash;
 		}
 		else
 		{
@@ -1360,18 +1816,26 @@ Ghoul2 Insert End
 			cent->currentState.weapon == WP_BRYAR_OLD)
 		{
 			// Hardcoded max charge time of 1 second
-			val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			shader = cgs.media.purpleFrontFlash;
-		}
-		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
+			shader = cgs.media.orangeFrontFlash;
+		}			
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
 		{
-			shader = cgs.media.lightningFlash;
+			shader = cgs.media.whiteFrontFlash;
 		}
 		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
 			shader = cgs.media.redFrontFlash;
+		}
+		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
+		{
+			shader = cgs.media.redFrontFlash;
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		{
+			shader = cgs.media.orangeFrontFlash;
 		}
 		else
 		{
@@ -1382,17 +1846,25 @@ Ghoul2 Insert End
 		{
 			// Hardcoded max charge time of 1 second
 			val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			shader = cgs.media.redFrontFlash;
+			/* shader = cgs.media.orangeFrontFlash; */
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+			shader = cgs.media.purpleFrontFlash;
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+			shader = cgs.media.yellowFrontFlash;
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			shader = cgs.media.blueFrontFlash;
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			shader = cgs.media.yellowFrontFlash;
+			shader = cgs.media.redFrontFlash;
 		}
 		else
 		{
@@ -1403,17 +1875,25 @@ Ghoul2 Insert End
 		else if ( cent->currentState.weapon == WP_DEMP2 )
 		{
 			val = ( cg.time - cent->currentState.constantLight ) * 0.001f;
-		if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+		if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
 		{
-			shader = cgs.media.yellowFrontFlash;
+//			shader = cgs.media.blueFrontFlash;
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+		{
+//			shader = cgs.media.greenFrontFlash;
+		}
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		{
+//			shader = cgs.media.yellowFrontFlash;
 		}
 		else if (cent->currentState.eFlags & EF_WP_OPTION_3  )
 		{
 			shader = cgs.media.lightningFlash;
 		}
-		else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+		else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
 		{
-			shader = cgs.media.blueFrontFlash;
+			shader = cgs.media.lightningFlash;
 		}
 		else
 		{
@@ -1532,31 +2012,38 @@ Ghoul2 Insert End
 		{	// Handle muzzle flashes
 			if ( cent->currentState.eFlags & EF_ALT_FIRING )
 			{	// Check the alt firing first.
-				if (weapon->altMuzzleEffect || weapon->altMuzzle2Effect || weapon->altMuzzle3Effect || weapon->altMuzzle4Effect)
-				{
-					if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+
+					if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
+					{
+					if(weapon->altMuzzle6Effect)
 					{
 					if (!thirdPerson)
 					{
-						trap_FX_PlayEntityEffectID(weapon->altMuzzle2Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
+						trap_FX_PlayEntityEffectID(weapon->altMuzzle6Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
 					}
 					else
 					{
-						trap_FX_PlayEffectID(weapon->altMuzzle2Effect, flashorigin, flashdir, -1, -1);
+						trap_FX_PlayEffectID(weapon->altMuzzle6Effect, flashorigin, flashdir, -1, -1);
 					}
 					}
-					else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+					}
+					else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3  )
+					{
+					if(weapon->altMuzzle5Effect)
 					{
 					if (!thirdPerson)
 					{
-						trap_FX_PlayEntityEffectID(weapon->altMuzzle3Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
+						trap_FX_PlayEntityEffectID(weapon->altMuzzle5Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
 					}
 					else
 					{
-						trap_FX_PlayEffectID(weapon->altMuzzle3Effect, flashorigin, flashdir, -1, -1);
+						trap_FX_PlayEffectID(weapon->altMuzzle5Effect, flashorigin, flashdir, -1, -1);
+					}
 					}
 					}
 					else if (cent->currentState.eFlags  & EF_WP_OPTION_4  )
+					{
+					if(weapon->altMuzzle4Effect)
 					{
 					if (!thirdPerson)
 					{
@@ -1567,7 +2054,38 @@ Ghoul2 Insert End
 						trap_FX_PlayEffectID(weapon->altMuzzle4Effect, flashorigin, flashdir, -1, -1);
 					}
 					}
+					}
+					else if (cent->currentState.eFlags  & EF_WP_OPTION_3  )
+					{
+					if(weapon->altMuzzle3Effect)
+					{
+					if (!thirdPerson)
+					{
+						trap_FX_PlayEntityEffectID(weapon->altMuzzle3Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
+					}
 					else
+					{
+						trap_FX_PlayEffectID(weapon->altMuzzle3Effect, flashorigin, flashdir, -1, -1);
+					}
+					}
+					}
+					else if (cent->currentState.eFlags  & EF_WP_OPTION_2  )
+					{
+					if(weapon->altMuzzle2Effect)
+					{
+					if (!thirdPerson)
+					{
+						trap_FX_PlayEntityEffectID(weapon->altMuzzle2Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
+					}
+					else
+					{
+						trap_FX_PlayEffectID(weapon->altMuzzle2Effect, flashorigin, flashdir, -1, -1);
+					}
+					}
+					}
+					else
+					{
+					if(weapon->altMuzzleEffect)
 					{
 					if (!thirdPerson)
 					{
@@ -1578,35 +2096,43 @@ Ghoul2 Insert End
 						trap_FX_PlayEffectID(weapon->altMuzzleEffect, flashorigin, flashdir, -1, -1);
 					}
 					}
-				}
+					}
+				
 			}
 			else	
 			{	// Regular firing
-				if ((weapon->muzzleEffect || weapon->muzzle2Effect || weapon->muzzle3Effect || weapon->muzzle4Effect  ) && (cg.predictedPlayerState.weapon != WP_FLECHETTE || cg.predictedPlayerState.weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime == 100000))
+
+				if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4 )
 				{
-				if (cent->currentState.eFlags  & EF_WP_OPTION_2 )
+				if(weapon->muzzle6Effect && (cg.predictedPlayerState.weapon != WP_FLECHETTE || cg.predictedPlayerState.weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime == 100000))
 				{
 					if (!thirdPerson)
 					{
-						trap_FX_PlayEntityEffectID(weapon->muzzle2Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
+						trap_FX_PlayEntityEffectID(weapon->muzzle6Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
 					}
 					else
 					{
-						trap_FX_PlayEffectID(weapon->muzzle2Effect, flashorigin, flashdir, -1, -1);
-					}
+						trap_FX_PlayEffectID(weapon->muzzle6Effect, flashorigin, flashdir, -1, -1);
+					}					
 				}
-				else if (cent->currentState.eFlags  & EF_WP_OPTION_3 )
+				}
+				else if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+				{
+				if(weapon->muzzle5Effect && (cg.predictedPlayerState.weapon != WP_FLECHETTE || cg.predictedPlayerState.weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime == 100000))
 				{
 					if (!thirdPerson)
 					{
-						trap_FX_PlayEntityEffectID(weapon->muzzle3Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
+						trap_FX_PlayEntityEffectID(weapon->muzzle5Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
 					}
 					else
 					{
-						trap_FX_PlayEffectID(weapon->muzzle3Effect, flashorigin, flashdir, -1, -1);
-					}
+						trap_FX_PlayEffectID(weapon->muzzle5Effect, flashorigin, flashdir, -1, -1);
+					}					
+				}
 				}
 				else if (cent->currentState.eFlags  & EF_WP_OPTION_4 )
+				{
+				if(weapon->muzzle4Effect && (cg.predictedPlayerState.weapon != WP_FLECHETTE || cg.predictedPlayerState.weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime == 100000))
 				{
 					if (!thirdPerson)
 					{
@@ -1615,9 +2141,40 @@ Ghoul2 Insert End
 					else
 					{
 						trap_FX_PlayEffectID(weapon->muzzle4Effect, flashorigin, flashdir, -1, -1);
+					}					
+				}
+				}
+				else if (cent->currentState.eFlags  & EF_WP_OPTION_3 )
+				{
+				if(weapon->muzzle3Effect && (cg.predictedPlayerState.weapon != WP_FLECHETTE || cg.predictedPlayerState.weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime == 100000))
+				{
+					if (!thirdPerson)
+					{
+						trap_FX_PlayEntityEffectID(weapon->muzzle3Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
 					}
+					else
+					{
+						trap_FX_PlayEffectID(weapon->muzzle3Effect, flashorigin, flashdir, -1, -1);
+					}					
+				}
+				}
+				else if (cent->currentState.eFlags  & EF_WP_OPTION_2 )
+				{
+				if(weapon->muzzle2Effect && (cg.predictedPlayerState.weapon != WP_FLECHETTE || cg.predictedPlayerState.weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime == 100000))
+				{
+					if (!thirdPerson)
+					{
+						trap_FX_PlayEntityEffectID(weapon->muzzle2Effect, flashorigin, flash.axis, -1, -1, -1, -1  );
+					}
+					else
+					{
+						trap_FX_PlayEffectID(weapon->muzzle2Effect, flashorigin, flashdir, -1, -1);
+					}					
+				}
 				}
 				else
+				{
+				if(weapon->muzzleEffect && (cg.predictedPlayerState.weapon != WP_FLECHETTE || cg.predictedPlayerState.weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime == 100000))
 				{
 					if (!thirdPerson)
 					{
@@ -1626,7 +2183,7 @@ Ghoul2 Insert End
 					else
 					{
 						trap_FX_PlayEffectID(weapon->muzzleEffect, flashorigin, flashdir, -1, -1);
-					}
+					}					
 				}
 				}
 			}
@@ -2187,9 +2744,9 @@ void CG_DrawWeaponSelect( void ) {
 	int				bits;
 	int				count;
 	int				smallIconSize,bigIconSize;
-	int				holdX,x,y,pad;
+	int				x,y,pad;
 	int				sideLeftIconCnt,sideRightIconCnt;
-	int				sideMax,holdCount,iconCnt;
+	int				sideMax,holdCount;
 	int				height;
 	int		yOffset = 0;
 	qboolean drewConc = qfalse;
@@ -2285,8 +2842,10 @@ void CG_DrawWeaponSelect( void ) {
 	// Background
 //	memcpy(calcColor, colorTable[CT_WHITE], sizeof(vec4_t));
 //	calcColor[3] = .35f;
-//	trap_R_SetColor( calcColor);					
+//	trap_R_SetColor( calcColor);	
 
+				
+/*
 	// Left side ICONS
 	trap_R_SetColor(colorTable[CT_WHITE]);
 	// Work backwards from current icon
@@ -2329,7 +2888,7 @@ void CG_DrawWeaponSelect( void ) {
 
 		++iconCnt;					// Good icon
 
-		if (cgs.media.weaponIcons[i] || cgs.media.weaponIcons2[i] || cgs.media.weaponIcons3[i] || cgs.media.weaponIcons4[i])
+		if (cgs.media.weaponIcons[i] || cgs.media.weaponIcons2[i] || cgs.media.weaponIcons3[i] || cgs.media.weaponIcons4[i] || cgs.media.weaponIcons5[i] || cgs.media.weaponIcons6[i])
 		{
 			weaponInfo_t	*weaponInfo;
 			CG_RegisterWeapon( i );	
@@ -2340,14 +2899,14 @@ void CG_DrawWeaponSelect( void ) {
 			{
 
 				
-//				CG_DrawPic( holdX, y+10+yOffset, smallIconSize, smallIconSize, /*weaponInfo->weaponIconNoAmmo*/cgs.media.weaponIcons_NA[i] );
+//				CG_DrawPic( holdX, y+10+yOffset, smallIconSize, smallIconSize, /*weaponInfo->weaponIconNoAmmocgs.media.weaponIcons_NA[i] );
 				
 			}
 			else
 			{
 
 				
-//				CG_DrawPic( holdX, y+10+yOffset, smallIconSize, smallIconSize, /*weaponInfo->weaponIcon*/cgs.media.weaponIcons[i] );
+//				CG_DrawPic( holdX, y+10+yOffset, smallIconSize, smallIconSize, /*weaponInfo->weaponIconcgs.media.weaponIcons[i] );
 				
 				
 			}
@@ -2360,11 +2919,10 @@ void CG_DrawWeaponSelect( void ) {
 			i = WP_ROCKET_LAUNCHER;
 		}
 	}
-
+*/
 	// Current Center Icon
 	height = bigIconSize * cg.iconHUDPercent;
-	if (cgs.media.weaponIcons[cg.weaponSelect] || cgs.media.weaponIcons2[cg.weaponSelect] || cgs.media.weaponIcons3[cg.weaponSelect] || cgs.media.weaponIcons4[cg.weaponSelect])
-	{
+
 		weaponInfo_t	*weaponInfo;
 		CG_RegisterWeapon( cg.weaponSelect );	
 		weaponInfo = &cg_weapons[cg.weaponSelect];
@@ -2372,47 +2930,97 @@ void CG_DrawWeaponSelect( void ) {
 		trap_R_SetColor( colorTable[CT_WHITE]);
 		if (!CG_WeaponCheck(cg.weaponSelect))
 		{
-				if(cg.snap->ps.eFlags & EF_WP_OPTION_2 )
+				if(cg.snap->ps.eFlags & EF_WP_OPTION_2 && cg.snap->ps.eFlags & EF_WP_OPTION_4)
 				{
-				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons2_NA[cg.weaponSelect] );
+				if(cgs.media.weaponIcons6[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons6_NA[cg.weaponSelect] );
 				}
-				else if(cg.snap->ps.eFlags & EF_WP_OPTION_3 )
+				}
+				else if(cg.snap->ps.eFlags & EF_WP_OPTION_2 && cg.snap->ps.eFlags & EF_WP_OPTION_3 )
 				{
-				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons3_NA[cg.weaponSelect] );
+				if(cgs.media.weaponIcons5[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons5_NA[cg.weaponSelect] );
+				}
 				}
 				else if(cg.snap->ps.eFlags & EF_WP_OPTION_4 )
 				{
+				if(cgs.media.weaponIcons4[cg.weaponSelect])
+				{
 				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons4_NA[cg.weaponSelect] );
 				}
-				
+				}
+				else if(cg.snap->ps.eFlags & EF_WP_OPTION_3 )
+				{
+				if(cgs.media.weaponIcons3[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons3_NA[cg.weaponSelect] );
+				}
+				}
+				else if(cg.snap->ps.eFlags & EF_WP_OPTION_2 )
+				{
+				if(cgs.media.weaponIcons2[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons2_NA[cg.weaponSelect] );
+				}
+				}		
 				else
 				{
+				if(cgs.media.weaponIcons[cg.weaponSelect])
+				{
 				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons_NA[cg.weaponSelect] );
+				}
 				}
 			
 		}
 		else
 		{
-				if(cg.snap->ps.eFlags & EF_WP_OPTION_2 )
+				if(cg.snap->ps.eFlags & EF_WP_OPTION_2 && cg.snap->ps.eFlags & EF_WP_OPTION_4 )
 				{
-				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons2[cg.weaponSelect] );
+				if(cgs.media.weaponIcons6[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons6[cg.weaponSelect] );
 				}
-				else if(cg.snap->ps.eFlags & EF_WP_OPTION_3)
+				}
+				else if(cg.snap->ps.eFlags & EF_WP_OPTION_2 && cg.snap->ps.eFlags & EF_WP_OPTION_3 )
 				{
-				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons3[cg.weaponSelect] );
+				if(cgs.media.weaponIcons5[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons5[cg.weaponSelect] );
+				}
 				}
 				else if(cg.snap->ps.eFlags & EF_WP_OPTION_4 )
 				{
+				if(cgs.media.weaponIcons4[cg.weaponSelect])
+				{
 				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons4[cg.weaponSelect] );
 				}
-				
+				}
+				else if(cg.snap->ps.eFlags & EF_WP_OPTION_3)
+				{
+				if(cgs.media.weaponIcons3[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons3[cg.weaponSelect] );
+				}
+				}
+				else if(cg.snap->ps.eFlags & EF_WP_OPTION_2 )
+				{
+				if(cgs.media.weaponIcons2[cg.weaponSelect])
+				{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons2[cg.weaponSelect] );
+				}
+				}			
 				else
+				{
+				if(cgs.media.weaponIcons[cg.weaponSelect])
 				{
 				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, cgs.media.weaponIcons[cg.weaponSelect] );
 				}
+				}
 			
 		}
-	}
+	
 
 	if ( cg.weaponSelect == WP_CONCUSSION )
 	{
@@ -2427,8 +3035,13 @@ void CG_DrawWeaponSelect( void ) {
 		i = 1;
 	}
 
+
+
+
+/*
 	// Right side ICONS
 	// Work forwards from current icon
+
 	holdX = x + (bigIconSize/2) + pad;
 	height = smallIconSize * cg.iconHUDPercent;
 	for (iconCnt=1;iconCnt<(sideRightIconCnt+1);i++)
@@ -2464,7 +3077,7 @@ void CG_DrawWeaponSelect( void ) {
 
 		++iconCnt;					// Good icon
 
-		if (/*weaponData[i].weaponIcon[0]*/cgs.media.weaponIcons[i] || cgs.media.weaponIcons2[i] || cgs.media.weaponIcons3[i] || cgs.media.weaponIcons4[i])
+		if (/*weaponData[i].weaponIcon[0] cgs.media.weaponIcons[i] || cgs.media.weaponIcons2[i] || cgs.media.weaponIcons3[i] || cgs.media.weaponIcons4[i] || cgs.media.weaponIcons5[i] || cgs.media.weaponIcons6[i])
 		{
 			weaponInfo_t	*weaponInfo;
 			CG_RegisterWeapon( i );	
@@ -2496,28 +3109,53 @@ void CG_DrawWeaponSelect( void ) {
 			i = WP_FLECHETTE;
 		}
 	}
-
+*/
 	// draw the selected name
-	if ( showWeaponsName[cg.weaponSelect] || showWeaponsName2[cg.weaponSelect] || showWeaponsName3[cg.weaponSelect] || showWeaponsName4[cg.weaponSelect]  ) 	
-	{	
 	
-	if(cg.snap->ps.eFlags & EF_WP_OPTION_2 )
+
+	if(cg.snap->ps.eFlags & EF_WP_OPTION_2 && cg.snap->ps.eFlags & EF_WP_OPTION_4)
 	{
-		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName2[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
-	}
-	else if(cg.snap->ps.eFlags & EF_WP_OPTION_3)
+	if(showWeaponsName6[cg.weaponSelect])
 	{
-		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName3[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName6[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
 	}
+	}
+	else if(cg.snap->ps.eFlags & EF_WP_OPTION_2 && cg.snap->ps.eFlags & EF_WP_OPTION_3)
+	{
+	if(showWeaponsName5[cg.weaponSelect])
+	{
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName5[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	}	
 	else if(cg.snap->ps.eFlags & EF_WP_OPTION_4)
+	{
+	if(showWeaponsName4[cg.weaponSelect])
 	{
 		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName4[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
 	}
+	}
+	else if(cg.snap->ps.eFlags & EF_WP_OPTION_3)
+	{
+	if(showWeaponsName3[cg.weaponSelect])
+	{
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName3[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	}
+	else if(cg.snap->ps.eFlags & EF_WP_OPTION_2 )
+	{
+	if(showWeaponsName2[cg.weaponSelect])
+	{
+		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName2[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	}
 	else	
 	{
+	if(showWeaponsName[cg.weaponSelect])
+	{
 		UI_DrawProportionalString(320, y+45+yOffset, CG_GetStringEdString("SP_INGAME", showWeaponsName[cg.weaponSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
-	}	
 	}
+	}	
+	
 
 	trap_R_SetColor( NULL );
 }
@@ -3119,27 +3757,50 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 		}
 		if ( c > 0 ) {
 			c = rand() % c;
-			if ( weap->altFlashSound[c] || weap->altFlashSound2[c] || weap->altFlashSound3[c] || weap->altFlashSound4[c])
-			{
-				if(cent->currentState.eFlags & EF_WP_OPTION_2 )
+
+				if(cent->currentState.eFlags & EF_WP_OPTION_2 && cent->currentState.eFlags & EF_WP_OPTION_4)
 				{
-				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound2[c] );
+				if(weap->altFlashSound6[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound6[c] );
 				}
-				else if(cent->currentState.eFlags & EF_WP_OPTION_3 )
+				}
+				else if(cent->currentState.eFlags & EF_WP_OPTION_2 && cent->currentState.eFlags & EF_WP_OPTION_3 )
 				{
-				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound3[c] );
+				if(weap->altFlashSound5[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound5[c] );
+				}
 				}
 				else if(cent->currentState.eFlags & EF_WP_OPTION_4 )
 				{
+				if(weap->altFlashSound4[c])
+				{
 				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound4[c] );
 				}
-			
+				}
+				else if(cent->currentState.eFlags & EF_WP_OPTION_3 )
+				{
+				if(weap->altFlashSound3[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound3[c] );
+				}
+				}
+				else if(cent->currentState.eFlags & EF_WP_OPTION_2 )
+				{
+				if(weap->altFlashSound2[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound2[c] );
+				}
+				}	
 				else
+				{
+				if(weap->altFlashSound[c])
 				{
 				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->altFlashSound[c] );
 				}
-				
-			}
+				}
+
 		}
 //		if ( weap->altFlashSnd )
 //		{
@@ -3156,25 +3817,50 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 		}
 		if ( c > 0 ) {
 			c = rand() % c;
-			if ( weap->flashSound[c] || weap->flashSound2[c] || weap->flashSound3[c] || weap->flashSound4[c])
-			{
-				if(cent->currentState.eFlags & EF_WP_OPTION_2 )
+
+				if(cent->currentState.eFlags & EF_WP_OPTION_2 && cent->currentState.eFlags & EF_WP_OPTION_4 )
 				{
-				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound2[c] );
+				if(weap->flashSound6[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound6[c] );
 				}
-				else if(cent->currentState.eFlags & EF_WP_OPTION_3 )
+				}
+				else if(cent->currentState.eFlags & EF_WP_OPTION_2 && cent->currentState.eFlags & EF_WP_OPTION_3 )
 				{
-				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound3[c] );
+				if(weap->flashSound5[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound5[c] );
+				}
 				}
 				else if(cent->currentState.eFlags & EF_WP_OPTION_4 )
 				{
+				if(weap->flashSound4[c])
+				{
 				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound4[c] );
+				}
+				}
+				else if(cent->currentState.eFlags & EF_WP_OPTION_3 )
+				{
+				if(weap->flashSound3[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound3[c] );
+				}
+				}
+				else if(cent->currentState.eFlags & EF_WP_OPTION_2 )
+				{
+				if(weap->flashSound2[c])
+				{
+				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound2[c] );
+				}
 				}
 				else
 				{
+				if(weap->flashSound[c])
+				{
 				trap_S_StartSound( NULL, ent->number, CHAN_WEAPON, weap->flashSound[c] );
 				}
-			}
+				}
+			
 		}
 	}
 }
@@ -3291,13 +3977,12 @@ void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, imp
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mIncineraryExplosionEffect, origin, dir, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1 );
 
 		break;
 
 	case WP_THERMAL:
-		trap_FX_PlayEffectID( cgs.effects.mThermalExplosionEffect, origin, dir, -1, -1 );
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );
 		break;
 
 	case WP_EMPLACED_GUN:
@@ -3376,14 +4061,7 @@ void CG_MissileHitWall2(int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		break;
 
 	case WP_DEMP2:
-		if (altFire)
-		{
 			FX_DEMP2_HitWall2( origin, dir );
-		}
-		else
-		{
-			FX_DEMP2_HitWall2( origin, dir );
-		}
 		break;
 
 	case WP_FLECHETTE:
@@ -3400,12 +4078,11 @@ void CG_MissileHitWall2(int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mThermalExplosionEffect, origin, dir, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );
 		break;
 
 	case WP_THERMAL:
-		trap_FX_PlayEffectID(cgs.effects.mIncineraryExplosionEffect, origin, dir, -1, -1);
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );
+		trap_FX_PlayEffectID(cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1);
 		break;
 
 	case WP_EMPLACED_GUN:
@@ -3485,14 +4162,7 @@ void CG_MissileHitWall3(int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		break;
 
 	case WP_DEMP2:
-		if (altFire)
-		{
-			trap_FX_PlayEffectID(cgs.effects.mAltDetonate, origin, dir, -1, -1);
-		}
-		else
-		{
-			FX_DEMP2_HitWall3( origin, dir );
-		}
+		FX_DEMP2_HitWall3( origin, dir );
 		break;
 
 	case WP_FLECHETTE:
@@ -3509,13 +4179,11 @@ void CG_MissileHitWall3(int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mThermalExplosionEffect, origin, dir, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );
 		break;
 
-	case WP_THERMAL:
-		
-		trap_FX_PlayEffectID( cgs.effects.mDioxisExplosionEffect, origin, dir, -1, -1 );
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );
+	case WP_THERMAL:		
+		trap_FX_PlayEffectID( cgs.effects.dioxisExplosionEffect, origin, dir, -1, -1 );
 		break;
 
 	case WP_EMPLACED_GUN:
@@ -3594,14 +4262,7 @@ void CG_MissileHitWall4(int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		break;
 
 	case WP_DEMP2:
-		if (altFire)
-		{
-			FX_DEMP2_HitWall4( origin, dir );
-		}
-		else
-		{
-			FX_DEMP2_HitWall4( origin, dir );
-		}
+		FX_DEMP2_HitWall4( origin, dir );
 		break;
 
 	case WP_FLECHETTE:
@@ -3618,13 +4279,11 @@ void CG_MissileHitWall4(int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mIncineraryExplosionEffect, origin, dir, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1 );
 		break;
 
 	case WP_THERMAL:
-
-		trap_FX_PlayEffectID( cgs.effects.mIonExplosionEffect, origin, dir, -1, -1 );
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );	
+		trap_FX_PlayEffectID( cgs.effects.ionExplosionEffect	, origin, dir, -1, -1 );
 		break;
 
 	case WP_EMPLACED_GUN:
@@ -3637,7 +4296,205 @@ void CG_MissileHitWall4(int weapon, int clientNum, vec3_t origin, vec3_t dir, im
 	}
 }
 
+void CG_MissileHitWall5(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean altFire, int charge) 
+{
+	int parm;
+	vec3_t up={0,0,1};
 
+	switch( weapon )
+	{
+	case WP_STUN_BATON:
+		FX_DestructionHitWall( origin, dir );
+		break;
+	case WP_BRYAR_PISTOL:
+		if ( altFire )
+		{
+			parm = charge;
+			FX_BryarAltHitWall( origin, dir, parm );
+		}
+		else
+		{
+			FX_BryarHitWall( origin, dir );
+		}
+		break;
+
+	case WP_CONCUSSION:
+		FX_ConcussionHitWall5( origin, dir );
+		break;
+
+	case WP_BRYAR_OLD:
+		if ( altFire )
+		{
+			parm = charge;
+			FX_BryarOldAltHitWall( origin, dir, parm );
+		}
+		else
+		{
+			FX_BryarOldHitWall( origin, dir );
+		}
+		break;
+
+	case WP_TURRET:
+		FX_TurretHitWall( origin, dir );
+		break;
+
+	case WP_BLASTER:
+		FX_BlasterWeaponHitWall( origin, dir );
+		break;
+
+	case WP_DISRUPTOR:
+		FX_DisruptorAltMiss( origin, dir );
+		break;
+
+	case WP_BOWCASTER:
+		FX_BowcasterHitWall( origin, dir );
+		break;
+
+	case WP_REPEATER:
+		if ( altFire )
+		{
+			FX_RepeaterAltHitWall5( origin, dir );
+		}
+		else
+		{
+			FX_RepeaterHitWall( origin, dir );
+		}
+		break;
+
+	case WP_DEMP2:
+		FX_DEMP2_HitWall5( origin, dir );
+		break;
+
+	case WP_FLECHETTE:
+		/*if (altFire)
+		{
+			CG_SurfaceExplosion(origin, dir, 20.0f, 12.0f, qtrue);
+		}
+		else
+		*/
+		if (!altFire)
+		{
+			FX_FlechetteWeaponHitWall( origin, dir );
+		}
+		break;
+
+	case WP_ROCKET_LAUNCHER:
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );
+		break;
+
+	case WP_THERMAL:
+		trap_FX_PlayEffectID( cgs.effects.sonicExplosionEffect	, origin, dir, -1, -1 );
+		break;
+
+	case WP_EMPLACED_GUN:
+		//FIXME: Its own effect?
+		FX_BlasterWeaponHitWall( origin, dir );
+		break;
+
+
+
+	}
+}
+
+void CG_MissileHitWall6(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean altFire, int charge) 
+{
+	int parm;
+	vec3_t up={0,0,1};
+
+	switch( weapon )
+	{
+	case WP_STUN_BATON:
+		FX_DestructionHitWall( origin, dir );
+		break;
+	case WP_BRYAR_PISTOL:
+		if ( altFire )
+		{
+			parm = charge;
+			FX_BryarAltHitWall( origin, dir, parm );
+		}
+		else
+		{
+			FX_BryarHitWall( origin, dir );
+		}
+		break;
+
+	case WP_CONCUSSION:
+		FX_ConcussionHitWall6( origin, dir );
+		break;
+
+	case WP_BRYAR_OLD:
+		if ( altFire )
+		{
+			parm = charge;
+			FX_BryarOldAltHitWall( origin, dir, parm );
+		}
+		else
+		{
+			FX_BryarOldHitWall( origin, dir );
+		}
+		break;
+
+	case WP_TURRET:
+		FX_TurretHitWall( origin, dir );
+		break;
+
+	case WP_BLASTER:
+		FX_BlasterWeaponHitWall( origin, dir );
+		break;
+
+	case WP_DISRUPTOR:
+		FX_DisruptorAltMiss( origin, dir );
+		break;
+
+	case WP_BOWCASTER:
+		FX_BowcasterHitWall( origin, dir );
+		break;
+
+	case WP_REPEATER:
+		if ( altFire )
+		{
+			FX_RepeaterAltHitWall6( origin, dir );
+		}
+		else
+		{
+			FX_RepeaterHitWall( origin, dir );
+		}
+		break;
+
+	case WP_DEMP2:
+		FX_DEMP2_HitWall6( origin, dir );
+		break;
+
+	case WP_FLECHETTE:
+		/*if (altFire)
+		{
+			CG_SurfaceExplosion(origin, dir, 20.0f, 12.0f, qtrue);
+		}
+		else
+		*/
+		if (!altFire)
+		{
+			FX_FlechetteWeaponHitWall( origin, dir );
+		}
+		break;
+
+	case WP_ROCKET_LAUNCHER:
+		trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1 );
+		break;
+
+	case WP_THERMAL:
+		trap_FX_PlayEffectID( cgs.effects.flashExplosionEffect	, origin, dir, -1, -1 );
+		break;
+
+	case WP_EMPLACED_GUN:
+		//FIXME: Its own effect?
+		FX_BlasterWeaponHitWall( origin, dir );
+		break;
+
+
+
+	}
+}
 /*
 =================
 CG_MissileHitPlayer
@@ -3742,11 +4599,10 @@ void CG_MissileHitPlayer(int weapon, vec3_t origin, vec3_t dir, int entityNum, q
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mIncineraryExplosionEffect, origin, dir, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1 );
 		break;
 	case WP_THERMAL:
-		trap_FX_PlayEffectID( cgs.effects.mThermalExplosionEffect, origin, dir, -1, -1 );
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );
 		break;
 	case WP_EMPLACED_GUN:
 		//FIXME: Its own effect?
@@ -3829,7 +4685,7 @@ void CG_MissileHitPlayer2(int weapon, vec3_t origin, vec3_t dir, int entityNum, 
 	case WP_REPEATER:
 		if ( altFire )
 		{
-			FX_RepeaterAltHitPlayer( origin, dir, humanoid );
+			FX_RepeaterAltHitPlayer2( origin, dir, humanoid );
 		}
 		else
 		{
@@ -3855,12 +4711,11 @@ void CG_MissileHitPlayer2(int weapon, vec3_t origin, vec3_t dir, int entityNum, 
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mThermalExplosionEffect, origin, dir, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );
 
 		break;
 	case WP_THERMAL:
-		trap_FX_PlayEffectID(cgs.effects.mIncineraryExplosionEffect, origin, dir, -1, -1);
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );
+		trap_FX_PlayEffectID(cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1);
 		break;
 	case WP_EMPLACED_GUN:
 		//FIXME: Its own effect?
@@ -3943,7 +4798,7 @@ void CG_MissileHitPlayer3(int weapon, vec3_t origin, vec3_t dir, int entityNum, 
 	case WP_REPEATER:
 		if ( altFire )
 		{
-			FX_RepeaterAltHitPlayer( origin, dir, humanoid );
+			FX_RepeaterAltHitPlayer3( origin, dir, humanoid );
 		}
 		else
 		{
@@ -3969,11 +4824,10 @@ void CG_MissileHitPlayer3(int weapon, vec3_t origin, vec3_t dir, int entityNum, 
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mThermalExplosionEffect, origin, dir, -1, -1 );	
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );	
 		break;
 	case WP_THERMAL:
-		trap_FX_PlayEffectID( cgs.effects.mDioxisExplosionEffect, origin, dir, -1, -1 );
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.dioxisExplosionEffect, origin, dir, -1, -1 );
 		break;
 	case WP_EMPLACED_GUN:
 		//FIXME: Its own effect?
@@ -4057,7 +4911,7 @@ void CG_MissileHitPlayer4(int weapon, vec3_t origin, vec3_t dir, int entityNum, 
 	case WP_REPEATER:
 		if ( altFire )
 		{
-			FX_RepeaterAltHitPlayer( origin, dir, humanoid );
+			FX_RepeaterAltHitPlayer4( origin, dir, humanoid );
 		}
 		else
 		{
@@ -4083,11 +4937,10 @@ void CG_MissileHitPlayer4(int weapon, vec3_t origin, vec3_t dir, int entityNum, 
 		break;
 
 	case WP_ROCKET_LAUNCHER:
-		trap_FX_PlayEffectID( cgs.effects.mIncineraryExplosionEffect, origin, dir, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1 );
 		break;
 	case WP_THERMAL:
-		trap_FX_PlayEffectID( cgs.effects.mIonExplosionEffect, origin, dir, -1, -1 );
-		trap_FX_PlayEffectID( cgs.effects.thermalShockwaveEffect, origin, up, -1, -1 );
+		trap_FX_PlayEffectID( cgs.effects.ionExplosionEffect	, origin, dir, -1, -1 );
 		break;
 	case WP_EMPLACED_GUN:
 		//FIXME: Its own effect?
@@ -4099,7 +4952,233 @@ void CG_MissileHitPlayer4(int weapon, vec3_t origin, vec3_t dir, int entityNum, 
 	}
 }
 
+void CG_MissileHitPlayer5(int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean altFire) 
+{
+	qboolean	humanoid = qtrue;
+	vec3_t up={0,0,1};
 
+	/*
+	// NOTENOTE Non-portable code from single player
+	if ( cent->gent )
+	{
+		other = &g_entities[cent->gent->s.otherEntityNum];
+
+		if ( other->client && other->client->playerTeam == TEAM_BOTS )
+		{
+			humanoid = qfalse;
+		}
+	}
+	*/	
+
+	// NOTENOTE No bleeding in this game
+//	CG_Bleed( origin, entityNum );
+
+	// some weapons will make an explosion with the blood, while
+	// others will just make the blood
+	switch ( weapon ) {
+	case WP_STUN_BATON:
+		FX_DestructionHitPlayer( origin, dir, humanoid );
+		break;
+	case WP_BRYAR_PISTOL:
+		if ( altFire )
+		{
+			FX_BryarAltHitPlayer( origin, dir, humanoid );
+		}
+		else
+		{
+			FX_BryarHitPlayer( origin, dir, humanoid );
+		}
+		break;
+
+	case WP_CONCUSSION:
+
+		FX_ConcussionHitPlayer5( origin, dir, humanoid );	
+		break;
+
+	case WP_BRYAR_OLD:
+		if ( altFire )
+		{
+			FX_BryarOldAltHitPlayer( origin, dir, humanoid );
+		}
+		else
+		{
+			FX_BryarOldHitPlayer( origin, dir, humanoid );
+		}
+		break;
+
+	case WP_TURRET:
+		FX_TurretHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_BLASTER:
+		FX_BlasterWeaponHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_DISRUPTOR:
+		FX_DisruptorAltHit( origin, dir);
+		break;
+
+	case WP_BOWCASTER:
+		FX_BowcasterHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_REPEATER:
+		if ( altFire )
+		{
+			FX_RepeaterAltHitPlayer5( origin, dir, humanoid );
+		}
+		else
+		{
+			FX_RepeaterHitPlayer( origin, dir, humanoid );
+		}
+		break;
+
+	case WP_DEMP2:
+		// Do a full body effect here for some more feedback
+		// NOTENOTE The chaining of the demp2 is not yet implemented.
+		/*
+		if ( other )
+		{
+			other->s.powerups |= ( 1 << PW_DISINT_1 );
+			other->client->ps.powerups[PW_DISINT_1] = cg.time + 650;
+		}
+		*/
+			FX_DEMP2_HitPlayer5( origin, dir, humanoid );	
+		break;
+
+	case WP_FLECHETTE:
+		FX_FlechetteWeaponHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_ROCKET_LAUNCHER:
+		trap_FX_PlayEffectID( cgs.effects.thermalExplosionEffect, origin, dir, -1, -1 );
+		break;
+	case WP_THERMAL:
+		trap_FX_PlayEffectID( cgs.effects.sonicExplosionEffect	, origin, dir, -1, -1 );
+		break;
+	case WP_EMPLACED_GUN:
+		//FIXME: Its own effect?
+		FX_BlasterWeaponHitPlayer( origin, dir, humanoid );
+		break;
+
+	default:
+		break;
+	}
+}
+
+void CG_MissileHitPlayer6(int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean altFire) 
+{
+	qboolean	humanoid = qtrue;
+	vec3_t up={0,0,1};
+
+	/*
+	// NOTENOTE Non-portable code from single player
+	if ( cent->gent )
+	{
+		other = &g_entities[cent->gent->s.otherEntityNum];
+
+		if ( other->client && other->client->playerTeam == TEAM_BOTS )
+		{
+			humanoid = qfalse;
+		}
+	}
+	*/	
+
+	// NOTENOTE No bleeding in this game
+//	CG_Bleed( origin, entityNum );
+
+	// some weapons will make an explosion with the blood, while
+	// others will just make the blood
+	switch ( weapon ) {
+	case WP_STUN_BATON:
+		FX_DestructionHitPlayer( origin, dir, humanoid );
+		break;
+	case WP_BRYAR_PISTOL:
+		if ( altFire )
+		{
+			FX_BryarAltHitPlayer( origin, dir, humanoid );
+		}
+		else
+		{
+			FX_BryarHitPlayer( origin, dir, humanoid );
+		}
+		break;
+
+	case WP_CONCUSSION:
+
+		FX_ConcussionHitPlayer6( origin, dir, humanoid );	
+		break;
+
+	case WP_BRYAR_OLD:
+		if ( altFire )
+		{
+			FX_BryarOldAltHitPlayer( origin, dir, humanoid );
+		}
+		else
+		{
+			FX_BryarOldHitPlayer( origin, dir, humanoid );
+		}
+		break;
+
+	case WP_TURRET:
+		FX_TurretHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_BLASTER:
+		FX_BlasterWeaponHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_DISRUPTOR:
+		FX_DisruptorAltHit( origin, dir);
+		break;
+
+	case WP_BOWCASTER:
+		FX_BowcasterHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_REPEATER:
+		if ( altFire )
+		{
+			FX_RepeaterAltHitPlayer6( origin, dir, humanoid );
+		}
+		else
+		{
+			FX_RepeaterHitPlayer( origin, dir, humanoid );
+		}
+		break;
+
+	case WP_DEMP2:
+		// Do a full body effect here for some more feedback
+		// NOTENOTE The chaining of the demp2 is not yet implemented.
+		/*
+		if ( other )
+		{
+			other->s.powerups |= ( 1 << PW_DISINT_1 );
+			other->client->ps.powerups[PW_DISINT_1] = cg.time + 650;
+		}
+		*/
+			FX_DEMP2_HitPlayer6( origin, dir, humanoid );	
+		break;
+
+	case WP_FLECHETTE:
+		FX_FlechetteWeaponHitPlayer( origin, dir, humanoid );
+		break;
+
+	case WP_ROCKET_LAUNCHER:
+		trap_FX_PlayEffectID( cgs.effects.incineraryExplosionEffect, origin, dir, -1, -1 );
+		break;
+	case WP_THERMAL:
+		trap_FX_PlayEffectID( cgs.effects.flashExplosionEffect	, origin, dir, -1, -1 );
+		break;
+	case WP_EMPLACED_GUN:
+		//FIXME: Its own effect?
+		FX_BlasterWeaponHitPlayer( origin, dir, humanoid );
+		break;
+
+	default:
+		break;
+	}
+}
 /*
 ============================================================================
 
@@ -4229,6 +5308,10 @@ static void *g2WeaponInstances5[MAX_WEAPONS];//[Option2]
 static void *g2WeaponInstances6[MAX_WEAPONS];//[Option2DualPistols]
 static void *g2WeaponInstances7[MAX_WEAPONS];//[Option3]
 static void *g2WeaponInstances8[MAX_WEAPONS];//[Option3DualPistols]
+static void *g2WeaponInstances9[MAX_WEAPONS];//[Option4]
+static void *g2WeaponInstances10[MAX_WEAPONS];//[Option3DualPistols]
+static void *g2WeaponInstances11[MAX_WEAPONS];//[Option5]
+static void *g2WeaponInstances12[MAX_WEAPONS];//[Option3DualPistols]
 //[VisualWeapons]
 void *g2HolsterWeaponInstances[MAX_WEAPONS];
 //[/VisualWeapons]
@@ -4244,6 +5327,10 @@ void CG_InitG2Weapons(void)
 	memset(g2WeaponInstances6, 0, sizeof(g2WeaponInstances6));//[Option2DualPistols]
 	memset(g2WeaponInstances7, 0, sizeof(g2WeaponInstances7));//[Option2]
 	memset(g2WeaponInstances8, 0, sizeof(g2WeaponInstances8));//[Option2DualPistols]
+	memset(g2WeaponInstances9, 0, sizeof(g2WeaponInstances9));//[Option2DualPistols]
+	memset(g2WeaponInstances10, 0, sizeof(g2WeaponInstances10));//[Option2DualPistols]
+	memset(g2WeaponInstances11, 0, sizeof(g2WeaponInstances11));//[Option2DualPistols]
+	memset(g2WeaponInstances12, 0, sizeof(g2WeaponInstances12));//[Option2DualPistols]
 	for ( item = bg_itemlist + 1 ; item->classname ; item++ ) 
 	{
 		if ( item->giType == IT_WEAPON )
@@ -4295,13 +5382,13 @@ void CG_InitG2Weapons(void)
 
 			#define PISTOL2_MODEL "models/weapons2/dh-17/dh-17_w.glm"
 			#define BLASTER2_MODEL "models/weapons2/a280/a280_w.glm"
-			#define DISRUPTOR2_MODEL "models/weapons2/tusken_rifle/tusken_rifle_w.glm"
+			#define DISRUPTOR2_MODEL "models/weapons2/DLT20a/dlt20a_w.glm"
 			#define BOWCASTER2_MODEL "models/weapons2/ee-3/ee-3_w.glm"
 			#define REPEATER2_MODEL "models/weapons2/dlt-18_repeater/dlt-18_repeater_w.glm"
-			#define DEMP22_MODEL "models/weapons2/CR-24_flamerifle/rifle_w.glm"
-			#define FLECHETTE2_MODEL "models/weapons2/CR-1_cannon/rifle_w.glm"
-			#define CONCUSSION2_MODEL "models/weapons2/z6_rotary/model.glm"
-			#define ROCKETS2_MODEL "models/weapons/Packered_MortarGun/model.glm"
+			#define DEMP22_MODEL "models/weapons2/beamRIFLE/c_rifle_w.glm"
+			#define FLECHETTE2_MODEL "models/weapons/Bryar_Rifle/model.glm"
+			#define CONCUSSION2_MODEL "models/weapons/LJ-70_ConcRifle/model.glm"
+			#define ROCKETS2_MODEL "models/weapons2/MiniMag_launcher/launcher_w.glm"
 			#define THERMAL2_MODEL "models/weapons2/plasma/plasma_w.glm"
 			#define OLD2_MODEL "models/weapons2/s5_heavy_pistol/s5_pistol_w.glm"
 			//Option1
@@ -4445,15 +5532,15 @@ void CG_InitG2Weapons(void)
 
 			#define PISTOL3_MODEL "models/weapons2/dc-17/dc-17_w.glm"
 			#define BLASTER3_MODEL "models/weapons2/dc-15s/blaster_w.glm"
-			#define DISRUPTOR3_MODEL "models/weapons2/DLT20a/dlt20a_w.glm"
+			#define DISRUPTOR3_MODEL "models/weapons2/clone_disruptor/clone_disruptor_w.glm"
 			#define BOWCASTER3_MODEL "models/weapons2/wbowcaster/wbowcaster1.glm"
 			#define REPEATER3_MODEL "models/weapons2/dc-15a/dc-15a_w.glm"
 			#define DEMP23_MODEL "models/weapons2/dc-17p/demp2_w.glm"
 			#define FLECHETTE3_MODEL "models/weapons/DoubleBarrel_ArrayGun/model.glm"
-			#define CONCUSSION3_MODEL "models/weapons2/minigun/minigun_w.glm"
+			#define CONCUSSION3_MODEL "models/weapons/PulseCannon/model.glm"
 			#define ROCKETS3_MODEL "models/weapons2/cw_launcher/cw_launcher_w.glm"
-			#define THERMAL3_MODEL "models/weapons2/sonic_detonator/sonic_det_w.glm"
-			#define OLD3_MODEL "models/weapons2/noweap/noweap.glm"
+			#define THERMAL3_MODEL "models/weapons2/fraggrenade/thermal_w.glm"
+			#define OLD3_MODEL "models/weapons2/sc-10_holdout/sc-10_holdout_w.glm"
 			//Option2
 			// initialise model
 
@@ -4601,13 +5688,13 @@ void CG_InitG2Weapons(void)
 			#define DISRUPTOR4_MODEL "models/weapons2/proj_rifle/proj_rifle_w.glm"
 			#define BOWCASTER4_MODEL "models/weapons2/canderous_blaster/cand_blaster_w.glm"
 			#define REPEATER4_MODEL "models/weapons2/t-21/t-21_w.glm"
-			#define DEMP24_MODEL "models/weapons2/CR-25_icerifle/rifle_w.glm"
+			#define DEMP24_MODEL "models/weapons2/CR-24_flamerifle/rifle_w.glm"
 			#define FLECHETTE4_MODEL "models/weapons/ACP_ArrayGun/model.glm"
-			#define CONCUSSION4_MODEL "models/weapons/LJ-70_ConcRifle/model.glm"
+			#define CONCUSSION4_MODEL "models/weapons2/geonosian/sonicrifle.glm"
 			#define ROCKETS4_MODEL "models/weapons2/e60r_launcher/e60r_launcher_w.glm"
 			#define THERMAL4_MODEL "models/weapons2/V-59_Concussion/V-59_conc_w.glm"
-			#define OLD4_MODEL "models/weapons2/concussion_new/c_rifle_w.glm"
-			//Option2
+			#define OLD4_MODEL "models/weapons2/noweap/noweap.glm"
+			//Option3
 			// initialise model
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
@@ -4743,6 +5830,310 @@ void CG_InitG2Weapons(void)
 			}
 			//[/Option3DualPistols]
 
+
+
+
+			#define PISTOL5_MODEL "models/weapons2/Glie-44/blaster_pistol_w.glm"
+			#define BLASTER5_MODEL "models/weapons2/EL-16/blaster_w.glm"
+			#define DISRUPTOR5_MODEL "models/weapons2/tusken_rifle/tusken_rifle_w.glm"
+			#define BOWCASTER5_MODEL "models/weapons/Bowcaster_heavy/model.glm"
+			#define REPEATER5_MODEL "models/weapons2/dc-17m/dc-17m_w.glm"
+			#define DEMP25_MODEL "models/weapons2/CR-25_icerifle/rifle_w.glm"
+			#define FLECHETTE5_MODEL "models/weapons2/CR-1_cannon/rifle_w.glm"
+			#define CONCUSSION5_MODEL "models/weapons2/z6_rotary/model.glm"
+			#define ROCKETS5_MODEL "models/weapons/Packered_MortarGun/model.glm"
+			#define THERMAL5_MODEL "models/weapons2/sonic_detonator/sonic_det_w.glm"
+			#define OLD5_MODEL "models/weapons2/noweap/noweap.glm"
+			//Option4
+			// initialise model
+			if (item->giTag == WP_BRYAR_PISTOL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], PISTOL5_MODEL, 0, 0, 0, 0, 0);
+			}	
+			else if (item->giTag == WP_BLASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], BLASTER5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DISRUPTOR)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], DISRUPTOR5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BOWCASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], BOWCASTER5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_REPEATER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], REPEATER5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DEMP2)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], DEMP25_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_FLECHETTE)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], FLECHETTE5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_CONCUSSION)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], CONCUSSION5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_ROCKET_LAUNCHER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], ROCKETS5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_THERMAL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], THERMAL5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BRYAR_OLD)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], OLD5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			}
+			//[VisualWeapons]
+			//[/VisualWeapons]
+//			trap_G2API_InitGhoul2Model(&g2WeaponInstances[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
+			if (g2WeaponInstances9[/*i*/item->giTag])
+			{
+				// indicate we will be bolted to model 0 (ie the player) on bolt 0 (always the right hand) when we get copied
+				trap_G2API_SetBoltInfo(g2WeaponInstances9[/*i*/item->giTag], 0, 0);
+				// now set up the gun bolt on it
+				if (item->giTag == WP_SABER)
+				{
+					trap_G2API_AddBolt(g2WeaponInstances9[/*i*/item->giTag], 0, "*blade1");
+				}
+				else
+				{
+					trap_G2API_AddBolt(g2WeaponInstances9[/*i*/item->giTag], 0, "*flash");
+				}
+				i++;
+			}
+			
+			//[Option4DualPistols]
+			if (item->giTag == WP_BRYAR_PISTOL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], PISTOL5_MODEL, 0, 0, 0, 0, 0);
+			}	
+			else if (item->giTag == WP_BLASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], BLASTER5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DISRUPTOR)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], DISRUPTOR5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BOWCASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], BOWCASTER5_MODEL, 0, 0, 0, 0, 0);
+			}						
+			else if (item->giTag == WP_REPEATER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], REPEATER5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DEMP2)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], DEMP25_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_FLECHETTE)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], FLECHETTE5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_CONCUSSION)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], CONCUSSION5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_ROCKET_LAUNCHER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], ROCKETS5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_THERMAL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], THERMAL5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BRYAR_OLD)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], OLD5_MODEL, 0, 0, 0, 0, 0);
+			}
+			else
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			}
+//			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
+			if (g2WeaponInstances10[/*i*/item->giTag])
+			{
+				// indicate we will be bolted to model 0 (ie the player) on bolt 0 (always the right hand) when we get copied
+				//WeaponMod FIXME ? : c bien 1?
+				trap_G2API_SetBoltInfo(g2WeaponInstances10[/*i*/item->giTag], 0, 1);
+				// now set up the gun bolt on it
+				if (item->giTag == WP_SABER)
+				{
+					trap_G2API_AddBolt(g2WeaponInstances10[/*i*/item->giTag], 0, "*blade1");
+				}
+				else
+				{
+					trap_G2API_AddBolt(g2WeaponInstances10[/*i*/item->giTag], 0, "*flash");
+				}
+			}
+			//[/Option4DualPistols]
+
+
+			#define PISTOL6_MODEL "models/weapons2/SE-44C/blaster_pistol_w.glm"
+			#define BLASTER6_MODEL "models/weapons2/f11d_blaster/model.glm"
+			#define DISRUPTOR6_MODEL "models/weapons2/psg/disruptor_w.glm"
+			#define BOWCASTER6_MODEL "models/weapons2/STCompRifle/bowcaster_w.glm"
+			#define REPEATER6_MODEL "models/weapons2/FWMB-10/heavy_repeater_w.glm"
+			#define DEMP26_MODEL "models/weapons/CarboniteRifle/model.glm"
+			#define FLECHETTE6_MODEL "models/weapons2/junglerifle/c_rifle_w.glm"
+			#define CONCUSSION6_MODEL "models/weapons2/minigun/minigun_w.glm"
+			#define ROCKETS6_MODEL "models/weapons/Packered_MortarGun/model.glm"
+			#define THERMAL6_MODEL "models/weapons2/Stormi_TD/stormiTD_w.glm"
+			#define OLD6_MODEL "models/weapons2/concussion_new/c_rifle_w.glm"
+			//Option5
+			// initialise model
+			if (item->giTag == WP_BRYAR_PISTOL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], PISTOL6_MODEL, 0, 0, 0, 0, 0);
+			}	
+			else if (item->giTag == WP_BLASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], BLASTER6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DISRUPTOR)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], DISRUPTOR6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BOWCASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], BOWCASTER6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_REPEATER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], REPEATER6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DEMP2)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], DEMP26_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_FLECHETTE)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], FLECHETTE6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_CONCUSSION)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], CONCUSSION6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_ROCKET_LAUNCHER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], ROCKETS6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_THERMAL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], THERMAL6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BRYAR_OLD)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], OLD6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			}
+			//[VisualWeapons]
+			//[/VisualWeapons]
+//			trap_G2API_InitGhoul2Model(&g2WeaponInstances[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
+			if (g2WeaponInstances11[/*i*/item->giTag])
+			{
+				// indicate we will be bolted to model 0 (ie the player) on bolt 0 (always the right hand) when we get copied
+				trap_G2API_SetBoltInfo(g2WeaponInstances11[/*i*/item->giTag], 0, 0);
+				// now set up the gun bolt on it
+				if (item->giTag == WP_SABER)
+				{
+					trap_G2API_AddBolt(g2WeaponInstances11[/*i*/item->giTag], 0, "*blade1");
+				}
+				else
+				{
+					trap_G2API_AddBolt(g2WeaponInstances11[/*i*/item->giTag], 0, "*flash");
+				}
+				i++;
+			}
+			
+			//[Option5DualPistols]
+			if (item->giTag == WP_BRYAR_PISTOL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], PISTOL6_MODEL, 0, 0, 0, 0, 0);
+			}	
+			else if (item->giTag == WP_BLASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], BLASTER6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DISRUPTOR)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], DISRUPTOR6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BOWCASTER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], BOWCASTER6_MODEL, 0, 0, 0, 0, 0);
+			}						
+			else if (item->giTag == WP_REPEATER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], REPEATER6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_DEMP2)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], DEMP26_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_FLECHETTE)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], FLECHETTE6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_CONCUSSION)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], CONCUSSION6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_ROCKET_LAUNCHER)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], ROCKETS6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_THERMAL)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], THERMAL6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else if (item->giTag == WP_BRYAR_OLD)
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], OLD6_MODEL, 0, 0, 0, 0, 0);
+			}
+			else
+			{
+			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			}
+//			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
+			if (g2WeaponInstances12[/*i*/item->giTag])
+			{
+				// indicate we will be bolted to model 0 (ie the player) on bolt 0 (always the right hand) when we get copied
+				//WeaponMod FIXME ? : c bien 1?
+				trap_G2API_SetBoltInfo(g2WeaponInstances12[/*i*/item->giTag], 0, 1);
+				// now set up the gun bolt on it
+				if (item->giTag == WP_SABER)
+				{
+					trap_G2API_AddBolt(g2WeaponInstances12[/*i*/item->giTag], 0, "*blade1");
+				}
+				else
+				{
+					trap_G2API_AddBolt(g2WeaponInstances12[/*i*/item->giTag], 0, "*flash");
+				}
+			}
+			//[/Option4DualPistols]
+
+
+
+
+
+
+
 			i++;
 
 			if (i == MAX_WEAPONS)
@@ -4772,6 +6163,10 @@ void CG_ShutDownG2Weapons(void)
 		trap_G2API_CleanGhoul2Models(&g2WeaponInstances6[i]);//[Option2DualPistols]
 		trap_G2API_CleanGhoul2Models(&g2WeaponInstances7[i]);//[Option3]
 		trap_G2API_CleanGhoul2Models(&g2WeaponInstances8[i]);//[Option3DualPistols]
+		trap_G2API_CleanGhoul2Models(&g2WeaponInstances9[i]);//[Option3]
+		trap_G2API_CleanGhoul2Models(&g2WeaponInstances10[i]);//[Option3DualPistols]
+		trap_G2API_CleanGhoul2Models(&g2WeaponInstances11[i]);//[Option3]
+		trap_G2API_CleanGhoul2Models(&g2WeaponInstances12[i]);//[Option3DualPistols]
 	}
 }
 
@@ -4781,17 +6176,25 @@ void *CG_G2WeaponInstance(centity_t *cent, int weapon)
 
 	if (weapon != WP_SABER)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances3[weapon];
+		return g2WeaponInstances11[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances9[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances7[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances5[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances7[weapon];
+		return g2WeaponInstances3[weapon];
 		}
 		else
 		{
@@ -4802,17 +6205,25 @@ void *CG_G2WeaponInstance(centity_t *cent, int weapon)
 	if (cent->currentState.eType != ET_PLAYER &&
 		cent->currentState.eType != ET_NPC)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances3[weapon];
+		return g2WeaponInstances11[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances9[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances7[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances5[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances7[weapon];
+		return g2WeaponInstances3[weapon];
 		}
 		else
 		{
@@ -4832,17 +6243,25 @@ void *CG_G2WeaponInstance(centity_t *cent, int weapon)
 
 	if (!ci)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances3[weapon];
+		return g2WeaponInstances11[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances9[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances7[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances5[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances7[weapon];
+		return g2WeaponInstances3[weapon];
 		}
 		else
 		{
@@ -4857,17 +6276,25 @@ void *CG_G2WeaponInstance(centity_t *cent, int weapon)
 	}
 
 	//If no custom then just use the default.
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances3[weapon];
+		return g2WeaponInstances11[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances9[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances7[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances5[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances7[weapon];
+		return g2WeaponInstances3[weapon];
 		}
 		else
 		{
@@ -4882,17 +6309,25 @@ void *CG_G2WeaponInstance2(centity_t *cent, int weapon)
 
 	if (weapon != WP_SABER)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances4[weapon];
+		return g2WeaponInstances12[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances10[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances8[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances6[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances8[weapon];
+		return g2WeaponInstances4[weapon];
 		}
 		else
 		{
@@ -4903,17 +6338,25 @@ void *CG_G2WeaponInstance2(centity_t *cent, int weapon)
 	if (cent->currentState.eType != ET_PLAYER &&
 		cent->currentState.eType != ET_NPC)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances4[weapon];
+		return g2WeaponInstances12[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances10[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances8[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances6[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances8[weapon];
+		return g2WeaponInstances4[weapon];
 		}
 		else
 		{
@@ -4932,17 +6375,25 @@ void *CG_G2WeaponInstance2(centity_t *cent, int weapon)
 
 	if (!ci)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances4[weapon];
+		return g2WeaponInstances12[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances10[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances8[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances6[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances8[weapon];
+		return g2WeaponInstances4[weapon];
 		}
 		else
 		{
@@ -4958,17 +6409,25 @@ void *CG_G2WeaponInstance2(centity_t *cent, int weapon)
 	}
 
 	//If no custom then just use the default.
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2)
+		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
 		{
-		return g2WeaponInstances4[weapon];
+		return g2WeaponInstances12[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
+		{
+		return g2WeaponInstances10[weapon];
+		}
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		{
+		return g2WeaponInstances8[weapon];
 		}
 		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
 		{
 		return g2WeaponInstances6[weapon];
 		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
+		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
 		{
-		return g2WeaponInstances8[weapon];
+		return g2WeaponInstances4[weapon];
 		}
 		else
 		{

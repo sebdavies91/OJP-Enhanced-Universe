@@ -231,17 +231,23 @@ int BasicDodgeCosts[MOD_MAX] =
 	//[/Asteroids]
 	//[SeekerItemNPC]
 	10,		//MOD_SEEKER,	//death by player's seeker droid.
-	10,		//MOD_INCINERATOR,	//death by player's seeker droid.	
+	10,		//MOD_FLAME,	//death by player's seeker droid.	
 	10,		//MOD_DIOXIS,	//death by player's seeker droid.
-	10,		//MOD_FREEZER,	//death by player's seeker droid.
-	50,		//MOD_INCINERATOR_EXPLOSION,	//death by player's seeker droid.	
-	50,		//MOD_INCINERATOR_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	10,		//MOD_ICE,	//death by player's seeker droid.
+	10,		//MOD_SONIC,	//death by player's seeker droid.
+	10,		//MOD_FLASH,	//death by player's seeker droid.
+	50,		//MOD_FLAME_EXPLOSION,	//death by player's seeker droid.	
+	50,		//MOD_FLAME_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	50,		//MOD_DIOXIS_EXPLOSION,	//death by player's seeker droid.	
 	50,		//MOD_DIOXIS_EXPLOSION_SPLASH,	//death by player's seeker droid.
-	50,		//MOD_FREEZER_EXPLOSION,	//death by player's seeker droid.	
-	50,		//MOD_FREEZER_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	50,		//MOD_ICE_EXPLOSION,	//death by player's seeker droid.	
+	50,		//MOD_ICE_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	50,		//MOD_ION_EXPLOSION,	//death by player's seeker droid.	
 	50,		//MOD_ION_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	50,		//MOD_SONIC_EXPLOSION,	//death by player's seeker droid.	
+	50,		//MOD_SONIC_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	50,		//MOD_FLASH_EXPLOSION,	//death by player's seeker droid.	
+	50,		//MOD_FLASH_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	-1,		//MOD_FORCE_DESTRUCTION,	//death by player's seeker droid.	
 	//[/SeekerItemNPC]
 	//MOD_MAX
@@ -3391,7 +3397,15 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 		{
 			if(attacker->activator->s.weapon == WP_BRYAR_PISTOL)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				{
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
@@ -3399,7 +3413,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
@@ -3411,7 +3425,15 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}
 			else if(attacker->activator->s.weapon == WP_BLASTER)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				{
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
@@ -3419,7 +3441,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}	
@@ -3431,7 +3453,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}			
 			else if(attacker->activator->s.weapon == WP_DISRUPTOR)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 				switch(attacker->s.generic1)
 				{
@@ -3450,7 +3472,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					break;
 				}
 				}	
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
 				{
 				switch(attacker->s.generic1)
 				{
@@ -3488,7 +3510,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					break;
 				}
 				}		
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_3)	
 				{
 				switch(attacker->s.generic1)
 				{
@@ -3507,6 +3529,25 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					break;
 				}
 				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				{
+				switch(attacker->s.generic1)
+				{
+				case 5:
+					saberBlockCost=20*DODGE_BOLTBLOCK;
+					break;
+				case 4:
+				case 3:
+					saberBlockCost=5*DODGE_BOLTBLOCK;
+					break;
+				case 2:
+					saberBlockCost=5*DODGE_BOLTBLOCK;
+					break;
+				default:
+					saberBlockCost=5*DODGE_BOLTBLOCK;
+					break;
+				}
+				}		
 				else
 				{
 				switch(attacker->s.generic1)
@@ -3529,7 +3570,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}	
 			else if(attacker->activator->s.weapon == WP_BOWCASTER)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 				switch(attacker->s.generic1)
 				{
@@ -3547,7 +3588,45 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					saberBlockCost=3*DODGE_BOLTBLOCK;
 					break;
 				}
+				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+				switch(attacker->s.generic1)
+				{
+				case 5:
+					saberBlockCost=10*DODGE_BOLTBLOCK;
+					break;
+				case 4:
+				case 3:
+					saberBlockCost=3*DODGE_BOLTBLOCK;
+					break;
+				case 2:
+					saberBlockCost=3*DODGE_BOLTBLOCK;
+					break;
+				default:
+					saberBlockCost=3*DODGE_BOLTBLOCK;
+					break;
 				}
+				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				{
+				switch(attacker->s.generic1)
+				{
+				case 5:
+					saberBlockCost=10*DODGE_BOLTBLOCK;
+					break;
+				case 4:
+				case 3:
+					saberBlockCost=3*DODGE_BOLTBLOCK;
+					break;
+				case 2:
+					saberBlockCost=3*DODGE_BOLTBLOCK;
+					break;
+				default:
+					saberBlockCost=3*DODGE_BOLTBLOCK;
+					break;
+				}
+				}	
 				else if (attacker->activator->s.eFlags & EF_WP_OPTION_3)	
 				{
 				switch(attacker->s.generic1)
@@ -3567,7 +3646,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					break;
 				}
 				}
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
 				{
 				switch(attacker->s.generic1)
 				{
@@ -3585,7 +3664,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					saberBlockCost=3*DODGE_BOLTBLOCK;
 					break;
 				}
-				}		
+				}	
 				else
 				{
 				switch(attacker->s.generic1)
@@ -3608,7 +3687,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}
 			else if(attacker->activator->s.weapon == WP_REPEATER)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
 				if(distance <= 125.0f)
@@ -3617,7 +3696,27 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					saberBlockCost = DODGE_BOLTBLOCK;
 				else
 					saberBlockCost = DODGE_BOLTBLOCK/2;
-				}
+				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
+				if(distance <= 125.0f)
+					saberBlockCost = DODGE_BOLTBLOCK*3/2;
+				else if(distance <= 300.0f)
+					saberBlockCost = DODGE_BOLTBLOCK;
+				else
+					saberBlockCost = DODGE_BOLTBLOCK/2;
+				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				{
+				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
+				if(distance <= 125.0f)
+					saberBlockCost = DODGE_BOLTBLOCK*3/2;
+				else if(distance <= 300.0f)
+					saberBlockCost = DODGE_BOLTBLOCK;
+				else
+					saberBlockCost = DODGE_BOLTBLOCK/2;
+				}	
 				else if (attacker->activator->s.eFlags & EF_WP_OPTION_3)	
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
@@ -3628,7 +3727,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				else
 					saberBlockCost = DODGE_BOLTBLOCK/2;
 				}
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
 				if(distance <= 125.0f)
@@ -3637,7 +3736,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					saberBlockCost = DODGE_BOLTBLOCK;
 				else
 					saberBlockCost = DODGE_BOLTBLOCK/2;
-				}			
+				}		
 				else
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
@@ -3649,9 +3748,23 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 					saberBlockCost = DODGE_BOLTBLOCK/2;
 				}				
 			}
-			else if(attacker->activator->s.weapon == WP_DEMP2)
+			if(attacker->activator->s.weapon == WP_DEMP2)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				{
+				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
+				if(distance <= 125.0f)
+					saberBlockCost = DODGE_BOLTBLOCK*3;
+				else if(distance <= 300.0f)
+					saberBlockCost = DODGE_BOLTBLOCK*2;
+				else
+					saberBlockCost = DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
 				if(distance <= 125.0f)
@@ -3665,7 +3778,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
 				if(distance <= 125.0f)
@@ -3682,13 +3795,27 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}
 			else if(attacker->activator->s.weapon == WP_FLECHETTE)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 				if(WalkCheck(defender))
 					saberBlockCost= DODGE_BOLTBLOCK/2;
 				else
 					saberBlockCost= DODGE_BOLTBLOCK;
-				}
+				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+				if(WalkCheck(defender))
+					saberBlockCost= DODGE_BOLTBLOCK/2;
+				else
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				{
+				if(WalkCheck(defender))
+					saberBlockCost= DODGE_BOLTBLOCK/2;
+				else
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}	
 				else if (attacker->activator->s.eFlags & EF_WP_OPTION_3)	
 				{
 				if(WalkCheck(defender))
@@ -3696,13 +3823,13 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				else
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
 				{
 				if(WalkCheck(defender))
 					saberBlockCost= DODGE_BOLTBLOCK/2;
 				else
 					saberBlockCost= DODGE_BOLTBLOCK;
-				}		
+				}	
 				else
 				{
 				if(WalkCheck(defender))
@@ -3713,7 +3840,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}
 			else if(attacker->activator->s.weapon == WP_CONCUSSION)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
 				if(distance <= 125.0f)
@@ -3723,7 +3850,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				else
 					saberBlockCost = DODGE_BOLTBLOCK/2;
 				}	
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
 				{
 				float distance = VectorDistance(attacker->activator->r.currentOrigin,defender->r.currentOrigin);
 				if(distance <= 125.0f)
@@ -3736,7 +3863,15 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 					saberBlockCost=20*DODGE_BOLTBLOCK;
-				}			
+				}	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+					saberBlockCost=20*DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				{
+					saberBlockCost=20*DODGE_BOLTBLOCK;
+				}				
 				else
 				{
 					saberBlockCost=20*DODGE_BOLTBLOCK;
@@ -3744,7 +3879,15 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 			}
 			else if(attacker->activator->s.weapon == WP_BRYAR_OLD)
 			{
-				if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
+				if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				{
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2 && attacker->activator->s.eFlags & EF_WP_OPTION_3)	
+				{
+					saberBlockCost= DODGE_BOLTBLOCK;
+				}
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
@@ -3752,7 +3895,7 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
-				else if (attacker->activator->s.eFlags & EF_WP_OPTION_4)	
+				else if (attacker->activator->s.eFlags & EF_WP_OPTION_2)	
 				{
 					saberBlockCost= DODGE_BOLTBLOCK;
 				}
@@ -6110,10 +6253,12 @@ qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int h
 		&& mod != MOD_TRIP_MINE_SPLASH
 		&& mod != MOD_TIMED_MINE_SPLASH
 		&& mod != MOD_DET_PACK_SPLASH 
-		&& mod != MOD_INCINERATOR_EXPLOSION_SPLASH
+		&& mod != MOD_FLAME_EXPLOSION_SPLASH
 		&& mod != MOD_DIOXIS_EXPLOSION_SPLASH
-		&& mod != MOD_FREEZER_EXPLOSION_SPLASH 
-		&& mod != MOD_ION_EXPLOSION_SPLASH)
+		&& mod != MOD_ICE_EXPLOSION_SPLASH 
+		&& mod != MOD_ION_EXPLOSION_SPLASH
+		&& mod != MOD_SONIC_EXPLOSION_SPLASH
+		&& mod != MOD_FLASH_EXPLOSION_SPLASH)
 	{//can't dodge direct fire in mid-air
 		if(g_debugdodge.integer)
 		{
@@ -6294,10 +6439,12 @@ qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int h
 		|| mod == MOD_TIMED_MINE_SPLASH
 		|| mod == MOD_DET_PACK_SPLASH
 		|| mod == MOD_ROCKET
-		|| mod == MOD_INCINERATOR_EXPLOSION_SPLASH
+		|| mod == MOD_FLAME_EXPLOSION_SPLASH
 		|| mod == MOD_DIOXIS_EXPLOSION_SPLASH
-		|| mod == MOD_FREEZER_EXPLOSION_SPLASH 
-		|| mod == MOD_ION_EXPLOSION_SPLASH)
+		|| mod == MOD_ICE_EXPLOSION_SPLASH 
+		|| mod == MOD_ION_EXPLOSION_SPLASH
+		|| mod == MOD_SONIC_EXPLOSION_SPLASH
+		|| mod != MOD_FLASH_EXPLOSION_SPLASH)
 	{//splash damage dodge, dodged by throwing oneself away from the blast into a knockdown
 		vec3_t blowBackDir;//[ExplosivesKnockback]
 		int blowBackPower = savedDmg;
@@ -11055,9 +11202,7 @@ static void G_GrabSomeMofos(gentity_t *self)
 	}
 }
 
-void Q3_SetInvisible( int entID, qboolean invisible );
-Vehicle_t *G_IsRidingVehicle( gentity_t *pEnt );
-extern gentity_t *NPC_SpawnType( gentity_t *ent, char *npc_type, char *targetname, qboolean isVehicle );
+
 
 //[SaberLockSys]
 //used for server side new saber lock clash effect.  Attempting a bgame solution instead.

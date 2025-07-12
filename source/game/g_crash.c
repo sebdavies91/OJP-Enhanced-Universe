@@ -237,7 +237,7 @@
 		Watch this space for mingw.
 	*/
 
-	BOOL CALLBACK EnumModules( LPSTR ModuleName, DWORD BaseOfDll, PVOID UserContext ) {
+	BOOL CALLBACK EnumModules( PCSTR ModuleName, DWORD BaseOfDll, PVOID UserContext ) {
 		G_LogPrintf("0x%08x\t%s\n", BaseOfDll, ModuleName);
 		return TRUE;
 	}

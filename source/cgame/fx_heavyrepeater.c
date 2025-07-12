@@ -60,6 +60,32 @@ void FX_RepeaterProjectileThink4( centity_t *cent, const struct weaponInfo_s *we
 
 	
 }
+void FX_RepeaterProjectileThink5( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect5, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_RepeaterProjectileThink6( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect6, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
 /*
 ------------------------
 FX_RepeaterHitWall
@@ -206,7 +232,7 @@ void FX_RepeaterAltProjectileThink3( centity_t *cent, const struct weaponInfo_s 
 		CG_DistortionOrb(cent);
 	}
 
-	trap_FX_PlayEffectID( cgs.effects.repeaterotherAltProjectileEffect, cent->lerpOrigin, forward, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.repeaterAltProjectileEffect2, cent->lerpOrigin, forward, -1, -1 );
 
 	
 }
@@ -225,6 +251,42 @@ void FX_RepeaterAltProjectileThink4( centity_t *cent, const struct weaponInfo_s 
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect4, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_RepeaterAltProjectileThink5( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	if (cg_repeaterOrb.integer)
+	{
+		CG_DistortionOrb(cent);
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterAltProjectileEffect3, cent->lerpOrigin, forward, -1, -1 );
+
+	
+}
+void FX_RepeaterAltProjectileThink6( centity_t *cent, const struct weaponInfo_s *weapon )
+{
+	vec3_t forward;
+
+	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
+	{
+		forward[2] = 1.0f;
+	}
+
+	if (cg_repeaterOrb.integer)
+	{
+		CG_DistortionOrb(cent);
+	}
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect6, cent->lerpOrigin, forward, -1, -1 );
 
 	
 }
@@ -254,7 +316,7 @@ void FX_RepeaterAltHitWall3( vec3_t origin, vec3_t normal )
 {
 
 
-	trap_FX_PlayEffectID( cgs.effects.repeaterotherAltWallImpactEffect, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.repeaterAltWallImpactEffect2, origin, normal, -1, -1 );
 	
 
 }
@@ -266,7 +328,22 @@ void FX_RepeaterAltHitWall4( vec3_t origin, vec3_t normal )
 	
 
 }
+void FX_RepeaterAltHitWall5( vec3_t origin, vec3_t normal )
+{
 
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterAltWallImpactEffect3, origin, normal, -1, -1 );
+	
+
+}
+void FX_RepeaterAltHitWall6( vec3_t origin, vec3_t normal )
+{
+
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterWallImpactEffect, origin, normal, -1, -1 );
+	
+
+}
 /*
 ------------------------
 FX_RepeaterAltHitPlayer
@@ -288,10 +365,22 @@ void FX_RepeaterAltHitPlayer2( vec3_t origin, vec3_t normal, qboolean humanoid )
 void FX_RepeaterAltHitPlayer3( vec3_t origin, vec3_t normal, qboolean humanoid )
 {
 
-	trap_FX_PlayEffectID( cgs.effects.repeaterotherAltWallImpactEffect, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.repeaterAltWallImpactEffect2, origin, normal, -1, -1 );
 	
 }
 void FX_RepeaterAltHitPlayer4( vec3_t origin, vec3_t normal, qboolean humanoid )
+{
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterFleshImpactEffect, origin, normal, -1, -1 );
+	
+}
+void FX_RepeaterAltHitPlayer5( vec3_t origin, vec3_t normal, qboolean humanoid )
+{
+
+	trap_FX_PlayEffectID( cgs.effects.repeaterAltWallImpactEffect3, origin, normal, -1, -1 );
+	
+}
+void FX_RepeaterAltHitPlayer6( vec3_t origin, vec3_t normal, qboolean humanoid )
 {
 
 	trap_FX_PlayEffectID( cgs.effects.repeaterFleshImpactEffect, origin, normal, -1, -1 );

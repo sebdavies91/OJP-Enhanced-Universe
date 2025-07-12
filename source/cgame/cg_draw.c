@@ -316,7 +316,71 @@ char *showItemsName6[] =
 	NULL
 };
 
+char *showItemsName7[] = 
+{
+	"NONE8",//HI_NONE
+	"SEEKER8",//HI_SEEKER
+	"SHIELD8",//HI_SHIELD
+	"MEDPAC8",//HI_MEDPAC
+	"SHIELDBOOSTER8",//HI_SHIELDBOOSTER
+	"BINOCULARS8",//HI_BINOCULARS
+	"SENTRY_GUN8",//HI_SENTRY_GUN
+	"JETPACK8",//HI_JETPACK
+	"SQUADTEAM8",//HI_SQUADTEAM
+	"VEHICLEMOUNT8",//HI_VEHICLEMOUNT
+	"EWEB8",//HI_EWEB
+	"CLOAK8",//HI_CLOAK
+	"FLAMETHROWER8",//HI_FLAMETHROWER
+	"ELECTROSHOCKER8",//HI_ELECTROSHOCKER
+	"SPHERESHIELD8",//HI_SPHERESHIELD
+	"OVERLOAD8",//HI_OVERLOAD
+	"GRAPPLE8",//HI_GRAPPLE
+	NULL
+};
 
+char *showItemsName8[] = 
+{
+	"NONE9",//HI_NONE
+	"SEEKER9",//HI_SEEKER
+	"SHIELD9",//HI_SHIELD
+	"MEDPAC9",//HI_MEDPAC
+	"SHIELDBOOSTER9",//HI_SHIELDBOOSTER
+	"BINOCULARS9",//HI_BINOCULARS
+	"SENTRY_GUN9",//HI_SENTRY_GUN
+	"JETPACK9",//HI_JETPACK
+	"SQUADTEAM9",//HI_SQUADTEAM
+	"VEHICLEMOUNT9",//HI_VEHICLEMOUNT
+	"EWEB9",//HI_EWEB
+	"CLOAK9",//HI_CLOAK
+	"FLAMETHROWER9",//HI_FLAMETHROWER
+	"ELECTROSHOCKER9",//HI_ELECTROSHOCKER
+	"SPHERESHIELD9",//HI_SPHERESHIELD
+	"OVERLOAD9",//HI_OVERLOAD
+	"GRAPPLE9",//HI_GRAPPLE
+	NULL
+};
+/*
+char *showItemsName9[] = 
+{
+	"NONE10",//HI_NONE
+	"SEEKER10",//HI_SEEKER
+	"SHIELD10",//HI_SHIELD
+	"MEDPAC10",//HI_MEDPAC
+	"SHIELDBOOSTER10",//HI_SHIELDBOOSTER
+	"BINOCULARS10",//HI_BINOCULARS
+	"SENTRY_GUN10",//HI_SENTRY_GUN
+	"JETPACK10",//HI_JETPACK
+	"SQUADTEAM10",//HI_SQUADTEAM
+	"VEHICLEMOUNT10",//HI_VEHICLEMOUNT
+	"EWEB10",//HI_EWEB
+	"CLOAK10",//HI_CLOAK
+	"FLAMETHROWER10",//HI_FLAMETHROWER
+	"ELECTROSHOCKER10",//HI_ELECTROSHOCKER
+	"SPHERESHIELD10",//HI_SPHERESHIELD
+	"OVERLOAD10",//HI_OVERLOAD
+	"GRAPPLE10",//HI_GRAPPLE
+	NULL
+};*/
 //Called from UI shared code. For now we'll just redirect to the normal anim load function.
 
 int UI_ParseAnimationFile(const char *filename, animation_t *animset, qboolean isHumanoid) 
@@ -2355,7 +2419,7 @@ void CG_DrawForceSelect( void )
 
 		++iconCnt;					// Good icon
 
-		if (cgs.media.forcePowerIcons[forcePowerSorted[i]] || cgs.media.forcePowerIcons2[forcePowerSorted[i]])
+		if (cgs.media.forcePowerIcons[forcePowerSorted[i]] )
 		{
 //			CG_DrawPic( holdX, y + yOffset, smallIconSize, smallIconSize, cgs.media.forcePowerIcons[forcePowerSorted[i]] ); 
 			holdX -= (smallIconSize+pad);
@@ -2365,17 +2429,22 @@ void CG_DrawForceSelect( void )
 	if (ForcePower_Valid(cg.forceSelect))
 	{
 		// Current Center Icon
-		if (cgs.media.forcePowerIcons[cg.forceSelect] || cgs.media.forcePowerIcons2[cg.forceSelect])
-		{
+
 			if(cg.snap->ps.eFlags & EF_FP_OPTION_2)
+			{
+			if(cgs.media.forcePowerIcons2[cg.forceSelect])
 			{
 			CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2)) + yOffset, bigIconSize, bigIconSize, cgs.media.forcePowerIcons2[cg.forceSelect] ); //only cache the icon for display	
 			}
+			}
 			else	
 			{
+			if(cgs.media.forcePowerIcons[cg.forceSelect])
+			{
 			CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2)) + yOffset, bigIconSize, bigIconSize, cgs.media.forcePowerIcons[cg.forceSelect] ); //only cache the icon for display	
-			}				
-		}
+			}
+			}
+		
 	}
 
 	i = BG_ProperForceIndex(cg.forceSelect) + 1;
@@ -2400,23 +2469,28 @@ void CG_DrawForceSelect( void )
 
 		++iconCnt;					// Good icon
 
-		if (cgs.media.forcePowerIcons[forcePowerSorted[i]] || cgs.media.forcePowerIcons2[forcePowerSorted[i]])
+		if (cgs.media.forcePowerIcons[forcePowerSorted[i]] )
 		{
 //			CG_DrawPic( holdX, y + yOffset, smallIconSize, smallIconSize, cgs.media.forcePowerIcons[forcePowerSorted[i]] ); //only cache the icon for display
 			holdX += (smallIconSize+pad);
 		}
 	}
-	if ( showPowersName2[cg.forceSelect] || showPowersName2[cg.forceSelect] ) 
-	{		
+		
 	if(cg.snap->ps.eFlags & EF_FP_OPTION_2)
+	{
+	if(showPowersName2[cg.forceSelect])
 	{
 		UI_DrawProportionalString(320, y + 30 + yOffset, CG_GetStringEdString("SP_INGAME", showPowersName2[cg.forceSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
 	}
+	}
 	else	
 	{
+	if(showPowersName[cg.forceSelect])
+	{
 		UI_DrawProportionalString(320, y + 30 + yOffset, CG_GetStringEdString("SP_INGAME", showPowersName[cg.forceSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
-	}	
 	}
+	}	
+	
 
 }
 
@@ -2550,33 +2624,71 @@ void CG_DrawInvenSelect( void )
 
 	// Current Center Icon
 	height = bigIconSize * cg.iconHUDPercent;
-	if ((cgs.media.invenIcons[cg.itemSelect] || cgs.media.invenIcons2[cg.itemSelect] || cgs.media.invenIcons3[cg.itemSelect]  || cgs.media.invenIcons4[cg.itemSelect]  || cgs.media.invenIcons5[cg.itemSelect]  || cgs.media.invenIcons6[cg.itemSelect]) && BG_IsItemSelectable(&cg.predictedPlayerState, cg.itemSelect))
-	{
-		int itemNdex;
+
+
 		trap_R_SetColor(NULL);
-		if(cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+//		if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+//		{
+//		if(cgs.media.invenIcons9[cg.itemSelect] )
+//		{
+//		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons9[cg.itemSelect] );
+//		}
+//		}
+		if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
 		{
-		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons6[cg.itemSelect] );
+		if(cgs.media.invenIcons8[cg.itemSelect] )
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons8[cg.itemSelect] );
+		}
+		}
+		else if(cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+		{
+		if(cgs.media.invenIcons7[cg.itemSelect] )
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons7[cg.itemSelect] );
+		}
 		}
 		else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
 		{
-		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons5[cg.itemSelect] );
+		if(cgs.media.invenIcons6[cg.itemSelect] )
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons6[cg.itemSelect] );
+		}
 		}
 		else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3)
 		{
+		if(cgs.media.invenIcons5[cg.itemSelect] )
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons5[cg.itemSelect] );
+		}
+		}
+		else if(cg.snap->ps.eFlags & EF_FP_OPTION_2)
+		{
+		if(cgs.media.invenIcons4[cg.itemSelect] )
+		{
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons4[cg.itemSelect] );
 		}
-		else if(cg.snap->ps.eFlags & EF_HI_OPTION_2)
-		{
-		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons2[cg.itemSelect] );
 		}
 		else if(cg.snap->ps.eFlags & EF_HI_OPTION_3)
 		{
+		if(cgs.media.invenIcons3[cg.itemSelect] )
+		{
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons3[cg.itemSelect] );
+		}
+		}
+		else if(cg.snap->ps.eFlags & EF_HI_OPTION_2)
+		{
+		if(cgs.media.invenIcons2[cg.itemSelect] )
+		{
+		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons2[cg.itemSelect] );
+		}
 		}
 		else
 		{
+		if(cgs.media.invenIcons[cg.itemSelect] )
+		{
 		CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10, bigIconSize, bigIconSize, cgs.media.invenIcons[cg.itemSelect] );
+		}
 		}
 		
 		
@@ -2588,38 +2700,75 @@ void CG_DrawInvenSelect( void )
 
 			
 			//[Flamethrower]
-	if ( showItemsName[cg.itemSelect] || showItemsName2[cg.itemSelect] || showItemsName3[cg.itemSelect] || showItemsName4[cg.itemSelect] || showItemsName5[cg.itemSelect] || showItemsName6[cg.itemSelect] ) 	
-	{	
 	
-	if(cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+//	if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+//	{
+//	if(cgs.media.invenIcons9[cg.itemSelect] && showItemsName9[cg.itemSelect])
+//	{
+//	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName9[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+//	}
+//	}	
+	if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
 	{
-		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName6[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	if(cgs.media.invenIcons8[cg.itemSelect] && showItemsName8[cg.itemSelect])
+	{
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName8[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	}
+	else if(cg.snap->ps.eFlags & EF_HI_OPTION_3 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
+	{
+	if(cgs.media.invenIcons7[cg.itemSelect] && showItemsName7[cg.itemSelect])
+	{
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName7[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
 	}
 	else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_FP_OPTION_2)
 	{
-		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName5[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	if(cgs.media.invenIcons6[cg.itemSelect] && showItemsName6[cg.itemSelect])
+	{
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName6[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
 	}
 	else if(cg.snap->ps.eFlags & EF_HI_OPTION_2 && cg.snap->ps.eFlags & EF_HI_OPTION_3)
 	{
-		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName4[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
-	}
-	else if(cg.snap->ps.eFlags & EF_HI_OPTION_2)
+	if(cgs.media.invenIcons5[cg.itemSelect] && showItemsName5[cg.itemSelect])
 	{
-		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName2[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName5[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	}
+	else if(cg.snap->ps.eFlags & EF_FP_OPTION_2)
+	{
+	if(cgs.media.invenIcons4[cg.itemSelect] && showItemsName4[cg.itemSelect])
+	{
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName4[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
 	}
 	else if(cg.snap->ps.eFlags & EF_HI_OPTION_3)
 	{
-		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName3[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	if(cgs.media.invenIcons3[cg.itemSelect] && showItemsName3[cg.itemSelect])
+	{
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName3[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
+	}
+	else if(cg.snap->ps.eFlags & EF_HI_OPTION_2)
+	{
+	if(cgs.media.invenIcons2[cg.itemSelect] && showItemsName2[cg.itemSelect])
+	{
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName2[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
+	}
 	}
 	else	
 	{
-		UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
-	}	
+	if(cgs.media.invenIcons[cg.itemSelect] && showItemsName[cg.itemSelect])
+	{
+	UI_DrawProportionalString(320, y+45, CG_GetStringEdString("SP_INGAME", showItemsName[cg.itemSelect]), UI_CENTER | UI_SMALLFONT, colorTable[CT_ICON_BLUE]);
 	}
+	}	
+	
 			
 
 
-	}
+	
 	i = cg.itemSelect + 1;
 	if (i> HI_NUM_HOLDABLE-1)
 	{
@@ -9451,6 +9600,65 @@ static void CG_Draw2DScreenTints( void )
 			}
 		}
 		if(cg_entities[cg.snap->ps.clientNum].teamPowerEffectTime > cg.time && cg_entities[cg.snap->ps.clientNum].teamPowerType == 8)
+		{
+			
+			blindingTime = (float)(cg.time - cgBlindingTime);
+			
+			blindingTime /= 9000;
+			
+			if (blindingTime < 0)
+			{
+				blindingTime = 0;
+			}
+			if (blindingTime > 0.15)
+			{
+				blindingTime = 0.15;
+			}
+			
+			hcolor[3] = 1.0;
+			hcolor[0] = 1.0;
+			hcolor[1] = 1.0;
+			hcolor[2] = 1.0;
+			
+
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+
+			
+			cgBlindingFadeTime = 0;
+			cgBlindingFadeVal = 0;				
+			
+			if (!cgBlindingTime)
+			{
+				cgBlindingTime = cg.time;
+			}
+			
+			blindingTime = (float)(cg.time - cgBlindingTime);
+			
+			blindingTime /= 9000;
+			
+			if (blindingTime < 0)
+			{
+				blindingTime = 0;
+			}
+			if (blindingTime > 0.15)
+			{
+				blindingTime = 0.15;
+			}
+			
+			hcolor[3] = 1.0;
+			hcolor[0] = 1.0;
+			hcolor[1] = 1.0;
+			hcolor[2] = 1.0;
+			
+
+				CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
+
+			
+			cgBlindingFadeTime = 0;
+			cgBlindingFadeVal = 0;				
+			
+		}
+		else if(cg_entities[cg.snap->ps.clientNum].itemPowerEffectTime > cg.time && cg_entities[cg.snap->ps.clientNum].itemPowerType == 4)
 		{
 			
 			blindingTime = (float)(cg.time - cgBlindingTime);

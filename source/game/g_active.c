@@ -2722,15 +2722,16 @@ void ClientThink_real( gentity_t *ent ) {
 			if(!ent->client->ps.saberInFlight)
 			{//can't switch saber holster settings if saber is out.
 				if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0]
-					&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[1] ) 
 					&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
+					&& ent->client->ps.fd.saberAnimLevel != SS_STAFF
 					&& ent->client->ps.saberHolstered == 0)
 				{//using dual sabers, but not the dual style, turn off blade
 					ent->client->ps.saberHolstered = 1;
 				}
-				else if (ent->client->saber[0].numBlades > 1
+				else if (ent->client->saber[0].numBlades > 1 
 					&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] )
 					&& ent->client->ps.fd.saberAnimLevel != SS_STAFF
+					&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
 					&& ent->client->ps.saberHolstered == 0)
 				{//using staff saber, but not the staff style, turn off blade
 					ent->client->ps.saberHolstered = 1;
@@ -2962,15 +2963,28 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 		else if (client->skillLevel[SK_JETPACKB]==FORCE_LEVEL_2)
 		{
-		client->ps.userInt3 |= (1 << FLAG_JETPACK2);
-		client->ps.userInt3 |= (1 << FLAG_JETPACK3);
+		client->ps.userInt3 |= (1 << FLAG_JETPACK5);
 		}
 		else if (client->skillLevel[SK_JETPACKB]==FORCE_LEVEL_3)
 		{
 		client->ps.userInt3 |= (1 << FLAG_JETPACK2);
+		client->ps.userInt3 |= (1 << FLAG_JETPACK3);	
+		}
+		else if (client->skillLevel[SK_JETPACKC]==FORCE_LEVEL_1)
+		{
+		client->ps.userInt3 |= (1 << FLAG_JETPACK2);	
+		client->ps.userInt3 |= (1 << FLAG_JETPACK4);		
+		}
+		else if (client->skillLevel[SK_JETPACKC]==FORCE_LEVEL_2)
+		{
+		client->ps.userInt3 |= (1 << FLAG_JETPACK2);
+		client->ps.userInt3 |= (1 << FLAG_JETPACK5);
+		}
+		else if (client->skillLevel[SK_JETPACKC]==FORCE_LEVEL_3)
+		{
+		client->ps.userInt3 |= (1 << FLAG_JETPACK3);
 		client->ps.userInt3 |= (1 << FLAG_JETPACK4);	
 		}
-
 	}
 	else
 	{
@@ -2978,6 +2992,7 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.userInt3 &= ~(1 << FLAG_JETPACK2);
 		client->ps.userInt3 &= ~(1 << FLAG_JETPACK3);
 		client->ps.userInt3 &= ~(1 << FLAG_JETPACK4);
+		client->ps.userInt3 &= ~(1 << FLAG_JETPACK5);
 	}
 
 	if ( client->noclip ) {

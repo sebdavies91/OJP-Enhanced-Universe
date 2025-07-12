@@ -265,7 +265,7 @@
 			name					setsk_thermalB
 			group					gunpowers
 			style					0	
-			text					"Ion / .. / ..:"
+			text					"Ion / Sonic / Flash:"
 			rect					180 120 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -298,7 +298,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Kirgo Ion Grenade / .. / .."
+			descText				"Kirgo Ion Grenade / Geonosian Sonic Grenade / Stouker Flash Grenade"
 			visible					1 
 			action 
 			{ 
@@ -476,7 +476,7 @@
 			name					setsk_tripmineB
 			group					gunpowers
 			style					0	
-			text					"Ion / .. / ..:"
+			text					"Ion / Sonic / Flash:"
 			rect					430 120 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -509,7 +509,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Kirgo Ion Mine / .. / .."
+			descText				"Kirgo Ion Mine / Geonosian Sonic Mine / Stouker Flash Mine"
 			visible					1 
 			action 
 			{ 
@@ -688,7 +688,7 @@
 			name					setsk_detpackB
 			group					gunpowers
 			style					0	
-			text					"Ion / .. / ..:"
+			text					"Ion / Sonic / Flash:"
 			rect					180 210 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -721,7 +721,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Kirgo Ion Bomb / .. / .."
+			descText				"Kirgo Ion Bomb / Geonosian Sonic Bomb / Stouker Flash Bomb"
 			visible					1 
 			action 
 			{ 

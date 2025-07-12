@@ -819,7 +819,8 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 	bs->forceinfo[NUM_FORCE_POWERS+SK_SHIELDS + 4] = '0' + skillLevel;
 	bs->forceinfo[NUM_FORCE_POWERS+SK_AGILITY + 4] = '0' + skillLevel;
 	bs->forceinfo[NUM_FORCE_POWERS+SK_STRENGTH + 4] = '0' + skillLevel;	
-	
+	bs->forceinfo[NUM_FORCE_POWERS+SK_POWER + 4] = '0' + skillLevel;
+	bs->forceinfo[NUM_FORCE_POWERS+SK_RESISTANCE + 4] = '0' + skillLevel;		
 	
 	i = 4;
 	for(i = 4; (i - 4) < NUM_FORCE_POWERS; i++)
@@ -1447,13 +1448,7 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 			}
 
 			switch(i)
-			{	
-			case WT_WRISTA:
-				bs->forceinfo[NUM_FORCE_POWERS+SK_WRISTA + 4] = '0' + skillLevel;
-				break;
-			case WT_WRISTB:
-				bs->forceinfo[NUM_FORCE_POWERS+SK_WRISTB + 4] = '0' + skillLevel;
-				break;						
+			{							
 			case WT_PISTOLA:
 				bs->forceinfo[NUM_FORCE_POWERS+SK_PISTOLA + 4] = '0' + skillLevel;
 				break;
@@ -1557,6 +1552,10 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 		{
 			bs->botItemTypeWeights[HT_JETPACKB] = atoi(readbuf);
 		}
+		if (GetPairedValue(group, "HT_JETPACKC", readbuf))
+		{
+			bs->botItemTypeWeights[HT_JETPACKC] = atoi(readbuf);
+		}
 		if (GetPairedValue(group, "HT_SQUADTEAMA", readbuf))
 		{
 			bs->botItemTypeWeights[HT_SQUADTEAMA] = atoi(readbuf);
@@ -1565,7 +1564,10 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 		{
 			bs->botItemTypeWeights[HT_SQUADTEAMB] = atoi(readbuf);
 		}		
-
+		if (GetPairedValue(group, "HT_SQUADTEAMC", readbuf))
+		{
+			bs->botItemTypeWeights[HT_SQUADTEAMC] = atoi(readbuf);
+		}
 	}
 
 
@@ -1607,13 +1609,18 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 			case HT_JETPACKB:
 				bs->forceinfo[NUM_FORCE_POWERS+SK_JETPACKB + 4] = '0' + skillLevel;
 				break;	
+			case HT_JETPACKC:
+				bs->forceinfo[NUM_FORCE_POWERS+SK_JETPACKC + 4] = '0' + skillLevel;
+				break;	
 			case HT_SQUADTEAMA:
 				bs->forceinfo[NUM_FORCE_POWERS+SK_SQUADTEAMA + 4] = '0' + skillLevel;
 				break;
 			case HT_SQUADTEAMB:
 				bs->forceinfo[NUM_FORCE_POWERS+SK_SQUADTEAMB + 4] = '0' + skillLevel;
 				break;				
-				
+			case HT_SQUADTEAMC:
+				bs->forceinfo[NUM_FORCE_POWERS+SK_SQUADTEAMC + 4] = '0' + skillLevel;
+				break;				
 			};
 			
 		}

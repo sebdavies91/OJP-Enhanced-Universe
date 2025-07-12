@@ -1149,10 +1149,13 @@ int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean resta
 
 	bs->botItemTypeWeights[HT_NONE] = 0;
 	bs->botItemTypeWeights[HT_FLAMETHROWERA] = 1;
+	bs->botItemTypeWeights[HT_ELECTROSHOCKERA] = 1;
 	bs->botItemTypeWeights[HT_JETPACKA] = 1;
 	bs->botItemTypeWeights[HT_JETPACKB] = 1;
+	bs->botItemTypeWeights[HT_JETPACKC] = 1;
 	bs->botItemTypeWeights[HT_SQUADTEAMA] = 1;
 	bs->botItemTypeWeights[HT_SQUADTEAMB] = 1;
+	bs->botItemTypeWeights[HT_SQUADTEAMC] = 1;
 	//[BotTweaks] UNIQUEFIXME - wha?
 //	bs->botWeaponWeights[WP_TRIP_MINE] = 3;
 //	bs->botWeaponWeights[WP_TRIP_MINE] = 10;
@@ -2222,7 +2225,7 @@ int PassStandardEnemyChecks(bot_state_t *bs, gentity_t *en)
 			}		
 	}
 	
-	if (en->client && level.clients[bs->client].blindingTime > level.time)
+	if (en->client && (level.clients[bs->client].blindingTime > level.time || level.clients[bs->client].flashTime > level.time))
 	{ //not a client, don't care about him
 			if(!(en->client->ps.eFlags & EF_FIRING) && !(en->client->ps.eFlags & EF_ALT_FIRING))
 			{
@@ -2639,7 +2642,7 @@ int PassLovedOneCheck(bot_state_t *bs, gentity_t *ent)
 //standard check to find a new enemy.
 int ScanForEnemies(bot_state_t *bs)
 {
-	vec3_t a, EnemyOrigin;
+	vec3_t a;
 	float distcheck;
 	float closest;
 	int bestindex;
@@ -7128,7 +7131,6 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 	int mineSelect = 0;
 	int detSelect = 0;
 	vec3_t preFrameGAngles;
-	vec3_t	fwd; 
 	gclient_t *client = g_entities[bs->cur_ps.clientNum].client;
 
 	//RACC - Shut down AI if doing bot routing editting.
@@ -7341,20 +7343,22 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			bs->changeStyleDebounce = level.time + 200000;
 			Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
 		}
-	if ( g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_DUAL)
-	{
 	if (bs->cur_ps.weapon == WP_SABER && g_entities[bs->client].client->saber[0].model[0] && g_entities[bs->client].client->saber[1].model[0] )
 	{
+	if ( g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_DUAL)
+	{
+
 		Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
 
 	}
 	}
-	if (g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_STAFF)
-	{
-	if (bs->cur_ps.weapon == WP_SABER && g_entities[bs->client].client->saber[0].numBlades > 1
+	else if (bs->cur_ps.weapon == WP_SABER && g_entities[bs->client].client->saber[0].numBlades > 1 
 		&& WP_SaberCanTurnOffSomeBlades(&g_entities[bs->client].client->saber[0] )
 		)
 	{
+	if (g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_STAFF)
+	{
+
 		Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
 	}
 	}

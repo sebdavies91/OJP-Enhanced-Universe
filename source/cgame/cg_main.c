@@ -39,7 +39,14 @@ void CG_CleanJetpack5Ghoul2(void);
 void CG_InitJetpack6Ghoul2(void);
 void CG_CleanJetpack6Ghoul2(void);
 
+void CG_InitJetpack7Ghoul2(void);
+void CG_CleanJetpack7Ghoul2(void);
 
+void CG_InitJetpack8Ghoul2(void);
+void CG_CleanJetpack8Ghoul2(void);
+
+void CG_InitJetpack9Ghoul2(void);
+void CG_CleanJetpack9Ghoul2(void);
 
 vec4_t colorTable[CT_MAX] = 
 {
@@ -2264,50 +2271,22 @@ static void CG_RegisterGraphics( void ) {
 	trap_FX_InitSystem(&cg.refdef);
 	CG_RegisterEffects();
 	
-	cgs.media.orangeFrontFlash = trap_R_RegisterShader( "gfx/effects/bryarFrontFlash" );
-	cgs.media.redFrontFlash = trap_R_RegisterShader( "gfx/effects/blasterFrontFlash" );
-	cgs.media.blueFrontFlash = trap_R_RegisterShader( "gfx/effects/blueFrontFlash" );
-	cgs.media.yellowFrontFlash = trap_R_RegisterShader( "gfx/effects/yellowFrontFlash" );
-	cgs.media.purpleFrontFlash = trap_R_RegisterShader( "gfx/effects/purpleFrontFlash" );
-	cgs.media.greenFrontFlash = trap_R_RegisterShader( "gfx/effects/greenFrontFlash" );
-	cgs.media.whiteFrontFlash = trap_R_RegisterShader( "gfx/effects/whiteFrontFlash" );	
-	cgs.media.lightningFlash = trap_R_RegisterShader("gfx/misc/lightningFlash");	
+
 	
 	cgs.media.boltShader = trap_R_RegisterShader( "gfx/misc/blueLine" );
 	cgs.media.boltShader2 = trap_R_RegisterShader( "gfx/misc/lightningline" );	
 	cgs.media.boltShader3 = trap_R_RegisterShader( "gfx/misc/judgementline" );
 	cgs.media.boltShader4 = trap_R_RegisterShader( "gfx/misc/electroshockbolt" );
 
-		cgs.effects.orangeShotEffect			= trap_FX_RegisterEffect( "bryar/shot" );
-		cgs.effects.redShotEffect			= trap_FX_RegisterEffect( "dh-17/shot" );		
-		cgs.effects.blueShotEffect			= trap_FX_RegisterEffect( "dc-17/shot" );		
-		cgs.effects.yellowShotEffect			= trap_FX_RegisterEffect( "gauntlet/shot" );		
-		cgs.effects.purpleShotEffect			= trap_FX_RegisterEffect( "s5_heavy_pistol/shot" );
-		cgs.effects.greenShotEffect			= trap_FX_RegisterEffect( "bryar_old/shot" );
-		cgs.effects.whiteShotEffect			= trap_FX_RegisterEffect( "w-34/shot" );
-
-		
-		
-		cgs.effects.orangePowerupShotEffect	= trap_FX_RegisterEffect( "bryar/crackleShot" );
-		cgs.effects.redPowerupShotEffect	= trap_FX_RegisterEffect( "dh-17/crackleShot" );		
-		cgs.effects.bluePowerupShotEffect	= trap_FX_RegisterEffect( "dc-17/crackleShot" );
-		cgs.effects.yellowPowerupShotEffect	= trap_FX_RegisterEffect( "gauntlet/crackleShot" );		
-		cgs.effects.purplePowerupShotEffect	= trap_FX_RegisterEffect( "s5_heavy_pistol/crackleShot" );		
-		cgs.effects.greenPowerupShotEffect	= trap_FX_RegisterEffect( "bryar_old/crackleShot" );		
-		cgs.effects.whitePowerupShotEffect	= trap_FX_RegisterEffect( "w-34/crackleShot" );		
-		
-
-
-	cgs.effects.turretShotEffect = trap_FX_RegisterEffect( "turret/shot" );
 	cgs.effects.mEmplacedDeadSmoke = trap_FX_RegisterEffect("emplaced/dead_smoke.efx");
 	cgs.effects.mEmplacedExplode = trap_FX_RegisterEffect("emplaced/explode.efx");
 	cgs.effects.mTurretExplode = trap_FX_RegisterEffect("turret/explode.efx");
-	cgs.effects.mSparkExplosion = trap_FX_RegisterEffect("sparks/spark_explosion.efx");
+	cgs.effects.mSparkExplosion = trap_FX_RegisterEffect("sparks/spark_explosion.efx");	
+	
 	cgs.effects.mFlechetteAltBlow = trap_FX_RegisterEffect("flechette/alt_blow.efx");
 	cgs.effects.mStunBatonFleshImpact = trap_FX_RegisterEffect("stunBaton/flesh_impact.efx");
 	cgs.effects.mAltDetonate = trap_FX_RegisterEffect("demp2/altDetonate.efx");
 	cgs.effects.mSparksExplodeNoSound = trap_FX_RegisterEffect("sparks/spark_exp_nosnd");
-	cgs.effects.mTripMineLaster = trap_FX_RegisterEffect("tripMine/laser.efx");
 	cgs.effects.mEmplacedMuzzleFlash = trap_FX_RegisterEffect( "effects/emplaced/muzzle_flash" );
 	cgs.effects.mConcussionAltRing = trap_FX_RegisterEffect("concussion/alt_ring");
 
@@ -2318,7 +2297,7 @@ static void CG_RegisterGraphics( void ) {
 	cgs.effects.mBobaJet = trap_FX_RegisterEffect("effects/boba/jet.efx");
 	cgs.effects.mRocketJet = trap_FX_RegisterEffect("effects/rockettrooper/flamenew.efx");
 
-	cgs.effects.itemCone = trap_FX_RegisterEffect("mp/itemcone.efx");
+
 	cgs.effects.mTurretMuzzleFlash = trap_FX_RegisterEffect("effects/turret/muzzle_flash.efx");
 	cgs.effects.mSparks = trap_FX_RegisterEffect("sparks/spark_nosnd.efx"); //sparks/spark.efx
 	cgs.effects.mSaberCut = trap_FX_RegisterEffect("saber/saber_cut.efx");
@@ -2330,16 +2309,14 @@ static void CG_RegisterGraphics( void ) {
 	cgs.effects.mSaberFriction = trap_FX_RegisterEffect("saber/saber_friction.efx");
 	//[/SaberLockSys]
 	cgs.effects.mSpawn = trap_FX_RegisterEffect("mp/spawn.efx");
-	cgs.effects.mJediSpawn = trap_FX_RegisterEffect("mp/jedispawn.efx");
 	cgs.effects.mBlasterDeflect = trap_FX_RegisterEffect("blaster/deflect.efx");
 	cgs.effects.mBlasterSmoke = trap_FX_RegisterEffect("blaster/smoke_bolton");
 	cgs.effects.mDisruptorDeathSmoke = trap_FX_RegisterEffect("disruptor/death_smoke");	
+	
+	cgs.effects.turretShotEffect = trap_FX_RegisterEffect( "turret/shot" );
+	
 
-	cgs.effects.mThermalExplosionEffect		= trap_FX_RegisterEffect( "thermal/explosion" );
-	cgs.effects.mIncineraryExplosionEffect		= trap_FX_RegisterEffect( "incinerary_grenade/explosion" );
-	cgs.effects.mDioxisExplosionEffect		= trap_FX_RegisterEffect( "dioxis_grenade/explosion" );
-	cgs.effects.mIonExplosionEffect		= trap_FX_RegisterEffect( "ion_grenade/explosion" );																					 
-
+	
 	cgs.effects.forceLightning		= trap_FX_RegisterEffect( "effects/force/lightning.efx" );
 	cgs.effects.forceLightningWide	= trap_FX_RegisterEffect( "effects/force/lightningwide.efx" );
 
@@ -2347,49 +2324,156 @@ static void CG_RegisterGraphics( void ) {
 	cgs.effects.forceJudgementWide	= trap_FX_RegisterEffect( "effects/force/judgementwide.efx" );	
 
 	//[Flamethrower]
-	cgs.effects.flamethrower = trap_FX_RegisterEffect( "effects/boba/fthrw.efx" );
-	cgs.effects.flamethrowerWide = trap_FX_RegisterEffect( "effects/boba/fthrwwide.efx" );  
+	cgs.effects.flamethrower = trap_FX_RegisterEffect( "effects/boba/fthrw.efx" );  
 	//[/Flamethrower]
 	//[Dioxisthrower]
 	cgs.effects.dioxisthrower = trap_FX_RegisterEffect( "effects/boba/dthrw.efx" );
-	cgs.effects.dioxisthrowerWide = trap_FX_RegisterEffect( "effects/boba/dthrwwide.efx" );  
 	//[/Dioxisthrower]
 	//[Icethrower]
-	cgs.effects.icethrower = trap_FX_RegisterEffect( "effects/boba/ithrw.efx" );
-	cgs.effects.icethrowerWide = trap_FX_RegisterEffect( "effects/boba/ithrwwide.efx" );  
+	cgs.effects.icethrower = trap_FX_RegisterEffect( "effects/boba/ithrw.efx" ); 
 	//[/Icethrower]	
 	//[Electroshocker]
 	cgs.effects.electroshocker = trap_FX_RegisterEffect( "effects/officer/elctr.efx" );
-	cgs.effects.electroshockerWide = trap_FX_RegisterEffect( "effects/officer/elctrwide.efx" );
 	//[/Electroshocker]		
 	//[Lasersupport]
 	cgs.effects.lasersupport = trap_FX_RegisterEffect( "effects/officer/lsr.efx" );
-	cgs.effects.lasersupportWide = trap_FX_RegisterEffect( "effects/officer/lsrwide.efx" );
 	//[/Lasersupport]	
 	//[Electroshocker]
 	cgs.effects.orbitalstrike = trap_FX_RegisterEffect( "effects/officer/orbtl.efx" );
-	cgs.effects.orbitalstrikeWide = trap_FX_RegisterEffect( "effects/officer/orbtlwide.efx" );
-	//[/Electroshocker]		
+	//[/Electroshocker]	
+	
 	cgs.effects.forceDrain		= trap_FX_RegisterEffect( "effects/mp/drain.efx" );
 	cgs.effects.forceDrainWide	= trap_FX_RegisterEffect( "effects/mp/drainwide.efx" );
 	cgs.effects.forceDrained	= trap_FX_RegisterEffect( "effects/mp/drainhit.efx");
 
 	cgs.effects.forceSever		= trap_FX_RegisterEffect( "effects/mp/sever.efx" );
 	cgs.effects.forceSeverWide	= trap_FX_RegisterEffect( "effects/mp/severwide.efx" );
-	cgs.effects.ForceSevered	= trap_FX_RegisterEffect( "effects/mp/severhit.efx");	
+	cgs.effects.forceSevered	= trap_FX_RegisterEffect( "effects/mp/severhit.efx");	
 	
 
 	cgs.effects.forceHealed	= trap_FX_RegisterEffect( "effects/force/heal2.efx" );
-	cgs.effects.ForceRegenerated	= trap_FX_RegisterEffect( "effects/force/heal3.efx");
+	cgs.effects.forceRegenerated	= trap_FX_RegisterEffect( "effects/force/heal3.efx");
 	cgs.effects.forceExplode		= trap_FX_RegisterEffect( "effects/force/shockwave" );
 	cgs.effects.forceDeathfield	= trap_FX_RegisterEffect( "effects/mp/deathfield");
 	cgs.effects.forceDeathsight	= trap_FX_RegisterEffect( "effects/mp/deathsight");		
 	cgs.effects.forceDestruction		= trap_FX_RegisterEffect( "effects/force/destruction.efx" );
 	cgs.effects.forceBlinding		= trap_FX_RegisterEffect( "effects/force/blinding.efx" );
+
+	
 	cgs.effects.burned	= trap_FX_RegisterEffect( "fire/fire_old.efx");
 	cgs.effects.frozen	= trap_FX_RegisterEffect( "ice/ice_old.efx");
 
+	//BRYAR PISTOL BLASTER BOWCASTER BRYAR OLD
+	cgs.media.orangeFrontFlash = trap_R_RegisterShader( "gfx/effects/bryarFrontFlash" );
+	cgs.media.redFrontFlash = trap_R_RegisterShader( "gfx/effects/blasterFrontFlash" );
+	cgs.media.blueFrontFlash = trap_R_RegisterShader( "gfx/effects/blueFrontFlash" );
+	cgs.media.yellowFrontFlash = trap_R_RegisterShader( "gfx/effects/yellowFrontFlash" );
+	cgs.media.purpleFrontFlash = trap_R_RegisterShader( "gfx/effects/purpleFrontFlash" );
+	cgs.media.greenFrontFlash = trap_R_RegisterShader( "gfx/effects/greenFrontFlash" );
+	cgs.media.whiteFrontFlash = trap_R_RegisterShader( "gfx/effects/whiteFrontFlash" );		
+	cgs.media.lightningFlash = trap_R_RegisterShader("gfx/misc/lightningFlash");
 
+	cgs.effects.orangeShotEffect			= trap_FX_RegisterEffect( "bryar/shot" );
+	cgs.effects.redShotEffect			= trap_FX_RegisterEffect( "SE-44C/shot" );		
+	cgs.effects.blueShotEffect			= trap_FX_RegisterEffect( "dc-17/shot" );		
+	cgs.effects.yellowShotEffect			= trap_FX_RegisterEffect( "w-34/shot" );		
+	cgs.effects.purpleShotEffect			= trap_FX_RegisterEffect( "Glie-44/shot" );
+	cgs.effects.greenShotEffect			= trap_FX_RegisterEffect( "bryar_old/shot" );
+	cgs.effects.whiteShotEffect			= trap_FX_RegisterEffect( "gauntlet/shot" );	
+	
+	cgs.effects.blasterWallImpactEffect	= trap_FX_RegisterEffect( "bryar/wall_impact" );
+	cgs.effects.blasterFleshImpactEffect	= trap_FX_RegisterEffect( "bryar/flesh_impact" );
+
+
+	
+	//DISRUPTOR	
+	cgs.effects.disruptorWallImpactEffect	= trap_FX_RegisterEffect( "disruptor/wall_impact" );
+	cgs.effects.disruptorFleshImpactEffect	= trap_FX_RegisterEffect( "disruptor/flesh_impact" );
+	cgs.effects.disruptorAltMissEffect		= trap_FX_RegisterEffect( "disruptor/alt_miss" );
+	cgs.effects.disruptorAltHitEffect		= trap_FX_RegisterEffect( "disruptor/alt_hit" );
+	// Disruptor gun zoom interface
+	cgs.media.disruptorMask			= trap_R_RegisterShader( "gfx/2d/cropCircle2");
+	cgs.media.disruptorInsert		= trap_R_RegisterShader( "gfx/2d/cropCircle");
+	cgs.media.disruptorLight		= trap_R_RegisterShader( "gfx/2d/cropCircleGlow" );
+	cgs.media.disruptorInsertTick	= trap_R_RegisterShader( "gfx/2d/insertTick" );
+	cgs.media.disruptorChargeShader	= trap_R_RegisterShaderNoMip("gfx/2d/crop_charge");
+	cgs.media.disruptorZoomLoop		= trap_S_RegisterSound( "sound/weapons/disruptor/zoomloop.wav" );
+
+
+	//REPEATER	
+	cgs.effects.repeaterProjectileEffect	= trap_FX_RegisterEffect( "repeater/projectile" );
+	cgs.effects.repeaterProjectileEffect2	= trap_FX_RegisterEffect( "dlt-18_repeater/projectile" );
+	cgs.effects.repeaterProjectileEffect3	= trap_FX_RegisterEffect( "dc-15a/projectile" );
+	cgs.effects.repeaterProjectileEffect4	= trap_FX_RegisterEffect( "t-21/projectile" );	
+	cgs.effects.repeaterProjectileEffect5	= trap_FX_RegisterEffect( "dc-17m/projectile" );			
+	cgs.effects.repeaterProjectileEffect6	= trap_FX_RegisterEffect( "FWMB-10/projectile" );		
+	cgs.effects.repeaterAltProjectileEffect	= trap_FX_RegisterEffect( "repeater/alt_projectile" );
+	cgs.effects.repeaterAltProjectileEffect2	= trap_FX_RegisterEffect( "dc-15a/alt_projectile" );		
+	cgs.effects.repeaterAltProjectileEffect3	= trap_FX_RegisterEffect( "dc-17m/alt_projectile" );	
+	cgs.effects.repeaterWallImpactEffect	= trap_FX_RegisterEffect( "repeater/wall_impact" );
+	cgs.effects.repeaterFleshImpactEffect	= trap_FX_RegisterEffect( "repeater/flesh_impact" );
+	cgs.effects.repeaterAltWallImpactEffect	= trap_FX_RegisterEffect( "repeater/concussion" );
+	cgs.effects.repeaterAltWallImpactEffect2	= trap_FX_RegisterEffect( "dc-15a/concussion" );		
+	cgs.effects.repeaterAltWallImpactEffect3	= trap_FX_RegisterEffect( "dc-17m/concussion" );	
+
+	//DEMP2	
+	cgs.effects.demp2ProjectileEffect		= trap_FX_RegisterEffect( "demp2/projectile" );
+	cgs.effects.fireProjectileEffect		= trap_FX_RegisterEffect( "CR-24_flamerifle/projectile" );
+	cgs.effects.dioxisProjectileEffect		= trap_FX_RegisterEffect( "CR-25_icerifle/projectile" );
+	cgs.effects.iceProjectileEffect		= trap_FX_RegisterEffect( "CarboniteRifle/projectile" );		
+	cgs.effects.demp2WallImpactEffect		= trap_FX_RegisterEffect( "demp2/wall_impact" );	
+	cgs.effects.fireWallImpactEffect		= trap_FX_RegisterEffect( "CR-24_flamerifle/wall_impact" );	
+	cgs.effects.dioxisWallImpactEffect		= trap_FX_RegisterEffect( "CR-25_icerifle/wall_impact" );
+	cgs.effects.iceWallImpactEffect		= trap_FX_RegisterEffect( "CarboniteRifle/wall_impact" );		
+	cgs.effects.demp2FleshImpactEffect		= trap_FX_RegisterEffect( "demp2/flesh_impact" );
+	cgs.effects.fireFleshImpactEffect		= trap_FX_RegisterEffect( "CR-24_flamerifle/flesh_impact" );
+	cgs.effects.dioxisFleshImpactEffect		= trap_FX_RegisterEffect( "CR-25_icerifle/flesh_impact" );
+	cgs.effects.iceFleshImpactEffect		= trap_FX_RegisterEffect( "CarboniteRifle/flesh_impact" );		
+	cgs.media.demp2Shell = trap_R_RegisterModel( "models/items/sphere.md3" );
+	cgs.media.demp2ShellShader = trap_R_RegisterShader( "gfx/effects/demp2shell" );
+
+	//FLECHETTE	
+	cgs.effects.flechetteShotEffect			= trap_FX_RegisterEffect( "flechette/shot" );
+	cgs.effects.flechetteShotEffect2			= trap_FX_RegisterEffect( "Bryar_Rifle/shot" );
+	cgs.effects.flechetteShotEffect3			= trap_FX_RegisterEffect( "DoubleBarrel_ArrayGun/shot" );
+	cgs.effects.flechetteShotEffect4			= trap_FX_RegisterEffect( "ACP_ArrayGun/shot" );
+	cgs.effects.flechetteShotEffect5			= trap_FX_RegisterEffect( "cr-1/shot" );
+	cgs.effects.flechetteShotEffect6			= trap_FX_RegisterEffect( "junglerifle/shot" );		
+	cgs.effects.flechetteAltShotEffect		= trap_FX_RegisterEffect( "flechette/alt_shot" );
+	cgs.effects.flechetteAltShotEffect2			= trap_FX_RegisterEffect( "ACP_ArrayGun/alt_shot" );		
+	cgs.effects.flechetteAltShotEffect3			= trap_FX_RegisterEffect( "junglerifle/alt_shot" );		
+	cgs.effects.flechetteWallImpactEffect	= trap_FX_RegisterEffect( "flechette/wall_impact" );
+	cgs.effects.flechetteFleshImpactEffect	= trap_FX_RegisterEffect( "flechette/flesh_impact" );
+
+	//ROCKET	
+	cgs.effects.rocketShotEffect			= trap_FX_RegisterEffect( "rocket/shot" );	
+
+	//THERMAL	
+	cgs.effects.thermalExplosionEffect		= trap_FX_RegisterEffect( "thermal/explosion" );
+	cgs.effects.incineraryExplosionEffect		= trap_FX_RegisterEffect( "incinerary_grenade/explosion" );
+	cgs.effects.dioxisExplosionEffect		= trap_FX_RegisterEffect( "dioxis_grenade/explosion" );
+//	cgs.effects.iceExplosionEffect		= trap_FX_RegisterEffect( "ice_grenade/explosion" );
+	cgs.effects.ionExplosionEffect		= trap_FX_RegisterEffect( "ion_grenade/explosion" );	
+	cgs.effects.sonicExplosionEffect		= trap_FX_RegisterEffect( "sonic_grenade/explosion" );	
+	cgs.effects.flashExplosionEffect		= trap_FX_RegisterEffect( "flash_grenade/explosion" );
+	cgs.media.grenadeBounce1		= trap_S_RegisterSound( "sound/weapons/thermal/bounce1.wav" );
+	cgs.media.grenadeBounce2		= trap_S_RegisterSound( "sound/weapons/thermal/bounce2.wav" );	
+	
+	//TRIP MINE		
+	cgs.effects.tripmineLaserFX = trap_FX_RegisterEffect("tripMine/laserMP.efx");
+	cgs.effects.tripmineGlowFX = trap_FX_RegisterEffect("tripMine/glowbit.efx");	
+
+	//CONCUSSION		
+	cgs.effects.concussionShotEffect		= trap_FX_RegisterEffect( "concussion/shot" );
+	cgs.effects.concussionShotEffect2		= trap_FX_RegisterEffect( "LJ-70_ConcRifle/shot" );
+	cgs.effects.concussionShotEffect3		= trap_FX_RegisterEffect( "PulseCannon/shot" );
+	cgs.effects.concussionShotEffect4		= trap_FX_RegisterEffect( "geonosian/shot" );		
+	cgs.effects.concussionImpactEffect		= trap_FX_RegisterEffect( "concussion/explosion" );
+	cgs.effects.concussionImpactEffect2		= trap_FX_RegisterEffect( "LJ-70_ConcRifle/explosion" );	
+	cgs.effects.concussionImpactEffect3		= trap_FX_RegisterEffect( "PulseCannon/explosion" );
+	cgs.effects.concussionImpactEffect4		= trap_FX_RegisterEffect( "geonosian/explosion" );		
+
+		
 	for ( i = 0 ; i < NUM_CROSSHAIRS ; i++ ) {
 		cgs.media.crosshairShader[i] = trap_R_RegisterShaderNoMip( va("gfx/2d/crosshair%c", 'a'+i) );
 	}
@@ -4106,7 +4190,12 @@ Ghoul2 Insert Start
 
 	CG_InitJetpack6Ghoul2();
 
+	CG_InitJetpack7Ghoul2();
 
+	CG_InitJetpack8Ghoul2();
+	
+	CG_InitJetpack9Ghoul2();
+	
 	CG_PmoveClientPointerUpdate();
 
 /*
@@ -4167,6 +4256,10 @@ Ghoul2 Insert End
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_clonepistol_1_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_w-34.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_w-34_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_glie-44.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_glie-44_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_se-44c.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_se-44c_na.tga");
 				}
 				else if( i == WP_BLASTER)
 				{
@@ -4176,15 +4269,23 @@ Ghoul2 Insert End
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_dc-15s_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_droidblaster.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_droidblaster_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_el-16hfe.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_el-16hfe_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_f11.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_f11_na.tga");
 				}
 				else if( i == WP_DISRUPTOR)
 				{
-				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tusken_rifle.tga");
-				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tusken_rifle_na.tga");
-				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_DLT20a.tga");
-				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_DLT20a_na.tga");
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_DLT20a.tga");
+				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_DLT20a_na.tga");
+				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_clonerifle.tga");
+				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_clonerifle_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_proj_rifle.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_proj_rifle_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tusken_rifle.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_tusken_rifle_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_psg.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_psg_na.tga");
 				}
 				else if( i == WP_BOWCASTER)
 				{
@@ -4194,6 +4295,10 @@ Ghoul2 Insert End
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_wbowcaster1_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_candblaster.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_candblaster_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_wbowcaster2.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_wbowcaster2_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_st_comp.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_st_comp_na.tga");
 				}
 				else if( i == WP_REPEATER)
 				{
@@ -4203,60 +4308,88 @@ Ghoul2 Insert End
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_dc-15a_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_t-21.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_t-21_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_dc-17m.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_dc-17m_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_fwmb-10.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_fwmb-10_na.tga");
 				}
 				else if( i == WP_DEMP2)
 				{
-				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flamerifle.tga");
-				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flamerifle_na.tga");
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_beamrifle.tga");
+				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_beamrifle_na.tga");
 				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_dc-17p.tga");
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_dc-17p_na.tga");
-				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_icerifle.tga");
-				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_icerifle_na.tga");
+				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flamerifle.tga");
+				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_flamerifle_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_icerifle.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_icerifle_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_icerifle.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_icerifle_na.tga");
 				}
 				else if( i == WP_FLECHETTE)
 				{
-				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cr1.tga");
-				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cr1_na.tga");
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_briar.tga");
+				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_briar_na.tga");
 				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1.tga");
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_golancr1_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_acp.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_acp_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cr1.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cr1_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_junglerifle.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_junglerifle_na.tga");
 				}
 				else if( i == WP_CONCUSSION)
 				{
-				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_rotary_cannon.tga");
-				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_rotary_cannon_na.tga");
-				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_minigun.tga");
-				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_minigun_na.tga");
-				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lj50.tga");
-				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lj50_na.tga");
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lj50.tga");
+				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_lj50_na.tga");
+				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pulsecannon.tga");
+				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pulsecannon_na.tga");
+				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sonicrifle.tga");
+				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sonicrifle_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_rotary_cannon.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_rotary_cannon_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_minigun.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_minigun_na.tga");
 				}
 				else if( i == WP_ROCKET_LAUNCHER)
 				{
-				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg.tga");
-				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg_na.tga");
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_MiniMag.tga");
+				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_MiniMag_na.tga");
 				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cw_launcher.tga");
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_cw_launcher_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_e60r_launcher.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_e60r_launcher_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_pmg_na.tga");
 				}
 				else if( i == WP_THERMAL)
 				{
 				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_plasma.tga");
 				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_plasma_na.tga");
-				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sonic_det.tga");
-				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sonic_det_na.tga");
+				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_oldfraggrenade.tga");
+				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_oldfraggrenade_na.tga");
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_V-59_conc.tga");
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_V-59_conc_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sonic_det.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sonic_det_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_StormiTD.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_StormiTD_na.tga");
 				}
 				else if( i == WP_BRYAR_OLD)
 				{
 				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_s5.tga");
 				cgs.media.weaponIcons2_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_s5_na.tga");
-				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_gauntlet.tga");
-				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_gauntlet_na.tga");
-				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sbdarm.tga");
-				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sbdarm_na.tga");
+				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sc-10_holdout.tga");
+				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sc-10_holdout_na.tga");
+				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_gauntlet.tga");
+				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_gauntlet_na.tga");
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_gauntlet.tga");
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_gauntlet_na.tga");
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sbdarm.tga");
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sbdarm_na.tga");
 				}
 				else
 				{
@@ -4266,6 +4399,10 @@ Ghoul2 Insert End
 				cgs.media.weaponIcons3_NA[i] = trap_R_RegisterShaderNoMip(va("%s_na", item->icon));	
 				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip(item->icon);
 				cgs.media.weaponIcons4_NA[i] = trap_R_RegisterShaderNoMip(va("%s_na", item->icon));	
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip(item->icon);
+				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip(va("%s_na", item->icon));	
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip(item->icon);
+				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip(va("%s_na", item->icon));	
 
 				}			
 				cgs.media.weaponIcons[i] = trap_R_RegisterShaderNoMip(item->icon);
@@ -4283,6 +4420,10 @@ Ghoul2 Insert End
 			cgs.media.weaponIcons3_NA[i] = 0;
 			cgs.media.weaponIcons4[i] = 0;
 			cgs.media.weaponIcons4_NA[i] = 0;
+			cgs.media.weaponIcons5[i] = 0;
+			cgs.media.weaponIcons5_NA[i] = 0;
+			cgs.media.weaponIcons6[i] = 0;
+			cgs.media.weaponIcons6_NA[i] = 0;
 		}
 		i++;
 	}
@@ -4313,6 +4454,9 @@ Ghoul2 Insert End
 					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons7[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons8[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+//					cgs.media.invenIcons9[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 				}
 				else if (bg_itemlist[i].giTag == HI_ELECTROSHOCKER)
 				{
@@ -4321,6 +4465,9 @@ Ghoul2 Insert End
 					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons7[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons8[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+//					cgs.media.invenIcons9[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 				}
 				else if (bg_itemlist[i].giTag == HI_SQUADTEAM)
 				{
@@ -4329,6 +4476,9 @@ Ghoul2 Insert End
 					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_confederacy.tga");
 					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_republic.tga");
 					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_mandalorians.tga");
+					cgs.media.invenIcons7[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_sithempire.tga");
+					cgs.media.invenIcons8[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_oldrepublic.tga");
+//					cgs.media.invenIcons9[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip("gfx/hud/i_icon_civilians.tga");
 				}
 				else
 				{
@@ -4337,17 +4487,23 @@ Ghoul2 Insert End
 					cgs.media.invenIcons4[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 					cgs.media.invenIcons5[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 					cgs.media.invenIcons6[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons7[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+					cgs.media.invenIcons8[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
+//					cgs.media.invenIcons9[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);
 				}
 			cgs.media.invenIcons[bg_itemlist[i].giTag] = trap_R_RegisterShaderNoMip(bg_itemlist[i].icon);	
 			}
 			else
 			{
+				cgs.media.invenIcons[bg_itemlist[i].giTag] = 0;
 				cgs.media.invenIcons2[bg_itemlist[i].giTag] = 0;
 				cgs.media.invenIcons3[bg_itemlist[i].giTag] = 0;
 				cgs.media.invenIcons4[bg_itemlist[i].giTag] = 0;
 				cgs.media.invenIcons5[bg_itemlist[i].giTag] = 0;
 				cgs.media.invenIcons6[bg_itemlist[i].giTag] = 0;
-				cgs.media.invenIcons[bg_itemlist[i].giTag] = 0;
+				cgs.media.invenIcons7[bg_itemlist[i].giTag] = 0;
+				cgs.media.invenIcons8[bg_itemlist[i].giTag] = 0;
+//				cgs.media.invenIcons9[bg_itemlist[i].giTag] = 0;
 			}
 			
 		}
@@ -4558,7 +4714,9 @@ void CG_DestroyAllGhoul2(void)
 	CG_CleanJetpack4Ghoul2();
 	CG_CleanJetpack5Ghoul2();
 	CG_CleanJetpack6Ghoul2();
-
+	CG_CleanJetpack7Ghoul2();
+	CG_CleanJetpack8Ghoul2();
+	CG_CleanJetpack9Ghoul2();
 }
 
 /*
@@ -4578,9 +4736,9 @@ void CG_Shutdown( void )
 	BG_ClearAnimsets(); //free all dynamic allocations made through the engine
 
 	//[DynamicMemory_Vehicles]
+
 	BG_VehicleUnloadParms();
 	//[/DynamicMemory_Vehicles]
-
     CG_DestroyAllGhoul2();
 
 //	Com_Printf("... FX System Cleanup\n");

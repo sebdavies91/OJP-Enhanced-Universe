@@ -575,9 +575,7 @@ typedef enum
 	SK_DUALSTYLE,	//Dual lightsaber style
 	SK_STAFFSTYLE,	//Staff lightsaber style
 	//[/StanceSelection]
-	SK_LASERTURRETA, 
 	SK_FLECHETTE,//[Flechette]
-	SK_LASERTURRETB, 
 	SK_TRIPMINE,			//trip mine
 	SK_DEMP2,			//Concussion Rifle
 	SK_CONCUSSION,			//Concussion Rifle
@@ -594,6 +592,7 @@ typedef enum
 	SK_SQUADTEAM,
 	SK_SQUADTEAMA,
 	SK_SQUADTEAMB,	
+	SK_SQUADTEAMC, 
 	SK_VEHICLEMOUNT,
 	SK_LIGHTVEHICLEA,
 	SK_MEDIUMVEHICLEA,
@@ -606,7 +605,7 @@ typedef enum
 	SK_HEAVYVEHICLEB,	
 	SK_FIGHTERSHIPB,
 	SK_BOMBERSHIPB,
-	SK_TRANSPORTSHIPB,
+	SK_TRANSPORTSHIPB, 
 	SK_GRAPPLE,	
 	SK_AGILITY,	
 	SK_STRENGTH,
@@ -615,8 +614,7 @@ typedef enum
 	SK_SPECIALCHARACTER,
 	SK_JETPACKA,
 	SK_JETPACKB,
-	SK_WRISTA,
-	SK_WRISTB,
+	SK_JETPACKC,
 	SK_PISTOLA,
 	SK_PISTOLB,
 	SK_BLASTERA,
@@ -657,6 +655,8 @@ typedef enum
 	SK_STASISA,	
 	SK_PUSHA,
 	SK_PULLA,	
+	SK_POWER,	
+	SK_RESISTANCE,
 	NUM_SKILLS
 } skills_t;
 
@@ -2434,7 +2434,7 @@ typedef enum {
 	, FLAG_PREBLOCK
 
 	//[QuickParry]
-	, FLAG_QUICKPARRY
+//	, FLAG_QUICKPARRY
 	//[/QuickParry]
 	, FLAG_BLOCKING
 	//[/SaberSys]
@@ -2457,6 +2457,7 @@ typedef enum {
 	, FLAG_JETPACK2
 	, FLAG_JETPACK3
 	, FLAG_JETPACK4
+	, FLAG_JETPACK5
 	, FLAG_LIGHTNING2
 	, FLAG_DRAIN2
 	, FLAG_ABSORB2

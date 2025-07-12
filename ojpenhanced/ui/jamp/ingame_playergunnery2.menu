@@ -204,7 +204,7 @@
 			name					setsk_disruptorA
 			group					gunpowers
 			style					0	
-			text					"DXR-6 / Cycler / DLT-20A:"
+			text					"DXR-6 / DLT-20A / DC-15X:"
 			rect					180 105 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -238,7 +238,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Tenloss DXR-6 Disruptor Rifle / Tusken Cycler Projectile Rifle / Blastech DLT-20A Laser Rifle"
+			descText				"Tenloss DXR-6 Disruptor Rifle / Blastech DLT-20A Laser Rifle / Blastech DC-15X Laser Rifle"
 			visible					1 
 			action 
 			{ 
@@ -262,7 +262,7 @@
 			name					setsk_disruptorB
 			group					gunpowers 
 			style					0	
-			text					"E-5s / .. / ..:"
+			text					"E-5s / Cycler / PSG:"
 			rect					180 120 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -295,7 +295,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baktoid E-5S Disruptor Rifle / .. / .."
+			descText				"Baktoid E-5S Disruptor Rifle / Tusken Cycler Projectile Rifle / Imperial PSG Disruptor Rifle"
 			visible					1 
 			action 
 			{ 
@@ -477,7 +477,7 @@
 			name					setsk_repeaterB
 			group					gunpowers
 			style					0	
-			text					"T-21 / .. / ..:"
+			text					"T-21 / DC-17M / FWMB-10:"
 			rect					430 120 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -510,7 +510,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Blastech T-21 Repeater Rifle / .. / .."
+			descText				"Blastech T-21 Repeater Rifle / Blastech DC-17M Repeater Rifle / Merr Sonn FWMB-10 Repeater Rifle"
 			visible					1 
 			action 
 			{ 
@@ -635,7 +635,7 @@
 			name					setsk_flechetteA
 			group					gunpowers
 			style					0	
-			text					"FC-1 / CR-1 / DBA:"
+			text					"FC-1 / K-16S / DBA:"
 			rect					180 195 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -670,7 +670,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Golan Arms FC-1 Shotgun / Golan Arms CR-1 Shotgun / Blastech DBA Array Gun"
+			descText				"Golan Arms FC-1 Shotgun / Bryar K-16 Shotgun / Blastech DBA Array Gun"
 			visible					1 
 			action 
 			{ 
@@ -694,7 +694,7 @@
 			name					setsk_flechetteB
 			group					gunpowers
 			style					0	
-			text					"ACP / .. / ..:"
+			text					"ACP / CR-1 / S-22:"
 			rect					180 210 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -727,7 +727,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Arakyd ACP Array Gun / .. / .."
+			descText				"Arakyd ACP Array Gun / Golan Arms CR-1 Shotgun / Imperial S-22 Shotgun"
 			visible					1 
 			action 
 			{ 
@@ -852,7 +852,7 @@
 			name					setsk_concussionA
 			group					gunpowers
 			style					0	
-			text					"Stouker / Z-6 / Z-12:"
+			text					"Stouker / LJ-70 / Pulse:"
 			rect					430 195 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -886,7 +886,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Stouker Concussion Cannon / Merr Sonn Z-6 Rotary Cannon / Merr Sonn Z-12 Rotary Cannon"
+			descText				"Stouker Concussion Cannon / Arakyd LJ-70 Concussion Cannon / Merr Sonn Pulse Cannon"
 			visible					1 
 			action 
 			{ 
@@ -910,7 +910,7 @@
 			name					setsk_concussionB
 			group					gunpowers
 			style					0	
-			text					"LJ-70 / .. / ..:"
+			text					"Sonic / Z-6 / Z-12:"
 			rect					430 210 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -943,7 +943,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Arakyd LJ-70 Concussion Cannon / .. / .."
+			descText				"Geonosian Sonic Cannon / Merr Sonn Z-6 Rotary Cannon / Merr Sonn Z-12 Rotary Cannon"
 			visible					1 
 			action 
 			{ 
@@ -1063,7 +1063,7 @@
 			name					setsk_rocketA
 			group					gunpowers
 			style					0	
-			text					"PLX-2M / MG / PLX-1:"
+			text					"PLX-2M / MML / PLX-1:"
 			rect					180 285 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -1098,7 +1098,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Merr Sonn PLX-2M Rocket Launcher / Packered MG Grenade Launcher / Merr Sonn PLX-1 Rocket Launcher"
+			descText				"Merr Sonn PLX-2M Rocket Launcher / Krupx MML Rocket Launcher / Merr Sonn PLX-1 Rocket Launcher"
 			visible					1 
 			action 
 			{ 
@@ -1124,7 +1124,7 @@
 			name					setsk_rocketB
 			group					gunpowers
 			style					0	
-			text					"E-60R / .. / ..:"
+			text					"E-60R / MG-T / MG-F:"
 			rect					180 300 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -1157,7 +1157,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baktoid E-60R Rocket Launcher / .. / .."
+			descText				"Baktoid E-60R Rocket Launcher / Packered MG-T Grenade Launcher / Packered MG-F Grenade Launcher"
 			visible					1 
 			action 
 			{ 

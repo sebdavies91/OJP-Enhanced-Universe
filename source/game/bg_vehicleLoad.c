@@ -82,8 +82,8 @@ extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 
 #ifndef DYNAMICMEMORY_VEHICLES
 //[MOREVEHICLES]
-#define MAX_VEH_WEAPON_DATA_SIZE 0x64000
-#define MAX_VEHICLE_DATA_SIZE 0x160000
+#define MAX_VEH_WEAPON_DATA_SIZE 0x10000
+#define MAX_VEHICLE_DATA_SIZE 0x50000
 
 //#define MAX_VEH_WEAPON_DATA_SIZE 0x4000
 //#define MAX_VEHICLE_DATA_SIZE 0x10000
@@ -97,13 +97,13 @@ extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 	extern void trap_TrueFree(void **ptr);
 
 	//char *VehWeaponParms; //will do this later
-#define MAX_VEH_WEAPON_DATA_SIZE 0x64000
+#define MAX_VEH_WEAPON_DATA_SIZE 0x10000
 	char	VehWeaponParms[MAX_VEH_WEAPON_DATA_SIZE];
 
 	char *VehicleParms;
 
 	//this is still used for a few temp buffers
-#define MAX_VEHICLE_DATA_SIZE 0x160000
+#define MAX_VEHICLE_DATA_SIZE 0x50000
 #endif
 
 //[/DynamicMemory_Vehicles]
@@ -983,7 +983,7 @@ static qboolean BG_ParseVehicleParm( vehicleInfo_t *vehicle, char *parmName, cha
 				}
 				break;
 			case VF_WEAPON:	// take string, resolve into index into VehWeaponParms
-				*(int *)(b+vehicleFields[i].ofs) = VEH_VehWeaponIndexForName( value );
+				//*(int *)(b+vehicleFields[i].ofs) = VEH_VehWeaponIndexForName( value );
 				break;
 			case VF_MODEL:	// take the string, get the G_ModelIndex
 #ifdef QAGAME

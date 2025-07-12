@@ -307,11 +307,11 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 			mechAttacker->behaveMode = SABBEHAVE_ATTACK;
 #endif
 
-			if (blocker->client->pers.cmd.buttons & BUTTON_15)
-			{
-				attacker->client->ps.userInt3 |= (1 << FLAG_QUICKPARRY);
-			}
-			else
+//			if (blocker->client->pers.cmd.buttons & BUTTON_15)
+//			{
+//				attacker->client->ps.userInt3 |= (1 << FLAG_QUICKPARRY);
+//			}
+//			else
 			{
 			attacker->client->ps.userInt3 |= ( 1 << FLAG_PARRIED );
 			}
@@ -388,11 +388,11 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 			mechAttacker->behaveMode = SABBEHAVE_ATTACKPARRIED;
 #endif
 			//[QuickParry]
-			if (blocker->client->pers.cmd.buttons & BUTTON_15)
-			{
-				attacker->client->ps.userInt3 |= ( 1 << FLAG_QUICKPARRY);
-			}
-			else
+//			if (blocker->client->pers.cmd.buttons & BUTTON_15)
+//			{
+//				attacker->client->ps.userInt3 |= ( 1 << FLAG_QUICKPARRY);
+//			}
+//			else
 			{
 			attacker->client->ps.userInt3 |= ( 1 << FLAG_PARRIED );
 			}

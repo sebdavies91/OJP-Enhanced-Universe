@@ -1223,7 +1223,7 @@ void ItemUse_Sentry2( gentity_t *ent )
 	SP_PAS( sentry );
 }
 
-extern gentity_t *NPC_SpawnType( gentity_t *ent, char *npc_type, char *targetname, qboolean isVehicle );
+gentity_t *NPC_SpawnType( gentity_t *ent, char *npc_type, char *targetname, qboolean isVehicle );
 
 //[SeekerItemNpc]
 void NPC_SetMoveGoal( gentity_t *ent, vec3_t point, int radius, qboolean isNavGoal, int combatPoint, gentity_t *targetEnt );
@@ -1520,21 +1520,30 @@ void Jetpack_Off(gentity_t *ent)
 	{
 		if(ent->client->ps.eFlags & EF_DUAL_WEAPONS)
 		{
-				
-					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
+					if (ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 					{
-			ent->client->ps.torsoAnim=WeaponReadyAnim4[ent->client->ps.weapon];
-			ent->client->ps.legsAnim=WeaponReadyAnim4[ent->client->ps.weapon];
+			ent->client->ps.torsoAnim=WeaponReadyAnim12[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim12[ent->client->ps.weapon];
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+			ent->client->ps.torsoAnim=WeaponReadyAnim10[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim10[ent->client->ps.weapon];
+					}				
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+			ent->client->ps.torsoAnim=WeaponReadyAnim8[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim8[ent->client->ps.weapon];
 					}
 					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
 					{
 			ent->client->ps.torsoAnim=WeaponReadyAnim6[ent->client->ps.weapon];
 			ent->client->ps.legsAnim=WeaponReadyAnim6[ent->client->ps.weapon];
 					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_2)
 					{
-			ent->client->ps.torsoAnim=WeaponReadyAnim8[ent->client->ps.weapon];
-			ent->client->ps.legsAnim=WeaponReadyAnim8[ent->client->ps.weapon];
+			ent->client->ps.torsoAnim=WeaponReadyAnim4[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim4[ent->client->ps.weapon];
 					}
 					else
 					{
@@ -1546,20 +1555,30 @@ void Jetpack_Off(gentity_t *ent)
 		}
 		else
 		{
-					if (ent->client->ps.eFlags & EF_WP_OPTION_2)
+					if (ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 					{
-			ent->client->ps.torsoAnim=WeaponReadyAnim3[ent->client->ps.weapon];
-			ent->client->ps.legsAnim=WeaponReadyAnim3[ent->client->ps.weapon];
+			ent->client->ps.torsoAnim=WeaponReadyAnim11[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim11[ent->client->ps.weapon];
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+			ent->client->ps.torsoAnim=WeaponReadyAnim9[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim9[ent->client->ps.weapon];
+					}
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+			ent->client->ps.torsoAnim=WeaponReadyAnim7[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim7[ent->client->ps.weapon];
 					}
 					else if (ent->client->ps.eFlags & EF_WP_OPTION_3)
 					{
 			ent->client->ps.torsoAnim=WeaponReadyAnim5[ent->client->ps.weapon];
 			ent->client->ps.legsAnim=WeaponReadyAnim5[ent->client->ps.weapon];
 					}
-					else if (ent->client->ps.eFlags & EF_WP_OPTION_4)
+					else if (ent->client->ps.eFlags & EF_WP_OPTION_2)
 					{
-			ent->client->ps.torsoAnim=WeaponReadyAnim7[ent->client->ps.weapon];
-			ent->client->ps.legsAnim=WeaponReadyAnim7[ent->client->ps.weapon];
+			ent->client->ps.torsoAnim=WeaponReadyAnim3[ent->client->ps.weapon];
+			ent->client->ps.legsAnim=WeaponReadyAnim3[ent->client->ps.weapon];
 					}
 					else
 					{
@@ -2234,17 +2253,26 @@ void Icethrower_Fire( gentity_t *self )
 					traceEnt->client->ps.legsTimer = traceEnt->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
 					traceEnt->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
 					traceEnt->client->ps.saberBlocked = BLOCKED_NONE;
-					if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2)
+
+					if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2 && traceEnt->client->ps.eFlags & EF_WP_OPTION_4)
 					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim3[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim11[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					}
+					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2 && traceEnt->client->ps.eFlags & EF_WP_OPTION_3)
+					{
+					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim9[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					}
+					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_4)
+					{
+					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim7[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
 					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_3)
 					{
 					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim5[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
-					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_4)
+					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2)
 					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim7[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
+					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim3[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
 					}
 					else
 					{
@@ -3115,6 +3143,9 @@ void ItemUse_UseOverload( gentity_t *ent )
 	ent->client->overloadToggleTime = level.time + OVERLOAD_TOGGLE_TIME;
 }
 
+gentity_t *NPC_SpawnType( gentity_t *ent, char *npc_type, char *targetname, qboolean isVehicle );
+
+
 void ItemUse_SquadTeam(gentity_t *ent)
 {
 
@@ -3148,6 +3179,18 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 		else if(ent->client->skillLevel[SK_SQUADTEAMB] == FORCE_LEVEL_3)
 			{
 		SquadTeam3 = NPC_SpawnType( ent, "squadman", va("player%iSquadTeam3", ent->s.number), qfalse );
+			}
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_1)
+			{
+		SquadTeam3 = NPC_SpawnType( ent, "squadtse", va("player%iSquadTeam3", ent->s.number), qfalse );
+			}
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_2)
+			{
+		SquadTeam3 = NPC_SpawnType( ent, "squadtor", va("player%iSquadTeam3", ent->s.number), qfalse );
+			}	
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_3)
+			{
+		SquadTeam3 = NPC_SpawnType( ent, "squadciv", va("player%iSquadTeam3", ent->s.number), qfalse );
 			}
 		else
 			{
@@ -3327,6 +3370,18 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			{
 		SquadTeam2 = NPC_SpawnType( ent, "squadman", va("player%iSquadTeam2", ent->s.number), qfalse );
 			}
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_1)
+			{
+		SquadTeam2 = NPC_SpawnType( ent, "squadtse", va("player%iSquadTeam2", ent->s.number), qfalse );
+			}
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_2)
+			{
+		SquadTeam2 = NPC_SpawnType( ent, "squadtor", va("player%iSquadTeam2", ent->s.number), qfalse );
+			}	
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_3)
+			{
+		SquadTeam2 = NPC_SpawnType( ent, "squadciv", va("player%iSquadTeam2", ent->s.number), qfalse );
+			}
 		else
 			{
 		SquadTeam2 = NPC_SpawnType( ent, "squademp", va("player%iSquadTeam2", ent->s.number), qfalse );
@@ -3497,6 +3552,18 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			{
 		SquadTeam = NPC_SpawnType( ent, "squadman", va("player%iSquadTeam", ent->s.number), qfalse );
 			}
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_1)
+			{
+		SquadTeam = NPC_SpawnType( ent, "squadtse", va("player%iSquadTeam", ent->s.number), qfalse );
+			}
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_2)
+			{
+		SquadTeam = NPC_SpawnType( ent, "squadtor", va("player%iSquadTeam", ent->s.number), qfalse );
+			}	
+		else if(ent->client->skillLevel[SK_SQUADTEAMC] == FORCE_LEVEL_3)
+			{
+		SquadTeam = NPC_SpawnType( ent, "squadciv", va("player%iSquadTeam", ent->s.number), qfalse );
+			}
 		else
 			{
 		SquadTeam = NPC_SpawnType( ent, "squademp", va("player%iSquadTeam", ent->s.number), qfalse );
@@ -3639,6 +3706,8 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 
 
 }
+gentity_t *NPC_SpawnType( gentity_t *ent, char *npc_type, char *targetname, qboolean isVehicle );
+
 
 void ItemUse_VehicleMount(gentity_t *ent)
 {
@@ -3798,18 +3867,6 @@ void ItemUse_VehicleMount(gentity_t *ent)
 	else if(ent->client->skillLevel[SK_TRANSPORTSHIPB] == FORCE_LEVEL_3)
 		{
 		VehicleMount = NPC_SpawnType( ent, "slave1_jango", va("player%iVehicleMount", ent->s.number), qtrue );
-		}
-	else if(ent->client->skillLevel[SK_LASERTURRETA] == FORCE_LEVEL_1)
-		{
-		VehicleMount = NPC_SpawnType( ent, "turbolaser_tower", va("player%iVehicleMount", ent->s.number), qtrue );
-		}
-	else if(ent->client->skillLevel[SK_LASERTURRETA] == FORCE_LEVEL_2)
-		{
-		VehicleMount = NPC_SpawnType( ent, "laserturret1", va("player%iVehicleMount", ent->s.number), qtrue );
-		}
-	else if(ent->client->skillLevel[SK_LASERTURRETA] == FORCE_LEVEL_3)
-		{
-		VehicleMount = NPC_SpawnType( ent, "laserturret2", va("player%iVehicleMount", ent->s.number), qtrue );
 		}		
 	else
 		{
@@ -4164,11 +4221,7 @@ void EWebFire(gentity_t *owner, gentity_t *eweb)
 	mdxaBone_t boltMatrix;
 	gentity_t *missile;
 	vec3_t p, d, bPoint;
-	
-	
-	vec3_t		angs;
-	int i;
-	int shots;
+
 	
 	if (eweb->genericValue10 == -1)
 	{ //oh no

@@ -503,7 +503,7 @@ typedef struct centity_s {
 	qboolean		teamPowerType; //0 drain, 1 sever, 2 lightning, 3 judgement, 4 deathfield, 5 deathsight, 6 stasis, 7 insanity, 8 blinding
 	
 	int				itemPowerEffectTime;
-	qboolean		itemPowerType; //0 flame, 1 ice, 2 shock 
+	qboolean		itemPowerType; //0 flame, 1 ice, 2 shock, 3 sound, 4 flash 
 	
 	qboolean		isRagging;
 	qboolean		ownerRagging;
@@ -763,21 +763,29 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		flashSound2[4];		// fast firing weapons randomly choose
 	sfxHandle_t		flashSound3[4];		// fast firing weapons randomly choose
 	sfxHandle_t		flashSound4[4];		// fast firing weapons randomly choose
+	sfxHandle_t		flashSound5[4];		// fast firing weapons randomly choose
+	sfxHandle_t		flashSound6[4];		// fast firing weapons randomly choose
 	sfxHandle_t		firingSound;
 	sfxHandle_t		chargeSound;
 	fxHandle_t		muzzleEffect;
 	fxHandle_t		muzzle2Effect;
 	fxHandle_t		muzzle3Effect;
 	fxHandle_t		muzzle4Effect;
+	fxHandle_t		muzzle5Effect;
+	fxHandle_t		muzzle6Effect;
 	qhandle_t		missileModel;
 	qhandle_t		missileModel2;
 	qhandle_t		missileModel3;
 	qhandle_t		missileModel4;
+	qhandle_t		missileModel5;
+	qhandle_t		missileModel6;
 	sfxHandle_t		missileSound;
 	void			(*missileTrailFunc)( centity_t *, const struct weaponInfo_s *wi );
 	void			(*missileTrailFunc2)( centity_t *, const struct weaponInfo_s *wi );
 	void			(*missileTrailFunc3)( centity_t *, const struct weaponInfo_s *wi );
 	void			(*missileTrailFunc4)( centity_t *, const struct weaponInfo_s *wi );
+	void			(*missileTrailFunc5)( centity_t *, const struct weaponInfo_s *wi );
+	void			(*missileTrailFunc6)( centity_t *, const struct weaponInfo_s *wi );
 	float			missileDlight;
 	vec3_t			missileDlightColor;
 	int				missileRenderfx;
@@ -787,21 +795,29 @@ typedef struct weaponInfo_s {
 	sfxHandle_t		altFlashSound2[4];
 	sfxHandle_t		altFlashSound3[4];
 	sfxHandle_t		altFlashSound4[4];
+	sfxHandle_t		altFlashSound5[4];
+	sfxHandle_t		altFlashSound6[4];
 	sfxHandle_t		altFiringSound;
 	sfxHandle_t		altChargeSound;
 	fxHandle_t		altMuzzleEffect;
 	fxHandle_t		altMuzzle2Effect;
 	fxHandle_t		altMuzzle3Effect;
 	fxHandle_t		altMuzzle4Effect;
+	fxHandle_t		altMuzzle5Effect;
+	fxHandle_t		altMuzzle6Effect;
 	qhandle_t		altMissileModel;
 	qhandle_t		altMissileModel2;
 	qhandle_t		altMissileModel3;
 	qhandle_t		altMissileModel4;
+	qhandle_t		altMissileModel5;
+	qhandle_t		altMissileModel6;
 	sfxHandle_t		altMissileSound;
 	void			(*altMissileTrailFunc)( centity_t *, const struct weaponInfo_s *wi );
 	void			(*altMissileTrailFunc2)( centity_t *, const struct weaponInfo_s *wi );
 	void			(*altMissileTrailFunc3)( centity_t *, const struct weaponInfo_s *wi );
 	void			(*altMissileTrailFunc4)( centity_t *, const struct weaponInfo_s *wi );
+	void			(*altMissileTrailFunc5)( centity_t *, const struct weaponInfo_s *wi );
+	void			(*altMissileTrailFunc6)( centity_t *, const struct weaponInfo_s *wi );
 	float			altMissileDlight;
 	vec3_t			altMissileDlightColor;
 	int				altMissileRenderfx;
@@ -1199,6 +1215,7 @@ typedef struct {
 	qhandle_t	purpleFrontFlash;	
 	qhandle_t	greenFrontFlash;
 	qhandle_t	whiteFrontFlash;
+	qhandle_t	cyanFrontFlash;
 	qhandle_t	lightningFlash;
 
 	qhandle_t	itemHoloModel;
@@ -1557,13 +1574,20 @@ typedef struct {
 	qhandle_t weaponIcons3_NA[WP_NUM_WEAPONS];
 	qhandle_t weaponIcons4[WP_NUM_WEAPONS];
 	qhandle_t weaponIcons4_NA[WP_NUM_WEAPONS];
+	qhandle_t weaponIcons5[WP_NUM_WEAPONS];
+	qhandle_t weaponIcons5_NA[WP_NUM_WEAPONS];
+	qhandle_t weaponIcons6[WP_NUM_WEAPONS];
+	qhandle_t weaponIcons6_NA[WP_NUM_WEAPONS];
 	//holdable inventory item icons
 	qhandle_t invenIcons[HI_NUM_HOLDABLE];
 	qhandle_t invenIcons2[HI_NUM_HOLDABLE];
 	qhandle_t invenIcons3[HI_NUM_HOLDABLE];
 	qhandle_t invenIcons4[HI_NUM_HOLDABLE];
 	qhandle_t invenIcons5[HI_NUM_HOLDABLE];
-	qhandle_t invenIcons6[HI_NUM_HOLDABLE];		
+	qhandle_t invenIcons6[HI_NUM_HOLDABLE];	
+	qhandle_t invenIcons7[HI_NUM_HOLDABLE];	
+	qhandle_t invenIcons8[HI_NUM_HOLDABLE];	
+//	qhandle_t invenIcons9[HI_NUM_HOLDABLE];		
 	//force power icons
 	qhandle_t forcePowerIcons[NUM_FORCE_POWERS];
 	qhandle_t forcePowerIcons2[NUM_FORCE_POWERS];
@@ -1602,14 +1626,13 @@ typedef struct
 	fxHandle_t	concussionShotEffect;
 	fxHandle_t	concussionShotEffect2;
 	fxHandle_t	concussionShotEffect3;
-	fxHandle_t	concussionShotEffect4;
-	
+	fxHandle_t	concussionShotEffect4;	
 	fxHandle_t	concussionImpactEffect;
-	fxHandle_t	concussionotherImpactEffect;	
-	
-	//destruction
-	fxHandle_t	destructionShotEffect;
-	fxHandle_t	destructionImpactEffect;
+	fxHandle_t	concussionImpactEffect2;	
+	fxHandle_t	concussionImpactEffect3;
+	fxHandle_t	concussionImpactEffect4;
+
+
 
 	//BRYAR PISTOL BLASTER BOWCASTER BRYAR OLD
 	fxHandle_t	orangeShotEffect;
@@ -1619,88 +1642,78 @@ typedef struct
 	fxHandle_t	greenShotEffect;
 	fxHandle_t	purpleShotEffect;
 	fxHandle_t	yellowShotEffect;
-
-	fxHandle_t	orangePowerupShotEffect;
-	fxHandle_t	redPowerupShotEffect;
-	fxHandle_t	bluePowerupShotEffect;
-	fxHandle_t	whitePowerupShotEffect;
-	fxHandle_t	greenPowerupShotEffect;
-	fxHandle_t	purplePowerupShotEffect;
-	fxHandle_t	yellowPowerupShotEffect;
-
-
-	// BRYAR PISTOL
-
-	fxHandle_t	bryarWallImpactEffect;
-	fxHandle_t	bryarFleshImpactEffect;
-
-
-	// BLASTER
+//	fxHandle_t	cyanShotEffect;
 
 	fxHandle_t  blasterWallImpactEffect;
 	fxHandle_t  blasterFleshImpactEffect;
 
 
 	// DISRUPTOR
-	fxHandle_t  disruptorRingsEffect;
-	fxHandle_t  disruptorProjectileEffect;
 	fxHandle_t  disruptorWallImpactEffect;	
 	fxHandle_t  disruptorFleshImpactEffect;	
 	fxHandle_t  disruptorAltMissEffect;	
 	fxHandle_t  disruptorAltHitEffect;	
-
-	// BOWCASTER
-
-	fxHandle_t	bowcasterImpactEffect;
 
 	// REPEATER
 	fxHandle_t  repeaterProjectileEffect;
 	fxHandle_t  repeaterProjectileEffect2;
 	fxHandle_t  repeaterProjectileEffect3;
 	fxHandle_t  repeaterProjectileEffect4;
-	
+	fxHandle_t  repeaterProjectileEffect5;
+	fxHandle_t  repeaterProjectileEffect6;	
 	fxHandle_t  repeaterAltProjectileEffect;
-	fxHandle_t  repeaterotherAltProjectileEffect;
-
-	
+	fxHandle_t  repeaterAltProjectileEffect2;
+	fxHandle_t  repeaterAltProjectileEffect3;	
 	fxHandle_t  repeaterWallImpactEffect;	
 	fxHandle_t  repeaterFleshImpactEffect;
 	fxHandle_t  repeaterAltWallImpactEffect;
-	fxHandle_t  repeaterotherAltWallImpactEffect;
+	fxHandle_t  repeaterAltWallImpactEffect2;
+	fxHandle_t  repeaterAltWallImpactEffect3;
+
 	// DEMP2
 	fxHandle_t  demp2ProjectileEffect;
 	fxHandle_t  fireProjectileEffect;
+	fxHandle_t  dioxisProjectileEffect;
 	fxHandle_t  iceProjectileEffect;	
 	fxHandle_t  demp2WallImpactEffect;
 	fxHandle_t  fireWallImpactEffect;
+	fxHandle_t  dioxisWallImpactEffect;
 	fxHandle_t  iceWallImpactEffect;	
 	fxHandle_t  demp2FleshImpactEffect;
 	fxHandle_t  fireFleshImpactEffect;
+	fxHandle_t  dioxisFleshImpactEffect;
 	fxHandle_t  iceFleshImpactEffect;
+
 	// FLECHETTE
 	fxHandle_t	flechetteShotEffect;
 	fxHandle_t	flechetteShotEffect2;
 	fxHandle_t	flechetteShotEffect3;
 	fxHandle_t	flechetteShotEffect4;
+	fxHandle_t	flechetteShotEffect5;
+	fxHandle_t	flechetteShotEffect6;
 	fxHandle_t	flechetteAltShotEffect;
-	fxHandle_t	flechetteotherAltShotEffect;
+	fxHandle_t	flechetteAltShotEffect2	;
+	fxHandle_t	flechetteAltShotEffect3	;
 	fxHandle_t	flechetteWallImpactEffect;
 	fxHandle_t	flechetteFleshImpactEffect;
 
 	// ROCKET
 	fxHandle_t  rocketShotEffect;
-	fxHandle_t  rocketExplosionEffect;
+
 	
 	// THERMAL
 	fxHandle_t	thermalExplosionEffect;
-	fxHandle_t	thermalShockwaveEffect;
+	fxHandle_t	incineraryExplosionEffect;
+	fxHandle_t	dioxisExplosionEffect;
+//	fxHandle_t	iceExplosionEffect;
+	fxHandle_t	ionExplosionEffect;
+	fxHandle_t	sonicExplosionEffect;	
+	fxHandle_t	flashExplosionEffect;
+
 	// TRIPMINE
 	fxHandle_t	tripmineLaserFX;
 	fxHandle_t	tripmineGlowFX;
-	// BRYAR OLD
 
-	fxHandle_t	bryaroldWallImpactEffect;
-	fxHandle_t	bryaroldFleshImpactEffect;
 
 
 	fxHandle_t  emplacedShotEffect;
@@ -1715,30 +1728,30 @@ typedef struct
 	
 	//[Flamethrower]
 	fxHandle_t flamethrower;
-	fxHandle_t flamethrowerWide;
+//	fxHandle_t flamethrowerWide;
 	//[/Flamethrower]
 	//[Dioxisthrower]
 	fxHandle_t dioxisthrower;
-	fxHandle_t dioxisthrowerWide;
+//	fxHandle_t dioxisthrowerWide;
 	//[/Dioxisthrower]
 	//[Icethrower]
 	fxHandle_t icethrower;
-	fxHandle_t icethrowerWide;
+//	fxHandle_t icethrowerWide;
 	//[/Icethrower]
 	
 	
 	
 	//[Electroshocker]
 	fxHandle_t electroshocker;
-	fxHandle_t electroshockerWide;
+//	fxHandle_t electroshockerWide;
 	//[/Electroshocker]
 	//[Lasersupport]
 	fxHandle_t lasersupport;
-	fxHandle_t lasersupportWide;
+//	fxHandle_t lasersupportWide;
 	//[/Lasersupport]
 	//[Orbitalstrike]
 	fxHandle_t orbitalstrike;
-	fxHandle_t orbitalstrikeWide;
+//	fxHandle_t orbitalstrikeWide;
 	//[/Orbitalstrike]
 	
 	
@@ -1751,9 +1764,9 @@ typedef struct
 	fxHandle_t forceDeathsight;
 	fxHandle_t forceSever;
 	fxHandle_t forceSeverWide;
-	fxHandle_t ForceSevered;
+	fxHandle_t forceSevered;
 	fxHandle_t forceHealed;
-	fxHandle_t ForceRegenerated;
+	fxHandle_t forceRegenerated;
 	fxHandle_t forceExplode;
 	fxHandle_t forceDestruction;
 	fxHandle_t forceBlinding;
@@ -1761,7 +1774,7 @@ typedef struct
 	fxHandle_t turretShotEffect;
 
 	//Whatever
-	fxHandle_t itemCone;
+//	fxHandle_t itemCone;
 
 	fxHandle_t	mSparks;
 	fxHandle_t	mSaberCut;
@@ -1775,7 +1788,7 @@ typedef struct
 	fxHandle_t  mSaberFriction;  
 	//[/SaberLockSys]
 	fxHandle_t	mSpawn;
-	fxHandle_t	mJediSpawn;
+//	fxHandle_t	mJediSpawn;
 	fxHandle_t	mBlasterDeflect;
 	fxHandle_t	mBlasterSmoke;
 	fxHandle_t	mDisruptorDeathSmoke;
@@ -1783,15 +1796,10 @@ typedef struct
 	fxHandle_t	mTurretExplode;
 	fxHandle_t	mEmplacedExplode;
 	fxHandle_t	mEmplacedDeadSmoke;
-	fxHandle_t	mThermalExplosionEffect;
-	fxHandle_t	mIncineraryExplosionEffect;
-	fxHandle_t	mDioxisExplosionEffect;
-	fxHandle_t	mIonExplosionEffect;
 	fxHandle_t	mFlechetteAltBlow;
 	fxHandle_t	mStunBatonFleshImpact;
 	fxHandle_t	mAltDetonate;
 	fxHandle_t	mSparksExplodeNoSound;
-	fxHandle_t	mTripMineLaster;
 	fxHandle_t	mEmplacedMuzzleFlash;
 	fxHandle_t	mConcussionAltRing;
 	fxHandle_t	mHyperspaceStars;
@@ -2389,11 +2397,14 @@ void CG_MissileHitWall(int weapon, int clientNum, vec3_t origin, vec3_t dir, imp
 void CG_MissileHitWall2(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean alt_fire, int charge);
 void CG_MissileHitWall3(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean alt_fire, int charge);
 void CG_MissileHitWall4(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean alt_fire, int charge);
+void CG_MissileHitWall5(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean alt_fire, int charge);
+void CG_MissileHitWall6(int weapon, int clientNum, vec3_t origin, vec3_t dir, impactSound_t soundType, qboolean alt_fire, int charge);
 void CG_MissileHitPlayer( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean alt_fire);
 void CG_MissileHitPlayer2( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean alt_fire);
 void CG_MissileHitPlayer3( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean alt_fire);
 void CG_MissileHitPlayer4( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean alt_fire);
-
+void CG_MissileHitPlayer5( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean alt_fire);
+void CG_MissileHitPlayer6( int weapon, vec3_t origin, vec3_t dir, int entityNum, qboolean alt_fire);
 void CG_AddViewWeapon (playerState_t *ps);
 void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent, int team, vec3_t newAngles, qboolean thirdPerson, qboolean leftweap );//[DualPistols]
 void CG_DrawWeaponSelect( void );
@@ -2831,14 +2842,20 @@ void FX_ConcussionHitWall( vec3_t origin, vec3_t normal );
 void FX_ConcussionHitWall2( vec3_t origin, vec3_t normal );
 void FX_ConcussionHitWall3( vec3_t origin, vec3_t normal );
 void FX_ConcussionHitWall4( vec3_t origin, vec3_t normal );
+void FX_ConcussionHitWall5( vec3_t origin, vec3_t normal );
+void FX_ConcussionHitWall6( vec3_t origin, vec3_t normal );
 void FX_ConcussionHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid );
 void FX_ConcussionHitPlayer2( vec3_t origin, vec3_t normal, qboolean humanoid );
 void FX_ConcussionHitPlayer3( vec3_t origin, vec3_t normal, qboolean humanoid );
 void FX_ConcussionHitPlayer4( vec3_t origin, vec3_t normal, qboolean humanoid );
+void FX_ConcussionHitPlayer5( vec3_t origin, vec3_t normal, qboolean humanoid );
+void FX_ConcussionHitPlayer6( vec3_t origin, vec3_t normal, qboolean humanoid );
 void FX_ConcussionProjectileThink(  centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_ConcussionProjectileThink2(  centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_ConcussionProjectileThink3(  centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_ConcussionProjectileThink4(  centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_ConcussionProjectileThink5(  centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_ConcussionProjectileThink6(  centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_ConcAltShot( vec3_t start, vec3_t end );
 
 void FX_DestructionHitWall( vec3_t origin, vec3_t normal );
@@ -2859,6 +2876,11 @@ void FX_BryarHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid );
 void FX_BryarAltHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid );
 
 void FX_BlasterProjectileThink( centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_BlasterProjectileThink2( centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_BlasterProjectileThink3( centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_BlasterProjectileThink4( centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_BlasterProjectileThink5( centity_t *cent, const struct weaponInfo_s *weapon );
+void FX_BlasterProjectileThink6( centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_BlasterAltFireThink( centity_t *cent, const struct weaponInfo_s *weapon );
 void FX_BlasterWeaponHitWall( vec3_t origin, vec3_t normal );
 void FX_BlasterWeaponHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid );

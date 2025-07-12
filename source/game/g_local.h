@@ -1013,6 +1013,8 @@ struct gclient_s {
 	int			burnTime;	
 	int			shockTime;
 	int			toxicTime;	
+	int			sonicTime;
+	int			flashTime;
 	int			backpackrocketTime;
 	int			specialcharacterSpawn;
 	int			disablingTime;
@@ -1022,6 +1024,7 @@ struct gclient_s {
 	int			repulseTime;
 	int			deathsightbubbledamageTime;
 	int			deathfieldbubbledamageTime;
+	int			semiTime;	
 };
 
 //Interest points

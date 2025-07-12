@@ -866,7 +866,7 @@ int CG_ParseAnimationEvtFile( char *as_filename, int animFileIndex, int eventFil
 	const char	*text_p;
 	int			len;
 	const char	*token;
-	char		text[80000];
+	char		text[160000];
 	char		sfilename[MAX_QPATH];
 	fileHandle_t	f;
 	int			i, j, upper_i, lower_i;
@@ -1227,7 +1227,7 @@ qboolean CG_ParseSurfsFile( const char *modelName, const char *skinName, char *s
 	int			len;
 	const char	*token;
 	const char	*value;
-	char		text[20000];
+	char		text[40000];
 	char		sfilename[MAX_QPATH];
 	fileHandle_t	f;
 	int			i = 0;
@@ -4221,7 +4221,7 @@ static void CG_SetLerpFrameAnimation( centity_t *cent, clientInfo_t *ci, lerpFra
 		//[FatigueSys]
 		BG_SaberStartTransAnim(cent->currentState.number, cent->currentState.fireflag, 
 			cent->currentState.weapon, newAnimation, &animSpeed, 
-			cent->currentState.brokenLimbs, cent->currentState.userInt3, PM_RunningAnim(cent->currentState.legsAnim));
+			cent->currentState.brokenLimbs, cent->currentState.userInt3);
 		//BG_SaberStartTransAnim(cent->currentState.number, cent->currentState.fireflag, cent->currentState.weapon, newAnimation, &animSpeed, cent->currentState.brokenLimbs);
 		//[/FatigueSys]
 
@@ -7207,7 +7207,7 @@ void CG_DoSaber( vec3_t origin, vec3_t dir, float length, float lengthMax, float
 
 	if (doLight)
 	{	// always add a light because sabers cast a nice glow before they slice you in half!!  or something...
-
+		vec3_t rgb={1,1,1};
 		//[RGBSabers]
 		float light = length*1.4f + random()*3.0f;
 		CG_RGBForSaberColor( color, rgb , cnum, bnum);
@@ -10486,7 +10486,7 @@ void CG_DoSFXSaber( vec3_t blade_muz, vec3_t blade_tip, vec3_t trail_tip, vec3_t
 //
 // Can pass in NULL for the axis
 //--------------------------------------------------------------
-void CG_GetTagWorldPosition( refEntity_t *model, char *tag, vec3_t pos, vec3_t axis )
+void CG_GetTagWorldPosition( refEntity_t *model, char *tag, vec3_t pos, vec3_t axis[3])
 {
 	orientation_t	orientation;
 	int i = 0;
@@ -13961,7 +13961,7 @@ void CG_CleanJetpack2Ghoul2(void)
 void *cg_g2Jetpack3Instance = NULL;
 
 
-#define JETPACK3_MODEL "models/weapons2/spacejet/model.glm"
+#define JETPACK3_MODEL "models/weapons2/b_jetpack/model.glm"
 
 void CG_InitJetpack3Ghoul2(void)
 {
@@ -14082,7 +14082,7 @@ void CG_CleanJetpack5Ghoul2(void)
 
 void *cg_g2Jetpack6Instance = NULL;
 
-#define JETPACK6_MODEL "models/weapons2/sbd_blaster/sbd_blaster.glm"
+#define JETPACK6_MODEL "models/weapons2/jetc/model.glm"
 
 
 void CG_InitJetpack6Ghoul2(void)
@@ -14117,6 +14117,121 @@ void CG_CleanJetpack6Ghoul2(void)
 		cg_g2Jetpack6Instance = NULL;
 	}
 }
+
+void *cg_g2Jetpack7Instance = NULL;
+
+#define JETPACK7_MODEL "models/weapons2/spacejet/model.glm"
+
+
+void CG_InitJetpack7Ghoul2(void)
+{
+
+
+	if (cg_g2Jetpack7Instance)
+	{
+		assert(!"Tried to init jetpack inst, already init'd");
+		return;
+	}
+
+	trap_G2API_InitGhoul2Model(&cg_g2Jetpack7Instance, JETPACK7_MODEL, 0, 0, 0, 0, 0);
+
+	assert(cg_g2Jetpack7Instance);
+
+	//Indicate which bolt on the player we will be attached to
+	//In this case bolt 0 is rhand, 1 is lhand, and 2 is the bolt
+	//for the jetpack (*chestg)
+	trap_G2API_SetBoltInfo(cg_g2Jetpack7Instance, 0, 2);
+
+	//Add the bolts jet effects will be played from
+	trap_G2API_AddBolt(cg_g2Jetpack7Instance, 0, "torso_ljet");
+	trap_G2API_AddBolt(cg_g2Jetpack7Instance, 0, "torso_rjet");
+}
+
+void CG_CleanJetpack7Ghoul2(void)
+{
+	if (cg_g2Jetpack7Instance)
+	{
+		trap_G2API_CleanGhoul2Models(&cg_g2Jetpack7Instance);
+		cg_g2Jetpack7Instance = NULL;
+	}
+}
+
+void *cg_g2Jetpack8Instance = NULL;
+
+#define JETPACK8_MODEL "models/weapons2/spacejetw/model.glm"
+
+
+void CG_InitJetpack8Ghoul2(void)
+{
+
+
+	if (cg_g2Jetpack8Instance)
+	{
+		assert(!"Tried to init jetpack inst, already init'd");
+		return;
+	}
+
+	trap_G2API_InitGhoul2Model(&cg_g2Jetpack8Instance, JETPACK8_MODEL, 0, 0, 0, 0, 0);
+
+	assert(cg_g2Jetpack8Instance);
+
+	//Indicate which bolt on the player we will be attached to
+	//In this case bolt 0 is rhand, 1 is lhand, and 2 is the bolt
+	//for the jetpack (*chestg)
+	trap_G2API_SetBoltInfo(cg_g2Jetpack8Instance, 0, 2);
+
+	//Add the bolts jet effects will be played from
+	trap_G2API_AddBolt(cg_g2Jetpack8Instance, 0, "torso_ljet");
+	trap_G2API_AddBolt(cg_g2Jetpack8Instance, 0, "torso_rjet");
+}
+
+void CG_CleanJetpack8Ghoul2(void)
+{
+	if (cg_g2Jetpack8Instance)
+	{
+		trap_G2API_CleanGhoul2Models(&cg_g2Jetpack8Instance);
+		cg_g2Jetpack8Instance = NULL;
+	}
+}
+
+void *cg_g2Jetpack9Instance = NULL;
+
+#define JETPACK9_MODEL "models/weapons2/noweap/noweap.glm"
+
+
+void CG_InitJetpack9Ghoul2(void)
+{
+
+
+	if (cg_g2Jetpack9Instance)
+	{
+		assert(!"Tried to init jetpack inst, already init'd");
+		return;
+	}
+
+	trap_G2API_InitGhoul2Model(&cg_g2Jetpack9Instance, JETPACK9_MODEL, 0, 0, 0, 0, 0);
+
+	assert(cg_g2Jetpack9Instance);
+
+	//Indicate which bolt on the player we will be attached to
+	//In this case bolt 0 is rhand, 1 is lhand, and 2 is the bolt
+	//for the jetpack (*chestg)
+	trap_G2API_SetBoltInfo(cg_g2Jetpack9Instance, 0, 2);
+
+	//Add the bolts jet effects will be played from
+	trap_G2API_AddBolt(cg_g2Jetpack9Instance, 0, "torso_ljet");
+	trap_G2API_AddBolt(cg_g2Jetpack9Instance, 0, "torso_rjet");
+}
+
+void CG_CleanJetpack9Ghoul2(void)
+{
+	if (cg_g2Jetpack9Instance)
+	{
+		trap_G2API_CleanGhoul2Models(&cg_g2Jetpack9Instance);
+		cg_g2Jetpack9Instance = NULL;
+	}
+}
+
 #define RARMBIT			(1 << (G2_MODELPART_RARM-10))
 #define RHANDBIT		(1 << (G2_MODELPART_RHAND-10))
 #define WAISTBIT		(1 << (G2_MODELPART_WAIST-10))
@@ -16423,35 +16538,73 @@ void CG_Player( centity_t *cent ) {
 						 trap_S_RegisterSound( "sound/chars/boba/jethover" ) );
 		}
 	}
-	if ((cent->currentState.eFlags & EF_JETPACK) && !(cent->currentState.eFlags & EF_DEAD) &&
-		(cg_g2JetpackInstance || cg_g2Jetpack2Instance || cg_g2Jetpack3Instance || cg_g2Jetpack4Instance || cg_g2Jetpack5Instance || cg_g2Jetpack6Instance ))
+	if ((cent->currentState.eFlags & EF_JETPACK) && !(cent->currentState.eFlags & EF_DEAD))
 	{ //should have a jetpack attached
 		//1 is rhand weap, 2 is lhand weap (akimbo sabs), 3 is jetpack
 		if (!trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), 3))
 		{
-			if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
+			if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
 			{
-			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack5Instance, 0, cent->ghoul2, 3);
+			if(cg_g2Jetpack9Instance)
+			{
+			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack9Instance, 0, cent->ghoul2, 3);
+			}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK5))
+			{
+			if(cg_g2Jetpack8Instance)
+			{
+			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack8Instance, 0, cent->ghoul2, 3);
+			}
 			}
 			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
 			{
+			if(cg_g2Jetpack7Instance)
+			{
+			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack7Instance, 0, cent->ghoul2, 3);
+			}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
+			{
+			if(cg_g2Jetpack6Instance)
+			{
 			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack6Instance, 0, cent->ghoul2, 3);
 			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2))
-			{
-			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack2Instance, 0, cent->ghoul2, 3);
 			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))
 			{
-			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack3Instance, 0, cent->ghoul2, 3);
+			if(cg_g2Jetpack5Instance)
+			{
+			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack5Instance, 0, cent->ghoul2, 3);
+			}
 			}
 			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
 			{
+			if(cg_g2Jetpack4Instance)
+			{
 			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack4Instance, 0, cent->ghoul2, 3);
+			}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
+			{
+			if(cg_g2Jetpack3Instance)
+			{
+			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack3Instance, 0, cent->ghoul2, 3);
+			}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2))
+			{
+			if(cg_g2Jetpack2Instance)
+			{
+			trap_G2API_CopySpecificGhoul2Model(cg_g2Jetpack2Instance, 0, cent->ghoul2, 3);
+			}
 			}
 			else
 			{
-			trap_G2API_CopySpecificGhoul2Model(cg_g2JetpackInstance, 0, cent->ghoul2, 3); 
+			if(cg_g2JetpackInstance)
+			{
+			trap_G2API_CopySpecificGhoul2Model(cg_g2JetpackInstance, 0, cent->ghoul2, 3);
+			} 
 			}
 		}
 
@@ -16464,7 +16617,103 @@ void CG_Player( centity_t *cent ) {
 			while (n < 2)
 			{
 				//Get the position/dir of the flame bolt on the jetpack model bolted to the player
-			if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
+			
+			if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+				if (n == 0)
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
+					VectorMA(flamePos, -16.5f, flameDir, flamePos);
+
+
+				}
+				else
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
+					VectorMA(flamePos, -16.5f, flameDir, flamePos);					
+
+				}
+			}			
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK5))
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+				if (n == 0)
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
+					VectorMA(flamePos, -5.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					VectorMA(flamePos, -5.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+
+
+
+				}
+				else
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
+					VectorMA(flamePos, -6.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+
+
+				}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+				if (n == 0)
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
+					VectorMA(flamePos, -5.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					VectorMA(flamePos, -5.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+
+
+
+				}
+				else
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
+					VectorMA(flamePos, -6.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+
+
+				}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+				if (n == 0)
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					VectorMA(flamePos, -4.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
+					VectorMA(flamePos, -16.0f, flameDir, flamePos);
+
+
+
+				}
+				else
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_X, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+
+
+
+				}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))
 			{
 				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
 				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
@@ -16488,65 +16737,6 @@ void CG_Player( centity_t *cent ) {
 					VectorMA(flamePos, 10.5f, flameDir, flamePos);
 					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
 					VectorMA(flamePos, 17.5f, flameDir, flamePos);
-
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, -16.5f, flameDir, flamePos);
-
-
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, -16.5f, flameDir, flamePos);					
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
-					VectorMA(flamePos, -9.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -13.5f, flameDir, flamePos);
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -9.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
-					VectorMA(flamePos, -13.5f, flameDir, flamePos);
-				}				
-			}				
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-
-
-
-				}
-				else
-				{
-
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
 
 
 				}
@@ -16579,6 +16769,49 @@ void CG_Player( centity_t *cent ) {
 
 				}
 			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+				if (n == 0)
+				{
+
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_X, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+
+
+				}
+				else
+				{
+
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
+					VectorMA(flamePos, 0.0f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_X, flameDir);
+					VectorMA(flamePos, -8.0f, flameDir, flamePos);
+
+				}
+			}
+			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2))
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+				if (n == 0)
+				{
+					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
+					VectorMA(flamePos, -9.5f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					VectorMA(flamePos, -13.5f, flameDir, flamePos);
+				}
+				else
+				{
+					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					VectorMA(flamePos, -9.5f, flameDir, flamePos);
+					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
+					VectorMA(flamePos, -13.5f, flameDir, flamePos);
+				}				
+			}				
 			else
 			{
 				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
@@ -16604,24 +16837,30 @@ void CG_Player( centity_t *cent ) {
 				{ //create effects
 					//FIXME: Just one big effect
 					//Play the effect
-					if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) )
+
+					if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK3) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))  )
 					{
-					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
-					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
-					}
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					}	
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK5))  )
+					{
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					}	
 					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))  )
-					{
-					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
-					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
-					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
-					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
-					}
-					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) ))
 					{
 					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
 					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
 					}	
-					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK3) ))
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3))  )
+					{
+					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
+					}					
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK5)) )
 					{
 					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
 					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
@@ -16630,6 +16869,16 @@ void CG_Player( centity_t *cent ) {
 					{
 					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
 					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					}		
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK3) ))
+					{
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);	
+					}
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) ))
+					{
+					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
 					}					
 					else
 					{
@@ -16644,30 +16893,42 @@ void CG_Player( centity_t *cent ) {
 				{ //just idling
 					//FIXME: Different smaller effect for idle
 					//Play the effect
-					if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) )
+					if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK3) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))  )
 					{
-					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
-					}
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					}	
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK5))  )
+					{
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					}	
 					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))  )
-					{
-					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
-					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
-					}
-					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) ))
 					{
 					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
 					}	
-					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK3) ))
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3))  )
+					{
+					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
+					}					
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK5)) )
 					{
 					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
 					}
 					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK4) ))
 					{
 					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);
+					}		
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK3) ))
+					{
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);	
+					}
+					else if ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2) ))
+					{
+					trap_FX_PlayEffectID(cgs.effects.mRocketJet, flamePos, flameDir, -1, -1);
 					}					
 					else
 					{
-					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);						
+					trap_FX_PlayEffectID(cgs.effects.mBobaJet, flamePos, flameDir, -1, -1);				
 					}
 				}
 
@@ -18138,9 +18399,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.icethrowerWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.icethrower, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.icethrowerWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.icethrower, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18212,9 +18473,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrowerWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrower, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrowerWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrower, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18288,9 +18549,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.flamethrowerWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.flamethrower, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.flamethrowerWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.flamethrower, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18365,9 +18626,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrikeWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrike, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrikeWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrike, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18441,9 +18702,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.lasersupportWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.lasersupport, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.lasersupportWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.lasersupport, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18516,9 +18777,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.electroshockerWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.electroshocker, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.electroshockerWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.electroshocker, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18695,8 +18956,7 @@ SkipTrueView:
 		 	axis[2][2] = boltMatrix.matrix[2][2];
 
 			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrg, axis, -1, -1 );
-		
+			trap_FX_PlayEntityEffectID(cgs.effects.forceExplode, efOrg, axis, -1, -1, -1, -1);
 		
 
 		}
@@ -18777,9 +19037,8 @@ SkipTrueView:
  			axis[2][1] = boltMatrix.matrix[1][2];
 		 	axis[2][2] = boltMatrix.matrix[2][2];
 
-			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
-			trap_FX_PlayEffectID( cgs.effects.forceExplode, efOrg, axis, -1, -1 );	
-		
+			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);	
+			trap_FX_PlayEntityEffectID(cgs.effects.forceExplode, efOrg, axis, -1, -1, -1, -1);
 		
 
 		}
@@ -19068,6 +19327,10 @@ SkipTrueView:
 		VectorSet(tempAngles, 0, cent->lerpAngles[YAW], 0);
 		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader4, qfalse );
 		}	
+		
+	
+		
+
 	}
 
 
@@ -19682,11 +19945,7 @@ stillDoSaber:
 					BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
 				}
 
-				if ( cent->currentState.saberHolstered == 0 && ci->saber[0].model && ci->saber[1].model && ci->saber[0].numBlades > 1 && ci->saber[1].numBlades > 1)
-				{
-					BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
-					BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
-				}
+
 				
 				//[SaberThrowSys]
 				if( cent->currentState.saberHolstered < 2 )
@@ -20779,8 +21038,7 @@ stillDoSaber:
 		 	axis[2][2] = boltMatrix.matrix[2][2];
 
 			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
-			trap_FX_PlayEffectID( cgs.effects.forceDeathfield, efOrg, axis, -1, -1 );
-			
+			trap_FX_PlayEntityEffectID(cgs.effects.forceDeathfield, efOrg, axis, -1, -1, -1, -1);
 	}
 	else
 	{
@@ -20859,10 +21117,8 @@ stillDoSaber:
 		AnglesToAxis(fAng, axis);
 
 			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
-			trap_FX_PlayEffectID( cgs.effects.forceDeathsight, efOrgR, axis, -1, -1 );
-			trap_FX_PlayEffectID( cgs.effects.forceDeathsight, efOrgL, axis, -1, -1 );
-			
-			
+			trap_FX_PlayEntityEffectID(cgs.effects.forceDeathsight, efOrgR, axis, -1, -1, -1, -1);
+			trap_FX_PlayEntityEffectID(cgs.effects.forceDeathsight, efOrgL, axis, -1, -1, -1, -1);
 
 	}
 	else

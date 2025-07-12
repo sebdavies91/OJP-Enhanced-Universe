@@ -86,17 +86,23 @@ int weaponFromMOD[MOD_MAX] =
 	//[/Asteroids]
 	//[SeekerItemNPC]
 	WP_NONE,		//MOD_SEEKER,	//death by player's seeker droid.
-	WP_NONE,		//MOD_INCINERATOR,	//death by player's seeker droid.	
+	WP_NONE,		//MOD_FLAME,	//death by player's seeker droid.	
 	WP_NONE,		//MOD_DIOXIS,	//death by player's seeker droid.
-	WP_NONE,	//MOD_FREEZER,	//death by player's seeker droid.
-	WP_NONE,	//MOD_INCINERATOR_EXPLOSION,	//death by player's seeker droid.	
-	WP_NONE,	//MOD_INCINERATOR_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	WP_NONE,	//MOD_ICE,	//death by player's seeker droid.
+	WP_NONE,	//MOD_SONIC,	//death by player's seeker droid.
+	WP_NONE,	//MOD_FLASH,	//death by player's seeker droid.
+	WP_NONE,	//MOD_FLAME_EXPLOSION,	//death by player's seeker droid.	
+	WP_NONE,	//MOD_FLAME_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	WP_NONE,	//MOD_DIOXIS_EXPLOSION,	//death by player's seeker droid.	
 	WP_NONE,	//MOD_DIOXIS_EXPLOSION_SPLASH,	//death by player's seeker droid.
-	WP_NONE,	//MOD_FREEZER_EXPLOSION,	//death by player's seeker droid.	
-	WP_NONE,	//MOD_FREEZER_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	WP_NONE,	//MOD_ICE_EXPLOSION,	//death by player's seeker droid.	
+	WP_NONE,	//MOD_ICE_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	WP_NONE,	//MOD_ION_EXPLOSION,	//death by player's seeker droid.	
 	WP_NONE,	//MOD_ION_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	WP_NONE,	//MOD_SONIC_EXPLOSION,	//death by player's seeker droid.	
+	WP_NONE,	//MOD_SONIC_EXPLOSION_SPLASH,	//death by player's seeker droid.
+	WP_NONE,	//MOD_FLASH_EXPLOSION,	//death by player's seeker droid.	
+	WP_NONE,	//MOD_FLASH_EXPLOSION_SPLASH,	//death by player's seeker droid.
 	WP_NONE,	//MOD_FORCE_DESTRUCTION,	//death by player's seeker droid.	
 };
 
@@ -1140,14 +1146,18 @@ qboolean CalculateDemolitionist(gentity_t *ent, int *kills)
 		nKills += G_WeaponLogKills[i][MOD_TRIP_MINE_SPLASH];
 		nKills += G_WeaponLogKills[i][MOD_TIMED_MINE_SPLASH];
 		nKills += G_WeaponLogKills[i][MOD_DET_PACK_SPLASH];
-		nKills += G_WeaponLogKills[i][MOD_INCINERATOR_EXPLOSION];
-		nKills += G_WeaponLogKills[i][MOD_INCINERATOR_EXPLOSION_SPLASH];
+		nKills += G_WeaponLogKills[i][MOD_FLAME_EXPLOSION];
+		nKills += G_WeaponLogKills[i][MOD_FLAME_EXPLOSION_SPLASH];
 		nKills += G_WeaponLogKills[i][MOD_DIOXIS_EXPLOSION];
 		nKills += G_WeaponLogKills[i][MOD_DIOXIS_EXPLOSION_SPLASH];
-		nKills += G_WeaponLogKills[i][MOD_FREEZER_EXPLOSION];
-		nKills += G_WeaponLogKills[i][MOD_FREEZER_EXPLOSION_SPLASH];
+		nKills += G_WeaponLogKills[i][MOD_ICE_EXPLOSION];
+		nKills += G_WeaponLogKills[i][MOD_ICE_EXPLOSION_SPLASH];
 		nKills += G_WeaponLogKills[i][MOD_ION_EXPLOSION];
 		nKills += G_WeaponLogKills[i][MOD_ION_EXPLOSION_SPLASH];
+		nKills += G_WeaponLogKills[i][MOD_SONIC_EXPLOSION];
+		nKills += G_WeaponLogKills[i][MOD_SONIC_EXPLOSION_SPLASH];
+		nKills += G_WeaponLogKills[i][MOD_FLASH_EXPLOSION];
+		nKills += G_WeaponLogKills[i][MOD_FLASH_EXPLOSION_SPLASH];
 		// if this guy didn't get two explosive kills per minute, reject him right now
 		if ( ((float)nKills)/((float)(playTime)) < 2.0 )
 		{

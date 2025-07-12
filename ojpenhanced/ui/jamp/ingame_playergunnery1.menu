@@ -209,7 +209,7 @@
 			name					setsk_oldA
 			group					gunpowers
 			style					0	
-			text					"K-16 / S5-H / B-I:"
+			text					"K-16 / S5-H / SC-10:"
 			rect					180 105 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -243,7 +243,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Bryar K-16 Blaster Pistol / Theed Arms S5-H Blaster Pistol / Mandalorian Blaster-Ion Gauntlet"
+			descText				"Bryar K-16 Blaster Pistol / Theed Arms S5-H Blaster Pistol / Blastech SC-10 Blaster Pistol"
 			visible					1 
 			action 
 			{ 
@@ -267,7 +267,7 @@
 			name					setsk_oldB
 			group					gunpowers
 			style					0	
-			text					"B-R / .. / ..:"
+			text					"B-B / B-I / B-R:"
 			rect					180 120 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -300,7 +300,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baktoid Blaster-Rocket Gauntlet / .. / .. "
+			descText				"Czerka Blaster Gauntlet / Mandalorian Blaster-Ion Gauntlet / Baktoid Blaster-Rocket Gauntlet "
 			visible					1 
 			action 
 			{ 
@@ -485,7 +485,7 @@
 			name					setsk_pistolB
 			group					gunpowers
 			style					0	
-			text					"W-34 / .. / ..:"
+			text					"W-34 / G-44 / SE-44C:"
 			rect					430 120 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -518,7 +518,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Westar W-34 Blaster Pistol / .. / .."
+			descText				"Westar W-34 Blaster Pistol / Ryloth G-44 Blaster Pistol / Merr Sonn SE-44C Blaster Pistol"
 			visible					1 
 			action 
 			{ 
@@ -704,7 +704,7 @@
 			name					setsk_blasterB
 			group					gunpowers
 			style					0	
-			text					"E-5B / .. / ..:"
+			text					"E-5B / EL-16 / F-11D:"
 			rect					180 210 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -737,7 +737,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baktoid E-5B Blaster Rifle / .. / .."
+			descText				"Baktoid E-5B Blaster Rifle / Blastech EL-16 Blaster Rifle / Merr Sonn F-11D Blaster Rifle"
 			visible					1 
 			action 
 			{ 
@@ -896,7 +896,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Wookie Bowcaster Carbine / Blastech EE-3 Blaster Carbine / Wookie Bowcaster-W Carbine"
+			descText				"Wookie Bowcaster Carbine / Blastech EE-3 Blaster Carbine / Gungan Bowcaster-W Carbine"
 			visible					1 
 			action 
 			{ 
@@ -920,7 +920,7 @@
 			name					setsk_bowcasterB
 			group					gunpowers
 			style					0	
-			text					"CO / .. / ..:"
+			text					"CO / BC-M / ST-C:"
 			rect					430 210 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -953,7 +953,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Mandalorian CO Blaster Carbine"
+			descText				"Mandalorian CO Blaster Carbine / Mon Calamari BC-M Blaster Carbine / Merr Sonn ST-C Blaster Carbine"
 			visible					1 
 			action 
 			{ 
@@ -1076,7 +1076,7 @@
 			name					setsk_DEMP2A
 			group					gunpowers
 			style					0	
-			text					"DEMP2 / CR-24 / DC-17P:"
+			text					"DEMP2 / Beam / DC-17P:"
 			rect					180 285 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -1110,7 +1110,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Merr Sonn DEMP2 Ion Carbine / Merr Sonn CR-24 Flame Carbine / Blastech DC-17P Ion Carbine"
+			descText				"Merr Sonn DEMP2 Ion Carbine / Merr Sonn Beam Ion Carbine / Blastech DC-17P Ion Carbine"
 			visible					1 
 			action 
 			{ 
@@ -1134,7 +1134,7 @@
 			name					setsk_DEMP2B
 			group					gunpowers
 			style					0	
-			text					"CR-25 / .. / ..:"
+			text					"CR-24 / CR-25 / CX-50:"
 			rect					180 300 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -1167,7 +1167,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Merr Sonn CR-25 Ice Carbine / .. / .."
+			descText				"Merr Sonn CR-24 Flame Carbine / Merr Sonn CR-25 Dioxis Carbine / Teta CX-50 Ice Carbine"
 			visible					1 
 			action 
 			{ 
@@ -1234,7 +1234,7 @@
 			name					setsk_wrist
 			group					gunpowers
 			style					0	
-			text					"Baton/Other Melee:"
+			text					"Baton:"
 			rect					430 270 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -1267,7 +1267,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baton/Other Melee"
+			descText				"Baton"
 			visible					1 
 			action 
 			{ 
@@ -1284,119 +1284,6 @@
 			}
 		}
 
-			// wristA title
-		itemDef 
-		{
-			name					setsk_wristA
-			group					gunpowers
-			style					0	
-			text					"Stun / .. / ..:"
-			rect					430 285 110 15
-			textalign				ITEM_ALIGN_RIGHT												
-			textalignx				0
-			textaligny				0
-			font					4
-			textscale				1
-				forecolor				.2 1 .2 1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			border					0
-			bordercolor				0 0 0 0
-			visible					1 
-			decoration
-		}
-	
-	
-		// wristA assign
-		itemDef 
-		{
-			name					setsk_wristA
-			group					gunpowers
-			style					0	
-			ownerdraw				UI_FORCE_RANK_WRISTA
-			rect					330 285 175 15
-			textalign				ITEM_ALIGN_RIGHT		
-			textalignx				115
-			textaligny				-5
-			textscale				.25        
-				forecolor				.2 1 .2 1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			border					0
-			bordercolor				0 0 0 0
-			descText				"Stun Baton / .. / .."
-			visible					1 
-			action 
-			{ 
-				play			"sound/interface/button1.wav" ;
-			}
-
-			mouseenter 
-			{ 
-				setitemcolor	setsk_wristA forecolor .7 1 2. 1
-			}
-			mouseexit 
-			{ 
-				setitemcolor	setsk_wristA forecolor .2 1 .2 1
-			}
-		}
-
-
-			// wristB title
-		itemDef 
-		{
-			name					setsk_wristB
-			group					gunpowers
-			style					0	
-			text					".. / .. / ..:"
-			rect					430 300 110 15
-			textalign				ITEM_ALIGN_RIGHT												
-			textalignx				0
-			textaligny				0
-			font					4
-			textscale				1
-				forecolor				.2 1 .2 1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			border					0
-			bordercolor				0 0 0 0
-			visible					1 
-			decoration
-		}
-	
-		// wristB assign
-		itemDef 
-		{
-			name					setsk_wristB
-			group					gunpowers
-			style					0	
-			ownerdraw				UI_FORCE_RANK_WRISTB
-			rect					330 300 175 15
-			textalign				ITEM_ALIGN_RIGHT		
-			textalignx				115
-			textaligny				-5
-			textscale				.25        
-				forecolor				.2 1 .2 1
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			border					0
-			bordercolor				0 0 0 0
-			descText				".. / .. / .."
-			visible					1 
-			action 
-			{ 
-				play			"sound/interface/button1.wav" ;
-			}
-
-			mouseenter 
-			{ 
-				setitemcolor	setsk_wristB forecolor .7 1 2. 1
-			}
-			mouseexit 
-			{ 
-				setitemcolor	setsk_wristB forecolor .2 1 .2 1
-			}
-		}
 		
 			
 	}

@@ -22,7 +22,7 @@ static  vec3_t  muzzle2;//[DualPistols]
 //Used to be 1600.  It's crazy-fast, and looks much better than it did before!
 #define BRYAR_PISTOL_VEL			3000
 //Pistol damage used to be 10.  Very piddly, all things considered.  We all know what blasters are SUPPOSED to do.
-#define BRYAR_PISTOL_DAMAGE			70
+#define BRYAR_PISTOL_DAMAGE			80
 //#define BRYAR_PISTOL_VEL			3000
 //#define BRYAR_PISTOL_DAMAGE			10
 //[/WeaponSys]
@@ -123,12 +123,12 @@ static  vec3_t  muzzle2;//[DualPistols]
 //---------
 #define FLECHETTE_SHOTS				1
 #define FLECHETTE_SPREAD			3.0f
-#define FLECHETTE_DAMAGE			20//15
+#define FLECHETTE_DAMAGE			25//15
 #define FLECHETTE_VELOCITY			3000
 #define FLECHETTE_SIZE				1
 #define FLECHETTE_GRENADES			1
 #define FLECHETTE_MINE_RADIUS_CHECK	384
-#define FLECHETTE_ALT_DAMAGE		150.0
+#define FLECHETTE_ALT_DAMAGE		200.0
 #define FLECHETTE_ALT_SPLASH_DAM	100
 #define FLECHETTE_ALT_SPLASH_RAD	256
 
@@ -173,7 +173,7 @@ static  vec3_t  muzzle2;//[DualPistols]
 //Used to be 1600.  It's crazy-fast, and looks much better than it did before!
 #define BRYAR_OLD_VEL			3000
 //Pistol damage used to be 10.  Very piddly, all things considered.  We all know what blasters are SUPPOSED to do.
-#define BRYAR_OLD_DAMAGE			70
+#define BRYAR_OLD_DAMAGE			80
 //#define BRYAR_OLD_VEL			3000
 //#define BRYAR_OLD_DAMAGE			10
 //[/WeaponSys]
@@ -487,7 +487,7 @@ BRYAR PISTOL2
 
 static void WP_FireBryarPistol2Main(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*6/7;
+	int damage = BRYAR_PISTOL_DAMAGE*7/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -546,7 +546,7 @@ static void WP_FireBryarPistol2Main(gentity_t*ent)
 
 static void WP_FireBryarPistol2Alt(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*6/7;
+	int damage = BRYAR_PISTOL_DAMAGE*7/8;
 	int count;
 
 	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qtrue );
@@ -661,7 +661,7 @@ BRYAR PISTOL3
 
 static void WP_FireBryarPistol3Main(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*5/7;
+	int damage = BRYAR_PISTOL_DAMAGE*3/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -722,7 +722,7 @@ static void WP_FireBryarPistol3Main(gentity_t*ent)
 
 static void WP_FireBryarPistol3Alt(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*5/7;
+	int damage = BRYAR_PISTOL_DAMAGE*3/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -801,7 +801,7 @@ BRYAR PISTOL4
 
 static void WP_FireBryarPistol4Main(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*4/7;
+	int damage = BRYAR_PISTOL_DAMAGE*4/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -814,17 +814,18 @@ static void WP_FireBryarPistol4Main(gentity_t*ent)
 		ent->client->leftPistol = !ent->client->leftPistol;
 	}
 	else
+	{
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
 	//gentity_t   *missile2;
-	
+
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
 	//[/DualPistols]
 
 	missile->classname = "bryar_proj";
-	
 	missile->s.weapon = WP_BRYAR_PISTOL;
 	missile->s.eFlags |= EF_WP_OPTION_4;
 
@@ -862,7 +863,7 @@ static void WP_FireBryarPistol4Main(gentity_t*ent)
 
 static void WP_FireBryarPistol4Alt(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*4/7;
+	int damage = BRYAR_PISTOL_DAMAGE*4/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -875,20 +876,20 @@ static void WP_FireBryarPistol4Alt(gentity_t*ent)
 		ent->client->leftPistol = !ent->client->leftPistol;
 	}
 	else
+	{
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
 	//gentity_t   *missile2;
-	
+
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
 	//[/DualPistols]
 
 	missile->classname = "bryar_proj";
-
 	missile->s.weapon = WP_BRYAR_PISTOL;
 	missile->s.eFlags |= EF_WP_OPTION_4;
-
 	//[DualPistols]
 	/*
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -931,6 +932,326 @@ static void WP_FireBryarPistol4( gentity_t *ent, qboolean altFire )
 		WP_FireBryarPistol4Main(ent);
 }
 
+
+
+/*
+======================================================================
+
+BRYAR PISTOL5
+
+======================================================================
+*/
+
+static void WP_FireBryarPistol5Main(gentity_t*ent)
+{
+	int damage = BRYAR_PISTOL_DAMAGE*5/8;
+	gentity_t	*missile;
+
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		if(ent->client->leftPistol)
+			missile=CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,qfalse);
+		else
+			missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+		
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t   *missile2;
+	
+	//[DualPistols]
+	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//[/DualPistols]
+
+	missile->classname = "bryar_proj";
+	
+	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->classname = "bryar_proj";
+		missile2->s.weapon = WP_BRYAR_PISTOL;
+	}*/
+	//[/DualPistols]
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}*/
+	//[/DualPistols]
+}
+
+static void WP_FireBryarPistol5Alt(gentity_t*ent)
+{
+	int damage = BRYAR_PISTOL_DAMAGE*6/8;
+	gentity_t	*missile;
+
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		if(ent->client->leftPistol)
+			missile=CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,qfalse);
+		else
+			missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+		
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t   *missile2;
+	
+	//[DualPistols]
+	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//[/DualPistols]
+
+	missile->classname = "bryar_proj";
+
+	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->classname = "bryar_proj";
+		missile2->s.weapon = WP_BRYAR_PISTOL;
+	}*/
+	//[/DualPistols]
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}*/
+	//[/DualPistols]
+}
+
+//----------------------------------------------
+static void WP_FireBryarPistol5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if(altFire)
+		WP_FireBryarPistol5Alt(ent);
+	else
+		WP_FireBryarPistol5Main(ent);
+}
+
+
+
+
+/*
+======================================================================
+
+BRYAR PISTOL6
+
+======================================================================
+*/
+
+static void WP_FireBryarPistol6Main(gentity_t*ent)
+{
+	int damage = BRYAR_PISTOL_DAMAGE*5/8;
+	gentity_t	*missile;
+
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		if(ent->client->leftPistol)
+			missile=CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,qfalse);
+		else
+			missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+		
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t   *missile2;
+	
+	//[DualPistols]
+	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//[/DualPistols]
+
+	missile->classname = "bryar_proj";
+	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->classname = "bryar_proj";
+		missile2->s.weapon = WP_BRYAR_PISTOL;
+	}*/
+	//[/DualPistols]
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}*/
+	//[/DualPistols]
+}
+
+static void WP_FireBryarPistol6Alt(gentity_t*ent)
+{
+	int damage = BRYAR_PISTOL_DAMAGE*6/8;
+	int count;
+
+	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qtrue );
+	gentity_t   *missile2;
+	float boxSize = 0;
+
+	//[DualPistols]
+	if ((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2 = CreateMissile(muzzle2, forward, BRYAR_PISTOL_VEL, 10000, ent, qtrue);
+	}
+	//[/DualPistols]
+
+	//if(ent->client->skillLevel[SK_PISTOL] != FORCE_LEVEL_3)
+	//{
+		//return;
+	//}
+
+	missile->classname = "bryar_proj";
+	missile->s.weapon = WP_BRYAR_PISTOL;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+
+	//[DualPistols]
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+	missile2->classname = "bryar_proj";
+	missile2->s.weapon = WP_BRYAR_PISTOL;
+	missile2->s.eFlags |= EF_WP_OPTION_2;
+	missile2->s.eFlags |= EF_WP_OPTION_4;
+	}
+	//[/DualPistols]
+	//[/DualPistols]
+
+//	else if(ent->client->skillLevel[SK_OLD] != FORCE_LEVEL_3)
+	//{
+		//return;
+	//}
+
+
+
+	count = ( level.time - ent->client->ps.weaponChargeTime ) / BRYAR_CHARGE_UNIT;
+
+	if ( count < 1 )
+	{
+		count = 1;
+	}
+	//[BryarSecondary]
+	else if ( count > BRYAR_MAX_CHARGE )
+	{
+		count = BRYAR_MAX_CHARGE;
+	}
+
+	damage = BRYAR_PISTOL_ALT_DPDAMAGE + (float)count/BRYAR_MAX_CHARGE*(BRYAR_PISTOL_ALT_DPMAXDAMAGE-BRYAR_PISTOL_ALT_DPDAMAGE);
+
+	//[/BryarSecondary]
+
+	missile->s.generic1 = count; // The missile will then render according to the charge level.
+
+	boxSize = BRYAR_ALT_SIZE*(count*0.5);
+
+	VectorSet( missile->r.maxs, boxSize, boxSize, boxSize );
+	VectorSet( missile->r.mins, -boxSize, -boxSize, -boxSize );
+
+	//[DualPistols]
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->s.generic1 = count;
+		VectorSet( missile2->r.maxs, boxSize, boxSize, boxSize );
+		VectorSet( missile2->r.mins, -boxSize, -boxSize, -boxSize );
+	}
+	//[/DualPistols]
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL_ALT;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL_ALT;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}
+	//[/DualPistols]
+}
+
+//----------------------------------------------
+static void WP_FireBryarPistol6( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if(altFire)
+		WP_FireBryarPistol6Alt(ent);
+	else
+		WP_FireBryarPistol6Main(ent);
+}
 /*
 ======================================================================
 
@@ -1218,7 +1539,7 @@ void WP_FireBlaster3Missile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean 
 //---------------------------------------------------------
 {
 	int velocity	= BLASTER_VELOCITY;
-	int	damage		= BLASTER_DAMAGE*7/9;
+	int	damage		= BLASTER_DAMAGE*5/9;
 	gentity_t *missile;
 
 
@@ -1317,6 +1638,149 @@ static void WP_FireBlaster4( gentity_t *ent, qboolean altFire )
 {
 	//[WeapAccuracy]
 	WP_FireBlaster4Missile( ent, muzzle, forward, altFire );
+
+	/* Don't want slop since our mishap inacurracy handles that now.
+	vec3_t	dir, angs;
+
+	vectoangles( forward, angs );
+
+	if ( altFire )
+	{
+		// add some slop to the alt-fire direction
+		angs[PITCH] += crandom() * BLASTER_SPREAD;
+		angs[YAW]	+= crandom() * BLASTER_SPREAD;
+	}
+	//[WeaponSys] 
+	else
+	{//adding the primary fire inaccuracy.  It's slight enough that it won't affect at closer ranges, but it keeps folks on their toes, since they can't snipe from across the levels anymore.                                                       
+		angs[PITCH] += crandom() * BLASTER_SPREAD2;
+		angs[YAW]	+= crandom() * BLASTER_SPREAD2;
+	}
+	//[/WeaponSys]
+
+	AngleVectors( angs, dir, NULL, NULL );
+
+	// FIXME: if temp_org does not have clear trace to inside the bbox, don't shoot!
+	WP_FireBlasterMissile( ent, muzzle, dir, altFire );
+	*/
+	//[/WeapAccuracy]
+}
+
+
+/*
+======================================================================
+
+BLASTER5
+
+======================================================================
+*/
+
+//---------------------------------------------------------
+void WP_FireBlaster5Missile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire )
+//---------------------------------------------------------
+{
+	int velocity	= BLASTER_VELOCITY;
+	int	damage		= BLASTER_DAMAGE*15/9;
+	gentity_t *missile;
+
+
+	if(ent->client->skillLevel[SK_BLASTER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
+	missile->classname = "blaster_proj";
+
+	missile->s.weapon = WP_BLASTER;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BLASTER;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+}
+
+
+//---------------------------------------------------------
+static void WP_FireBlaster5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	//[WeapAccuracy]
+	WP_FireBlaster5Missile( ent, muzzle, forward, altFire );
+
+	/* Don't want slop since our mishap inacurracy handles that now.
+	vec3_t	dir, angs;
+
+	vectoangles( forward, angs );
+
+	if ( altFire )
+	{
+		// add some slop to the alt-fire direction
+		angs[PITCH] += crandom() * BLASTER_SPREAD;
+		angs[YAW]	+= crandom() * BLASTER_SPREAD;
+	}
+	//[WeaponSys] 
+	else
+	{//adding the primary fire inaccuracy.  It's slight enough that it won't affect at closer ranges, but it keeps folks on their toes, since they can't snipe from across the levels anymore.                                                       
+		angs[PITCH] += crandom() * BLASTER_SPREAD2;
+		angs[YAW]	+= crandom() * BLASTER_SPREAD2;
+	}
+	//[/WeaponSys]
+
+	AngleVectors( angs, dir, NULL, NULL );
+
+	// FIXME: if temp_org does not have clear trace to inside the bbox, don't shoot!
+	WP_FireBlasterMissile( ent, muzzle, dir, altFire );
+	*/
+	//[/WeapAccuracy]
+}
+
+/*
+======================================================================
+
+BLASTER6
+
+======================================================================
+*/
+
+//---------------------------------------------------------
+void WP_FireBlaster6Missile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean altFire )
+//---------------------------------------------------------
+{
+	int velocity	= BLASTER_VELOCITY;
+	int	damage		= BLASTER_DAMAGE*7/9;
+	gentity_t *missile;
+
+
+	if(ent->client->skillLevel[SK_BLASTER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
+	missile->classname = "blaster_proj";
+
+	missile->s.weapon = WP_BLASTER;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BLASTER;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+}
+
+
+//---------------------------------------------------------
+static void WP_FireBlaster6( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	//[WeapAccuracy]
+	WP_FireBlaster6Missile( ent, muzzle, forward, altFire );
 
 	/* Don't want slop since our mishap inacurracy handles that now.
 	vec3_t	dir, angs;
@@ -1868,6 +2332,8 @@ static void WP_FireDisruptor( gentity_t *ent, qboolean altFire )
 	}
 }
 
+
+
 /*
 ======================================================================
 
@@ -1882,14 +2348,19 @@ extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBox
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 //[/DodgeSys]
 //---------------------------------------------------------
-static void WP_Disruptor2MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+static void WP_Disruptor2MainFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int			damage = DISRUPTOR_MAIN_DAMAGE*4/3;
-	int velocity	= BLASTER_VELOCITY;
-	gentity_t *missile;
+	int			damage = DISRUPTOR_MAIN_DAMAGE*5/6;
+	qboolean	render_impact = qtrue;
+	vec3_t		start, end;
+	trace_t		tr;
+	gentity_t	*traceEnt, *tent;
+	float		shotRange = 8192;
+	int			ignore, traces;
 	//[WeaponSys]
-
+	vec3_t		shotMaxs = { DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE };
+	vec3_t		shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
 	//[/WeaponSys]
 
 
@@ -1898,49 +2369,419 @@ static void WP_Disruptor2MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboo
 	{
 		damage *= 2.0;
 	}
+	memset(&tr, 0, sizeof(tr)); //to shut the compiler up
 
-	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
-	missile->classname = "bryar_proj";
+	VectorCopy( ent->client->ps.origin, start );
+	start[2] += ent->client->ps.viewheight;//By eyes
 
+	VectorMA( start, shotRange, forward, end );
 
-	missile->s.weapon = WP_BRYAR_PISTOL;
+	ignore = ent->s.number;
+	traces = 0;
+	while ( traces < 10 )
+	{//need to loop this in case we hit a Jedi who dodges the shot
+		if (d_projectileGhoul2Collision.integer)
+		{
+			//[WeaponSys]
+			trap_G2Trace( &tr, start, shotMins, shotMaxs, end, ignore, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//trap_G2Trace( &tr, start, NULL, NULL, end, ignore, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//[/WeaponSys]
+		}
+		else
+		{
+			//[WeaponSys]
+			trap_Trace( &tr, start, shotMins, shotMaxs, end, ignore, MASK_SHOT );
+			//trap_Trace( &tr, start, NULL, NULL, end, ignore, MASK_SHOT );
+			//[/WeaponSys]
+		}
 
-	missile->damage = damage;
-	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_BLASTER;
-	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+		traceEnt = &g_entities[tr.entityNum];
 
-	// we don't want it to bounce forever
-	missile->bounceCount = 8;
+		if (d_projectileGhoul2Collision.integer && traceEnt->inuse && traceEnt->client)
+		{ //g2 collision checks -rww
+			if (traceEnt->inuse && traceEnt->client && traceEnt->ghoul2)
+			{ //since we used G2TRFLAG_GETSURFINDEX, tr.surfaceFlags will actually contain the index of the surface on the ghoul2 model we collided with.
+				traceEnt->client->g2LastSurfaceHit = tr.surfaceFlags;
+				traceEnt->client->g2LastSurfaceTime = level.time;
+				//[BugFix12]
+				//BUGFIX12RAFIXME - ugh, can't seem to get the model index on the 
+				//trap_G2Traces.  These probably need to be replaced with the more
+				//indepth G2traces.  For now, just assume that the player model was hit.
+				traceEnt->client->g2LastSurfaceModel = G2MODEL_PLAYER;
+				//[/BugFix12]
+			}
+
+			if (traceEnt->ghoul2)
+			{
+				tr.surfaceFlags = 0; //clear the surface flags after, since we actually care about them in here.
+			}
+		}
+
+		if (traceEnt && traceEnt->client && traceEnt->client->ps.duelInProgress &&
+			traceEnt->client->ps.duelIndex != ent->s.number)
+		{
+			VectorCopy( tr.endpos, start );
+			ignore = tr.entityNum;
+			traces++;
+			continue;
+		}
+
+		//[BoltBlockSys]
+		//players can block or dodge disruptor shots.
+		if(OJP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
+		{//saber can be used to block the shot.
+
+			//broadcast shot blocked effect
+			gentity_t *te = NULL;
+
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT );
+			tent->s.eFlags |= EF_WP_OPTION_2;
+			VectorCopy( muzzle, tent->s.origin2 );
+			tent->s.eventParm = ent->s.number;
+
+			te = G_TempEntity( tr.endpos, EV_SABER_BLOCK );
+			VectorCopy(tr.endpos, te->s.origin);
+			VectorCopy(tr.plane.normal, te->s.angles);
+			if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
+			{
+				te->s.angles[1] = 1;
+			}
+			te->s.eventParm = 0;
+			te->s.weapon = 0;//saberNum
+			te->s.legsAnim = 0;//bladeNum
+
+			//reduce DP cost of the block
+			//[ExpSys]
+			G_DodgeDrain(traceEnt, ent, OJP_SaberBlockCost(traceEnt, ent, tr.endpos));
+			//[/ExpSys]
+
+			//force player into a projective block move.
+			WP_SaberBlockNonRandom(traceEnt, tr.endpos, qtrue);
+			return;
+		}
+		//[/BoltBlockSys]
+		//[DodgeSys]
+		else if(G_DoDodge(traceEnt, ent, tr.endpos, -1, &damage, MOD_DISRUPTOR))
+		{//player physically dodged the damage.  Act like we didn't hit him.
+			VectorCopy( tr.endpos, start );
+			ignore = tr.entityNum;
+			traces++;
+			continue;
+		}
+		/* basejka block/dodge code...redundent with dodgesys code in place.
+		if ( Jedi_DodgeEvasion( traceEnt, ent, &tr, G_GetHitLocation(traceEnt, tr.endpos) ) )
+		{//act like we didn't even hit him
+			VectorCopy( tr.endpos, start );
+			ignore = tr.entityNum;
+			traces++;
+			continue;
+		}
+		else if (traceEnt && traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABER_DEFENSE] >= FORCE_LEVEL_3)
+		{
+			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, MOD_DISRUPTOR, qtrue, 0))
+			{ //broadcast and stop the shot because it was blocked
+				gentity_t *te = NULL;
+
+				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT );
+				VectorCopy( muzzle, tent->s.origin2 );
+				tent->s.eventParm = ent->s.number;
+
+				te = G_TempEntity( tr.endpos, EV_SABER_BLOCK );
+				VectorCopy(tr.endpos, te->s.origin);
+				VectorCopy(tr.plane.normal, te->s.angles);
+				if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
+				{
+					te->s.angles[1] = 1;
+				}
+				te->s.eventParm = 0;
+				te->s.weapon = 0;//saberNum
+				te->s.legsAnim = 0;//bladeNum
+
+				return;
+			}
+		}
+		*/
+		//[/DodgeSys]
+		else if ( (traceEnt->flags&FL_SHIELDED) )
+		{//stopped cold
+			return;
+		}
+		//a Jedi is not dodging this shot
+		break;
+	}
+
+	if ( tr.surfaceFlags & SURF_NOIMPACT ) 
+	{
+		render_impact = qfalse;
+	}
+
+	// always render a shot beam, doing this the old way because I don't much feel like overriding the effect.
+	tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT );
+	tent->s.eFlags |= EF_WP_OPTION_2;
+	VectorCopy( muzzle, tent->s.origin2 );
+	tent->s.eventParm = ent->s.number;
+
+	traceEnt = &g_entities[tr.entityNum];
+
+	if ( render_impact )
+	{
+		if ( tr.entityNum < ENTITYNUM_WORLD && traceEnt->takedamage )
+		{
+			if ( traceEnt->client && LogAccuracyHit( traceEnt, ent )) 
+			{
+				ent->client->accuracy_hits++;
+			} 
+
+			G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NORMAL, MOD_DISRUPTOR );
+			
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
+			tent->s.eventParm = DirToByte( tr.plane.normal );
+			if (traceEnt->client)
+			{
+				tent->s.weapon = 1;
+			}
+		}
+		else 
+		{
+			 // Hmmm, maybe don't make any marks on things that could break
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS );
+			tent->s.eventParm = DirToByte( tr.plane.normal );
+			tent->s.weapon = 1;
+		}
+	}
 }
 
 
 //---------------------------------------------------------
-void WP_Disruptor2AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+void WP_Disruptor2AltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int			damage = 0;
-	int velocity	= BLASTER_VELOCITY;
-	gentity_t *missile;
+	int			damage = 0, skip;
+	qboolean	render_impact = qtrue;
+	vec3_t		start, end;
+	vec3_t		muzzle2;
+	trace_t		tr;
+	gentity_t	*traceEnt, *tent;
+	float		shotRange = 8192.0f;
+	int			i;
+	//[DodgeSys]
+	int			count;
+	//int			count, maxCount = 60;
+	//[/DodgeSys]
+	int			traces = DISRUPTOR_ALT_TRACES;
+	qboolean	fullCharge = qfalse;
 
-	damage = DISRUPTOR_ALT_DAMAGE*4/3;
+	//[WeaponSys]
+	vec3_t	shotMaxs = { DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE };
+	vec3_t	shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
+	//[/WeaponSys]
+
+	damage = DISRUPTOR_ALT_DAMAGE*5/4;
 	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
 	}
-	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
-	missile->classname = "bryar_proj";
+	VectorCopy( muzzle, muzzle2 ); // making a backup copy
+
+	if (ent->client)
+	{
+		VectorCopy( ent->client->ps.origin, start );
+		start[2] += ent->client->ps.viewheight;//By eyes
+	}
+	else
+	{
+		VectorCopy( ent->r.currentOrigin, start );
+		start[2] += 24;
+	}
+
+	//[DodgeSys]
+	//moved into DetermineDisruptorCharge so we can use it for Dodge cost calcs
+	count = DetermineDisruptorCharge(ent);
+
+	if(count >= DISRUPTOR_MAX_CHARGE)
+	{
+		fullCharge = qtrue;
+	}
+
+	// more powerful charges go through more things
+	if ( count < 10 )
+	{
+		traces = 1;
+	}
+	else if ( count < 20 )
+	{
+		traces = 2;
+	}
+
+	//ent->s.generic1=count;
+	ent->genericValue6=count;
+
+	damage += count;
+	
+	skip = ent->s.number;
+
+	for (i = 0; i < traces; i++ )
+	{
+		VectorMA( start, shotRange, forward, end );
+
+		if (d_projectileGhoul2Collision.integer)
+		{
+			//[WeaponSys]
+			trap_G2Trace( &tr, start, shotMins, shotMaxs, end, skip, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//trap_G2Trace( &tr, start, NULL, NULL, end, skip, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//[/WeaponSys]
+		}
+		else
+		{
+			//[WeaponSys]
+			trap_Trace( &tr, start, shotMins, shotMaxs, end, skip, MASK_SHOT );
+			//[/WeaponSys]
+		}
+
+		traceEnt = &g_entities[tr.entityNum];
+
+		if (d_projectileGhoul2Collision.integer && traceEnt->inuse && traceEnt->client)
+		{ //g2 collision checks -rww
+			if (traceEnt->inuse && traceEnt->client && traceEnt->ghoul2)
+			{ //since we used G2TRFLAG_GETSURFINDEX, tr.surfaceFlags will actually contain the index of the surface on the ghoul2 model we collided with.
+				traceEnt->client->g2LastSurfaceHit = tr.surfaceFlags;
+				traceEnt->client->g2LastSurfaceTime = level.time;
+				traceEnt->client->g2LastSurfaceModel = G2MODEL_PLAYER;
+			}
+
+			if (traceEnt->ghoul2)
+			{
+				tr.surfaceFlags = 0; //clear the surface flags after, since we actually care about them in here.
+			}
+		}
+
+		if ( tr.surfaceFlags & SURF_NOIMPACT ) 
+		{
+			render_impact = qfalse;
+		}
+
+		if (traceEnt && traceEnt->client && traceEnt->client->ps.duelInProgress &&
+			traceEnt->client->ps.duelIndex != ent->s.number)
+		{
+			skip = tr.entityNum;
+			VectorCopy(tr.endpos, start);
+			continue;
+		}
+
+		if(G_DoDodge(traceEnt, ent, tr.endpos, -1, &damage, MOD_DISRUPTOR_SNIPER))
+		{//player physically dodged the damage.  Act like we didn't hit him.
+			skip = tr.entityNum;
+			VectorCopy(tr.endpos, start);
+			continue;
+		}
+
+		// always render a shot beam, doing this the old way because I don't much feel like overriding the effect.
+		tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT );
+		tent->s.eFlags |= EF_WP_OPTION_2;
+		VectorCopy( muzzle, tent->s.origin2 );
+		tent->s.shouldtarget = fullCharge;
+		tent->s.eventParm = ent->s.number;
+
+		// If the beam hits a skybox, etc. it would look foolish to add impact effects
+		if ( render_impact ) 
+		{
+			if ( traceEnt->takedamage && traceEnt->client )
+			{
+				tent->s.otherEntityNum = traceEnt->s.number;
+
+				// Create a simple impact type mark
+				tent = G_TempEntity(tr.endpos, EV_MISSILE_MISS);
+				tent->s.eventParm = DirToByte(tr.plane.normal);
+				tent->s.eFlags |= EF_ALT_FIRING;
+	
+				if ( LogAccuracyHit( traceEnt, ent )) 
+				{
+					if (ent->client)
+					{
+						ent->client->accuracy_hits++;
+					}
+				}
+			} 
+			else 
+			{
+				 if ( traceEnt->r.svFlags & SVF_GLASS_BRUSH 
+						|| traceEnt->takedamage 
+						|| traceEnt->s.eType == ET_MOVER )
+				 {
+					if ( traceEnt->takedamage )
+					{
+						G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
+								DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
+
+						tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
+						tent->s.eventParm = DirToByte( tr.plane.normal );
+					}
+				 }
+				 else
+				 {
+					 // Hmmm, maybe don't make any marks on things that could break
+					tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS );
+					tent->s.eventParm = DirToByte( tr.plane.normal );
+				 }
+				break; // and don't try any more traces
+			}
+
+			if ( (traceEnt->flags&FL_SHIELDED) )
+			{//stops us cold
+				break;
+			}
+
+			if ( traceEnt->takedamage )
+			{
+				vec3_t preAng;
+				int preHealth = traceEnt->health;
+				int preLegs = 0;
+				int preTorso = 0;
 
 
-	missile->s.weapon = WP_BRYAR_PISTOL;
+				if (traceEnt->client)
+				{
+					preLegs = traceEnt->client->ps.legsAnim;
+					preTorso = traceEnt->client->ps.torsoAnim;
+					VectorCopy(traceEnt->client->ps.viewangles, preAng);
+				}
 
-	missile->damage = damage;
-	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_BLASTER;
-	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
 
-	// we don't want it to bounce forever
-	missile->bounceCount = 8;
+				if (traceEnt->client && preHealth > 0 && traceEnt->health <= 0 && fullCharge &&
+					G_CanDisruptify(traceEnt))
+				{ //was killed by a fully charged sniper shot, so disintegrate
+					VectorCopy(preAng, traceEnt->client->ps.viewangles);
+
+					traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
+					VectorCopy(tr.endpos, traceEnt->client->ps.lastHitLoc);
+
+					traceEnt->client->ps.legsAnim = preLegs;
+					traceEnt->client->ps.torsoAnim = preTorso;
+
+					traceEnt->r.contents = 0;
+
+					VectorClear(traceEnt->client->ps.velocity);
+				}
+
+				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
+				tent->s.eventParm = DirToByte( tr.plane.normal );
+				if (traceEnt->client)
+				{
+					tent->s.weapon = 1;
+				}
+			}
+		}
+		else // not rendering impact, must be a skybox or other similar thing?
+		{
+			break; // don't try anymore traces
+		}
+
+		// Get ready for an attempt to trace through another person
+		VectorCopy( tr.endpos, muzzle );
+		VectorCopy( tr.endpos, start );
+		skip = tr.entityNum;
+	}
 }
 
 
@@ -1955,17 +2796,17 @@ static void WP_FireDisruptor2( gentity_t *ent, qboolean altFire )
 
 	if (ent && ent->s.eType == ET_NPC && !ent->client)
 	{ //special case for animents
-		WP_Disruptor2AltFire(ent, muzzle, forward, altFire);
+		WP_Disruptor2AltFire( ent );
 		return;
 	}
 
 	if ( altFire )
 	{
-		WP_Disruptor2AltFire(ent, muzzle, forward, altFire);
+		WP_Disruptor2AltFire( ent );
 	}
 	else
 	{
-		WP_Disruptor2MainFire(ent, muzzle, forward, altFire);
+		WP_Disruptor2MainFire( ent );
 	}
 }
 
@@ -1986,7 +2827,7 @@ extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean mis
 static void WP_Disruptor3MainFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int			damage = DISRUPTOR_MAIN_DAMAGE*2/3;
+	int			damage = DISRUPTOR_MAIN_DAMAGE*1/2;
 	qboolean	render_impact = qtrue;
 	vec3_t		start, end;
 	trace_t		tr;
@@ -2211,7 +3052,7 @@ void WP_Disruptor3AltFire( gentity_t *ent )
 	vec3_t	shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
 	//[/WeaponSys]
 
-	damage = DISRUPTOR_ALT_DAMAGE*2/3;
+	damage = DISRUPTOR_ALT_DAMAGE*1/2;
 	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -2462,7 +3303,7 @@ extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean mis
 static void WP_Disruptor4MainFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int			damage = DISRUPTOR_MAIN_DAMAGE*7/6;
+	int			damage = DISRUPTOR_MAIN_DAMAGE*2/3;
 	qboolean	render_impact = qtrue;
 	vec3_t		start, end;
 	trace_t		tr;
@@ -2687,7 +3528,7 @@ void WP_Disruptor4AltFire( gentity_t *ent )
 	vec3_t	shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
 	//[/WeaponSys]
 
-	damage = DISRUPTOR_ALT_DAMAGE*7/6;
+	damage = DISRUPTOR_ALT_DAMAGE*2/3;
 	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -2921,6 +3762,587 @@ static void WP_FireDisruptor4( gentity_t *ent, qboolean altFire )
 	}
 }
 
+/*
+======================================================================
+
+DISRUPTOR5
+
+======================================================================
+*/
+//[DodgeSys]
+extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
+extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
+//[/DodgeSys]
+//---------------------------------------------------------
+static void WP_Disruptor5MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+//---------------------------------------------------------
+{
+	int			damage = DISRUPTOR_MAIN_DAMAGE*4/3;
+	int velocity	= BLASTER_VELOCITY;
+	gentity_t *missile;
+	//[WeaponSys]
+
+	//[/WeaponSys]
+
+
+
+	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+
+	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
+	missile->classname = "bryar_proj";
+
+
+	missile->s.weapon = WP_BRYAR_PISTOL;
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BLASTER;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+}
+
+
+//---------------------------------------------------------
+void WP_Disruptor5AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+//---------------------------------------------------------
+{
+	int			damage = 0;
+	int velocity	= BLASTER_VELOCITY;
+	gentity_t *missile;
+
+	damage = DISRUPTOR_ALT_DAMAGE*4/3;
+	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
+	missile->classname = "bryar_proj";
+
+
+	missile->s.weapon = WP_BRYAR_PISTOL;
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BLASTER;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+}
+
+
+//---------------------------------------------------------
+static void WP_FireDisruptor5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if (!ent || !ent->client || ent->client->ps.zoomMode != 1)
+	{ //do not ever let it do the alt fire when not zoomed
+		altFire = qfalse;
+	}
+
+	if (ent && ent->s.eType == ET_NPC && !ent->client)
+	{ //special case for animents
+		WP_Disruptor5AltFire(ent, muzzle, forward, altFire);
+		return;
+	}
+
+	if ( altFire )
+	{
+		WP_Disruptor5AltFire(ent, muzzle, forward, altFire);
+	}
+	else
+	{
+		WP_Disruptor5MainFire(ent, muzzle, forward, altFire);
+	}
+}
+
+
+
+/*
+======================================================================
+
+DISRUPTOR6
+
+======================================================================
+*/
+//[DodgeSys]
+extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
+extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
+//[/DodgeSys]
+//---------------------------------------------------------
+static void WP_Disruptor6MainFire( gentity_t *ent )
+//---------------------------------------------------------
+{
+	int			damage = DISRUPTOR_MAIN_DAMAGE*7/6;
+	qboolean	render_impact = qtrue;
+	vec3_t		start, end;
+	trace_t		tr;
+	gentity_t	*traceEnt, *tent;
+	float		shotRange = 8192;
+	int			ignore, traces;
+	//[WeaponSys]
+	vec3_t		shotMaxs = { DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE };
+	vec3_t		shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
+	//[/WeaponSys]
+
+
+
+	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	memset(&tr, 0, sizeof(tr)); //to shut the compiler up
+
+	VectorCopy( ent->client->ps.origin, start );
+	start[2] += ent->client->ps.viewheight;//By eyes
+
+	VectorMA( start, shotRange, forward, end );
+
+	ignore = ent->s.number;
+	traces = 0;
+	while ( traces < 10 )
+	{//need to loop this in case we hit a Jedi who dodges the shot
+		if (d_projectileGhoul2Collision.integer)
+		{
+			//[WeaponSys]
+			trap_G2Trace( &tr, start, shotMins, shotMaxs, end, ignore, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//trap_G2Trace( &tr, start, NULL, NULL, end, ignore, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//[/WeaponSys]
+		}
+		else
+		{
+			//[WeaponSys]
+			trap_Trace( &tr, start, shotMins, shotMaxs, end, ignore, MASK_SHOT );
+			//trap_Trace( &tr, start, NULL, NULL, end, ignore, MASK_SHOT );
+			//[/WeaponSys]
+		}
+
+		traceEnt = &g_entities[tr.entityNum];
+
+		if (d_projectileGhoul2Collision.integer && traceEnt->inuse && traceEnt->client)
+		{ //g2 collision checks -rww
+			if (traceEnt->inuse && traceEnt->client && traceEnt->ghoul2)
+			{ //since we used G2TRFLAG_GETSURFINDEX, tr.surfaceFlags will actually contain the index of the surface on the ghoul2 model we collided with.
+				traceEnt->client->g2LastSurfaceHit = tr.surfaceFlags;
+				traceEnt->client->g2LastSurfaceTime = level.time;
+				//[BugFix12]
+				//BUGFIX12RAFIXME - ugh, can't seem to get the model index on the 
+				//trap_G2Traces.  These probably need to be replaced with the more
+				//indepth G2traces.  For now, just assume that the player model was hit.
+				traceEnt->client->g2LastSurfaceModel = G2MODEL_PLAYER;
+				//[/BugFix12]
+			}
+
+			if (traceEnt->ghoul2)
+			{
+				tr.surfaceFlags = 0; //clear the surface flags after, since we actually care about them in here.
+			}
+		}
+
+		if (traceEnt && traceEnt->client && traceEnt->client->ps.duelInProgress &&
+			traceEnt->client->ps.duelIndex != ent->s.number)
+		{
+			VectorCopy( tr.endpos, start );
+			ignore = tr.entityNum;
+			traces++;
+			continue;
+		}
+
+		//[BoltBlockSys]
+		//players can block or dodge disruptor shots.
+		if(OJP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
+		{//saber can be used to block the shot.
+
+			//broadcast shot blocked effect
+			gentity_t *te = NULL;
+
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT );
+			tent->s.eFlags |= EF_WP_OPTION_2;
+			tent->s.eFlags |= EF_WP_OPTION_4;
+			VectorCopy( muzzle, tent->s.origin2 );
+			tent->s.eventParm = ent->s.number;
+
+			te = G_TempEntity( tr.endpos, EV_SABER_BLOCK );
+			VectorCopy(tr.endpos, te->s.origin);
+			VectorCopy(tr.plane.normal, te->s.angles);
+			if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
+			{
+				te->s.angles[1] = 1;
+			}
+			te->s.eventParm = 0;
+			te->s.weapon = 0;//saberNum
+			te->s.legsAnim = 0;//bladeNum
+
+			//reduce DP cost of the block
+			//[ExpSys]
+			G_DodgeDrain(traceEnt, ent, OJP_SaberBlockCost(traceEnt, ent, tr.endpos));
+			//[/ExpSys]
+
+			//force player into a projective block move.
+			WP_SaberBlockNonRandom(traceEnt, tr.endpos, qtrue);
+			return;
+		}
+		//[/BoltBlockSys]
+		//[DodgeSys]
+		else if(G_DoDodge(traceEnt, ent, tr.endpos, -1, &damage, MOD_DISRUPTOR))
+		{//player physically dodged the damage.  Act like we didn't hit him.
+			VectorCopy( tr.endpos, start );
+			ignore = tr.entityNum;
+			traces++;
+			continue;
+		}
+		/* basejka block/dodge code...redundent with dodgesys code in place.
+		if ( Jedi_DodgeEvasion( traceEnt, ent, &tr, G_GetHitLocation(traceEnt, tr.endpos) ) )
+		{//act like we didn't even hit him
+			VectorCopy( tr.endpos, start );
+			ignore = tr.entityNum;
+			traces++;
+			continue;
+		}
+		else if (traceEnt && traceEnt->client && traceEnt->client->ps.fd.forcePowerLevel[FP_SABER_DEFENSE] >= FORCE_LEVEL_3)
+		{
+			if (WP_SaberCanBlock(traceEnt, tr.endpos, 0, MOD_DISRUPTOR, qtrue, 0))
+			{ //broadcast and stop the shot because it was blocked
+				gentity_t *te = NULL;
+
+				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT );
+				VectorCopy( muzzle, tent->s.origin2 );
+				tent->s.eventParm = ent->s.number;
+
+				te = G_TempEntity( tr.endpos, EV_SABER_BLOCK );
+				VectorCopy(tr.endpos, te->s.origin);
+				VectorCopy(tr.plane.normal, te->s.angles);
+				if (!te->s.angles[0] && !te->s.angles[1] && !te->s.angles[2])
+				{
+					te->s.angles[1] = 1;
+				}
+				te->s.eventParm = 0;
+				te->s.weapon = 0;//saberNum
+				te->s.legsAnim = 0;//bladeNum
+
+				return;
+			}
+		}
+		*/
+		//[/DodgeSys]
+		else if ( (traceEnt->flags&FL_SHIELDED) )
+		{//stopped cold
+			return;
+		}
+		//a Jedi is not dodging this shot
+		break;
+	}
+
+	if ( tr.surfaceFlags & SURF_NOIMPACT ) 
+	{
+		render_impact = qfalse;
+	}
+
+	// always render a shot beam, doing this the old way because I don't much feel like overriding the effect.
+	tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_MAIN_SHOT );
+	tent->s.eFlags |= EF_WP_OPTION_2;
+	tent->s.eFlags |= EF_WP_OPTION_4;
+	VectorCopy( muzzle, tent->s.origin2 );
+	tent->s.eventParm = ent->s.number;
+
+	traceEnt = &g_entities[tr.entityNum];
+
+	if ( render_impact )
+	{
+		if ( tr.entityNum < ENTITYNUM_WORLD && traceEnt->takedamage )
+		{
+			if ( traceEnt->client && LogAccuracyHit( traceEnt, ent )) 
+			{
+				ent->client->accuracy_hits++;
+			} 
+
+			G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NORMAL, MOD_DISRUPTOR );
+			
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
+			tent->s.eventParm = DirToByte( tr.plane.normal );
+			if (traceEnt->client)
+			{
+				tent->s.weapon = 1;
+			}
+		}
+		else 
+		{
+			 // Hmmm, maybe don't make any marks on things that could break
+			tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS );
+			tent->s.eventParm = DirToByte( tr.plane.normal );
+			tent->s.weapon = 1;
+		}
+	}
+}
+
+
+//---------------------------------------------------------
+void WP_Disruptor6AltFire( gentity_t *ent )
+//---------------------------------------------------------
+{
+	int			damage = 0, skip;
+	qboolean	render_impact = qtrue;
+	vec3_t		start, end;
+	vec3_t		muzzle2;
+	trace_t		tr;
+	gentity_t	*traceEnt, *tent;
+	float		shotRange = 8192.0f;
+	int			i;
+	//[DodgeSys]
+	int			count;
+	//int			count, maxCount = 60;
+	//[/DodgeSys]
+	int			traces = DISRUPTOR_ALT_TRACES;
+	qboolean	fullCharge = qfalse;
+
+	//[WeaponSys]
+	vec3_t	shotMaxs = { DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE, DISRUPTOR_SHOT_SIZE };
+	vec3_t	shotMins = { -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE, -DISRUPTOR_SHOT_SIZE };
+	//[/WeaponSys]
+
+	damage = DISRUPTOR_ALT_DAMAGE*7/6;
+	if(ent->client->skillLevel[SK_DISRUPTOR] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	VectorCopy( muzzle, muzzle2 ); // making a backup copy
+
+	if (ent->client)
+	{
+		VectorCopy( ent->client->ps.origin, start );
+		start[2] += ent->client->ps.viewheight;//By eyes
+	}
+	else
+	{
+		VectorCopy( ent->r.currentOrigin, start );
+		start[2] += 24;
+	}
+
+	//[DodgeSys]
+	//moved into DetermineDisruptorCharge so we can use it for Dodge cost calcs
+	count = DetermineDisruptorCharge(ent);
+
+	if(count >= DISRUPTOR_MAX_CHARGE)
+	{
+		fullCharge = qtrue;
+	}
+
+	// more powerful charges go through more things
+	if ( count < 10 )
+	{
+		traces = 1;
+	}
+	else if ( count < 20 )
+	{
+		traces = 2;
+	}
+
+	//ent->s.generic1=count;
+	ent->genericValue6=count;
+
+	damage += count;
+	
+	skip = ent->s.number;
+
+	for (i = 0; i < traces; i++ )
+	{
+		VectorMA( start, shotRange, forward, end );
+
+		if (d_projectileGhoul2Collision.integer)
+		{
+			//[WeaponSys]
+			trap_G2Trace( &tr, start, shotMins, shotMaxs, end, skip, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//trap_G2Trace( &tr, start, NULL, NULL, end, skip, MASK_SHOT, G2TRFLAG_DOGHOULTRACE|G2TRFLAG_GETSURFINDEX|G2TRFLAG_THICK|G2TRFLAG_HITCORPSES, g_g2TraceLod.integer );
+			//[/WeaponSys]
+		}
+		else
+		{
+			//[WeaponSys]
+			trap_Trace( &tr, start, shotMins, shotMaxs, end, skip, MASK_SHOT );
+			//[/WeaponSys]
+		}
+
+		traceEnt = &g_entities[tr.entityNum];
+
+		if (d_projectileGhoul2Collision.integer && traceEnt->inuse && traceEnt->client)
+		{ //g2 collision checks -rww
+			if (traceEnt->inuse && traceEnt->client && traceEnt->ghoul2)
+			{ //since we used G2TRFLAG_GETSURFINDEX, tr.surfaceFlags will actually contain the index of the surface on the ghoul2 model we collided with.
+				traceEnt->client->g2LastSurfaceHit = tr.surfaceFlags;
+				traceEnt->client->g2LastSurfaceTime = level.time;
+				traceEnt->client->g2LastSurfaceModel = G2MODEL_PLAYER;
+			}
+
+			if (traceEnt->ghoul2)
+			{
+				tr.surfaceFlags = 0; //clear the surface flags after, since we actually care about them in here.
+			}
+		}
+
+		if ( tr.surfaceFlags & SURF_NOIMPACT ) 
+		{
+			render_impact = qfalse;
+		}
+
+		if (traceEnt && traceEnt->client && traceEnt->client->ps.duelInProgress &&
+			traceEnt->client->ps.duelIndex != ent->s.number)
+		{
+			skip = tr.entityNum;
+			VectorCopy(tr.endpos, start);
+			continue;
+		}
+
+		if(G_DoDodge(traceEnt, ent, tr.endpos, -1, &damage, MOD_DISRUPTOR_SNIPER))
+		{//player physically dodged the damage.  Act like we didn't hit him.
+			skip = tr.entityNum;
+			VectorCopy(tr.endpos, start);
+			continue;
+		}
+
+		// always render a shot beam, doing this the old way because I don't much feel like overriding the effect.
+		tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_SHOT );
+		tent->s.eFlags |= EF_WP_OPTION_2;
+		tent->s.eFlags |= EF_WP_OPTION_4;
+		VectorCopy( muzzle, tent->s.origin2 );
+		tent->s.shouldtarget = fullCharge;
+		tent->s.eventParm = ent->s.number;
+
+		// If the beam hits a skybox, etc. it would look foolish to add impact effects
+		if ( render_impact ) 
+		{
+			if ( traceEnt->takedamage && traceEnt->client )
+			{
+				tent->s.otherEntityNum = traceEnt->s.number;
+
+				// Create a simple impact type mark
+				tent = G_TempEntity(tr.endpos, EV_MISSILE_MISS);
+				tent->s.eventParm = DirToByte(tr.plane.normal);
+				tent->s.eFlags |= EF_ALT_FIRING;
+	
+				if ( LogAccuracyHit( traceEnt, ent )) 
+				{
+					if (ent->client)
+					{
+						ent->client->accuracy_hits++;
+					}
+				}
+			} 
+			else 
+			{
+				 if ( traceEnt->r.svFlags & SVF_GLASS_BRUSH 
+						|| traceEnt->takedamage 
+						|| traceEnt->s.eType == ET_MOVER )
+				 {
+					if ( traceEnt->takedamage )
+					{
+						G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, 
+								DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
+
+						tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
+						tent->s.eventParm = DirToByte( tr.plane.normal );
+					}
+				 }
+				 else
+				 {
+					 // Hmmm, maybe don't make any marks on things that could break
+					tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_SNIPER_MISS );
+					tent->s.eventParm = DirToByte( tr.plane.normal );
+				 }
+				break; // and don't try any more traces
+			}
+
+			if ( (traceEnt->flags&FL_SHIELDED) )
+			{//stops us cold
+				break;
+			}
+
+			if ( traceEnt->takedamage )
+			{
+				vec3_t preAng;
+				int preHealth = traceEnt->health;
+				int preLegs = 0;
+				int preTorso = 0;
+
+
+				if (traceEnt->client)
+				{
+					preLegs = traceEnt->client->ps.legsAnim;
+					preTorso = traceEnt->client->ps.torsoAnim;
+					VectorCopy(traceEnt->client->ps.viewangles, preAng);
+				}
+
+				G_Damage( traceEnt, ent, ent, forward, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_DISRUPTOR_SNIPER );
+
+				if (traceEnt->client && preHealth > 0 && traceEnt->health <= 0 && fullCharge &&
+					G_CanDisruptify(traceEnt))
+				{ //was killed by a fully charged sniper shot, so disintegrate
+					VectorCopy(preAng, traceEnt->client->ps.viewangles);
+
+					traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
+					VectorCopy(tr.endpos, traceEnt->client->ps.lastHitLoc);
+
+					traceEnt->client->ps.legsAnim = preLegs;
+					traceEnt->client->ps.torsoAnim = preTorso;
+
+					traceEnt->r.contents = 0;
+
+					VectorClear(traceEnt->client->ps.velocity);
+				}
+
+				tent = G_TempEntity( tr.endpos, EV_DISRUPTOR_HIT );
+				tent->s.eventParm = DirToByte( tr.plane.normal );
+				if (traceEnt->client)
+				{
+					tent->s.weapon = 1;
+				}
+			}
+		}
+		else // not rendering impact, must be a skybox or other similar thing?
+		{
+			break; // don't try anymore traces
+		}
+
+		// Get ready for an attempt to trace through another person
+		VectorCopy( tr.endpos, muzzle );
+		VectorCopy( tr.endpos, start );
+		skip = tr.entityNum;
+	}
+}
+
+
+//---------------------------------------------------------
+static void WP_FireDisruptor6( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if (!ent || !ent->client || ent->client->ps.zoomMode != 1)
+	{ //do not ever let it do the alt fire when not zoomed
+		altFire = qfalse;
+	}
+
+	if (ent && ent->s.eType == ET_NPC && !ent->client)
+	{ //special case for animents
+		WP_Disruptor6AltFire( ent );
+		return;
+	}
+
+	if ( altFire )
+	{
+		WP_Disruptor6AltFire( ent );
+	}
+	else
+	{
+		WP_Disruptor6MainFire( ent );
+	}
+}
 
 /*
 ======================================================================
@@ -3044,7 +4466,7 @@ BOWCASTER2
 #if 0
 static void WP_Bowcaster2AltFire( gentity_t *ent )
 {
-	int	damage	= BOWCASTER_DAMAGE*6/12;
+	int	damage	= BOWCASTER_DAMAGE*1/2;
 	if(ent->client->skillLevel[SK_BOWCASTER] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -3076,7 +4498,7 @@ static void WP_Bowcaster2AltFire( gentity_t *ent )
 static void WP_Bowcaster2MainFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int			damage	= BOWCASTER_DAMAGE*6/12, count=1,dp=0;
+	int			damage	= BOWCASTER_DAMAGE*1/2, count=1,dp=0;
 	float		vel;
 	vec3_t		angs, dir;
 	gentity_t	*missile;
@@ -3156,7 +4578,7 @@ BOWCASTER3
 #if 0
 static void WP_Bowcaster3AltFire( gentity_t *ent )
 {
-	int	damage	= BOWCASTER_DAMAGE*10/12;
+	int	damage	= BOWCASTER_DAMAGE*4/5;
 	if(ent->client->skillLevel[SK_BOWCASTER] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -3188,7 +4610,7 @@ static void WP_Bowcaster3AltFire( gentity_t *ent )
 static void WP_Bowcaster3MainFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int			damage	= BOWCASTER_DAMAGE*10/12, count=1,dp=0;
+	int			damage	= BOWCASTER_DAMAGE*4/5, count=1,dp=0;
 	float		vel;
 	vec3_t		angs, dir;
 	gentity_t	*missile;
@@ -3268,7 +4690,7 @@ BOWCASTER4
 #if 0
 static void WP_Bowcaster4AltFire( gentity_t *ent )
 {
-	int	damage	= BOWCASTER_DAMAGE*8/12;
+	int	damage	= BOWCASTER_DAMAGE*2/3;
 	if(ent->client->skillLevel[SK_BOWCASTER] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -3300,7 +4722,7 @@ static void WP_Bowcaster4AltFire( gentity_t *ent )
 static void WP_Bowcaster4MainFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int			damage	= BOWCASTER_DAMAGE*8/12, count=1,dp=0;
+	int			damage	= BOWCASTER_DAMAGE*2/3, count=1,dp=0;
 	float		vel;
 	vec3_t		angs, dir;
 	gentity_t	*missile;
@@ -3370,6 +4792,232 @@ static void WP_FireBowcaster4( gentity_t *ent, qboolean altFire )
 	WP_Bowcaster4MainFire( ent );
 }
 
+/*
+======================================================================
+
+BOWCASTER5
+
+======================================================================
+*/
+#if 0
+static void WP_Bowcaster5AltFire( gentity_t *ent )
+{
+	int	damage	= BOWCASTER_DAMAGE*7/8;
+	if(ent->client->skillLevel[SK_BOWCASTER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	gentity_t *missile = CreateMissile( muzzle, forward, BOWCASTER_VELOCITY, 10000, ent, qfalse);
+
+	missile->classname = "bowcaster_proj";
+	missile->s.weapon = WP_BOWCASTER;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;	
+
+	VectorSet( missile->r.maxs, BOWCASTER_SIZE, BOWCASTER_SIZE, BOWCASTER_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BOWCASTER;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	missile->damageDecreaseTime = level.time + 300;
+
+	//missile->flags |= FL_BOUNCE; taken out because it was causing problems for sabers
+	//missile->bounceCount = 3;
+}
+#endif
+
+//[Bowcaster]
+//---------------------------------------------------------
+static void WP_Bowcaster5MainFire( gentity_t *ent )
+//---------------------------------------------------------
+{
+	int			damage	= BOWCASTER_DAMAGE*7/8, count=1,dp=0;
+	float		vel;
+	vec3_t		angs, dir;
+	gentity_t	*missile;
+	int i=0;
+	if(ent->client->skillLevel[SK_BOWCASTER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	dp = (level.time - ent->client->ps.weaponChargeTime) / BOWCASTER_CHARGE_UNIT;
+		
+		if ( dp < 1 )
+		{
+			dp = 1;
+		}
+		else if ( dp > BRYAR_MAX_CHARGE )
+		{
+			dp = BRYAR_MAX_CHARGE;
+		}
+
+		// create a range of different velocities
+		vel = BOWCASTER_VELOCITY * ( crandom() * BOWCASTER_VEL_RANGE + 1.0f );
+
+		vectoangles( forward, angs );
+
+		// add some slop to the alt-fire direction
+		angs[PITCH] += crandom() * BOWCASTER_ALT_SPREAD * 0.2f;
+		angs[YAW]	+= ((i+0.5f) * BOWCASTER_ALT_SPREAD - count * 0.5f * BOWCASTER_ALT_SPREAD );
+		
+		AngleVectors( angs, dir, NULL, NULL );
+
+		missile = CreateMissile( muzzle, dir, vel, 10000, ent, qtrue );
+
+		missile->classname = "bowcaster_alt_proj";
+		missile->s.weapon = WP_BOWCASTER;
+		missile->s.eFlags |= EF_WP_OPTION_2;
+		missile->s.eFlags |= EF_WP_OPTION_3;
+		
+		VectorSet( missile->r.maxs, BOWCASTER_SIZE, BOWCASTER_SIZE, BOWCASTER_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_BOWCASTER;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+		missile->s.generic1 = dp;
+		ent->client->ps.userInt2=dp;
+		// we don't want it to bounce
+		missile->bounceCount = 0;
+
+		missile->damageDecreaseTime = level.time + 300;
+}
+//[/Bowcaster]
+
+//---------------------------------------------------------
+static void WP_FireBowcaster5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	/*
+	if ( altFire )
+	{
+		WP_Bowcaster4AltFire( ent );
+	}
+	else
+	{
+		WP_Bowcaster4MainFire( ent );
+	}
+	*/
+	WP_Bowcaster5MainFire( ent );
+}
+
+
+/*
+======================================================================
+
+BOWCASTER6
+
+======================================================================
+*/
+#if 0
+static void WP_Bowcaster6AltFire( gentity_t *ent )
+{
+	int	damage	= BOWCASTER_DAMAGE*2/5;
+	if(ent->client->skillLevel[SK_BOWCASTER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	gentity_t *missile = CreateMissile( muzzle, forward, BOWCASTER_VELOCITY, 10000, ent, qfalse);
+
+	missile->classname = "bowcaster_proj";
+	missile->s.weapon = WP_BOWCASTER;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;	
+
+	VectorSet( missile->r.maxs, BOWCASTER_SIZE, BOWCASTER_SIZE, BOWCASTER_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BOWCASTER;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	missile->damageDecreaseTime = level.time + 300;
+
+	//missile->flags |= FL_BOUNCE; taken out because it was causing problems for sabers
+	//missile->bounceCount = 3;
+}
+#endif
+
+//[Bowcaster]
+//---------------------------------------------------------
+static void WP_Bowcaster6MainFire( gentity_t *ent )
+//---------------------------------------------------------
+{
+	int			damage	= BOWCASTER_DAMAGE*2/5, count=1,dp=0;
+	float		vel;
+	vec3_t		angs, dir;
+	gentity_t	*missile;
+	int i=0;
+	if(ent->client->skillLevel[SK_BOWCASTER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	dp = (level.time - ent->client->ps.weaponChargeTime) / BOWCASTER_CHARGE_UNIT;
+		
+		if ( dp < 1 )
+		{
+			dp = 1;
+		}
+		else if ( dp > BRYAR_MAX_CHARGE )
+		{
+			dp = BRYAR_MAX_CHARGE;
+		}
+
+		// create a range of different velocities
+		vel = BOWCASTER_VELOCITY * ( crandom() * BOWCASTER_VEL_RANGE + 1.0f );
+
+		vectoangles( forward, angs );
+
+		// add some slop to the alt-fire direction
+		angs[PITCH] += crandom() * BOWCASTER_ALT_SPREAD * 0.2f;
+		angs[YAW]	+= ((i+0.5f) * BOWCASTER_ALT_SPREAD - count * 0.5f * BOWCASTER_ALT_SPREAD );
+		
+		AngleVectors( angs, dir, NULL, NULL );
+
+		missile = CreateMissile( muzzle, dir, vel, 10000, ent, qtrue );
+
+		missile->classname = "bowcaster_alt_proj";
+		missile->s.weapon = WP_BOWCASTER;
+		missile->s.eFlags |= EF_WP_OPTION_2;
+		missile->s.eFlags |= EF_WP_OPTION_4;
+		
+		VectorSet( missile->r.maxs, BOWCASTER_SIZE, BOWCASTER_SIZE, BOWCASTER_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_BOWCASTER;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+		missile->s.generic1 = dp;
+		ent->client->ps.userInt2=dp;
+		// we don't want it to bounce
+		missile->bounceCount = 0;
+
+		missile->damageDecreaseTime = level.time + 300;
+}
+//[/Bowcaster]
+
+//---------------------------------------------------------
+static void WP_FireBowcaster6( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	/*
+	if ( altFire )
+	{
+		WP_Bowcaster4AltFire( ent );
+	}
+	else
+	{
+		WP_Bowcaster4MainFire( ent );
+	}
+	*/
+	WP_Bowcaster6MainFire( ent );
+}
 
 
 /*
@@ -3446,10 +5094,6 @@ static void WP_RepeaterAltFire( gentity_t *ent )
 	VectorSet( missile->r.maxs, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE );
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 	missile->s.pos.trType = TR_GRAVITY;
-	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
-	{
-	missile->s.pos.trDelta[2] += 90.0f;
-	}
 	missile->s.pos.trDelta[2] += 45.0f; //give a slight boost in the upward direction
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
@@ -3470,11 +5114,9 @@ static void WP_RepeaterAltFire( gentity_t *ent )
 	missile2->s.weapon = WP_REPEATER;
 	
 	VectorSet( missile2->r.maxs, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE );
-	VectorScale( missile2->r.maxs, -1, missile->r.mins );
+	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
 	missile2->s.pos.trType = TR_GRAVITY;
-	missile2->s.pos.trDelta[1] -= 78.0f;
-	missile2->s.pos.trDelta[2] -= 45.0f;
-	missile2->s.pos.trDelta[2] += 45.0f; //give a slight boost in the upward direction
+	missile2->s.pos.trDelta[2] += 90.0f;
 	missile2->damage = damage;
 	missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile2->methodOfDeath = MOD_REPEATER_ALT;
@@ -3532,7 +5174,7 @@ static void WP_Repeater2MainFire( gentity_t *ent, vec3_t dir )
 	gentity_t	*missile;
 	int i;
 	int shots;
-	int damage = REPEATER_DAMAGE*2.0;
+	int damage = REPEATER_DAMAGE*5/2;
 	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -3584,7 +5226,7 @@ static void WP_Repeater2AltFire( gentity_t *ent, vec3_t dir )
 	gentity_t	*missile;
 	int i;
 	int shots;
-	int damage = REPEATER_DAMAGE*2.0;
+	int damage = REPEATER_DAMAGE*5/2;
 	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -3670,7 +5312,7 @@ static void WP_Repeater3MainFire( gentity_t *ent, vec3_t dir )
 	gentity_t	*missile;
 	int i;
 	int shots;
-	int damage = REPEATER_DAMAGE * 3 / 2;
+	int damage = REPEATER_DAMAGE*3/2;
 	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
 	{
 		damage *= 2.0;
@@ -3717,11 +5359,11 @@ static void WP_Repeater3AltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
 	
-	int	damage	= REPEATER_ALT_DAMAGE*4/5;
+	int	damage	= REPEATER_ALT_DAMAGE*1/3;
 
 	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
 	{
-		damage *= 3.0;
+		damage *= 2.0;
 	}
 	
 	gentity_t *missile = CreateMissile( muzzle, forward, REPEATER_ALT_VELOCITY, 10000, ent, qtrue );
@@ -3787,7 +5429,7 @@ static void WP_Repeater4MainFire( gentity_t *ent, vec3_t dir )
 	gentity_t	*missile;
 	int i;
 	int shots;
-	int damage = REPEATER_DAMAGE*3;
+	int damage = REPEATER_DAMAGE*7/2;
 		shots = REPEATER_SHOTS;
 	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
 	{
@@ -3835,7 +5477,7 @@ static void WP_Repeater4AltFire( gentity_t *ent, vec3_t dir )
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
 	int i;
-	int damage = REPEATER_DAMAGE * 9 / 2;
+	int damage = REPEATER_DAMAGE*9/2;
 	int shots;
 	if (ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
 	{
@@ -3906,6 +5548,307 @@ static void WP_FireRepeater4( gentity_t *ent, qboolean altFire )
 	}
 }
 
+
+/*
+======================================================================
+
+REPEATER5
+
+======================================================================
+*/
+
+//---------------------------------------------------------
+static void WP_Repeater5MainFire( gentity_t *ent, vec3_t dir )
+//---------------------------------------------------------
+{
+	vec3_t		fwd, angs;
+	gentity_t	*missile;
+	int i;
+	int shots;
+	int damage = REPEATER_DAMAGE*2;
+	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+		shots = REPEATER_SHOTS;
+		
+	for (i = 0; i < shots; i++ )
+	{
+		vectoangles( forward, angs );
+
+		if (i != 0)
+		{ //do nothing on the first shot, it will hit the crosshairs
+			angs[PITCH] += crandom() * REPEATER_SPREAD;
+			angs[YAW]	+= crandom() * REPEATER_SPREAD;
+		}
+
+		AngleVectors( angs, fwd, NULL, NULL );
+
+		missile = CreateMissile( muzzle, fwd, REPEATER_VELOCITY, 10000, ent, qfalse);
+
+		missile->classname = "repeater_proj";
+		missile->s.weapon = WP_REPEATER ;
+		missile->s.eFlags |= EF_WP_OPTION_2;
+		missile->s.eFlags |= EF_WP_OPTION_3;
+		
+		VectorSet( missile->r.maxs, REPEATER_SIZE, REPEATER_SIZE, REPEATER_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_REPEATER;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile->bounceCount = Q_irand(5,8);
+									  
+													 
+
+		missile->flags |= FL_BOUNCE_SHRAPNEL;
+	}
+}
+
+//---------------------------------------------------------
+static void WP_Repeater5AltFire( gentity_t *ent )
+//---------------------------------------------------------
+{
+	
+	int	damage	= REPEATER_ALT_DAMAGE*4/3;
+
+
+	
+	gentity_t *missile = CreateMissile( muzzle, forward, REPEATER_ALT_VELOCITY, 10000, ent, qtrue );
+
+	missile->classname = "repeater_alt_proj";
+	missile->s.weapon = WP_REPEATER ;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;
+	VectorSet( missile->r.maxs, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->s.pos.trType = TR_GRAVITY;
+	missile->s.pos.trDelta[2] += 45.0f; //give a slight boost in the upward direction
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_REPEATER_ALT;
+	missile->splashMethodOfDeath = MOD_REPEATER_ALT_SPLASH;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile->splashDamage = REPEATER_ALT_SPLASH_DAMAGE;
+	missile->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
+
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
+	{
+	gentity_t *missile2 = CreateMissile( muzzle, forward, REPEATER_ALT_VELOCITY, 10000, ent, qtrue );
+
+	missile2->classname = "repeater_alt_proj";
+	missile2->s.weapon = WP_REPEATER;
+	missile2->s.eFlags |= EF_WP_OPTION_2;
+	missile2->s.eFlags |= EF_WP_OPTION_3;	
+	VectorSet( missile2->r.maxs, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE );
+	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
+	missile2->s.pos.trType = TR_GRAVITY;
+	missile2->s.pos.trDelta[2] += 90.0f;
+	missile2->damage = damage;
+	missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile2->methodOfDeath = MOD_REPEATER_ALT;
+	missile2->splashMethodOfDeath = MOD_REPEATER_ALT_SPLASH;
+	missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile2->splashDamage = REPEATER_ALT_SPLASH_DAMAGE;
+	missile2->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
+
+
+	// we don't want it to bounce forever
+	missile2->bounceCount = 8;
+	
+
+	gentity_t *missile3 = CreateMissile( muzzle, forward, REPEATER_ALT_VELOCITY, 10000, ent, qtrue );
+
+	missile3->classname = "repeater_alt_proj";
+	missile3->s.weapon = WP_REPEATER;
+	missile3->s.eFlags |= EF_WP_OPTION_2;
+	missile3->s.eFlags |= EF_WP_OPTION_3;	
+	VectorSet( missile3->r.maxs, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE, REPEATER_ALT_SIZE );
+	VectorScale( missile3->r.maxs, -1, missile3->r.mins );
+	missile3->s.pos.trType = TR_GRAVITY;
+	missile3->s.pos.trDelta[2] += 135.0f; //give a slight boost in the upward direction
+	missile3->damage = damage;
+	missile3->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile3->methodOfDeath = MOD_REPEATER_ALT;
+	missile3->splashMethodOfDeath = MOD_REPEATER_ALT_SPLASH;
+	missile3->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile3->splashDamage = REPEATER_ALT_SPLASH_DAMAGE;
+	missile3->splashRadius = REPEATER_ALT_SPLASH_RADIUS;
+
+
+	// we don't want it to bounce forever
+	missile3->bounceCount = 8;
+	}
+}
+
+//---------------------------------------------------------
+static void WP_FireRepeater5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	vec3_t	dir, angs;
+
+	vectoangles( forward, angs );
+
+	if ( altFire && ent->client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_0 )
+	{
+		WP_Repeater5AltFire( ent );
+	}
+	else
+	{
+		// add some slop to the alt-fire direction
+		//angs[PITCH] += crandom() * REPEATER_SPREAD;
+		//angs[YAW]	+= crandom() * REPEATER_SPREAD;
+
+		AngleVectors( angs, dir, NULL, NULL );
+
+		WP_Repeater5MainFire( ent, dir );
+	}
+}
+
+
+/*
+======================================================================
+
+REPEATER6
+
+======================================================================
+*/
+
+//---------------------------------------------------------
+static void WP_Repeater6MainFire( gentity_t *ent, vec3_t dir )
+//---------------------------------------------------------
+{
+	vec3_t		fwd, angs;
+	gentity_t	*missile;
+	int i;
+	int shots;
+	int damage = REPEATER_DAMAGE*3;
+	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	
+		shots = REPEATER_SHOTS;
+			
+	for (i = 0; i < shots; i++ )
+	{
+		vectoangles( forward, angs );
+
+		if (i != 0)
+		{ //do nothing on the first shot, it will hit the crosshairs
+			angs[PITCH] += crandom() * REPEATER_SPREAD;
+			angs[YAW]	+= crandom() * REPEATER_SPREAD;
+		}
+
+		AngleVectors( angs, fwd, NULL, NULL );
+
+		missile = CreateMissile( muzzle, fwd, REPEATER_VELOCITY, 10000, ent, qfalse);
+
+		missile->classname = "repeater_proj";
+		missile->s.weapon = WP_REPEATER;	
+		missile->s.eFlags |= EF_WP_OPTION_2;
+		missile->s.eFlags |= EF_WP_OPTION_4;
+
+		VectorSet( missile->r.maxs, REPEATER_SIZE, REPEATER_SIZE, REPEATER_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_REPEATER;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile->bounceCount = Q_irand(5,8);
+									  
+													 
+
+		missile->flags |= FL_BOUNCE_SHRAPNEL;
+	}
+}
+
+//---------------------------------------------------------
+static void WP_Repeater6AltFire( gentity_t *ent, vec3_t dir )
+//---------------------------------------------------------
+{
+	vec3_t		fwd, angs;
+	gentity_t	*missile;
+	int i;
+	int shots;
+	int damage = REPEATER_DAMAGE*3;
+	if(ent->client->skillLevel[SK_REPEATER] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}
+	
+		shots = REPEATER_SHOTS;
+			
+	for (i = 0; i < shots; i++ )
+	{
+		vectoangles( forward, angs );
+
+		if (i != 0)
+		{ //do nothing on the first shot, it will hit the crosshairs
+			angs[PITCH] += crandom() * REPEATER_SPREAD;
+			angs[YAW]	+= crandom() * REPEATER_SPREAD;
+		}
+
+		AngleVectors( angs, fwd, NULL, NULL );
+
+		missile = CreateMissile( muzzle, fwd, REPEATER_VELOCITY, 10000, ent, qfalse);
+
+		missile->classname = "repeater_proj";
+		missile->s.weapon = WP_REPEATER;	
+		missile->s.eFlags |= EF_WP_OPTION_2;
+		missile->s.eFlags |= EF_WP_OPTION_4;
+
+		VectorSet( missile->r.maxs, REPEATER_SIZE, REPEATER_SIZE, REPEATER_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_REPEATER;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile->bounceCount = Q_irand(5,8);
+									  
+													 
+
+		missile->flags |= FL_BOUNCE_SHRAPNEL;
+	}
+}
+
+//---------------------------------------------------------
+static void WP_FireRepeater6( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	vec3_t	dir, angs;
+
+	vectoangles( forward, angs );
+
+	if ( altFire && ent->client->skillLevel[SK_REPEATER] >= FORCE_LEVEL_0 )
+	{
+		AngleVectors( angs, dir, NULL, NULL );
+		
+		WP_Repeater6AltFire( ent, dir );
+	}
+	else
+	{
+		// add some slop to the alt-fire direction
+		//angs[PITCH] += crandom() * REPEATER_SPREAD;
+		//angs[YAW]	+= crandom() * REPEATER_SPREAD;
+
+		AngleVectors( angs, dir, NULL, NULL );
+
+		WP_Repeater6MainFire( ent, dir );
+	}
+}
 
 /*
 ======================================================================
@@ -4225,6 +6168,7 @@ static void WP_FireDEMP2( gentity_t *ent, qboolean altFire )
 	}
 }
 
+
 /*
 ======================================================================
 
@@ -4251,7 +6195,7 @@ static void WP_DEMP22_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolea
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_INCINERATOR;
+	missile->methodOfDeath = MOD_DEMP2;
 	missile->clipmask = MASK_SHOT;
 
 	// we don't want it to ever bounce
@@ -4281,7 +6225,7 @@ static void WP_DEMP22_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_INCINERATOR;
+	missile->methodOfDeath = MOD_DEMP2;
 	missile->clipmask = MASK_SHOT;
 
 	// we don't want it to ever bounce
@@ -4302,7 +6246,6 @@ static void WP_FireDEMP22( gentity_t *ent, qboolean altFire )
 		WP_DEMP22_MainFire(ent, muzzle, forward, qfalse);
 	}
 }
-
 /*
 ======================================================================
 
@@ -4313,7 +6256,7 @@ DEMP23
 
 static void WP_DEMP23_MainFire( gentity_t *ent )
 {
-	int	damage	= DEMP2_DAMAGE*7/10;
+	int	damage	= DEMP2_DAMAGE*3/4;
 	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
@@ -4342,7 +6285,7 @@ static void WP_DEMP23_MainFire( gentity_t *ent )
 static void WP_DEMP23_AltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
-	int	damage	= DEMP2_DAMAGE*7/10;
+	int	damage	= DEMP2_DAMAGE*3/4;
 	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
@@ -4405,12 +6348,14 @@ static void WP_DEMP24_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolea
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_FREEZER;
+	missile->methodOfDeath = MOD_FLAME;
 	missile->clipmask = MASK_SHOT;
 
 	// we don't want it to ever bounce
 	missile->bounceCount = 0;
 }
+
+
 
 
 //---------------------------------------------------------
@@ -4433,11 +6378,12 @@ static void WP_DEMP24_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean
 	VectorScale( missile->r.maxs, -1, missile->r.mins );
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_FREEZER;
+	missile->methodOfDeath = MOD_FLAME;
 	missile->clipmask = MASK_SHOT;
 
 	// we don't want it to ever bounce
 	missile->bounceCount = 0;
+	
 }
 
 //---------------------------------------------------------
@@ -4450,11 +6396,162 @@ static void WP_FireDEMP24( gentity_t *ent, qboolean altFire )
 	}
 	else
 	{
-		WP_DEMP24_MainFire(ent, muzzle, forward, altFire);
+		WP_DEMP24_MainFire(ent, muzzle, forward, qfalse);
+	}
+}
+/*
+======================================================================
+
+DEMP25
+
+======================================================================
+*/
+
+static void WP_DEMP25_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+{
+	int	damage	= DEMP2_DAMAGE/10;
+	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}
+	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	missile->classname = "demp2_proj";
+	missile->s.weapon = WP_DEMP2;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;
+
+	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_DIOXIS;
+	missile->clipmask = MASK_SHOT;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+}
+
+
+//---------------------------------------------------------
+static void WP_DEMP25_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+//---------------------------------------------------------
+{
+	int	damage	= DEMP2_DAMAGE/5;
+	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}
+	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	missile->classname = "demp2_proj";
+	missile->s.weapon = WP_DEMP2;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;
+
+	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_DIOXIS;
+	missile->clipmask = MASK_SHOT;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+}
+
+//---------------------------------------------------------
+static void WP_FireDEMP25( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if ( altFire )
+	{
+		WP_DEMP25_AltFire(ent, muzzle, forward, altFire);
+	}
+	else
+	{
+		WP_DEMP25_MainFire(ent, muzzle, forward, altFire);
 	}
 }
 
 
+
+
+/*
+======================================================================
+
+DEMP26
+
+======================================================================
+*/
+
+static void WP_DEMP26_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+{
+	int	damage	= DEMP2_DAMAGE/10;
+	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}
+	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	missile->classname = "demp2_proj";
+	missile->s.weapon = WP_DEMP2;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+
+	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_ICE;
+	missile->clipmask = MASK_SHOT;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+}
+
+
+//---------------------------------------------------------
+static void WP_DEMP26_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
+//---------------------------------------------------------
+{
+	int	damage	= DEMP2_DAMAGE/5;
+	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}
+	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	missile->classname = "demp2_proj";
+	missile->s.weapon = WP_DEMP2;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+	
+
+	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_ICE;
+	missile->clipmask = MASK_SHOT;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+}
+
+//---------------------------------------------------------
+static void WP_FireDEMP26( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if ( altFire )
+	{
+		WP_DEMP26_AltFire(ent, muzzle, forward, altFire);
+	}
+	else
+	{
+		WP_DEMP26_MainFire(ent, muzzle, forward, altFire);
+	}
+}
 
 /*
 ======================================================================
@@ -4779,6 +6876,7 @@ static void WP_FireFlechette( gentity_t *ent, qboolean altFire )
 	}
 }
 
+
 /*
 ======================================================================
 
@@ -4794,17 +6892,15 @@ static void WP_Flechette2MainFire( gentity_t *ent )
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
 	int i;
-	int shots;
-	int damage = FLECHETTE_DAMAGE*2/5;
-	
+	int damage = FLECHETTE_DAMAGE*18/5;
 	if(ent->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
 	}
-	
-		shots = FLECHETTE_SHOTS + 5;
+	int shots;
 
-		
+		shots = FLECHETTE_SHOTS;
+			
 	for (i = 0; i < shots; i++ )
 	{
 		vectoangles( forward, angs );
@@ -4820,8 +6916,9 @@ static void WP_Flechette2MainFire( gentity_t *ent )
 		missile = CreateMissile( muzzle, fwd, FLECHETTE_VELOCITY, 10000, ent, qfalse);
 
 		missile->classname = "flech_proj";
-		missile->s.weapon = WP_FLECHETTE;	
-		missile->s.eFlags |= EF_WP_OPTION_2;
+
+		missile->s.weapon = WP_FLECHETTE;
+		missile->s.eFlags |= EF_WP_OPTION_2;	
 
 		VectorSet( missile->r.maxs, FLECHETTE_SIZE, FLECHETTE_SIZE, FLECHETTE_SIZE );
 		VectorScale( missile->r.maxs, -1, missile->r.mins );
@@ -4844,8 +6941,6 @@ static void WP_Flechette2MainFire( gentity_t *ent )
 
 
 
-
-
 //---------------------------------------------------------
 static void WP_Flechette2AltFire( gentity_t *self )
 //---------------------------------------------------------
@@ -4853,16 +6948,16 @@ static void WP_Flechette2AltFire( gentity_t *self )
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
 	int i;
-	int shots;
-	int damage = FLECHETTE_DAMAGE*3/5;
-	
+
+	int damage = FLECHETTE_DAMAGE*36/5;
 	if(self->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
 	}
-		shots = FLECHETTE_SHOTS + 5;
+	int shots;
 
-		
+		shots = FLECHETTE_SHOTS;
+			
 	for (i = 0; i < shots; i++ )
 	{
 		vectoangles( forward, angs );
@@ -4878,9 +6973,11 @@ static void WP_Flechette2AltFire( gentity_t *self )
 		missile = CreateMissile( muzzle, fwd, FLECHETTE_VELOCITY, 10000, self, qfalse);
 
 		missile->classname = "flech_proj";
-		missile->s.weapon = WP_FLECHETTE;	
+
+		missile->s.weapon = WP_FLECHETTE;
 		missile->s.eFlags |= EF_WP_OPTION_2;
 
+		
 		VectorSet( missile->r.maxs, FLECHETTE_SIZE, FLECHETTE_SIZE, FLECHETTE_SIZE );
 		VectorScale( missile->r.maxs, -1, missile->r.mins );
 
@@ -4926,6 +7023,7 @@ static void WP_FireFlechette2( gentity_t *ent, qboolean altFire )
 		WP_Flechette2MainFire( ent );
 	}
 }
+
 /*
 ======================================================================
 
@@ -4941,7 +7039,7 @@ static void WP_Flechette3MainFire( gentity_t *ent )
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
 	int i;
-	int damage = FLECHETTE_DAMAGE*5;
+	int damage = FLECHETTE_DAMAGE*8/5;
 	if(ent->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
@@ -4998,7 +7096,7 @@ static void WP_Flechette3AltFire( gentity_t *self )
 	gentity_t	*missile;
 	int i;
 
-	int damage = FLECHETTE_DAMAGE*15/8;
+	int damage = FLECHETTE_DAMAGE*8/5;
 	if(self->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
@@ -5092,7 +7190,7 @@ static void WP_Flechette4MainFire( gentity_t *ent )
 	gentity_t	*missile;
 	int i;
 	int shots;
-	int damage = FLECHETTE_DAMAGE * 3 / 2;
+	int damage = FLECHETTE_DAMAGE*7/5;
 	if(ent->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
@@ -5145,7 +7243,7 @@ static void WP_CreateFlechette4BouncyThing( vec3_t start, vec3_t fwd, gentity_t 
 {
 
 	gentity_t	*missile = CreateMissile( start, fwd, 700 + random() * 700, 1500 + random() * 2000, self, qtrue );
-	int damage = FLECHETTE_ALT_DAMAGE*4/5;
+	int damage = FLECHETTE_ALT_DAMAGE*7/5;
 	if(self->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
 	{
 		damage	*= 2.0;
@@ -5256,8 +7354,341 @@ static void WP_FireFlechette4( gentity_t *ent, qboolean altFire )
 	}
 }
 
+/*
+======================================================================
+
+FLECHETTE5
+
+======================================================================
+*/
+
+//---------------------------------------------------------
+static void WP_Flechette5MainFire( gentity_t *ent )
+//---------------------------------------------------------
+{
+	vec3_t		fwd, angs;
+	gentity_t	*missile;
+	int i;
+	int shots;
+	int damage = FLECHETTE_DAMAGE*2/3;
+	
+	if(ent->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}
+	
+		shots = FLECHETTE_SHOTS + 5;
+
+		
+	for (i = 0; i < shots; i++ )
+	{
+		vectoangles( forward, angs );
+
+		if (i != 0)
+		{ //do nothing on the first shot, it will hit the crosshairs
+			angs[PITCH] += crandom() * FLECHETTE_SPREAD;
+			angs[YAW]	+= crandom() * FLECHETTE_SPREAD;
+		}
+
+		AngleVectors( angs, fwd, NULL, NULL );
+
+		missile = CreateMissile( muzzle, fwd, FLECHETTE_VELOCITY, 10000, ent, qfalse);
+
+		missile->classname = "flech_proj";
+		missile->s.weapon = WP_FLECHETTE;	
+		missile->s.eFlags |= EF_WP_OPTION_2;
+		missile->s.eFlags |= EF_WP_OPTION_3;
+		
+		VectorSet( missile->r.maxs, FLECHETTE_SIZE, FLECHETTE_SIZE, FLECHETTE_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_FLECHETTE;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile->bounceCount = Q_irand(5,8);
+									  
+													 
+
+		missile->flags |= FL_BOUNCE_SHRAPNEL;
+	}
+}
+
+  
 
 
+
+
+
+//---------------------------------------------------------
+static void WP_Flechette5AltFire( gentity_t *self )
+//---------------------------------------------------------
+{
+	vec3_t		fwd, angs;
+	gentity_t	*missile;
+	int i;
+	int shots;
+	int damage = FLECHETTE_DAMAGE*4/3;
+	
+	if(self->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}
+		shots = FLECHETTE_SHOTS + 5;
+
+		
+	for (i = 0; i < shots; i++ )
+	{
+		vectoangles( forward, angs );
+
+		if (i != 0)
+		{ //do nothing on the first shot, it will hit the crosshairs
+			angs[PITCH] += crandom() * FLECHETTE_SPREAD;
+			angs[YAW]	+= crandom() * FLECHETTE_SPREAD;
+		}
+
+		AngleVectors( angs, fwd, NULL, NULL );
+
+		missile = CreateMissile( muzzle, fwd, FLECHETTE_VELOCITY, 10000, self, qfalse);
+
+		missile->classname = "flech_proj";
+		missile->s.weapon = WP_FLECHETTE;	
+		missile->s.eFlags |= EF_WP_OPTION_2;
+		missile->s.eFlags |= EF_WP_OPTION_3;
+
+		VectorSet( missile->r.maxs, FLECHETTE_SIZE, FLECHETTE_SIZE, FLECHETTE_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_FLECHETTE;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile->bounceCount = Q_irand(5,8);
+									  
+													 
+
+		missile->flags |= FL_BOUNCE_SHRAPNEL;
+	}
+}
+	  
+
+//#endif
+
+//---------------------------------------------------------
+static void WP_FireFlechette5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	/*
+	if ( altFire )
+	{
+		//WP_FlechetteProxMine( ent );
+		WP_Flechette5AltFire(ent);
+	}
+	else
+	{
+		WP_Flechette5MainFire( ent );
+	}
+	*/
+	if ( altFire )
+	{
+		//WP_FlechetteProxMine( ent );
+		WP_Flechette5AltFire(ent);
+	}
+	else
+	{
+		WP_Flechette5MainFire( ent );
+	}
+}
+
+
+
+
+/*
+======================================================================
+
+FLECHETTE6
+
+======================================================================
+*/
+
+//---------------------------------------------------------
+static void WP_Flechette6MainFire( gentity_t *ent )
+//---------------------------------------------------------
+{
+	vec3_t		fwd, angs;
+	gentity_t	*missile;
+	int i;
+	int damage = FLECHETTE_DAMAGE*12/5;
+	if(ent->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}
+	int shots;
+
+		shots = FLECHETTE_SHOTS;
+			
+	for (i = 0; i < shots; i++ )
+	{
+		vectoangles( forward, angs );
+
+		if (i != 0)
+		{ //do nothing on the first shot, it will hit the crosshairs
+			angs[PITCH] += crandom() * FLECHETTE_SPREAD;
+			angs[YAW]	+= crandom() * FLECHETTE_SPREAD;
+		}
+
+		AngleVectors( angs, fwd, NULL, NULL );
+
+		missile = CreateMissile( muzzle, fwd, FLECHETTE_VELOCITY, 10000, ent, qfalse);
+
+		missile->classname = "flech_proj";
+
+		missile->s.weapon = WP_FLECHETTE;
+		missile->s.eFlags |= EF_WP_OPTION_2;	
+		missile->s.eFlags |= EF_WP_OPTION_4;
+		VectorSet( missile->r.maxs, FLECHETTE_SIZE, FLECHETTE_SIZE, FLECHETTE_SIZE );
+		VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+		missile->damage = damage;
+		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile->methodOfDeath = MOD_FLECHETTE;
+		missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile->bounceCount = Q_irand(5,8);
+									  
+													 
+
+		missile->flags |= FL_BOUNCE_SHRAPNEL;
+	}
+}
+
+  
+
+
+
+//#if 0
+//------------------------------------------------------------------------------
+static void WP_CreateFlechette6BouncyThing( vec3_t start, vec3_t fwd, gentity_t *self )
+//------------------------------------------------------------------------------
+{
+
+	gentity_t	*missile = CreateMissile( start, fwd, 700 + random() * 700, 1500 + random() * 2000, self, qtrue );
+	int damage = FLECHETTE_ALT_DAMAGE*12/5;
+	if(self->client->skillLevel[SK_FLECHETTE] == FORCE_LEVEL_3)
+	{
+		damage	*= 2.0;
+	}		
+	missile->think = WP_flechette_alt_blow;
+
+	missile->activator = self;
+
+	
+
+
+	missile->s.weapon = WP_FLECHETTE;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+	
+	missile->classname = "flech_alt";
+	missile->mass = 4;
+
+	// How 'bout we give this thing a size...
+	VectorSet( missile->r.mins, -3.0f, -3.0f, -3.0f );
+	VectorSet( missile->r.maxs, 3.0f, 3.0f, 3.0f );
+	missile->clipmask = MASK_SHOT;
+
+	missile->touch = touch_NULL;
+
+	// normal ones bounce, alt ones explode on impact
+	missile->s.pos.trType = TR_GRAVITY;
+
+	missile->flags |= FL_BOUNCE_HALF;
+	missile->s.eFlags |= EF_ALT_FIRING;
+
+	missile->bounceCount = 50;
+
+	missile->damage = damage;
+	missile->dflags = 0;
+	missile->splashDamage = FLECHETTE_ALT_SPLASH_DAM;
+	missile->splashRadius = FLECHETTE_ALT_SPLASH_RAD;
+
+	missile->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+
+	missile->methodOfDeath = MOD_FLECHETTE_ALT_SPLASH;
+	missile->splashMethodOfDeath = MOD_FLECHETTE_ALT_SPLASH;
+
+	VectorCopy( start, missile->pos2 );
+}
+
+
+//---------------------------------------------------------
+static void WP_Flechette6AltFire( gentity_t *self )
+//---------------------------------------------------------
+{
+	vec3_t 	dir, fwd, start, angs;
+					
+	int i;
+
+	vectoangles( forward, angs );
+	VectorCopy( muzzle, start );
+							   
+
+	WP_TraceSetStart( self, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+															  
+																			  
+																		   
+	int grenades;
+
+		grenades = FLECHETTE_GRENADES;
+
+	for ( i = 0; i < grenades; i++ )
+	{
+		VectorCopy( angs, dir );
+
+		dir[PITCH] -= random() * 4 + 8; // make it fly upwards
+		dir[YAW] += crandom() * 2;
+		AngleVectors( dir, fwd, NULL, NULL );
+
+		WP_CreateFlechette6BouncyThing( start, fwd, self );
+
+	}
+		
+	
+}
+	  
+
+//#endif
+
+//---------------------------------------------------------
+static void WP_FireFlechette6( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	/*
+	if ( altFire )
+	{
+		//WP_FlechetteProxMine( ent );
+		WP_Flechette3AltFire(ent);
+	}
+	else
+	{
+		WP_Flechette3MainFire( ent );
+	}
+	*/
+	if ( altFire )
+	{
+		//WP_FlechetteProxMine( ent );
+		WP_Flechette6AltFire(ent);
+	}
+	else
+	{
+		WP_Flechette6MainFire( ent );
+	}
+}
 
 
 /*
@@ -5541,10 +7972,346 @@ else if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3)
 
 }
 
+
+
 /*
 ======================================================================
 
 ROCKET LAUNCHER2
+
+======================================================================
+*/
+
+
+//---------------------------------------------------------
+static void WP_FireRocket2( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	int	damage	= ROCKET_DAMAGE*2/3;
+	int	vel = ROCKET_VELOCITY;
+	int dif = 0;
+	float rTime;
+	gentity_t *missile;
+if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
+{
+	damage *= 3.0;
+}
+else if(altFire)
+{
+	damage *= 3 / 2;
+}
+else if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3)
+{
+	damage *= 2.0;
+}
+//	if ( altFire )
+//	{
+//		vel *= 0.5f;
+//	}
+
+	missile = CreateMissile( muzzle, forward, vel, 10000, ent, altFire );
+	if (ent->client && ent->client->ps.rocketLockIndex != ENTITYNUM_NONE)
+	{
+		float lockTimeInterval = ((g_gametype.integer==GT_SIEGE)?2400.0f:1200.0f)/16.0f;
+		rTime = ent->client->ps.rocketLockTime;
+
+		if (rTime == -1)
+		{
+			rTime = ent->client->ps.rocketLastValidTime;
+		}
+		dif = ( level.time - rTime ) / lockTimeInterval;
+
+		if (dif < 0)
+		{
+			dif = 0;
+		}
+
+		//It's 10 even though it locks client-side at 8, because we want them to have a sturdy lock first, and because there's a slight difference in time between server and client
+		if ( dif >= 10 && rTime != -1 )
+		{
+			missile->enemy = &g_entities[ent->client->ps.rocketLockIndex];
+
+			if (missile->enemy && missile->enemy->client && missile->enemy->health > 0 && !OnSameTeam(ent, missile->enemy))
+			{ //if enemy became invalid, died, or is on the same team, then don't seek it
+				missile->angle = 0.5f;
+				missile->think = rocketThink;
+				missile->nextthink = level.time + ROCKET_ALT_THINK_TIME;
+			}
+		}
+
+		ent->client->ps.rocketLockIndex = ENTITYNUM_NONE;
+		ent->client->ps.rocketLockTime = 0;
+		ent->client->ps.rocketTargetTime = 0;
+	}
+
+	missile->classname = "rocket_proj";
+	missile->s.weapon = WP_ROCKET_LAUNCHER;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	if (altFire)
+	{
+		missile->methodOfDeath = MOD_ROCKET_HOMING;
+		missile->splashMethodOfDeath = MOD_ROCKET_HOMING_SPLASH;
+	}
+	else
+	{
+		missile->methodOfDeath = MOD_ROCKET;
+		missile->splashMethodOfDeath = MOD_ROCKET_SPLASH;
+	}
+//===testing being able to shoot rockets out of the air==================================
+	missile->health = 10;
+	missile->takedamage = qtrue;
+	missile->r.contents = MASK_SHOT;
+	missile->die = RocketDie;
+//===testing being able to shoot rockets out of the air==================================
+	
+	missile->clipmask = MASK_SHOT;
+	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
+	missile->splashRadius = ROCKET_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+	
+	
+
+}
+
+
+
+
+/*
+======================================================================
+
+ROCKET LAUNCHER3
+
+======================================================================
+*/
+
+//---------------------------------------------------------
+static void WP_FireRocket3( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	int	damage	= ROCKET_DAMAGE*4/3;
+	int	vel = ROCKET_VELOCITY;
+	int dif = 0;
+	gentity_t *missile;
+
+if(altFire)
+{
+	damage *= 3 / 2;
+}
+else if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && !altFire )
+{
+	damage *= 2.0;
+}
+//	if ( altFire )
+//	{
+//		vel *= 0.5f;
+//	}
+
+	missile = CreateMissile( muzzle, forward, vel, 10000, ent, altFire );
+
+
+	missile->classname = "rocket_proj";
+	missile->s.weapon = WP_ROCKET_LAUNCHER;	
+	missile->s.eFlags |= EF_WP_OPTION_3;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	if (altFire)
+	{
+		missile->methodOfDeath = MOD_ROCKET_HOMING;
+		missile->splashMethodOfDeath = MOD_ROCKET_HOMING_SPLASH;
+	}
+	else
+	{
+		missile->methodOfDeath = MOD_ROCKET;
+		missile->splashMethodOfDeath = MOD_ROCKET_SPLASH;
+	}
+//===testing being able to shoot rockets out of the air==================================
+	missile->health = 10;
+	missile->takedamage = qtrue;
+	missile->r.contents = MASK_SHOT;
+	missile->die = RocketDie;
+//===testing being able to shoot rockets out of the air==================================
+	
+	missile->clipmask = MASK_SHOT;
+	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
+	missile->splashRadius = ROCKET_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+	
+	
+	if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
+		{
+	gentity_t *missile2;
+
+//	if ( altFire )
+//	{
+//		vel *= 0.5f;
+//	}
+
+	missile2 = CreateMissile( muzzle2, forward, vel, 10000, ent, altFire );
+	missile2->classname = "rocket_proj";
+	missile2->s.weapon = WP_ROCKET_LAUNCHER;	
+	missile2->s.eFlags |= EF_WP_OPTION_3;
+
+	// Make it easier to hit things
+	VectorSet( missile2->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
+	missile2->damage = damage;
+	missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+	if (altFire)
+	{
+		missile2->methodOfDeath = MOD_ROCKET_HOMING;
+		missile2->splashMethodOfDeath = MOD_ROCKET_HOMING_SPLASH;
+	}
+	else
+	{
+		missile2->methodOfDeath = MOD_ROCKET;
+		missile2->splashMethodOfDeath = MOD_ROCKET_SPLASH;
+	}
+//===testing being able to shoot rockets out of the air==================================
+	missile2->health = 10;
+	missile2->takedamage = qtrue;
+	missile2->r.contents = MASK_SHOT;
+	missile2->die = RocketDie;
+//===testing being able to shoot rockets out of the air==================================
+	
+	missile2->clipmask = MASK_SHOT;
+	missile2->splashDamage = ROCKET_SPLASH_DAMAGE;
+	missile2->splashRadius = ROCKET_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile2->bounceCount = 0;
+		}
+}
+
+
+
+
+/*
+======================================================================
+
+ROCKET LAUNCHER4
+
+======================================================================
+*/
+
+
+//---------------------------------------------------------
+static void WP_FireRocket4( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	int	damage	= ROCKET_DAMAGE*2/3;
+	int	vel = ROCKET_VELOCITY;
+	int dif = 0;
+	float rTime;
+	gentity_t *missile;
+if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
+{
+	damage *= 3.0;
+}
+else if(altFire)
+{
+	damage *= 3 / 2;
+}
+else if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3)
+{
+	damage *= 2.0;
+}
+//	if ( altFire )
+//	{
+//		vel *= 0.5f;
+//	}
+
+	missile = CreateMissile( muzzle, forward, vel, 10000, ent, altFire );
+	if (ent->client && ent->client->ps.rocketLockIndex != ENTITYNUM_NONE)
+	{
+		float lockTimeInterval = ((g_gametype.integer==GT_SIEGE)?2400.0f:1200.0f)/16.0f;
+		rTime = ent->client->ps.rocketLockTime;
+
+		if (rTime == -1)
+		{
+			rTime = ent->client->ps.rocketLastValidTime;
+		}
+		dif = ( level.time - rTime ) / lockTimeInterval;
+
+		if (dif < 0)
+		{
+			dif = 0;
+		}
+
+		//It's 10 even though it locks client-side at 8, because we want them to have a sturdy lock first, and because there's a slight difference in time between server and client
+		if ( dif >= 10 && rTime != -1 )
+		{
+			missile->enemy = &g_entities[ent->client->ps.rocketLockIndex];
+
+			if (missile->enemy && missile->enemy->client && missile->enemy->health > 0 && !OnSameTeam(ent, missile->enemy))
+			{ //if enemy became invalid, died, or is on the same team, then don't seek it
+				missile->angle = 0.5f;
+				missile->think = rocketThink;
+				missile->nextthink = level.time + ROCKET_ALT_THINK_TIME;
+			}
+		}
+
+		ent->client->ps.rocketLockIndex = ENTITYNUM_NONE;
+		ent->client->ps.rocketLockTime = 0;
+		ent->client->ps.rocketTargetTime = 0;
+	}
+
+	missile->classname = "rocket_proj";
+	missile->s.weapon = WP_ROCKET_LAUNCHER;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	if (altFire)
+	{
+		missile->methodOfDeath = MOD_ROCKET_HOMING;
+		missile->splashMethodOfDeath = MOD_ROCKET_HOMING_SPLASH;
+	}
+	else
+	{
+		missile->methodOfDeath = MOD_ROCKET;
+		missile->splashMethodOfDeath = MOD_ROCKET_SPLASH;
+	}
+//===testing being able to shoot rockets out of the air==================================
+	missile->health = 10;
+	missile->takedamage = qtrue;
+	missile->r.contents = MASK_SHOT;
+	missile->die = RocketDie;
+//===testing being able to shoot rockets out of the air==================================
+	
+	missile->clipmask = MASK_SHOT;
+	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
+	missile->splashRadius = ROCKET_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+	
+	
+
+}
+
+
+
+/*
+======================================================================
+
+ROCKET LAUNCHER5
 
 ======================================================================
 */
@@ -5601,12 +8368,12 @@ void grenadelauncherThinkStandard(gentity_t *ent)
 
 #define GLA_TIME				1500//6000
 //---------------------------------------------------------
-static void WP_FireRocket2( gentity_t *ent, qboolean altFire )
+static void WP_FireRocket5( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
 	if (ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
 	{
-	int damage = ROCKET_DAMAGE/2;
+	int damage = ROCKET_DAMAGE/3;
 	
 	gentity_t	*bolt;
 	vec3_t		dir, start;
@@ -5836,229 +8603,251 @@ static void WP_FireRocket2( gentity_t *ent, qboolean altFire )
 }
 
 
-
 /*
 ======================================================================
 
-ROCKET LAUNCHER3
+ROCKET LAUNCHER6
 
 ======================================================================
 */
-
 //---------------------------------------------------------
-static void WP_FireRocket3( gentity_t *ent, qboolean altFire )
+static void WP_FireRocket6( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
-	int	damage	= ROCKET_DAMAGE*4/3;
-	int	vel = ROCKET_VELOCITY;
-	int dif = 0;
-	float rTime;
-	gentity_t *missile;
-
-if(altFire)
-{
-	damage *= 3 / 2;
-}
-else if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && !altFire )
-{
-	damage *= 2.0;
-}
-//	if ( altFire )
-//	{
-//		vel *= 0.5f;
-//	}
-
-	missile = CreateMissile( muzzle, forward, vel, 10000, ent, altFire );
-
-
-	missile->classname = "rocket_proj";
-	missile->s.weapon = WP_ROCKET_LAUNCHER;	
-	missile->s.eFlags |= EF_WP_OPTION_3;
-
-	// Make it easier to hit things
-	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
-	missile->damage = damage;
-	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	if (altFire)
+	if (ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
 	{
-		missile->methodOfDeath = MOD_ROCKET_HOMING;
-		missile->splashMethodOfDeath = MOD_ROCKET_HOMING_SPLASH;
+	int damage = ROCKET_DAMAGE/3;
+	
+	gentity_t	*bolt;
+	vec3_t		dir, start;
+	float chargeAmount = 1.0f; // default of full charge
+	
+	VectorCopy( forward, dir );
+	VectorCopy( muzzle, start );
+
+	bolt = G_Spawn();
+	
+	bolt->physicsObject = qtrue;
+
+	bolt->classname = "thermal_detonator";
+	bolt->think = grenadelauncherThinkStandard;
+	bolt->nextthink = level.time;
+	bolt->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet( bolt->r.mins, -3.0f, -3.0f, -3.0f );
+	VectorSet( bolt->r.maxs, 3.0f, 3.0f, 3.0f );
+	bolt->clipmask = MASK_SHOT;
+
+	W_TraceSetStart( ent, start, bolt->r.mins, bolt->r.maxs );//make sure our start point isn't on the other side of a wall
+
+	if ( ent->client )
+	{
+		chargeAmount = 1.0f;
+	}
+
+
+
+
+	// normal ones bounce, alt ones explode on impact
+	bolt->genericValue5 = level.time + GLA_TIME; // How long 'til she blows
+	bolt->s.pos.trType = TR_GRAVITY;
+	bolt->parent = ent;
+	bolt->r.ownerNum = ent->s.number;
+	VectorScale( dir, TD_VELOCITY * chargeAmount, bolt->s.pos.trDelta );
+
+	if ( ent->health >= 0 )
+	{
+		bolt->s.pos.trDelta[1] -=30 ;
+		bolt->s.pos.trDelta[2] += 120;
+	}
+
+	if ( !altFire )
+	{
+		bolt->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
+	bolt->s.loopIsSoundset = qfalse;
+
+	bolt->damage = damage;
+	bolt->dflags = 0;
+	bolt->splashDamage = ROCKET_SPLASH_DAMAGE;
+	bolt->splashRadius = ROCKET_SPLASH_RADIUS;
+
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_THERMAL;
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->methodOfDeath = MOD_THERMAL;
+	bolt->splashMethodOfDeath = MOD_THERMAL_SPLASH;
+
+	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, bolt->s.pos.trBase );
+	
+	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, bolt->r.currentOrigin);
+
+	VectorCopy( start, bolt->pos2 );
+
+	bolt->bounceCount = -5;
+
+	//return bolt;
+	
+	
+	
+
+	
+	gentity_t	*bolt2;
+	
+
+	bolt2 = G_Spawn();
+	
+	bolt2->physicsObject = qtrue;
+
+	bolt2->classname = "thermal_detonator";
+	bolt2->think = grenadelauncherThinkStandard;
+	bolt2->nextthink = level.time;
+	bolt2->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet( bolt2->r.mins, -3.0f, -3.0f, -3.0f );
+	VectorSet( bolt2->r.maxs, 3.0f, 3.0f, 3.0f );
+	bolt2->clipmask = MASK_SHOT;
+
+	W_TraceSetStart( ent, start, bolt2->r.mins, bolt2->r.maxs );//make sure our start point isn't on the other side of a wall
+
+
+	// normal ones bounce, alt ones explode on impact
+	bolt2->genericValue5 = level.time + GLA_TIME; // How long 'til she blows
+	bolt2->s.pos.trType = TR_GRAVITY;
+	bolt2->parent = ent;
+	bolt2->r.ownerNum = ent->s.number;
+	VectorScale( dir, TD_VELOCITY * chargeAmount, bolt2->s.pos.trDelta );
+
+	if ( ent->health >= 0 )
+	{
+		bolt2->s.pos.trDelta[1] +=30 ;
+		bolt2->s.pos.trDelta[2] += 120;
+	}
+
+	if ( !altFire )
+	{
+		bolt2->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt2->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
+	bolt2->s.loopIsSoundset = qfalse;
+
+	bolt2->damage = damage;
+	bolt2->dflags = 0;
+	bolt2->splashDamage = ROCKET_SPLASH_DAMAGE;
+	bolt2->splashRadius = ROCKET_SPLASH_RADIUS;
+
+	bolt2->s.eType = ET_MISSILE;
+	bolt2->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt2->s.weapon = WP_THERMAL;
+	bolt2->s.eFlags |= EF_WP_OPTION_2;
+	bolt2->methodOfDeath = MOD_THERMAL;
+	bolt2->splashMethodOfDeath = MOD_THERMAL_SPLASH;
+
+	bolt2->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, bolt2->s.pos.trBase );
+	
+	SnapVector( bolt2->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, bolt2->r.currentOrigin);
+
+	VectorCopy( start, bolt2->pos2 );
+
+	bolt2->bounceCount = -5;
+	
+
+	//return bolt, bolt2;
 	}
 	else
 	{
-		missile->methodOfDeath = MOD_ROCKET;
-		missile->splashMethodOfDeath = MOD_ROCKET_SPLASH;
-	}
-//===testing being able to shoot rockets out of the air==================================
-	missile->health = 10;
-	missile->takedamage = qtrue;
-	missile->r.contents = MASK_SHOT;
-	missile->die = RocketDie;
-//===testing being able to shoot rockets out of the air==================================
-	
-	missile->clipmask = MASK_SHOT;
-	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
-	missile->splashRadius = ROCKET_SPLASH_RADIUS;
-
-	// we don't want it to ever bounce
-	missile->bounceCount = 0;
-	
-	
-	if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
-		{
-	gentity_t *missile2;
-
-//	if ( altFire )
-//	{
-//		vel *= 0.5f;
-//	}
-
-	missile2 = CreateMissile( muzzle2, forward, vel, 10000, ent, altFire );
-	missile2->classname = "rocket_proj";
-	missile2->s.weapon = WP_ROCKET_LAUNCHER;	
-	missile2->s.eFlags |= EF_WP_OPTION_3;
-
-	// Make it easier to hit things
-	VectorSet( missile2->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
-	missile2->damage = damage;
-	missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
-	if (altFire)
+	gentity_t* bolt;
+	vec3_t		dir, start;
+	float chargeAmount = 1.0f; // default of full charge
+	int damage = ROCKET_DAMAGE/3;
+	if(altFire)
 	{
-		missile2->methodOfDeath = MOD_ROCKET_HOMING;
-		missile2->splashMethodOfDeath = MOD_ROCKET_HOMING_SPLASH;
+	damage *= 3/2;	
 	}
-	else
+	if(ent->client->skillLevel[SK_ROCKET] >= FORCE_LEVEL_3)
 	{
-		missile2->methodOfDeath = MOD_ROCKET;
-		missile2->splashMethodOfDeath = MOD_ROCKET_SPLASH;
+	damage *= 2;
 	}
-//===testing being able to shoot rockets out of the air==================================
-	missile2->health = 10;
-	missile2->takedamage = qtrue;
-	missile2->r.contents = MASK_SHOT;
-	missile2->die = RocketDie;
-//===testing being able to shoot rockets out of the air==================================
-	
-	missile2->clipmask = MASK_SHOT;
-	missile2->splashDamage = ROCKET_SPLASH_DAMAGE;
-	missile2->splashRadius = ROCKET_SPLASH_RADIUS;
+	VectorCopy(forward, dir);
+	VectorCopy(muzzle, start);
 
-	// we don't want it to ever bounce
-	missile2->bounceCount = 0;
-		}
+	bolt = G_Spawn();
+
+	bolt->physicsObject = qtrue;
+
+	bolt->classname = "thermal_detonator";
+	bolt->think = grenadelauncherThinkStandard;
+	bolt->nextthink = level.time;
+	bolt->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet(bolt->r.mins, -3.0f, -3.0f, -3.0f);
+	VectorSet(bolt->r.maxs, 3.0f, 3.0f, 3.0f);
+	bolt->clipmask = MASK_SHOT;
+
+	W_TraceSetStart(ent, start, bolt->r.mins, bolt->r.maxs);//make sure our start point isn't on the other side of a wall
+
+	if (ent->client)
+	{
+		chargeAmount = 1.0f;
+	}
+
+	// normal ones bounce, alt ones explode on impact
+	bolt->genericValue5 = level.time + GLA_TIME; // How long 'til she blows
+	bolt->s.pos.trType = TR_GRAVITY;
+	bolt->parent = ent;
+	bolt->r.ownerNum = ent->s.number;
+	VectorScale(dir, TD_VELOCITY * chargeAmount, bolt->s.pos.trDelta);
+
+	if (ent->health >= 0)
+	{
+		bolt->s.pos.trDelta[2] += 120;
+	}
+
+	if (!altFire)
+	{
+		bolt->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt->s.loopSound = G_SoundIndex("sound/weapons/thermal/thermloop.wav");
+	bolt->s.loopIsSoundset = qfalse;
+
+	bolt->damage = damage;
+	bolt->dflags = 0;
+	bolt->splashDamage = ROCKET_SPLASH_DAMAGE;
+	bolt->splashRadius = ROCKET_SPLASH_RADIUS;
+
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_THERMAL;
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->methodOfDeath = MOD_THERMAL;
+	bolt->splashMethodOfDeath = MOD_THERMAL_SPLASH;
+
+	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy(start, bolt->s.pos.trBase);
+
+	SnapVector(bolt->s.pos.trDelta);			// save net bandwidth
+	VectorCopy(start, bolt->r.currentOrigin);
+
+	VectorCopy(start, bolt->pos2);
+
+	bolt->bounceCount = -5;
+
+	//return bolt; 
+	}
 }
 
-
-
-
-/*
-======================================================================
-
-ROCKET LAUNCHER4
-
-======================================================================
-*/
-
-
-//---------------------------------------------------------
-static void WP_FireRocket4( gentity_t *ent, qboolean altFire )
-//---------------------------------------------------------
-{
-	int	damage	= ROCKET_DAMAGE*2/3;
-	int	vel = ROCKET_VELOCITY;
-	int dif = 0;
-	float rTime;
-	gentity_t *missile;
-if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
-{
-	damage *= 3.0;
-}
-else if(altFire)
-{
-	damage *= 3 / 2;
-}
-else if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3)
-{
-	damage *= 2.0;
-}
-//	if ( altFire )
-//	{
-//		vel *= 0.5f;
-//	}
-
-	missile = CreateMissile( muzzle, forward, vel, 10000, ent, altFire );
-	if (ent->client && ent->client->ps.rocketLockIndex != ENTITYNUM_NONE)
-	{
-		float lockTimeInterval = ((g_gametype.integer==GT_SIEGE)?2400.0f:1200.0f)/16.0f;
-		rTime = ent->client->ps.rocketLockTime;
-
-		if (rTime == -1)
-		{
-			rTime = ent->client->ps.rocketLastValidTime;
-		}
-		dif = ( level.time - rTime ) / lockTimeInterval;
-
-		if (dif < 0)
-		{
-			dif = 0;
-		}
-
-		//It's 10 even though it locks client-side at 8, because we want them to have a sturdy lock first, and because there's a slight difference in time between server and client
-		if ( dif >= 10 && rTime != -1 )
-		{
-			missile->enemy = &g_entities[ent->client->ps.rocketLockIndex];
-
-			if (missile->enemy && missile->enemy->client && missile->enemy->health > 0 && !OnSameTeam(ent, missile->enemy))
-			{ //if enemy became invalid, died, or is on the same team, then don't seek it
-				missile->angle = 0.5f;
-				missile->think = rocketThink;
-				missile->nextthink = level.time + ROCKET_ALT_THINK_TIME;
-			}
-		}
-
-		ent->client->ps.rocketLockIndex = ENTITYNUM_NONE;
-		ent->client->ps.rocketLockTime = 0;
-		ent->client->ps.rocketTargetTime = 0;
-	}
-
-	missile->classname = "rocket_proj";
-	missile->s.weapon = WP_ROCKET_LAUNCHER;
-	missile->s.eFlags |= EF_WP_OPTION_4;
-
-	// Make it easier to hit things
-	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
-	missile->damage = damage;
-	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	if (altFire)
-	{
-		missile->methodOfDeath = MOD_ROCKET_HOMING;
-		missile->splashMethodOfDeath = MOD_ROCKET_HOMING_SPLASH;
-	}
-	else
-	{
-		missile->methodOfDeath = MOD_ROCKET;
-		missile->splashMethodOfDeath = MOD_ROCKET_SPLASH;
-	}
-//===testing being able to shoot rockets out of the air==================================
-	missile->health = 10;
-	missile->takedamage = qtrue;
-	missile->r.contents = MASK_SHOT;
-	missile->die = RocketDie;
-//===testing being able to shoot rockets out of the air==================================
-	
-	missile->clipmask = MASK_SHOT;
-	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
-	missile->splashRadius = ROCKET_SPLASH_RADIUS;
-
-	// we don't want it to ever bounce
-	missile->bounceCount = 0;
-	
-	
-
-}
 
 /*
 ======================================================================
@@ -6466,8 +9255,8 @@ gentity_t *WP_FireThermalDetonator2( gentity_t *ent, qboolean altFire )
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_THERMAL;
 	bolt->s.eFlags |= EF_WP_OPTION_2;
-	bolt->methodOfDeath = MOD_INCINERATOR_EXPLOSION;
-	bolt->splashMethodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
+	bolt->methodOfDeath = MOD_FLAME_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_FLAME_EXPLOSION_SPLASH;
 
 	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
 	VectorCopy( start, bolt->s.pos.trBase );
@@ -6535,8 +9324,8 @@ gentity_t *WP_FireThermalDetonator2( gentity_t *ent, qboolean altFire )
 	bolt2->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt2->s.weapon = WP_THERMAL;
 	bolt2->s.eFlags |= EF_WP_OPTION_2;
-	bolt2->methodOfDeath = MOD_INCINERATOR_EXPLOSION;
-	bolt2->splashMethodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
+	bolt2->methodOfDeath = MOD_FLAME_EXPLOSION;
+	bolt2->splashMethodOfDeath = MOD_FLAME_EXPLOSION_SPLASH;
 
 	bolt2->s.pos.trTime = level.time;		// move a bit on the very first frame
 	VectorCopy( start, bolt2->s.pos.trBase );
@@ -6622,8 +9411,8 @@ gentity_t *WP_FireThermalDetonator2( gentity_t *ent, qboolean altFire )
 	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
 	bolt->s.weapon = WP_THERMAL;
 	bolt->s.eFlags |= EF_WP_OPTION_2;
-	bolt->methodOfDeath = MOD_INCINERATOR_EXPLOSION;
-	bolt->splashMethodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
+	bolt->methodOfDeath = MOD_FLAME_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_FLAME_EXPLOSION_SPLASH;
 
 	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
 	VectorCopy(start, bolt->s.pos.trBase);
@@ -7134,6 +9923,512 @@ gentity_t *WP_FireThermalDetonator4( gentity_t *ent, qboolean altFire )
 	return bolt; 
 	}
 }
+//---------------------------------------------------------
+gentity_t *WP_FireThermalDetonator5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if (ent->client->skillLevel[SK_THERMAL] == FORCE_LEVEL_3)
+	{
+	gentity_t	*bolt;
+	vec3_t		dir, start;
+	float chargeAmount = 1.0f; // default of full charge
+	
+	VectorCopy( forward, dir );
+	VectorCopy( muzzle, start );
+
+	bolt = G_Spawn();
+	
+	bolt->physicsObject = qtrue;
+
+	bolt->classname = "thermal_detonator";
+	bolt->think = thermalThinkStandard;
+	bolt->nextthink = level.time;
+	bolt->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet( bolt->r.mins, -3.0f, -3.0f, -3.0f );
+	VectorSet( bolt->r.maxs, 3.0f, 3.0f, 3.0f );
+	bolt->clipmask = MASK_SHOT;
+
+	W_TraceSetStart( ent, start, bolt->r.mins, bolt->r.maxs );//make sure our start point isn't on the other side of a wall
+
+	if ( ent->client )
+	{
+		chargeAmount = level.time - ent->client->ps.weaponChargeTime;
+	}
+
+	// get charge amount
+	chargeAmount = chargeAmount / (float)TD_VELOCITY;
+
+	if ( chargeAmount > 1.0f )
+	{
+		chargeAmount = 1.0f;
+	}
+	else if ( chargeAmount < TD_MIN_CHARGE )
+	{
+		chargeAmount = TD_MIN_CHARGE;
+	}
+
+	// normal ones bounce, alt ones explode on impact
+	bolt->genericValue5 = level.time + TD_TIME; // How long 'til she blows
+	bolt->s.pos.trType = TR_GRAVITY;
+	bolt->parent = ent;
+	bolt->r.ownerNum = ent->s.number;
+	VectorScale( dir, TD_VELOCITY * chargeAmount, bolt->s.pos.trDelta );
+
+	if ( ent->health >= 0 )
+	{
+		bolt->s.pos.trDelta[1] -=30 ;
+		bolt->s.pos.trDelta[2] += 120;
+	}
+
+	if ( !altFire )
+	{
+		bolt->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
+	bolt->s.loopIsSoundset = qfalse;
+
+	bolt->damage = TD_DAMAGE;
+	bolt->dflags = 0;
+	bolt->splashDamage = TD_SPLASH_DAM;
+	bolt->splashRadius = TD_SPLASH_RAD;
+
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_THERMAL;
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->s.eFlags |= EF_WP_OPTION_3;
+	bolt->methodOfDeath = MOD_SONIC_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_SONIC_EXPLOSION_SPLASH;
+
+	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, bolt->s.pos.trBase );
+	
+	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, bolt->r.currentOrigin);
+
+	VectorCopy( start, bolt->pos2 );
+
+	bolt->bounceCount = -5;
+
+
+	
+	
+	
+
+	
+	gentity_t	*bolt2;
+	
+
+	bolt2 = G_Spawn();
+	
+	bolt2->physicsObject = qtrue;
+
+	bolt2->classname = "thermal_detonator";
+	bolt2->think = thermalThinkStandard;
+	bolt2->nextthink = level.time;
+	bolt2->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet( bolt2->r.mins, -3.0f, -3.0f, -3.0f );
+	VectorSet( bolt2->r.maxs, 3.0f, 3.0f, 3.0f );
+	bolt2->clipmask = MASK_SHOT;
+
+	W_TraceSetStart( ent, start, bolt2->r.mins, bolt2->r.maxs );//make sure our start point isn't on the other side of a wall
+
+
+	// normal ones bounce, alt ones explode on impact
+	bolt2->genericValue5 = level.time + TD_TIME; // How long 'til she blows
+	bolt2->s.pos.trType = TR_GRAVITY;
+	bolt2->parent = ent;
+	bolt2->r.ownerNum = ent->s.number;
+	VectorScale( dir, TD_VELOCITY * chargeAmount, bolt2->s.pos.trDelta );
+
+	if ( ent->health >= 0 )
+	{
+		bolt2->s.pos.trDelta[1] +=30 ;
+		bolt2->s.pos.trDelta[2] += 120;
+	}
+
+	if ( !altFire )
+	{
+		bolt2->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt2->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
+	bolt2->s.loopIsSoundset = qfalse;
+
+	bolt2->damage = TD_DAMAGE;
+	bolt2->dflags = 0;
+	bolt2->splashDamage = TD_SPLASH_DAM;
+	bolt2->splashRadius = TD_SPLASH_RAD;
+
+	bolt2->s.eType = ET_MISSILE;
+	bolt2->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt2->s.weapon = WP_THERMAL;
+	bolt2->s.eFlags |= EF_WP_OPTION_2;
+	bolt2->s.eFlags |= EF_WP_OPTION_3;
+	bolt2->methodOfDeath = MOD_SONIC_EXPLOSION;
+	bolt2->splashMethodOfDeath = MOD_SONIC_EXPLOSION_SPLASH;
+
+	bolt2->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, bolt2->s.pos.trBase );
+	
+	SnapVector( bolt2->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, bolt2->r.currentOrigin);
+
+	VectorCopy( start, bolt2->pos2 );
+
+	bolt2->bounceCount = -5;
+	
+
+	return bolt, bolt2;
+	}
+	else
+	{
+	gentity_t* bolt;
+	vec3_t		dir, start;
+	float chargeAmount = 1.0f; // default of full charge
+
+	VectorCopy(forward, dir);
+	VectorCopy(muzzle, start);
+
+	bolt = G_Spawn();
+
+	bolt->physicsObject = qtrue;
+
+	bolt->classname = "thermal_detonator";
+	bolt->think = thermalThinkStandard;
+	bolt->nextthink = level.time;
+	bolt->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet(bolt->r.mins, -3.0f, -3.0f, -3.0f);
+	VectorSet(bolt->r.maxs, 3.0f, 3.0f, 3.0f);
+	bolt->clipmask = MASK_SHOT;
+
+	W_TraceSetStart(ent, start, bolt->r.mins, bolt->r.maxs);//make sure our start point isn't on the other side of a wall
+
+	if (ent->client)
+	{
+		chargeAmount = level.time - ent->client->ps.weaponChargeTime;
+	}
+
+	// get charge amount
+	chargeAmount = chargeAmount / (float)TD_VELOCITY;
+
+	if (chargeAmount > 1.0f)
+	{
+		chargeAmount = 1.0f;
+	}
+	else if (chargeAmount < TD_MIN_CHARGE)
+	{
+		chargeAmount = TD_MIN_CHARGE;
+	}
+
+	// normal ones bounce, alt ones explode on impact
+	bolt->genericValue5 = level.time + TD_TIME; // How long 'til she blows
+	bolt->s.pos.trType = TR_GRAVITY;
+	bolt->parent = ent;
+	bolt->r.ownerNum = ent->s.number;
+	VectorScale(dir, TD_VELOCITY * chargeAmount, bolt->s.pos.trDelta);
+
+	if (ent->health >= 0)
+	{
+		bolt->s.pos.trDelta[2] += 120;
+	}
+
+	if (!altFire)
+	{
+		bolt->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt->s.loopSound = G_SoundIndex("sound/weapons/thermal/thermloop.wav");
+	bolt->s.loopIsSoundset = qfalse;
+
+	bolt->damage = TD_DAMAGE;
+	bolt->dflags = 0;
+	bolt->splashDamage = TD_SPLASH_DAM;
+	bolt->splashRadius = TD_SPLASH_RAD;
+
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_THERMAL;
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->s.eFlags |= EF_WP_OPTION_3;
+	bolt->methodOfDeath = MOD_SONIC_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_SONIC_EXPLOSION_SPLASH;
+
+	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy(start, bolt->s.pos.trBase);
+
+	SnapVector(bolt->s.pos.trDelta);			// save net bandwidth
+	VectorCopy(start, bolt->r.currentOrigin);
+
+	VectorCopy(start, bolt->pos2);
+
+	bolt->bounceCount = -5;
+
+	return bolt; 
+	}
+}
+//---------------------------------------------------------
+gentity_t *WP_FireThermalDetonator6( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if (ent->client->skillLevel[SK_THERMAL] == FORCE_LEVEL_3)
+	{
+	gentity_t	*bolt;
+	vec3_t		dir, start;
+	float chargeAmount = 1.0f; // default of full charge
+	
+	VectorCopy( forward, dir );
+	VectorCopy( muzzle, start );
+
+	bolt = G_Spawn();
+	
+	bolt->physicsObject = qtrue;
+
+	bolt->classname = "thermal_detonator";
+	bolt->think = thermalThinkStandard;
+	bolt->nextthink = level.time;
+	bolt->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet( bolt->r.mins, -3.0f, -3.0f, -3.0f );
+	VectorSet( bolt->r.maxs, 3.0f, 3.0f, 3.0f );
+	bolt->clipmask = MASK_SHOT;
+
+	W_TraceSetStart( ent, start, bolt->r.mins, bolt->r.maxs );//make sure our start point isn't on the other side of a wall
+
+	if ( ent->client )
+	{
+		chargeAmount = level.time - ent->client->ps.weaponChargeTime;
+	}
+
+	// get charge amount
+	chargeAmount = chargeAmount / (float)TD_VELOCITY;
+
+	if ( chargeAmount > 1.0f )
+	{
+		chargeAmount = 1.0f;
+	}
+	else if ( chargeAmount < TD_MIN_CHARGE )
+	{
+		chargeAmount = TD_MIN_CHARGE;
+	}
+
+	// normal ones bounce, alt ones explode on impact
+	bolt->genericValue5 = level.time + TD_TIME; // How long 'til she blows
+	bolt->s.pos.trType = TR_GRAVITY;
+	bolt->parent = ent;
+	bolt->r.ownerNum = ent->s.number;
+	VectorScale( dir, TD_VELOCITY * chargeAmount, bolt->s.pos.trDelta );
+
+	if ( ent->health >= 0 )
+	{
+		bolt->s.pos.trDelta[1] -=30 ;
+		bolt->s.pos.trDelta[2] += 120;
+	}
+
+	if ( !altFire )
+	{
+		bolt->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
+	bolt->s.loopIsSoundset = qfalse;
+
+	bolt->damage = 0.0;
+	bolt->dflags = 0;
+	bolt->splashDamage = 0.0;
+	bolt->splashRadius = TD_SPLASH_RAD;
+
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_THERMAL;
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->s.eFlags |= EF_WP_OPTION_4;
+	bolt->methodOfDeath = MOD_FLASH_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_FLASH_EXPLOSION_SPLASH;
+
+	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, bolt->s.pos.trBase );
+	
+	SnapVector( bolt->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, bolt->r.currentOrigin);
+
+	VectorCopy( start, bolt->pos2 );
+
+	bolt->bounceCount = -5;
+
+
+	
+	
+	
+
+	
+	gentity_t	*bolt2;
+	
+
+	bolt2 = G_Spawn();
+	
+	bolt2->physicsObject = qtrue;
+
+	bolt2->classname = "thermal_detonator";
+	bolt2->think = thermalThinkStandard;
+	bolt2->nextthink = level.time;
+	bolt2->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet( bolt2->r.mins, -3.0f, -3.0f, -3.0f );
+	VectorSet( bolt2->r.maxs, 3.0f, 3.0f, 3.0f );
+	bolt2->clipmask = MASK_SHOT;
+
+	W_TraceSetStart( ent, start, bolt2->r.mins, bolt2->r.maxs );//make sure our start point isn't on the other side of a wall
+
+
+	// normal ones bounce, alt ones explode on impact
+	bolt2->genericValue5 = level.time + TD_TIME; // How long 'til she blows
+	bolt2->s.pos.trType = TR_GRAVITY;
+	bolt2->parent = ent;
+	bolt2->r.ownerNum = ent->s.number;
+	VectorScale( dir, TD_VELOCITY * chargeAmount, bolt2->s.pos.trDelta );
+
+	if ( ent->health >= 0 )
+	{
+		bolt2->s.pos.trDelta[1] +=30 ;
+		bolt2->s.pos.trDelta[2] += 120;
+	}
+
+	if ( !altFire )
+	{
+		bolt2->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt2->s.loopSound = G_SoundIndex( "sound/weapons/thermal/thermloop.wav" );
+	bolt2->s.loopIsSoundset = qfalse;
+
+	bolt2->damage = 0.0;
+	bolt2->dflags = 0;
+	bolt2->splashDamage = 0.0;
+	bolt2->splashRadius = TD_SPLASH_RAD;
+
+	bolt2->s.eType = ET_MISSILE;
+	bolt2->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt2->s.weapon = WP_THERMAL;
+	bolt2->s.eFlags |= EF_WP_OPTION_2;
+	bolt2->s.eFlags |= EF_WP_OPTION_4;
+	bolt2->methodOfDeath = MOD_FLASH_EXPLOSION;
+	bolt2->splashMethodOfDeath = MOD_FLASH_EXPLOSION_SPLASH;
+
+	bolt2->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, bolt2->s.pos.trBase );
+	
+	SnapVector( bolt2->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, bolt2->r.currentOrigin);
+
+	VectorCopy( start, bolt2->pos2 );
+
+	bolt2->bounceCount = -5;
+	
+
+	return bolt, bolt2;
+	}
+	else
+	{
+	gentity_t* bolt;
+	vec3_t		dir, start;
+	float chargeAmount = 1.0f; // default of full charge
+
+	VectorCopy(forward, dir);
+	VectorCopy(muzzle, start);
+
+	bolt = G_Spawn();
+
+	bolt->physicsObject = qtrue;
+
+	bolt->classname = "thermal_detonator";
+	bolt->think = thermalThinkStandard;
+	bolt->nextthink = level.time;
+	bolt->touch = touch_NULL;
+
+	// How 'bout we give this thing a size...
+	VectorSet(bolt->r.mins, -3.0f, -3.0f, -3.0f);
+	VectorSet(bolt->r.maxs, 3.0f, 3.0f, 3.0f);
+	bolt->clipmask = MASK_SHOT;
+
+	W_TraceSetStart(ent, start, bolt->r.mins, bolt->r.maxs);//make sure our start point isn't on the other side of a wall
+
+	if (ent->client)
+	{
+		chargeAmount = level.time - ent->client->ps.weaponChargeTime;
+	}
+
+	// get charge amount
+	chargeAmount = chargeAmount / (float)TD_VELOCITY;
+
+	if (chargeAmount > 1.0f)
+	{
+		chargeAmount = 1.0f;
+	}
+	else if (chargeAmount < TD_MIN_CHARGE)
+	{
+		chargeAmount = TD_MIN_CHARGE;
+	}
+
+	// normal ones bounce, alt ones explode on impact
+	bolt->genericValue5 = level.time + TD_TIME; // How long 'til she blows
+	bolt->s.pos.trType = TR_GRAVITY;
+	bolt->parent = ent;
+	bolt->r.ownerNum = ent->s.number;
+	VectorScale(dir, TD_VELOCITY * chargeAmount, bolt->s.pos.trDelta);
+
+	if (ent->health >= 0)
+	{
+		bolt->s.pos.trDelta[2] += 120;
+	}
+
+	if (!altFire)
+	{
+		bolt->flags |= FL_BOUNCE_HALF;
+	}
+
+	bolt->s.loopSound = G_SoundIndex("sound/weapons/thermal/thermloop.wav");
+	bolt->s.loopIsSoundset = qfalse;
+
+	bolt->damage = 0.0;
+	bolt->dflags = 0;
+	bolt->splashDamage = 0.0;
+	bolt->splashRadius = TD_SPLASH_RAD;
+
+	bolt->s.eType = ET_MISSILE;
+	bolt->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	bolt->s.weapon = WP_THERMAL;
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->s.eFlags |= EF_WP_OPTION_4;
+	bolt->methodOfDeath = MOD_FLASH_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_FLASH_EXPLOSION_SPLASH;
+
+	bolt->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy(start, bolt->s.pos.trBase);
+
+	SnapVector(bolt->s.pos.trDelta);			// save net bandwidth
+	VectorCopy(start, bolt->r.currentOrigin);
+
+	VectorCopy(start, bolt->pos2);
+
+	bolt->bounceCount = -5;
+
+	return bolt; 
+	}
+}
+
+
+
+
 gentity_t *WP_DropThermal( gentity_t *ent )
 {
 	AngleVectors( ent->client->ps.viewangles, forward, vright, up );
@@ -7154,6 +10449,19 @@ gentity_t *WP_DropThermal4( gentity_t *ent )
 	AngleVectors( ent->client->ps.viewangles, forward, vright, up );
 	return (WP_FireThermalDetonator4( ent, qfalse ));
 }
+gentity_t *WP_DropThermal5( gentity_t *ent )
+{
+	AngleVectors( ent->client->ps.viewangles, forward, vright, up );
+	return (WP_FireThermalDetonator5( ent, qfalse ));
+}
+gentity_t *WP_DropThermal6( gentity_t *ent )
+{
+	AngleVectors( ent->client->ps.viewangles, forward, vright, up );
+	return (WP_FireThermalDetonator6( ent, qfalse ));
+}
+
+
+
 //---------------------------------------------------------
 qboolean WP_LobFire( gentity_t *self, vec3_t start, vec3_t target, vec3_t mins, vec3_t maxs, int clipmask, 
 				vec3_t velocity, qboolean tracePath, int ignoreEntNum, int enemyNum,
@@ -7330,17 +10638,25 @@ void laserTrapExplode( gentity_t *self )
 	}
 	else
 	{
-	if (self->s.eFlags & EF_WP_OPTION_2)
+	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_INCINERATOR_EXPLOSION_SPLASH/*MOD_LT_SPLASH*/ );
+		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_FLASH_EXPLOSION_SPLASH/*MOD_LT_SPLASH*/ );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
+	{
+		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_SONIC_EXPLOSION_SPLASH/*MOD_LT_SPLASH*/ );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_4)
+	{
+		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_ION_EXPLOSION_SPLASH/*MOD_LT_SPLASH*/ );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_3)
 	{
 		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_DIOXIS_EXPLOSION_SPLASH/*MOD_LT_SPLASH*/ );
 	}
-	else if (self->s.eFlags & EF_WP_OPTION_4)
+	else if (self->s.eFlags & EF_WP_OPTION_2)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_DEMP2/*MOD_LT_SPLASH*/ );
+		G_RadiusDamage( self->r.currentOrigin, self->activator, self->splashDamage, self->splashRadius, self, self, MOD_FLAME_EXPLOSION_SPLASH/*MOD_LT_SPLASH*/ );
 	}
 	else
 	{
@@ -7371,17 +10687,25 @@ void laserTrapExplode( gentity_t *self )
 	}
 	else 
 	{
-		if(self->s.eFlags & EF_WP_OPTION_2)
+		if(self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 		{
-		G_PlayEffect(EFFECT_EXPLOSION_TRIPMINE2, self->r.currentOrigin, v);			
+		G_PlayEffect(EFFECT_EXPLOSION_TRIPMINE6, self->r.currentOrigin, v);			
+		}
+		else if(self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
+		{
+		G_PlayEffect(EFFECT_EXPLOSION_TRIPMINE5, self->r.currentOrigin, v);			
+		}
+		else if(self->s.eFlags & EF_WP_OPTION_4)
+		{
+		G_PlayEffect(EFFECT_EXPLOSION_TRIPMINE4, self->r.currentOrigin, v);			
 		}
 		else if(self->s.eFlags & EF_WP_OPTION_3)
 		{
 		G_PlayEffect(EFFECT_EXPLOSION_TRIPMINE3, self->r.currentOrigin, v);			
 		}		
-		else if(self->s.eFlags & EF_WP_OPTION_4)
+		else if(self->s.eFlags & EF_WP_OPTION_2)
 		{
-		G_PlayEffect(EFFECT_EXPLOSION_TRIPMINE4, self->r.currentOrigin, v);			
+		G_PlayEffect(EFFECT_EXPLOSION_TRIPMINE2, self->r.currentOrigin, v);			
 		}
 		else
 		{
@@ -7596,7 +10920,7 @@ void CreateLaserTrap( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	laserTrap->s.eFlags |= EF_MISSILE_STICK;
 	laserTrap->splashRadius = LT_SPLASH_RAD;
 	laserTrap->splashDamage = LT_SPLASH_DAM;
-	if (owner->client && owner->client->skillLevel[SK_DETPACK] == FORCE_LEVEL_3)
+	if (owner->client && owner->client->skillLevel[SK_TRIPMINE] == FORCE_LEVEL_3)
 	{
 	laserTrap->damage = 2*LT_DAMAGE;
 	}
@@ -7605,29 +10929,10 @@ void CreateLaserTrap( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	laserTrap->damage = LT_DAMAGE;
 	}
 	
-	if (owner->client && owner->client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && owner->client->skillLevel[SK_TRIPMINEA] == FORCE_LEVEL_2 )
-	{
-		laserTrap->s.eFlags |= EF_WP_OPTION_2;
-		laserTrap->methodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
-		laserTrap->splashMethodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
-	}
-	else if (owner->client && owner->client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && owner->client->skillLevel[SK_TRIPMINEA] == FORCE_LEVEL_3)
-	{
-		laserTrap->s.eFlags |= EF_WP_OPTION_3;
-		laserTrap->methodOfDeath = MOD_DIOXIS_EXPLOSION_SPLASH;
-		laserTrap->splashMethodOfDeath = MOD_DIOXIS_EXPLOSION_SPLASH;
-	}
-	else if (owner->client && owner->client->skillLevel[SK_TRIPMINE] >= FORCE_LEVEL_1 && owner->client->skillLevel[SK_TRIPMINEB] == FORCE_LEVEL_1)
-	{
-		laserTrap->s.eFlags |= EF_WP_OPTION_4;
-		laserTrap->methodOfDeath = MOD_ION_EXPLOSION;
-		laserTrap->splashMethodOfDeath = MOD_ION_EXPLOSION_SPLASH;
-	}
-	else
-	{
+
 		laserTrap->methodOfDeath = MOD_TRIP_MINE_SPLASH;
 		laserTrap->splashMethodOfDeath = MOD_TRIP_MINE_SPLASH;			
-	}
+	
 
 	laserTrap->s.eType = ET_GENERAL;
 	laserTrap->r.svFlags = SVF_USE_CURRENT_ORIGIN;
@@ -7782,7 +11087,7 @@ void CreateLaserTrap2( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	laserTrap->s.eFlags |= EF_MISSILE_STICK;
 	laserTrap->splashRadius = LT_SPLASH_RAD;
 	laserTrap->splashDamage = LT_SPLASH_DAM;
-	if (owner->client && owner->client->skillLevel[SK_DETPACK] == FORCE_LEVEL_3)
+	if (owner->client && owner->client->skillLevel[SK_TRIPMINE] == FORCE_LEVEL_3)
 	{
 	laserTrap->damage = 2*LT_DAMAGE;
 	}
@@ -7794,8 +11099,8 @@ void CreateLaserTrap2( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 
 	
 	laserTrap->s.eFlags |= EF_WP_OPTION_2;
-	laserTrap->methodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
-	laserTrap->splashMethodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
+	laserTrap->methodOfDeath = MOD_FLAME_EXPLOSION_SPLASH;
+	laserTrap->splashMethodOfDeath = MOD_FLAME_EXPLOSION_SPLASH;
 	
 
 
@@ -7951,7 +11256,7 @@ void CreateLaserTrap3( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	laserTrap->s.eFlags |= EF_MISSILE_STICK;
 	laserTrap->splashRadius = LT_SPLASH_RAD;
 	laserTrap->splashDamage = LT_SPLASH_DAM;
-	if (owner->client && owner->client->skillLevel[SK_DETPACK] == FORCE_LEVEL_3)
+	if (owner->client && owner->client->skillLevel[SK_TRIPMINE] == FORCE_LEVEL_3)
 	{
 	laserTrap->damage = 2*LT_DAMAGE;
 	}
@@ -8120,7 +11425,7 @@ void CreateLaserTrap4( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
 	laserTrap->s.eFlags |= EF_MISSILE_STICK;
 	laserTrap->splashRadius = LT_SPLASH_RAD;
 	laserTrap->splashDamage = LT_SPLASH_DAM;
-	if (owner->client && owner->client->skillLevel[SK_DETPACK] == FORCE_LEVEL_3)
+	if (owner->client && owner->client->skillLevel[SK_TRIPMINE] == FORCE_LEVEL_3)
 	{
 	laserTrap->damage = 2*LT_DAMAGE;
 	}
@@ -8276,6 +11581,341 @@ void WP_PlaceLaserTrap4(gentity_t* ent, qboolean alt_fire)
 }
 
 
+/*
+======================================================================
+
+LASER TRAP5 / TRIP MINE5
+
+======================================================================
+*/
+void CreateLaserTrap5( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
+{ //create a laser trap entity
+	laserTrap->classname = "laserTrap";
+	laserTrap->flags |= FL_BOUNCE_HALF;
+	laserTrap->s.eFlags |= EF_MISSILE_STICK;
+	laserTrap->splashRadius = LT_SPLASH_RAD;
+	laserTrap->splashDamage = LT_SPLASH_DAM;
+	if (owner->client && owner->client->skillLevel[SK_TRIPMINE] == FORCE_LEVEL_3)
+	{
+	laserTrap->damage = 2*LT_DAMAGE;
+	}
+	else
+	{
+	laserTrap->damage = LT_DAMAGE;
+	}
+	
+	
+	laserTrap->s.eFlags |= EF_WP_OPTION_2;
+	laserTrap->s.eFlags |= EF_WP_OPTION_3;
+	laserTrap->methodOfDeath = MOD_SONIC_EXPLOSION;
+	laserTrap->splashMethodOfDeath = MOD_SONIC_EXPLOSION_SPLASH;
+	
+
+
+	laserTrap->s.eType = ET_GENERAL;
+	laserTrap->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	laserTrap->s.weapon = WP_TRIP_MINE;
+	laserTrap->s.pos.trType = TR_GRAVITY;
+	laserTrap->r.contents = MASK_SHOT;
+	laserTrap->parent = owner;
+	laserTrap->activator = owner;
+	laserTrap->r.ownerNum = owner->s.number;
+	VectorSet( laserTrap->r.mins, -LT_SIZE, -LT_SIZE, -LT_SIZE );
+	VectorSet( laserTrap->r.maxs, LT_SIZE, LT_SIZE, LT_SIZE );
+	laserTrap->clipmask = MASK_SHOT;
+	laserTrap->s.solid = 2;
+	laserTrap->s.modelindex = G_ModelIndex( "models/weapons2/laser_trap/laser_trap_w.glm" );
+	laserTrap->s.modelGhoul2 = 1;
+	laserTrap->s.g2radius = 40;
+
+	laserTrap->s.genericenemyindex = owner->s.number+MAX_GENTITIES;
+
+	laserTrap->health = 1;
+
+	laserTrap->s.time = 0;
+
+	laserTrap->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, laserTrap->s.pos.trBase );
+	SnapVector( laserTrap->s.pos.trBase );			// save net bandwidth
+	
+	SnapVector( laserTrap->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, laserTrap->r.currentOrigin);
+
+	laserTrap->s.apos.trType = TR_GRAVITY;
+	laserTrap->s.apos.trTime = level.time;
+	laserTrap->s.apos.trBase[YAW] = rand()%360;
+	laserTrap->s.apos.trBase[PITCH] = rand()%360;
+	laserTrap->s.apos.trBase[ROLL] = rand()%360;
+
+	if (rand()%10 < 5)
+	{
+		laserTrap->s.apos.trBase[YAW] = -laserTrap->s.apos.trBase[YAW];
+	}
+
+	VectorCopy( start, laserTrap->pos2 );
+	laserTrap->touch = touchLaserTrap;
+	laserTrap->think = TrapThink;
+	laserTrap->nextthink = level.time + 50;
+}
+
+void WP_PlaceLaserTrap5(gentity_t* ent, qboolean alt_fire)
+{
+	gentity_t* laserTrap;
+	//	gentity_t	*found = NULL;
+	vec3_t		dir, start;
+	//	int			trapcount = 0;
+	int			foundLaserTraps[MAX_GENTITIES];
+
+	foundLaserTraps[0] = ENTITYNUM_NONE;
+
+	VectorCopy(forward, dir);
+	VectorCopy(muzzle, start);
+
+	laserTrap = G_Spawn();
+
+	//limit to 10 placed at any one time
+	//see how many there are now
+	/*
+	while ( (found = G_Find( found, FOFS(classname), "laserTrap" )) != NULL )
+	{
+		if ( found->parent != ent )
+		{
+			continue;
+		}
+		foundLaserTraps[trapcount++] = found->s.number;
+	}
+	//now remove first ones we find until there are only 9 left
+	found = NULL;
+	trapcount_org = trapcount;
+	lowestTimeStamp = level.time;
+	while ( trapcount > 9 )
+	{
+		removeMe = -1;
+		for ( i = 0; i < trapcount_org; i++ )
+		{
+			if ( foundLaserTraps[i] == ENTITYNUM_NONE )
+			{
+				continue;
+			}
+			found = &g_entities[foundLaserTraps[i]];
+			if ( laserTrap && found->setTime < lowestTimeStamp )
+			{
+				removeMe = i;
+				lowestTimeStamp = found->setTime;
+			}
+		}
+		if ( removeMe != -1 )
+		{
+			//remove it... or blow it?
+			if ( &g_entities[foundLaserTraps[removeMe]] == NULL )
+			{
+				break;
+			}
+			else
+			{
+				G_FreeEntity( &g_entities[foundLaserTraps[removeMe]] );
+			}
+			foundLaserTraps[removeMe] = ENTITYNUM_NONE;
+			trapcount--;
+		}
+		else
+		{
+			break;
+		}
+	}
+	*/
+	//now make the new one
+	CreateLaserTrap5(laserTrap, start, ent);
+
+	//set player-created-specific fields
+	laserTrap->setTime = level.time;//remember when we placed it
+
+	if (!alt_fire)
+	{//tripwire
+		laserTrap->count = 1;
+	}
+
+	//move it
+	laserTrap->s.pos.trType = TR_GRAVITY;
+
+	if (alt_fire)
+	{
+		VectorScale(dir, 512, laserTrap->s.pos.trDelta);
+	}
+	else
+	{
+		VectorScale(dir, 256, laserTrap->s.pos.trDelta);
+	}
+
+	trap_LinkEntity(laserTrap);
+
+}
+
+
+/*
+======================================================================
+
+LASER TRAP6 / TRIP MINE6
+
+======================================================================
+*/
+void CreateLaserTrap6( gentity_t *laserTrap, vec3_t start, gentity_t *owner )
+{ //create a laser trap entity
+	laserTrap->classname = "laserTrap";
+	laserTrap->flags |= FL_BOUNCE_HALF;
+	laserTrap->s.eFlags |= EF_MISSILE_STICK;
+	laserTrap->splashRadius = LT_SPLASH_RAD;
+	laserTrap->splashDamage = 0.0;
+
+	laserTrap->damage = 0.0;
+
+	
+	
+	laserTrap->s.eFlags |= EF_WP_OPTION_2;
+	laserTrap->s.eFlags |= EF_WP_OPTION_4;
+	laserTrap->methodOfDeath = MOD_FLASH_EXPLOSION;
+	laserTrap->splashMethodOfDeath = MOD_FLASH_EXPLOSION_SPLASH;
+	
+
+
+	laserTrap->s.eType = ET_GENERAL;
+	laserTrap->r.svFlags = SVF_USE_CURRENT_ORIGIN;
+	laserTrap->s.weapon = WP_TRIP_MINE;
+	laserTrap->s.pos.trType = TR_GRAVITY;
+	laserTrap->r.contents = MASK_SHOT;
+	laserTrap->parent = owner;
+	laserTrap->activator = owner;
+	laserTrap->r.ownerNum = owner->s.number;
+	VectorSet( laserTrap->r.mins, -LT_SIZE, -LT_SIZE, -LT_SIZE );
+	VectorSet( laserTrap->r.maxs, LT_SIZE, LT_SIZE, LT_SIZE );
+	laserTrap->clipmask = MASK_SHOT;
+	laserTrap->s.solid = 2;
+	laserTrap->s.modelindex = G_ModelIndex( "models/weapons2/laser_trap/laser_trap_w.glm" );
+	laserTrap->s.modelGhoul2 = 1;
+	laserTrap->s.g2radius = 40;
+
+	laserTrap->s.genericenemyindex = owner->s.number+MAX_GENTITIES;
+
+	laserTrap->health = 1;
+
+	laserTrap->s.time = 0;
+
+	laserTrap->s.pos.trTime = level.time;		// move a bit on the very first frame
+	VectorCopy( start, laserTrap->s.pos.trBase );
+	SnapVector( laserTrap->s.pos.trBase );			// save net bandwidth
+	
+	SnapVector( laserTrap->s.pos.trDelta );			// save net bandwidth
+	VectorCopy (start, laserTrap->r.currentOrigin);
+
+	laserTrap->s.apos.trType = TR_GRAVITY;
+	laserTrap->s.apos.trTime = level.time;
+	laserTrap->s.apos.trBase[YAW] = rand()%360;
+	laserTrap->s.apos.trBase[PITCH] = rand()%360;
+	laserTrap->s.apos.trBase[ROLL] = rand()%360;
+
+	if (rand()%10 < 5)
+	{
+		laserTrap->s.apos.trBase[YAW] = -laserTrap->s.apos.trBase[YAW];
+	}
+
+	VectorCopy( start, laserTrap->pos2 );
+	laserTrap->touch = touchLaserTrap;
+	laserTrap->think = TrapThink;
+	laserTrap->nextthink = level.time + 50;
+}
+
+void WP_PlaceLaserTrap6(gentity_t* ent, qboolean alt_fire)
+{
+	gentity_t* laserTrap;
+	//	gentity_t	*found = NULL;
+	vec3_t		dir, start;
+	//	int			trapcount = 0;
+	int			foundLaserTraps[MAX_GENTITIES];
+
+	foundLaserTraps[0] = ENTITYNUM_NONE;
+
+	VectorCopy(forward, dir);
+	VectorCopy(muzzle, start);
+
+	laserTrap = G_Spawn();
+
+	//limit to 10 placed at any one time
+	//see how many there are now
+	/*
+	while ( (found = G_Find( found, FOFS(classname), "laserTrap" )) != NULL )
+	{
+		if ( found->parent != ent )
+		{
+			continue;
+		}
+		foundLaserTraps[trapcount++] = found->s.number;
+	}
+	//now remove first ones we find until there are only 9 left
+	found = NULL;
+	trapcount_org = trapcount;
+	lowestTimeStamp = level.time;
+	while ( trapcount > 9 )
+	{
+		removeMe = -1;
+		for ( i = 0; i < trapcount_org; i++ )
+		{
+			if ( foundLaserTraps[i] == ENTITYNUM_NONE )
+			{
+				continue;
+			}
+			found = &g_entities[foundLaserTraps[i]];
+			if ( laserTrap && found->setTime < lowestTimeStamp )
+			{
+				removeMe = i;
+				lowestTimeStamp = found->setTime;
+			}
+		}
+		if ( removeMe != -1 )
+		{
+			//remove it... or blow it?
+			if ( &g_entities[foundLaserTraps[removeMe]] == NULL )
+			{
+				break;
+			}
+			else
+			{
+				G_FreeEntity( &g_entities[foundLaserTraps[removeMe]] );
+			}
+			foundLaserTraps[removeMe] = ENTITYNUM_NONE;
+			trapcount--;
+		}
+		else
+		{
+			break;
+		}
+	}
+	*/
+	//now make the new one
+	CreateLaserTrap6(laserTrap, start, ent);
+
+	//set player-created-specific fields
+	laserTrap->setTime = level.time;//remember when we placed it
+
+	if (!alt_fire)
+	{//tripwire
+		laserTrap->count = 1;
+	}
+
+	//move it
+	laserTrap->s.pos.trType = TR_GRAVITY;
+
+	if (alt_fire)
+	{
+		VectorScale(dir, 512, laserTrap->s.pos.trDelta);
+	}
+	else
+	{
+		VectorScale(dir, 256, laserTrap->s.pos.trDelta);
+	}
+
+	trap_LinkEntity(laserTrap);
+
+}
 
 
 
@@ -8346,17 +11986,26 @@ void charge_stick (gentity_t *self, gentity_t *other, trace_t *trace)
 
 		VectorClear(self->s.apos.trDelta);
 		self->s.apos.trType = TR_STATIONARY;
-	if (self->s.eFlags & EF_WP_OPTION_2)
+
+	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_INCINERATOR_EXPLOSION_SPLASH );
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_FLASH_EXPLOSION_SPLASH );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
+	{
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_SONIC_EXPLOSION_SPLASH );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_4)
+	{
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_ION_EXPLOSION_SPLASH );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_3)
 	{
 		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_DIOXIS_EXPLOSION_SPLASH );
 	}
-	else if (self->s.eFlags & EF_WP_OPTION_4)
+	else if (self->s.eFlags & EF_WP_OPTION_2)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_ION_EXPLOSION_SPLASH );
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_FLAME_EXPLOSION_SPLASH );
 	}
 	else
 	{
@@ -8366,17 +12015,25 @@ void charge_stick (gentity_t *self, gentity_t *other, trace_t *trace)
 		VectorCopy(trace->plane.normal, v);
 		VectorCopy(v, self->pos2);
 		self->count = -1;
-	if (self->s.eFlags & EF_WP_OPTION_2)
+	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_PlayEffect(EFFECT_EXPLOSION_DETPACK2, self->r.currentOrigin, v);
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK6, self->r.currentOrigin, v);
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
+	{
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK5, self->r.currentOrigin, v);
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_4)
+	{
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK4, self->r.currentOrigin, v);
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_3)
 	{
 		G_PlayEffect(EFFECT_EXPLOSION_DETPACK3, self->r.currentOrigin, v);
 	}
-	else if (self->s.eFlags & EF_WP_OPTION_4)
+	else if (self->s.eFlags & EF_WP_OPTION_2)
 	{
-		G_PlayEffect(EFFECT_EXPLOSION_DETPACK4, self->r.currentOrigin, v);
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK2, self->r.currentOrigin, v);
 	}
 	else
 	{
@@ -8434,17 +12091,25 @@ void DetPackBlow(gentity_t *self)
 
 	if ( self->target_ent )
 	{//we were attached to something, do *direct* damage to it!
-	if (self->s.eFlags & EF_WP_OPTION_2)
+	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_INCINERATOR_EXPLOSION_SPLASH );
+		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_FLASH_EXPLOSION_SPLASH );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
+	{
+		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_SONIC_EXPLOSION_SPLASH );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_4)
+	{
+		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_ION_EXPLOSION_SPLASH );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_3)
 	{
 		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_DIOXIS_EXPLOSION_SPLASH );
 	}
-	else if (self->s.eFlags & EF_WP_OPTION_4)
+	else if (self->s.eFlags & EF_WP_OPTION_2)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_ION_EXPLOSION_SPLASH );
+		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_FLAME_EXPLOSION_SPLASH );
 	}
 	else
 	{
@@ -8452,17 +12117,25 @@ void DetPackBlow(gentity_t *self)
 	}
 
 	}
-	if (self->s.eFlags & EF_WP_OPTION_2)
+	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_INCINERATOR_EXPLOSION_SPLASH );
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_FLASH_EXPLOSION_SPLASH );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
+	{
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_SONIC_EXPLOSION_SPLASH );
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_4)
+	{
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_ION_EXPLOSION_SPLASH );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_3)
 	{
 		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_DIOXIS_EXPLOSION_SPLASH );
 	}
-	else if (self->s.eFlags & EF_WP_OPTION_4)
+	else if (self->s.eFlags & EF_WP_OPTION_2)
 	{
-		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_ION_EXPLOSION_SPLASH );
+		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_FLAME_EXPLOSION_SPLASH );
 	}
 	else
 	{
@@ -8477,17 +12150,25 @@ void DetPackBlow(gentity_t *self)
 		VectorCopy(self->pos2, v);
 	}
 
-	if (self->s.eFlags & EF_WP_OPTION_2)
+	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_PlayEffect(EFFECT_EXPLOSION_DETPACK2, self->r.currentOrigin, v);
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK6, self->r.currentOrigin, v);
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
+	{
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK5, self->r.currentOrigin, v);
+	}
+	else if (self->s.eFlags & EF_WP_OPTION_4)
+	{
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK4, self->r.currentOrigin, v);
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_3)
 	{
 		G_PlayEffect(EFFECT_EXPLOSION_DETPACK3, self->r.currentOrigin, v);
 	}
-	else if (self->s.eFlags & EF_WP_OPTION_4)
+	else if (self->s.eFlags & EF_WP_OPTION_2)
 	{
-		G_PlayEffect(EFFECT_EXPLOSION_DETPACK4, self->r.currentOrigin, v);
+		G_PlayEffect(EFFECT_EXPLOSION_DETPACK2, self->r.currentOrigin, v);
 	}
 	else
 	{
@@ -8755,8 +12436,8 @@ void drop_charge2 (gentity_t *self, vec3_t start, vec3_t dir)
 
 	
 	bolt->s.eFlags |= EF_WP_OPTION_2;
-	bolt->methodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
-	bolt->splashMethodOfDeath = MOD_INCINERATOR_EXPLOSION_SPLASH;
+	bolt->methodOfDeath = MOD_FLAME_EXPLOSION_SPLASH;
+	bolt->splashMethodOfDeath = MOD_FLAME_EXPLOSION_SPLASH;
 	
 
 	
@@ -9265,6 +12946,370 @@ void WP_DropDetPack4( gentity_t *ent, qboolean alt_fire )
 /*
 ======================================================================
 
+DET PACK5
+
+======================================================================
+*/
+void drop_charge5 (gentity_t *self, vec3_t start, vec3_t dir) 
+{
+	gentity_t	*bolt;
+
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();
+	bolt->classname = "detpack";
+	bolt->nextthink = level.time + FRAMETIME;
+	bolt->think = G_RunObject;
+	bolt->s.eType = ET_GENERAL;
+	bolt->s.g2radius = 100;
+	bolt->s.modelGhoul2 = 1;
+	bolt->s.modelindex = G_ModelIndex("models/weapons2/detpack/det_pack_proj.glm");
+	bolt->parent = self;
+	bolt->r.ownerNum = self->s.number;
+	if (self->client && self->client->skillLevel[SK_DETPACK] == FORCE_LEVEL_3)
+	{
+	bolt->damage = 600;	
+	}
+	else
+	{
+	bolt->damage = 300;	
+	}
+	bolt->splashDamage = 150;
+	bolt->splashRadius = 512;
+	
+
+	
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->s.eFlags |= EF_WP_OPTION_3;
+	bolt->methodOfDeath = MOD_SONIC_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_SONIC_EXPLOSION_SPLASH;
+	
+
+	
+	bolt->clipmask = MASK_SHOT;
+	bolt->s.solid = 2;
+	bolt->r.contents = MASK_SHOT;
+	bolt->touch = charge_stick;
+
+	bolt->physicsObject = qtrue;
+
+	bolt->s.genericenemyindex = self->s.number+MAX_GENTITIES;
+	//rww - so client prediction knows we own this and won't hit it
+
+	VectorSet( bolt->r.mins, -2, -2, -2 );
+	VectorSet( bolt->r.maxs, 2, 2, 2 );
+
+	bolt->health = 1;
+	bolt->takedamage = qtrue;
+	bolt->pain = DetPackPain;
+	bolt->die = DetPackDie;
+
+	bolt->s.weapon = WP_DET_PACK;
+
+	bolt->setTime = level.time;
+
+	G_SetOrigin(bolt, start);
+	bolt->s.pos.trType = TR_GRAVITY;
+	VectorCopy( start, bolt->s.pos.trBase );
+	VectorScale(dir, 300, bolt->s.pos.trDelta );
+	bolt->s.pos.trTime = level.time;
+
+	bolt->s.apos.trType = TR_GRAVITY;
+	bolt->s.apos.trTime = level.time;
+	bolt->s.apos.trBase[YAW] = rand()%360;
+	bolt->s.apos.trBase[PITCH] = rand()%360;
+	bolt->s.apos.trBase[ROLL] = rand()%360;
+
+	if (rand()%10 < 5)
+	{
+		bolt->s.apos.trBase[YAW] = -bolt->s.apos.trBase[YAW];
+	}
+
+	vectoangles(dir, bolt->s.angles);
+	VectorCopy(bolt->s.angles, bolt->s.apos.trBase);
+	VectorSet(bolt->s.apos.trDelta, 300, 0, 0 );
+	bolt->s.apos.trTime = level.time;
+
+	trap_LinkEntity(bolt);
+
+	//[CoOp]
+	//make some sight/sound events
+	AddSoundEvent( NULL, bolt->r.currentOrigin, 128, AEL_MINOR, qtrue, qfalse );
+	AddSightEvent( NULL, bolt->r.currentOrigin, 128, AEL_SUSPICIOUS, 10 );
+	//[/CoOp]
+}
+
+
+void WP_DropDetPack5( gentity_t *ent, qboolean alt_fire )
+{
+	gentity_t	*found = NULL;
+	int			trapcount = 0;
+	int			foundDetPacks[MAX_GENTITIES] = {ENTITYNUM_NONE};
+	int			trapcount_org;
+	int			lowestTimeStamp;
+	int			removeMe;
+	int			i;
+
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
+	//limit to 10 placed at any one time
+	//see how many there are now
+	while ( (found = G_Find( found, FOFS(classname), "detpack" )) != NULL )
+	{
+		if ( found->parent != ent )
+		{
+			continue;
+		}
+		foundDetPacks[trapcount++] = found->s.number;
+	}
+	//now remove first ones we find until there are only 9 left
+	found = NULL;
+	trapcount_org = trapcount;
+	lowestTimeStamp = level.time;
+	while ( trapcount > 9 )
+	{
+		removeMe = -1;
+		for ( i = 0; i < trapcount_org; i++ )
+		{
+			if ( foundDetPacks[i] == ENTITYNUM_NONE )
+			{
+				continue;
+			}
+			found = &g_entities[foundDetPacks[i]];
+			if ( found->setTime < lowestTimeStamp )
+			{
+				removeMe = i;
+				lowestTimeStamp = found->setTime;
+			}
+		}
+		if ( removeMe != -1 )
+		{
+			//remove it... or blow it?
+			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			{
+				break;
+			}
+			else
+			{
+				if (!CheatsOn())
+				{ //Let them have unlimited if cheats are enabled
+					G_FreeEntity( &g_entities[foundDetPacks[removeMe]] );
+				}
+			}
+			foundDetPacks[removeMe] = ENTITYNUM_NONE;
+			trapcount--;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if ( alt_fire  )
+	{
+		BlowDetpacks(ent);
+	}
+	else
+	{
+		AngleVectors( ent->client->ps.viewangles, forward, vright, up );
+
+		CalcMuzzlePoint( ent, forward, vright, up, muzzle );
+
+		VectorNormalize( forward );
+		VectorMA( muzzle, -4, forward, muzzle );
+		drop_charge5( ent, muzzle, forward );
+
+		ent->client->ps.hasDetPackPlanted = qtrue;
+	}
+}
+/*
+======================================================================
+
+DET PACK6
+
+======================================================================
+*/
+void drop_charge6 (gentity_t *self, vec3_t start, vec3_t dir) 
+{
+	gentity_t	*bolt;
+
+	VectorNormalize (dir);
+
+	bolt = G_Spawn();
+	bolt->classname = "detpack";
+	bolt->nextthink = level.time + FRAMETIME;
+	bolt->think = G_RunObject;
+	bolt->s.eType = ET_GENERAL;
+	bolt->s.g2radius = 100;
+	bolt->s.modelGhoul2 = 1;
+	bolt->s.modelindex = G_ModelIndex("models/weapons2/detpack/det_pack_proj.glm");
+	bolt->parent = self;
+	bolt->r.ownerNum = self->s.number;
+	if (self->client && self->client->skillLevel[SK_DETPACK] == FORCE_LEVEL_3)
+	{
+	bolt->damage = 0.0;	
+	}
+	else
+	{
+	bolt->damage = 0.0;	
+	}
+	bolt->splashDamage = 0.0;
+	bolt->splashRadius = 512;
+	
+
+	
+	bolt->s.eFlags |= EF_WP_OPTION_2;
+	bolt->s.eFlags |= EF_WP_OPTION_4;
+	bolt->methodOfDeath = MOD_FLASH_EXPLOSION;
+	bolt->splashMethodOfDeath = MOD_FLASH_EXPLOSION_SPLASH;
+	
+
+	
+	bolt->clipmask = MASK_SHOT;
+	bolt->s.solid = 2;
+	bolt->r.contents = MASK_SHOT;
+	bolt->touch = charge_stick;
+
+	bolt->physicsObject = qtrue;
+
+	bolt->s.genericenemyindex = self->s.number+MAX_GENTITIES;
+	//rww - so client prediction knows we own this and won't hit it
+
+	VectorSet( bolt->r.mins, -2, -2, -2 );
+	VectorSet( bolt->r.maxs, 2, 2, 2 );
+
+	bolt->health = 1;
+	bolt->takedamage = qtrue;
+	bolt->pain = DetPackPain;
+	bolt->die = DetPackDie;
+
+	bolt->s.weapon = WP_DET_PACK;
+
+	bolt->setTime = level.time;
+
+	G_SetOrigin(bolt, start);
+	bolt->s.pos.trType = TR_GRAVITY;
+	VectorCopy( start, bolt->s.pos.trBase );
+	VectorScale(dir, 300, bolt->s.pos.trDelta );
+	bolt->s.pos.trTime = level.time;
+
+	bolt->s.apos.trType = TR_GRAVITY;
+	bolt->s.apos.trTime = level.time;
+	bolt->s.apos.trBase[YAW] = rand()%360;
+	bolt->s.apos.trBase[PITCH] = rand()%360;
+	bolt->s.apos.trBase[ROLL] = rand()%360;
+
+	if (rand()%10 < 5)
+	{
+		bolt->s.apos.trBase[YAW] = -bolt->s.apos.trBase[YAW];
+	}
+
+	vectoangles(dir, bolt->s.angles);
+	VectorCopy(bolt->s.angles, bolt->s.apos.trBase);
+	VectorSet(bolt->s.apos.trDelta, 300, 0, 0 );
+	bolt->s.apos.trTime = level.time;
+
+	trap_LinkEntity(bolt);
+
+	//[CoOp]
+	//make some sight/sound events
+	AddSoundEvent( NULL, bolt->r.currentOrigin, 128, AEL_MINOR, qtrue, qfalse );
+	AddSightEvent( NULL, bolt->r.currentOrigin, 128, AEL_SUSPICIOUS, 10 );
+	//[/CoOp]
+}
+
+
+void WP_DropDetPack6( gentity_t *ent, qboolean alt_fire )
+{
+	gentity_t	*found = NULL;
+	int			trapcount = 0;
+	int			foundDetPacks[MAX_GENTITIES] = {ENTITYNUM_NONE};
+	int			trapcount_org;
+	int			lowestTimeStamp;
+	int			removeMe;
+	int			i;
+
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
+	//limit to 10 placed at any one time
+	//see how many there are now
+	while ( (found = G_Find( found, FOFS(classname), "detpack" )) != NULL )
+	{
+		if ( found->parent != ent )
+		{
+			continue;
+		}
+		foundDetPacks[trapcount++] = found->s.number;
+	}
+	//now remove first ones we find until there are only 9 left
+	found = NULL;
+	trapcount_org = trapcount;
+	lowestTimeStamp = level.time;
+	while ( trapcount > 9 )
+	{
+		removeMe = -1;
+		for ( i = 0; i < trapcount_org; i++ )
+		{
+			if ( foundDetPacks[i] == ENTITYNUM_NONE )
+			{
+				continue;
+			}
+			found = &g_entities[foundDetPacks[i]];
+			if ( found->setTime < lowestTimeStamp )
+			{
+				removeMe = i;
+				lowestTimeStamp = found->setTime;
+			}
+		}
+		if ( removeMe != -1 )
+		{
+			//remove it... or blow it?
+			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			{
+				break;
+			}
+			else
+			{
+				if (!CheatsOn())
+				{ //Let them have unlimited if cheats are enabled
+					G_FreeEntity( &g_entities[foundDetPacks[removeMe]] );
+				}
+			}
+			foundDetPacks[removeMe] = ENTITYNUM_NONE;
+			trapcount--;
+		}
+		else
+		{
+			break;
+		}
+	}
+
+	if ( alt_fire  )
+	{
+		BlowDetpacks(ent);
+	}
+	else
+	{
+		AngleVectors( ent->client->ps.viewangles, forward, vright, up );
+
+		CalcMuzzlePoint( ent, forward, vright, up, muzzle );
+
+		VectorNormalize( forward );
+		VectorMA( muzzle, -4, forward, muzzle );
+		drop_charge6( ent, muzzle, forward );
+
+		ent->client->ps.hasDetPackPlanted = qtrue;
+	}
+}
+/*
+======================================================================
+
 CONCUSSION
 
 ======================================================================
@@ -9606,6 +13651,8 @@ static void WP_FireConcussion( gentity_t *ent, qboolean altFire )
 		WP_FireConcussionMain(ent);
 }
 
+
+
 /*
 ======================================================================
 
@@ -9615,6 +13662,454 @@ CONCUSSION2
 */
 //#pragma warning(disable : 4701) //local variable may be used without having been initialized
 static void WP_FireConcussion2Alt( gentity_t *ent )
+{//a rail-gun-like beam
+	vec3_t	start;
+	int		damage	= CONC_ALT_DAMAGE*4/3;
+	float	vel = CONC_VELOCITY;
+	gentity_t *missile;
+
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile->classname = "conc_proj";
+	missile->s.weapon = WP_CONCUSSION;	
+	missile->s.eFlags |= EF_WP_OPTION_2;
+
+	missile->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile->methodOfDeath = MOD_CONC;
+	missile->splashMethodOfDeath = MOD_CONC;
+
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile->splashDamage = CONC_SPLASH_DAMAGE;
+	missile->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
+	{
+	gentity_t *missile2;
+
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle2, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile2 = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile2->classname = "conc_proj";
+
+	missile2->s.weapon = WP_CONCUSSION;	
+	missile2->s.eFlags |= EF_WP_OPTION_2;
+	missile2->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile2->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
+
+	missile2->damage = damage;
+	missile2->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile2->methodOfDeath = MOD_CONC;
+	missile2->splashMethodOfDeath = MOD_CONC;
+
+	missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile2->splashDamage = CONC_SPLASH_DAMAGE;
+	missile2->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile2->bounceCount = 0;
+	}
+}
+//#pragma warning(default : 4701) //local variable may be used without having been initialized
+
+static void WP_FireConcussion2Main( gentity_t *ent )
+{//a fast rocket-like projectile
+	vec3_t	start;
+	int		damage	= CONC_DAMAGE*4/3;
+	float	vel = CONC_VELOCITY;
+	gentity_t *missile;
+	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}	
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile->classname = "conc_proj";
+	missile->s.weapon = WP_CONCUSSION;	
+	missile->s.eFlags |= EF_WP_OPTION_2;
+
+	missile->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile->methodOfDeath = MOD_CONC;
+	missile->splashMethodOfDeath = MOD_CONC;
+
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile->splashDamage = CONC_SPLASH_DAMAGE;
+	missile->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+
+}
+//----------------------------------------------
+static void WP_FireConcussion2( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if(altFire)
+		WP_FireConcussion2Alt(ent);
+	else
+		WP_FireConcussion2Main(ent);
+}
+
+/*
+======================================================================
+
+CONCUSSION3
+
+======================================================================
+*/
+//#pragma warning(disable : 4701) //local variable may be used without having been initialized
+static void WP_FireConcussion3Alt( gentity_t *ent )
+{//a rail-gun-like beam
+	vec3_t	start;
+	int		damage	= CONC_ALT_DAMAGE*5/30;
+	float	vel = CONC_VELOCITY;
+	gentity_t *missile;
+
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile->classname = "conc_proj";
+	missile->s.weapon = WP_CONCUSSION;	
+	missile->s.eFlags |= EF_WP_OPTION_3;
+
+
+	missile->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile->methodOfDeath = MOD_CONC;
+	missile->splashMethodOfDeath = MOD_CONC;
+
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile->splashDamage = CONC_SPLASH_DAMAGE;
+	missile->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
+	{
+	gentity_t *missile2;
+
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle2, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile2 = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile2->classname = "conc_proj";
+
+	missile2->s.weapon = WP_CONCUSSION;	
+	missile2->s.eFlags |= EF_WP_OPTION_3;
+	missile2->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile2->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
+
+	missile2->damage = damage;
+	missile2->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile2->methodOfDeath = MOD_CONC;
+	missile2->splashMethodOfDeath = MOD_CONC;
+
+	missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile2->splashDamage = CONC_SPLASH_DAMAGE;
+	missile2->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile2->bounceCount = 0;
+	}
+}
+//#pragma warning(default : 4701) //local variable may be used without having been initialized
+
+static void WP_FireConcussion3Main( gentity_t *ent )
+{//a fast rocket-like projectile
+	vec3_t	start;
+	int		damage	= CONC_DAMAGE*5/30;
+	float	vel = CONC_VELOCITY;
+	gentity_t *missile;
+	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
+	{
+		damage *= 2.0;
+	}	
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile->classname = "conc_proj";
+	missile->s.weapon = WP_CONCUSSION;	
+	missile->s.eFlags |= EF_WP_OPTION_3;
+
+
+	missile->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile->methodOfDeath = MOD_CONC;
+	missile->splashMethodOfDeath = MOD_CONC;
+
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile->splashDamage = CONC_SPLASH_DAMAGE;
+	missile->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+
+}
+//----------------------------------------------
+static void WP_FireConcussion3( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if(altFire)
+		WP_FireConcussion3Alt(ent);
+	else
+		WP_FireConcussion3Main(ent);
+}
+
+
+/*
+======================================================================
+
+CONCUSSION4
+
+======================================================================
+*/
+//#pragma warning(disable : 4701) //local variable may be used without having been initialized
+static void WP_FireConcussion4Alt( gentity_t *ent )
+{//a fast rocket-like projectile
+	vec3_t	start;
+	int		damage	= CONC_ALT_DAMAGE*4/3;
+	float	vel = CONC_VELOCITY;
+	gentity_t *missile;
+if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
+{
+	damage *= 2.0;
+}
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile->classname = "conc_proj";
+	missile->s.weapon = WP_CONCUSSION;
+	missile->s.eFlags |= EF_WP_OPTION_4;	
+	missile->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile->methodOfDeath = MOD_SONIC;
+	missile->splashMethodOfDeath = MOD_SONIC;
+
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile->splashDamage = CONC_SPLASH_DAMAGE;
+	missile->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+
+}
+//#pragma warning(default : 4701) //local variable may be used without having been initialized
+
+static void WP_FireConcussion4Main( gentity_t *ent )
+{//a fast rocket-like projectile
+	vec3_t	start;
+	int		damage	= CONC_DAMAGE*2/3;
+	float	vel = CONC_VELOCITY;
+	gentity_t *missile;
+if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
+{
+	damage *= 2.0;
+}
+	//hold us still for a bit
+	//ent->client->ps.pm_time = 300;
+	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
+	//add viewkick
+//	if ( ent->s.number < MAX_CLIENTS//player only
+//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
+//	{//kick the view back
+//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
+//		cg.kick_time = level.time;
+//	}
+	//mm..yeah..this needs some reworking for mp
+
+	VectorCopy( muzzle, start );
+	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
+
+	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
+
+	missile->classname = "conc_proj";
+	missile->s.weapon = WP_CONCUSSION;
+	missile->s.eFlags |= EF_WP_OPTION_4;	
+	missile->mass = 10;
+
+	// Make it easier to hit things
+	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
+
+	missile->methodOfDeath = MOD_SONIC;
+	missile->splashMethodOfDeath = MOD_SONIC;
+
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+	missile->splashDamage = CONC_SPLASH_DAMAGE;
+	missile->splashRadius = CONC_SPLASH_RADIUS;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+
+}
+//----------------------------------------------
+static void WP_FireConcussion4( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if(altFire)
+		WP_FireConcussion4Alt(ent);
+	else
+		WP_FireConcussion4Main(ent);
+}
+
+
+/*
+======================================================================
+
+CONCUSSION5
+
+======================================================================
+*/
+//#pragma warning(disable : 4701) //local variable may be used without having been initialized
+static void WP_FireConcussion5Alt( gentity_t *ent )
 {//a rail-gun-like beam
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
@@ -9664,7 +14159,7 @@ static void WP_FireConcussion2Alt( gentity_t *ent )
 }
 //#pragma warning(default : 4701) //local variable may be used without having been initialized
 
-static void WP_FireConcussion2Main( gentity_t *ent )
+static void WP_FireConcussion5Main( gentity_t *ent )
 {//a fast rocket-like projectile
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
@@ -9713,24 +14208,24 @@ static void WP_FireConcussion2Main( gentity_t *ent )
 	}
 }
 //----------------------------------------------
-static void WP_FireConcussion2( gentity_t *ent, qboolean altFire )
+static void WP_FireConcussion5( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
 	if(altFire)
-		WP_FireConcussion2Alt(ent);
+		WP_FireConcussion5Alt(ent);
 	else
-		WP_FireConcussion2Main(ent);
+		WP_FireConcussion5Main(ent);
 }
 
 /*
 ======================================================================
 
-CONCUSSION3
+CONCUSSION6
 
 ======================================================================
 */
 //#pragma warning(disable : 4701) //local variable may be used without having been initialized
-static void WP_FireConcussion3Alt( gentity_t *ent )
+static void WP_FireConcussion6Alt( gentity_t *ent )
 {//a rail-gun-like beam
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
@@ -9760,7 +14255,7 @@ static void WP_FireConcussion3Alt( gentity_t *ent )
 		missile->classname = "repeater_proj";
 
 		missile->s.weapon = WP_REPEATER;
-		missile->s.eFlags |= EF_WP_OPTION_3;
+
 
 		VectorSet( missile->r.maxs, REPEATER_SIZE, REPEATER_SIZE, REPEATER_SIZE );
 		VectorScale( missile->r.maxs, -1, missile->r.mins );
@@ -9780,7 +14275,7 @@ static void WP_FireConcussion3Alt( gentity_t *ent )
 }
 //#pragma warning(default : 4701) //local variable may be used without having been initialized
 
-static void WP_FireConcussion3Main( gentity_t *ent )
+static void WP_FireConcussion6Main( gentity_t *ent )
 {//a fast rocket-like projectile
 	vec3_t		fwd, angs;
 	gentity_t	*missile;
@@ -9810,7 +14305,7 @@ static void WP_FireConcussion3Main( gentity_t *ent )
 		missile->classname = "repeater_proj";
 
 		missile->s.weapon = WP_REPEATER;
-		missile->s.eFlags |= EF_WP_OPTION_3;
+
 
 		VectorSet( missile->r.maxs, REPEATER_SIZE, REPEATER_SIZE, REPEATER_SIZE );
 		VectorScale( missile->r.maxs, -1, missile->r.mins );
@@ -9829,175 +14324,13 @@ static void WP_FireConcussion3Main( gentity_t *ent )
 	}
 }
 //----------------------------------------------
-static void WP_FireConcussion3( gentity_t *ent, qboolean altFire )
+static void WP_FireConcussion6( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
 	if(altFire)
-		WP_FireConcussion3Alt(ent);
+		WP_FireConcussion6Alt(ent);
 	else
-		WP_FireConcussion3Main(ent);
-}
-
-/*
-======================================================================
-
-CONCUSSION4
-
-======================================================================
-*/
-//#pragma warning(disable : 4701) //local variable may be used without having been initialized
-static void WP_FireConcussion4Alt( gentity_t *ent )
-{//a rail-gun-like beam
-	vec3_t	start;
-	int		damage	= CONC_ALT_DAMAGE*4/3;
-	float	vel = CONC_VELOCITY;
-	gentity_t *missile;
-
-	//hold us still for a bit
-	//ent->client->ps.pm_time = 300;
-	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-	//add viewkick
-//	if ( ent->s.number < MAX_CLIENTS//player only
-//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
-//	{//kick the view back
-//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
-//		cg.kick_time = level.time;
-//	}
-	//mm..yeah..this needs some reworking for mp
-
-	VectorCopy( muzzle, start );
-	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
-
-	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
-
-	missile->classname = "conc_proj";
-	missile->s.weapon = WP_CONCUSSION;	
-	missile->s.eFlags |= EF_WP_OPTION_4;
-
-	missile->mass = 10;
-
-	// Make it easier to hit things
-	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
-
-	missile->damage = damage;
-	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
-
-	missile->methodOfDeath = MOD_CONC;
-	missile->splashMethodOfDeath = MOD_CONC;
-
-	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-	missile->splashDamage = CONC_SPLASH_DAMAGE;
-	missile->splashRadius = CONC_SPLASH_RADIUS;
-
-	// we don't want it to ever bounce
-	missile->bounceCount = 0;
-	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
-	{
-	gentity_t *missile2;
-
-	//hold us still for a bit
-	//ent->client->ps.pm_time = 300;
-	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-	//add viewkick
-//	if ( ent->s.number < MAX_CLIENTS//player only
-//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
-//	{//kick the view back
-//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
-//		cg.kick_time = level.time;
-//	}
-	//mm..yeah..this needs some reworking for mp
-
-	VectorCopy( muzzle2, start );
-	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
-
-	missile2 = CreateMissile( start, forward, vel, 10000, ent, qfalse );
-
-	missile2->classname = "conc_proj";
-
-	missile2->s.weapon = WP_CONCUSSION;	
-	missile2->s.eFlags |= EF_WP_OPTION_4;
-	missile2->mass = 10;
-
-	// Make it easier to hit things
-	VectorSet( missile2->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
-
-	missile2->damage = damage;
-	missile2->dflags = DAMAGE_EXTRA_KNOCKBACK;
-
-	missile2->methodOfDeath = MOD_CONC;
-	missile2->splashMethodOfDeath = MOD_CONC;
-
-	missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-	missile2->splashDamage = CONC_SPLASH_DAMAGE;
-	missile2->splashRadius = CONC_SPLASH_RADIUS;
-
-	// we don't want it to ever bounce
-	missile2->bounceCount = 0;
-	}
-}
-//#pragma warning(default : 4701) //local variable may be used without having been initialized
-
-static void WP_FireConcussion4Main( gentity_t *ent )
-{//a fast rocket-like projectile
-	vec3_t	start;
-	int		damage	= CONC_DAMAGE*4/3;
-	float	vel = CONC_VELOCITY;
-	gentity_t *missile;
-	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
-	{
-		damage *= 2.0;
-	}	
-	//hold us still for a bit
-	//ent->client->ps.pm_time = 300;
-	//ent->client->ps.pm_flags |= PMF_TIME_KNOCKBACK;
-	//add viewkick
-//	if ( ent->s.number < MAX_CLIENTS//player only
-//		&& !cg.renderingThirdPerson )//gives an advantage to being in 3rd person, but would look silly otherwise
-//	{//kick the view back
-//		cg.kick_angles[PITCH] = Q_flrand( -10, -15 );
-//		cg.kick_time = level.time;
-//	}
-	//mm..yeah..this needs some reworking for mp
-
-	VectorCopy( muzzle, start );
-	WP_TraceSetStart( ent, start, vec3_origin, vec3_origin );//make sure our start point isn't on the other side of a wall
-
-	missile = CreateMissile( start, forward, vel, 10000, ent, qfalse );
-
-	missile->classname = "conc_proj";
-	missile->s.weapon = WP_CONCUSSION;	
-	missile->s.eFlags |= EF_WP_OPTION_4;
-
-	missile->mass = 10;
-
-	// Make it easier to hit things
-	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
-
-	missile->damage = damage;
-	missile->dflags = DAMAGE_EXTRA_KNOCKBACK;
-
-	missile->methodOfDeath = MOD_CONC;
-	missile->splashMethodOfDeath = MOD_CONC;
-
-	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-	missile->splashDamage = CONC_SPLASH_DAMAGE;
-	missile->splashRadius = CONC_SPLASH_RADIUS;
-
-	// we don't want it to ever bounce
-	missile->bounceCount = 0;
-
-}
-//----------------------------------------------
-static void WP_FireConcussion4( gentity_t *ent, qboolean altFire )
-//---------------------------------------------------------
-{
-	if(altFire)
-		WP_FireConcussion4Alt(ent);
-	else
-		WP_FireConcussion4Main(ent);
+		WP_FireConcussion6Main(ent);
 }
 
 
@@ -10190,7 +14523,7 @@ BRYAR OLD2
 
 static void WP_FireBryarOld2Main(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*6/7;
+	int damage = BRYAR_OLD_DAMAGE*6/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -10252,7 +14585,7 @@ static void WP_FireBryarOld2Main(gentity_t*ent)
 
 static void WP_FireBryarOld2Alt(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*5/7;
+	int damage = BRYAR_OLD_DAMAGE*6/8;
 	int count;
 
 	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qtrue );
@@ -10367,7 +14700,7 @@ BRYAR OLD3
 
 static void WP_FireBryarOld3Main(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*4/7;
+	int damage = BRYAR_OLD_DAMAGE*4/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -10380,18 +14713,17 @@ static void WP_FireBryarOld3Main(gentity_t*ent)
 		ent->client->leftPistol = !ent->client->leftPistol;
 	}
 	else
-	{
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
-	}
-	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, altFire );
 	//gentity_t   *missile2;
-
+	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_OLD_VEL,10000,ent,altFire);
 	//[/DualPistols]
 
 	missile->classname = "bryar_proj";
+	
 	missile->s.weapon = WP_BRYAR_OLD;
 	missile->s.eFlags |= EF_WP_OPTION_3;
 
@@ -10400,7 +14732,7 @@ static void WP_FireBryarOld3Main(gentity_t*ent)
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	{
 		missile2->classname = "bryar_proj";
-		missile2->s.weapon = WP_BRYAR_PISTOL;
+		missile2->s.weapon = WP_BRYAR_OLD;
 	}*/
 	//[/DualPistols]
 
@@ -10429,7 +14761,7 @@ static void WP_FireBryarOld3Main(gentity_t*ent)
 
 static void WP_FireBryarOld3Alt(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*6/7;
+	int damage = BRYAR_OLD_DAMAGE*4/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -10442,30 +14774,50 @@ static void WP_FireBryarOld3Alt(gentity_t*ent)
 		ent->client->leftPistol = !ent->client->leftPistol;
 	}
 	else
-	{
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
-	}
-	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, altFire );
 	//gentity_t   *missile2;
-
+	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_OLD_VEL,10000,ent,altFire);
 	//[/DualPistols]
-	missile->classname = "demp2_proj";
-	missile->s.weapon = WP_DEMP2;
 
+	missile->classname = "bryar_proj";
 
+	missile->s.weapon = WP_BRYAR_OLD;
+	missile->s.eFlags |= EF_WP_OPTION_3;
 
-	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->classname = "bryar_proj";
+		missile2->s.weapon = WP_BRYAR_OLD;
+	}*/
+	//[/DualPistols]
+
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_DEMP2;
-	missile->clipmask = MASK_SHOT;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
 
-	// we don't want it to ever bounce
-	missile->bounceCount = 0;
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}*/
+	//[/DualPistols]
 }
 
 //----------------------------------------------
@@ -10478,6 +14830,9 @@ static void WP_FireBryarOld3( gentity_t *ent, qboolean altFire )
 		WP_FireBryarOld3Main(ent);
 }
 
+
+
+
 /*
 ======================================================================
 
@@ -10488,7 +14843,7 @@ BRYAR OLD4
 
 static void WP_FireBryarOld4Main(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*2/7;
+	int damage = BRYAR_OLD_DAMAGE*4/8;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -10515,7 +14870,7 @@ static void WP_FireBryarOld4Main(gentity_t*ent)
 	missile->classname = "bryar_proj";
 	missile->s.weapon = WP_BRYAR_OLD;
 	missile->s.eFlags |= EF_WP_OPTION_4;
-
+	
 	//[DualPistols]
 	/*
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -10550,8 +14905,268 @@ static void WP_FireBryarOld4Main(gentity_t*ent)
 
 static void WP_FireBryarOld4Alt(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*45/7;
-	int count;
+	int damage = BRYAR_OLD_DAMAGE*4/8;
+	gentity_t	*missile;
+
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		if(ent->client->leftPistol)
+			missile=CreateMissile(muzzle2,forward,BRYAR_OLD_VEL,10000,ent,qfalse);
+		else
+			missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+		
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+	{
+		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+	}
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t   *missile2;
+
+	//[DualPistols]
+	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//[/DualPistols]
+
+	missile->classname = "bryar_proj";
+	missile->s.weapon = WP_BRYAR_OLD;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+	
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->classname = "bryar_proj";
+		missile2->s.weapon = WP_BRYAR_PISTOL;
+	}*/
+	//[/DualPistols]
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}*/
+	//[/DualPistols]
+}
+
+//----------------------------------------------
+static void WP_FireBryarOld4( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if(altFire)
+		WP_FireBryarOld4Alt(ent);
+	else
+		WP_FireBryarOld4Main(ent);
+}
+/*
+======================================================================
+
+BRYAR OLD5
+
+======================================================================
+*/
+
+static void WP_FireBryarOld5Main(gentity_t*ent)
+{
+	int damage = BRYAR_OLD_DAMAGE*5/8;
+	gentity_t	*missile;
+
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		if(ent->client->leftPistol)
+			missile=CreateMissile(muzzle2,forward,BRYAR_OLD_VEL,10000,ent,qfalse);
+		else
+			missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+		
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+	{
+		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+	}
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t   *missile2;
+
+	//[DualPistols]
+	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//[/DualPistols]
+
+	missile->classname = "bryar_proj";
+	missile->s.weapon = WP_BRYAR_OLD;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_3;
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->classname = "bryar_proj";
+		missile2->s.weapon = WP_BRYAR_PISTOL;
+	}*/
+	//[/DualPistols]
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}*/
+	//[/DualPistols]
+}
+
+static void WP_FireBryarOld5Alt(gentity_t*ent)
+{
+	int damage = BRYAR_OLD_DAMAGE*15/16;
+	gentity_t	*missile;
+
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		if(ent->client->leftPistol)
+			missile=CreateMissile(muzzle2,forward,BRYAR_OLD_VEL,10000,ent,qfalse);
+		else
+			missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+		
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+	{
+		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+	}
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t   *missile2;
+
+	//[DualPistols]
+	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//[/DualPistols]
+	missile->classname = "demp2_proj";
+	missile->s.weapon = WP_DEMP2;
+
+	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
+	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_DEMP2;
+	missile->clipmask = MASK_SHOT;
+
+	// we don't want it to ever bounce
+	missile->bounceCount = 0;
+}
+
+//----------------------------------------------
+static void WP_FireBryarOld5( gentity_t *ent, qboolean altFire )
+//---------------------------------------------------------
+{
+	if(altFire)
+		WP_FireBryarOld5Alt(ent);
+	else
+		WP_FireBryarOld5Main(ent);
+}
+
+/*
+======================================================================
+
+BRYAR OLD6
+
+======================================================================
+*/
+
+static void WP_FireBryarOld6Main(gentity_t*ent)
+{
+	int damage = BRYAR_OLD_DAMAGE*3/8;
+	gentity_t	*missile;
+
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		if(ent->client->leftPistol)
+			missile=CreateMissile(muzzle2,forward,BRYAR_OLD_VEL,10000,ent,qfalse);
+		else
+			missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+		
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+	{
+		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+	}
+	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
+	//gentity_t   *missile2;
+
+	//[DualPistols]
+	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
+	//[/DualPistols]
+
+	missile->classname = "bryar_proj";
+	missile->s.weapon = WP_BRYAR_OLD;
+	missile->s.eFlags |= EF_WP_OPTION_2;
+	missile->s.eFlags |= EF_WP_OPTION_4;
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->classname = "bryar_proj";
+		missile2->s.weapon = WP_BRYAR_PISTOL;
+	}*/
+	//[/DualPistols]
+
+	missile->damage = damage;
+	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
+	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+	// we don't want it to bounce forever
+	missile->bounceCount = 8;
+
+	//[DualPistols]
+	/*
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	{
+		missile2->damage = damage;
+		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
+		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
+		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
+
+		// we don't want it to bounce forever
+		missile2->bounceCount = 8;
+	}*/
+	//[/DualPistols]
+}
+
+static void WP_FireBryarOld6Alt(gentity_t*ent)
+{
+	int damage = BRYAR_OLD_DAMAGE*45/8;
+
 
 	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	gentity_t   *missile2;
@@ -10650,15 +15265,14 @@ static void WP_FireBryarOld4Alt(gentity_t*ent)
 }
 
 //----------------------------------------------
-static void WP_FireBryarOld4( gentity_t *ent, qboolean altFire )
+static void WP_FireBryarOld6( gentity_t *ent, qboolean altFire )
 //---------------------------------------------------------
 {
 	if(altFire)
-		WP_FireBryarOld4Alt(ent);
+		WP_FireBryarOld6Alt(ent);
 	else
-		WP_FireBryarOld4Main(ent);
+		WP_FireBryarOld6Main(ent);
 }
-
 
 
 
@@ -11395,6 +16009,8 @@ gentity_t *WP_FireVehicleWeapon( gentity_t *ent, vec3_t start, vec3_t dir, vehWe
 		}
 		missile->s.otherEntityNum2 = (vehWeapon-&g_vehWeaponInfo[0]);
 		missile->s.eFlags |= EF_JETPACK_ACTIVE;
+//		Com_Printf( "^1SV: %i\n", missile->s.otherEntityNum2 );
+//		Com_Printf( "^2SV-WP: %s\n", g_vehWeaponInfo[missile->s.otherEntityNum2].iShotFX);
 		//homing
 		if ( vehWeapon->fHoming )
 		{//homing missile
@@ -12308,15 +16924,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_BRYAR_PISTOL:
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireBryarPistol2( ent, altFire );
+					WP_FireBryarPistol6( ent, altFire );
 				}
 				else
 				{
-					WP_FireBryarPistol2( ent, qfalse );
+					WP_FireBryarPistol6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireBryarPistol5( ent, altFire );
+				}
+				else
+				{
+					WP_FireBryarPistol5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireBryarPistol4( ent, altFire );
+				}
+				else
+				{
+					WP_FireBryarPistol4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12330,15 +16968,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarPistol3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireBryarPistol4( ent, altFire );
+					WP_FireBryarPistol2( ent, altFire );
 				}
 				else
 				{
-					WP_FireBryarPistol4( ent, qfalse );
+					WP_FireBryarPistol2( ent, qfalse );
 				}
 			}
 			else 
@@ -12356,16 +16994,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_CONCUSSION:
 						//[/WeaponSys]
-
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireConcussion2( ent, altFire );
+					WP_FireConcussion6( ent, altFire);
 				}
 				else
 				{
-					WP_FireConcussion2( ent, qfalse );
+					WP_FireConcussion6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireConcussion5( ent, altFire);
+				}
+				else
+				{
+					WP_FireConcussion5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireConcussion4( ent, altFire);
+				}
+				else
+				{
+					WP_FireConcussion4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12379,15 +17038,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireConcussion3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireConcussion4( ent, altFire);
+					WP_FireConcussion2( ent, altFire );
 				}
 				else
 				{
-					WP_FireConcussion4( ent, qfalse );
+					WP_FireConcussion2( ent, qfalse );
 				}
 			}
 			else 
@@ -12405,15 +17064,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_BRYAR_OLD:
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireBryarOld2( ent, altFire );
+					WP_FireBryarOld6( ent, altFire );
 				}
 				else
 				{
-					WP_FireBryarOld2( ent, qfalse );
+					WP_FireBryarOld6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireBryarOld5( ent, altFire );
+				}
+				else
+				{
+					WP_FireBryarOld5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireBryarOld4( ent, altFire );
+				}
+				else
+				{
+					WP_FireBryarOld4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12427,15 +17108,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarOld3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireBryarOld4( ent, altFire );
+					WP_FireBryarOld2( ent, altFire );
 				}
 				else
 				{
-					WP_FireBryarOld4( ent, qfalse );
+					WP_FireBryarOld2( ent, qfalse );
 				}
 			}
 			else 
@@ -12455,15 +17136,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_BLASTER:
 			//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireBlaster2( ent, qfalse );
+					WP_FireBlaster6( ent, qfalse );
 				}
 				else
 				{
-					WP_FireBlaster2( ent, qfalse );
+					WP_FireBlaster6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireBlaster5( ent, qfalse );
+				}
+				else
+				{
+					WP_FireBlaster5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireBlaster4( ent, qfalse );
+				}
+				else
+				{
+					WP_FireBlaster4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12477,15 +17180,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBlaster3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireBlaster4( ent, qfalse );
+					WP_FireBlaster2( ent, qfalse );
 				}
 				else
 				{
-					WP_FireBlaster4( ent, qfalse );
+					WP_FireBlaster2( ent, qfalse );
 				}
 			}
 			else 
@@ -12506,15 +17209,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			alert = 50;
 			//[/CoOp]
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireDisruptor2( ent, qfalse );
+					WP_FireDisruptor6( ent, altFire );
 				}
 				else
 				{
-					WP_FireDisruptor2( ent, qfalse );
+					WP_FireDisruptor6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireDisruptor5( ent, altFire );
+				}
+				else
+				{
+					WP_FireDisruptor5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireDisruptor4( ent, altFire );
+				}
+				else
+				{
+					WP_FireDisruptor4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12528,15 +17253,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDisruptor3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireDisruptor4( ent, altFire );
+					WP_FireDisruptor2( ent, qfalse );
 				}
 				else
 				{
-					WP_FireDisruptor4( ent, qfalse );
+					WP_FireDisruptor2( ent, qfalse );
 				}
 			}
 			else 
@@ -12555,7 +17280,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_BOWCASTER:
 			//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -12563,7 +17288,29 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 				}
 				else
 				{
-					WP_FireBowcaster2( ent, altFire );
+					WP_FireBowcaster6( ent, altFire );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					return;
+				}
+				else
+				{
+					WP_FireBowcaster5( ent, altFire );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					return;
+				}
+				else
+				{
+					WP_FireBowcaster4( ent, altFire );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12577,7 +17324,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBowcaster3( ent, altFire );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -12585,7 +17332,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 				}
 				else
 				{
-					WP_FireBowcaster4( ent, altFire );
+					WP_FireBowcaster2( ent, altFire );
 				}
 			}
 			else 
@@ -12604,15 +17351,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_REPEATER:
 						//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireRepeater2( ent, altFire );
+					WP_FireRepeater6( ent, altFire);
 				}
 				else
 				{
-					WP_FireRepeater2( ent, qfalse );
+					WP_FireRepeater6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireRepeater5( ent, altFire);
+				}
+				else
+				{
+					WP_FireRepeater5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireRepeater4( ent, altFire);
+				}
+				else
+				{
+					WP_FireRepeater4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12626,15 +17395,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRepeater3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireRepeater4( ent, altFire);
+					WP_FireRepeater2( ent, altFire );
 				}
 				else
 				{
-					WP_FireRepeater4( ent, qfalse );
+					WP_FireRepeater2( ent, qfalse );
 				}
 			}
 			else 
@@ -12652,15 +17421,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_DEMP2:
 						//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireDEMP22( ent, altFire );
+					WP_FireDEMP26( ent, altFire );
 				}
 				else
 				{
-					WP_FireDEMP22( ent, qfalse );
+					WP_FireDEMP26( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireDEMP25( ent, altFire );
+				}
+				else
+				{
+					WP_FireDEMP25( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireDEMP24( ent, altFire );
+				}
+				else
+				{
+					WP_FireDEMP24( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12674,15 +17465,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDEMP23( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireDEMP24( ent, altFire );
+					WP_FireDEMP22( ent, altFire );
 				}
 				else
 				{
-					WP_FireDEMP24( ent, qfalse );
+					WP_FireDEMP22( ent, qfalse );
 				}
 			}
 			else 
@@ -12701,15 +17492,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_FLECHETTE:
 			//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireFlechette2( ent, altFire );
+					WP_FireFlechette6( ent, altFire);
 				}
 				else
 				{
-					WP_FireFlechette2( ent, qfalse );
+					WP_FireFlechette6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireFlechette5( ent, altFire);
+				}
+				else
+				{
+					WP_FireFlechette5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireFlechette4( ent, altFire);
+				}
+				else
+				{
+					WP_FireFlechette4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12723,15 +17536,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireFlechette3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireFlechette4( ent, altFire);
+					WP_FireFlechette2( ent, altFire );
 				}
 				else
 				{
-					WP_FireFlechette4( ent, qfalse );
+					WP_FireFlechette2( ent, qfalse );
 				}
 			}
 			else 
@@ -12749,15 +17562,37 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_ROCKET_LAUNCHER:
 			//[/WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
-					WP_FireRocket2( ent, altFire );
+					WP_FireRocket6( ent, altFire);
 				}
 				else
 				{
-					WP_FireRocket2( ent, qfalse );
+					WP_FireRocket6( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+				if ( altFire )
+				{
+					WP_FireRocket5( ent, altFire);
+				}
+				else
+				{
+					WP_FireRocket5( ent, qfalse );
+				}
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+				if ( altFire )
+				{
+					WP_FireRocket4( ent, altFire);
+				}
+				else
+				{
+					WP_FireRocket4( ent, qfalse );
 				}
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12771,15 +17606,15 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRocket3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
-					WP_FireRocket4( ent, altFire);
+					WP_FireRocket2( ent, altFire );
 				}
 				else
 				{
-					WP_FireRocket4( ent, qfalse );
+					WP_FireRocket2( ent, qfalse );
 				}
 			}
 			else 
@@ -12797,9 +17632,19 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_THERMAL:
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
-			WP_FireThermalDetonator2( ent, altFire );
+			WP_FireThermalDetonator6( ent, altFire );
+			//[/WeaponSys]
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+			WP_FireThermalDetonator5( ent, altFire );
+			//[/WeaponSys]
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+			WP_FireThermalDetonator4( ent, altFire );
 			//[/WeaponSys]
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12807,9 +17652,9 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			WP_FireThermalDetonator3( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
-			WP_FireThermalDetonator4( ent, altFire );
+			WP_FireThermalDetonator2( ent, altFire );
 			//[/WeaponSys]
 			}
 			else 
@@ -12823,9 +17668,19 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			//[CoOp]
 			alert = 0;
 			//[/CoOp]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
-			WP_PlaceLaserTrap2( ent, altFire );
+			WP_PlaceLaserTrap6( ent, altFire );
+			//[/WeaponSys]
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+			WP_PlaceLaserTrap5( ent, altFire );
+			//[/WeaponSys]
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+			WP_PlaceLaserTrap4( ent, altFire );
 			//[/WeaponSys]
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12833,9 +17688,9 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			WP_PlaceLaserTrap3( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
-			WP_PlaceLaserTrap4( ent, altFire );
+			WP_PlaceLaserTrap2( ent, altFire );
 			//[/WeaponSys]
 			}
 			else 
@@ -12849,9 +17704,19 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			//[CoOp]
 			alert = 0;
 			//[/CoOp]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
-			WP_DropDetPack2( ent, altFire );
+			WP_DropDetPack6( ent, altFire );
+			//[/WeaponSys]
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			{	
+			WP_DropDetPack5( ent, altFire );
+			//[/WeaponSys]
+			}
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			{	
+			WP_DropDetPack4( ent, altFire );
 			//[/WeaponSys]
 			}
 			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
@@ -12859,9 +17724,9 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			WP_DropDetPack3( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
-			WP_DropDetPack4( ent, altFire );
+			WP_DropDetPack2( ent, altFire );
 			//[/WeaponSys]
 			}
 			else 

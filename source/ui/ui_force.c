@@ -1064,33 +1064,7 @@ void UpdateForceUsed()
 
 
 
-	if(uiRank[NUM_FORCE_POWERS+SK_WRIST].uiForcePowersRank < 1)
-	{
-		uiRank[NUM_FORCE_POWERS+SK_WRISTA].uiForcePowersRank = 0;
-		menu = Menus_FindByName("ingame_playergunnery1");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_wrista", qfalse);
-	}
-	else
-	{
-		menu = Menus_FindByName("ingame_playergunnery1");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_wrista", qtrue);
-	}
 
-	if(uiRank[NUM_FORCE_POWERS+SK_WRIST].uiForcePowersRank < 1)
-	{
-		uiRank[NUM_FORCE_POWERS+SK_WRISTB].uiForcePowersRank = 0;
-		menu = Menus_FindByName("ingame_playergunnery1");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_wristb", qfalse);
-	}
-	else
-	{
-		menu = Menus_FindByName("ingame_playergunnery1");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_wristb", qtrue);
-	}	
 
 
 
@@ -1463,11 +1437,21 @@ void UpdateForceUsed()
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_jetpackb", qtrue);
 	}
+
 	
-	
-	
-	
-	
+	if(uiRank[NUM_FORCE_POWERS+SK_JETPACK].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_JETPACKC].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_jetpackc", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_jetpackc", qtrue);
+	}	
 	
 	
 	
@@ -1500,7 +1484,19 @@ void UpdateForceUsed()
 	}	
 	
 	
-	
+	if(uiRank[NUM_FORCE_POWERS+SK_SQUADTEAM].uiForcePowersRank < 1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_SQUADTEAMC].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_squadteamc", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playergadgets2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_squadteamc", qtrue);
+	}	
 	
 	
 	
@@ -1721,34 +1717,10 @@ void UpdateForceUsed()
 	}	
 	
 	
-	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
-	{
-		uiRank[NUM_FORCE_POWERS+SK_LASERTURRETA].uiForcePowersRank = 0;
-		menu = Menus_FindByName("ingame_playervehicles");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_laserturreta", qfalse);
-	}
-	else
-	{
-		menu = Menus_FindByName("ingame_playervehicles");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_laserturreta", qtrue);
-	}	
 
 
-	if(uiRank[NUM_FORCE_POWERS+SK_VEHICLEMOUNT].uiForcePowersRank < 1)
-	{
-		uiRank[NUM_FORCE_POWERS+SK_LASERTURRETB].uiForcePowersRank = 0;
-		menu = Menus_FindByName("ingame_playervehicles");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_laserturretb", qfalse);
-	}
-	else
-	{
-		menu = Menus_FindByName("ingame_playervehicles");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_laserturretb", qtrue);
-	}		
+
+		
 
 
 
