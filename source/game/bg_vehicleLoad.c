@@ -983,7 +983,7 @@ static qboolean BG_ParseVehicleParm( vehicleInfo_t *vehicle, char *parmName, cha
 				}
 				break;
 			case VF_WEAPON:	// take string, resolve into index into VehWeaponParms
-				//*(int *)(b+vehicleFields[i].ofs) = VEH_VehWeaponIndexForName( value );
+				*(int *)(b+vehicleFields[i].ofs) = VEH_VehWeaponIndexForName( value );
 				break;
 			case VF_MODEL:	// take the string, get the G_ModelIndex
 #ifdef QAGAME
