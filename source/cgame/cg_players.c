@@ -18399,9 +18399,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.icethrower, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.icethrowerWide, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.icethrower, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.icethrowerWide, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18473,9 +18473,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrower, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrowerWide, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrower, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.dioxisthrowerWide, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -18549,9 +18549,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.flamethrower, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.flamethrowerWide, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.flamethrower, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.flamethrowerWide, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 

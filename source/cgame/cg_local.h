@@ -1728,30 +1728,27 @@ typedef struct
 	
 	//[Flamethrower]
 	fxHandle_t flamethrower;
-//	fxHandle_t flamethrowerWide;
+	fxHandle_t flamethrowerWide;
 	//[/Flamethrower]
 	//[Dioxisthrower]
 	fxHandle_t dioxisthrower;
-//	fxHandle_t dioxisthrowerWide;
+	fxHandle_t dioxisthrowerWide;
 	//[/Dioxisthrower]
 	//[Icethrower]
 	fxHandle_t icethrower;
-//	fxHandle_t icethrowerWide;
+	fxHandle_t icethrowerWide;
 	//[/Icethrower]
 	
 	
 	
 	//[Electroshocker]
 	fxHandle_t electroshocker;
-//	fxHandle_t electroshockerWide;
 	//[/Electroshocker]
 	//[Lasersupport]
 	fxHandle_t lasersupport;
-//	fxHandle_t lasersupportWide;
 	//[/Lasersupport]
 	//[Orbitalstrike]
 	fxHandle_t orbitalstrike;
-//	fxHandle_t orbitalstrikeWide;
 	//[/Orbitalstrike]
 	
 	

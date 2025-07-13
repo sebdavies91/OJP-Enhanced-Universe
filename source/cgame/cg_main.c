@@ -2325,12 +2325,15 @@ static void CG_RegisterGraphics( void ) {
 
 	//[Flamethrower]
 	cgs.effects.flamethrower = trap_FX_RegisterEffect( "effects/boba/fthrw.efx" );  
+	cgs.effects.flamethrowerWide = trap_FX_RegisterEffect( "effects/boba/fthrwwide.efx" );  
 	//[/Flamethrower]
 	//[Dioxisthrower]
 	cgs.effects.dioxisthrower = trap_FX_RegisterEffect( "effects/boba/dthrw.efx" );
+	cgs.effects.dioxisthrowerWide = trap_FX_RegisterEffect( "effects/boba/dthrwwide.efx" );
 	//[/Dioxisthrower]
 	//[Icethrower]
 	cgs.effects.icethrower = trap_FX_RegisterEffect( "effects/boba/ithrw.efx" ); 
+	cgs.effects.icethrowerWide = trap_FX_RegisterEffect( "effects/boba/ithrwwide.efx" ); 
 	//[/Icethrower]	
 	//[Electroshocker]
 	cgs.effects.electroshocker = trap_FX_RegisterEffect( "effects/officer/elctr.efx" );
