@@ -1125,7 +1125,7 @@ Update 59 26/04/2025
 
 
 
-Update 59 26/04/2025
+Update 60 12/07/2025
 
 1) Fixed all warnings appearing when compiling the game.
 
@@ -1202,6 +1202,14 @@ Update 59 26/04/2025
 37) Adapted new abilities, new weapons, jetpacks, and squad teams to siege classes.
 
 38) Added the old republic trooper as well as the sith empire trooper models as part of the squad teams.
+
+
+
+Fixes to Update 60 13/07/2025
+
+1) Removed a line of code in Update 60 which prevented the droideka and mark 1 droids from firing their weapons.
+2) Restored the effects differences between one hand and two hands flamethrower, dioxisthrower and icethrower.
+3) Improved the effects of the elctroshocker to make it look more different to force lightning and judgement.
 
 
 
