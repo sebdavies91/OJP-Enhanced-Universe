@@ -12362,7 +12362,7 @@ void WP_DropDetPack( gentity_t *ent, qboolean alt_fire )
 		if ( removeMe != -1 )
 		{
 			//remove it... or blow it?
-			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			if (g_entities[foundDetPacks[removeMe]].s.number == ENTITYNUM_NONE)
 			{
 				break;
 			}
@@ -12543,7 +12543,7 @@ void WP_DropDetPack2( gentity_t *ent, qboolean alt_fire )
 		if ( removeMe != -1 )
 		{
 			//remove it... or blow it?
-			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			if (g_entities[foundDetPacks[removeMe]].s.number == ENTITYNUM_NONE)
 			{
 				break;
 			}
@@ -12725,7 +12725,7 @@ void WP_DropDetPack3( gentity_t *ent, qboolean alt_fire )
 		if ( removeMe != -1 )
 		{
 			//remove it... or blow it?
-			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			if (g_entities[foundDetPacks[removeMe]].s.number == ENTITYNUM_NONE)
 			{
 				break;
 			}
@@ -12906,7 +12906,7 @@ void WP_DropDetPack4( gentity_t *ent, qboolean alt_fire )
 		if ( removeMe != -1 )
 		{
 			//remove it... or blow it?
-			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			if (g_entities[foundDetPacks[removeMe]].s.number == ENTITYNUM_NONE)
 			{
 				break;
 			}
@@ -13088,7 +13088,7 @@ void WP_DropDetPack5( gentity_t *ent, qboolean alt_fire )
 		if ( removeMe != -1 )
 		{
 			//remove it... or blow it?
-			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			if (g_entities[foundDetPacks[removeMe]].s.number == ENTITYNUM_NONE)
 			{
 				break;
 			}
@@ -13270,7 +13270,7 @@ void WP_DropDetPack6( gentity_t *ent, qboolean alt_fire )
 		if ( removeMe != -1 )
 		{
 			//remove it... or blow it?
-			if ( &g_entities[foundDetPacks[removeMe]] == NULL )
+			if (g_entities[foundDetPacks[removeMe]].s.number == ENTITYNUM_NONE)
 			{
 				break;
 			}
@@ -15103,7 +15103,7 @@ BRYAR OLD6
 
 static void WP_FireBryarOld6Main(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*3/8;
+	int damage = BRYAR_OLD_DAMAGE*13/40;
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -15429,7 +15429,11 @@ void WP_FireStunBaton( gentity_t *ent, qboolean alt_fire )
 		}
 	}
 		}
-		ent->client->leftPistol = !ent->client->leftPistol;
+		if (ent->client)
+		{
+			ent->client->leftPistol = !ent->client->leftPistol;
+		}
+
 	}
 	else
 	{
@@ -15528,7 +15532,7 @@ void WP_FireMelee( gentity_t *ent, qboolean alt_fire )
 	}
 	else
 	{ //left
-		if (ent->client->ps.brokenLimbs & (1 << BROKENLIMB_LARM))
+		if (ent->client && ent->client->ps.brokenLimbs & (1 << BROKENLIMB_LARM))
 		{
 			return;
 		}
@@ -15580,15 +15584,15 @@ void WP_FireMelee( gentity_t *ent, qboolean alt_fire )
 		if ( tr_ent->takedamage )
 		{ //damage them, do more damage if we're in the second right hook
 		int dmg = MELEE_SWING1_DAMAGE;
-			if(ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_3)
+			if(ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_3)
 			{	
 				dmg = 4*MELEE_SWING1_DAMAGE;
 			}
-			if(ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_2)
+			if(ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_2)
 			{	
 				 dmg = 3*MELEE_SWING1_DAMAGE;
 			}
-			if(ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_1)
+			if(ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_1)
 			{	
 				 dmg = 2*MELEE_SWING1_DAMAGE;
 			}		
@@ -15596,15 +15600,15 @@ void WP_FireMelee( gentity_t *ent, qboolean alt_fire )
 			if (ent->client && ent->client->ps.torsoAnim == BOTH_MELEE2)
 			{ //do a tad bit more damage on the second swing
 				dmg = MELEE_SWING2_DAMAGE;
-			if(ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_3)
+			if(ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_3)
 			{	
 				dmg = 4*MELEE_SWING2_DAMAGE;
 			}
-			if(ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_2)
+			if(ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_2)
 			{	
 				 dmg = 3*MELEE_SWING2_DAMAGE;
 			}
-			if(ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_1)
+			if(ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_1)
 			{	
 				 dmg = 2*MELEE_SWING2_DAMAGE;
 			}
@@ -16793,7 +16797,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 	else
 	{
 		// set aiming directions
-		if (ent->s.weapon == WP_EMPLACED_GUN &&
+		if (ent && ent->client && ent->s.weapon == WP_EMPLACED_GUN &&
 			ent->client->ps.emplacedIndex)
 		{ //if using emplaced then base muzzle point off of gun position/angles
 			gentity_t *emp = &g_entities[ent->client->ps.emplacedIndex];
@@ -16825,7 +16829,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 				AngleVectors( ent->client->ps.viewangles, forward, vright, up );
 			}
 		}
-		else if (ent->s.number < MAX_CLIENTS &&
+		else if (ent && ent->client && ent->s.number < MAX_CLIENTS &&
 			ent->client->ps.m_iVehicleNum && ent->s.weapon == WP_BLASTER)
 		{ //riding a vehicle...with blaster selected
 			vec3_t vehTurnAngles;
@@ -16853,17 +16857,21 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		}
 		else
 		{
-			AngleVectors( ent->client->ps.viewangles, forward, vright, up );
+			if (ent && ent->client)
+			{
+				AngleVectors(ent->client->ps.viewangles, forward, vright, up);
+			}
+
 		}
 
 		CalcMuzzlePoint ( ent, forward, vright, up, muzzle );
 		//[DualPistols]
-		if (ent->client->ps.eFlags & EF_DUAL_WEAPONS)
+		if (ent && ent->client && ent->client->ps.eFlags & EF_DUAL_WEAPONS)
 			CalcMuzzlePoint2 ( ent, forward, vright, up, muzzle2 );
 		//[/DualPistols]
-		else if (ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
+		else if (ent && ent->client && ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
 			CalcMuzzlePoint2 ( ent, forward, vright, up, muzzle2 );
-		else if (ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3)
+		else if (ent && ent->client && ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3)
 			CalcMuzzlePoint2 ( ent, forward, vright, up, muzzle2 );
 	//[WeapAccuracy]
 		//bump accuracy based on MP level.
@@ -16905,7 +16913,8 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			}
 		}
 		//[/WeapAccuracy]
-
+		if(ent)
+		{ 
 		// fire the specific weapon
 		switch( ent->s.weapon ) {
 		case WP_STUN_BATON:
@@ -16924,7 +16933,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_BRYAR_PISTOL:
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -16935,7 +16944,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarPistol6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -16946,7 +16955,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarPistol5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -16957,7 +16966,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarPistol4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -16968,7 +16977,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarPistol3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -16994,7 +17003,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_CONCUSSION:
 						//[/WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17005,7 +17014,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireConcussion6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17016,7 +17025,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireConcussion5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17027,7 +17036,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireConcussion4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17038,7 +17047,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireConcussion3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17064,7 +17073,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_BRYAR_OLD:
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17075,7 +17084,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarOld6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17086,7 +17095,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarOld5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17097,7 +17106,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarOld4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17108,7 +17117,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBryarOld3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17136,7 +17145,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_BLASTER:
 			//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17147,7 +17156,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBlaster6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17158,7 +17167,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBlaster5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17169,7 +17178,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBlaster4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17180,7 +17189,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBlaster3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17209,7 +17218,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			alert = 50;
 			//[/CoOp]
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17220,7 +17229,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDisruptor6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17231,7 +17240,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDisruptor5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17242,7 +17251,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDisruptor4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17253,7 +17262,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDisruptor3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17280,7 +17289,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_BOWCASTER:
 			//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17291,7 +17300,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBowcaster6( ent, altFire );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17302,7 +17311,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBowcaster5( ent, altFire );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17313,7 +17322,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBowcaster4( ent, altFire );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17324,7 +17333,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireBowcaster3( ent, altFire );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17351,7 +17360,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_REPEATER:
 						//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17362,7 +17371,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRepeater6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17373,7 +17382,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRepeater5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17384,7 +17393,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRepeater4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17395,7 +17404,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRepeater3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17421,7 +17430,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_DEMP2:
 						//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17432,7 +17441,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDEMP26( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17443,7 +17452,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDEMP25( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17454,7 +17463,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDEMP24( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17465,7 +17474,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireDEMP23( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17492,7 +17501,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		case WP_FLECHETTE:
 			//[/WeaponSys]
 
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17503,7 +17512,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireFlechette6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17514,7 +17523,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireFlechette5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17525,7 +17534,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireFlechette4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17536,7 +17545,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireFlechette3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17562,7 +17571,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_ROCKET_LAUNCHER:
 			//[/WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17573,7 +17582,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRocket6( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17584,7 +17593,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRocket5( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 				if ( altFire )
 				{
@@ -17595,7 +17604,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRocket4( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 				if ( altFire )
 				{
@@ -17606,7 +17615,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 					WP_FireRocket3( ent, qfalse );
 				}
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 				if ( altFire )
 				{
@@ -17632,27 +17641,27 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 
 		case WP_THERMAL:
 			//[WeaponSys]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 			WP_FireThermalDetonator6( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 			WP_FireThermalDetonator5( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 			WP_FireThermalDetonator4( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 			WP_FireThermalDetonator3( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 			WP_FireThermalDetonator2( ent, altFire );
 			//[/WeaponSys]
@@ -17668,27 +17677,27 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			//[CoOp]
 			alert = 0;
 			//[/CoOp]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 			WP_PlaceLaserTrap6( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 			WP_PlaceLaserTrap5( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 			WP_PlaceLaserTrap4( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 			WP_PlaceLaserTrap3( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 			WP_PlaceLaserTrap2( ent, altFire );
 			//[/WeaponSys]
@@ -17704,27 +17713,27 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			//[CoOp]
 			alert = 0;
 			//[/CoOp]
-			if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
+			if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 			WP_DropDetPack6( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 			WP_DropDetPack5( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_4)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
 			WP_DropDetPack4( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_3)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
 			WP_DropDetPack3( ent, altFire );
 			//[/WeaponSys]
 			}
-			else if(ent->client->ps.eFlags & EF_WP_OPTION_2)
+			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
 			WP_DropDetPack2( ent, altFire );
 			//[/WeaponSys]
@@ -17737,7 +17746,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			break;
 
 		case WP_EMPLACED_GUN:
-			if (ent->client && ent->client->ewebIndex)
+			if (ent && ent->client && ent->client->ewebIndex)
 			{ //specially handled by the e-web itself
 				break;
 			}
@@ -17748,13 +17757,13 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			break;
 		}
 	}
-
+	}
 	//[CoOp] SP code
 	//alert events for NPCs
 	// We should probably just use this as a default behavior, in special cases, just set alert to false.
 	if ( alert > 0 )
 	{
-		if ( ent->client->ps.groundEntityNum == ENTITYNUM_WORLD//FIXME: check for sand contents type?
+		if (ent && ent->client && ent->client->ps.groundEntityNum == ENTITYNUM_WORLD//FIXME: check for sand contents type?
 			&& ent->s.weapon != WP_MELEE
 			//&& ent->s.weapon != WP_TUSKEN_STAFF //RAFIXME - Impliment?
 			&& ent->s.weapon != WP_THERMAL
@@ -17770,8 +17779,11 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		AddSightEvent( ent, muzzle, alert*2, AEL_DISCOVERED, 20 );
 	}
 	//[/CoOp]
+	if (ent)
+	{
+		G_LogWeaponFire(ent->s.number, ent->s.weapon);
+	}
 
-	G_LogWeaponFire(ent->s.number, ent->s.weapon);
 }
 
 //---------------------------------------------------------

@@ -705,25 +705,25 @@ void Fade(int *flags, float *f, float clamp, int *nextTime, int offsetTime, qboo
 
 
 
-void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle) 
+void Window_Paint(Window* w, float fadeAmount, float fadeClamp, float fadeCycle)
 {
-	//float bordersize = 0;
-	vec4_t color;
+	// Initializing color to a default value to avoid using uninitialized memory
+	vec4_t color = { 0, 0, 0, 1 };  // Default color set to black with full opacity
+
 	rectDef_t fillRect = w->rect;
 
-
-	if (debugMode) 
+	if (debugMode)
 	{
 		color[0] = color[1] = color[2] = color[3] = 1;
 		DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, 1, color);
 	}
 
-	if (w == NULL || (w->style == 0 && w->border == 0)) 
+	if (w == NULL || (w->style == 0 && w->border == 0))
 	{
 		return;
 	}
 
-	if (w->border != 0) 
+	if (w->border != 0)
 	{
 		fillRect.x += w->borderSize;
 		fillRect.y += w->borderSize;
@@ -731,112 +731,110 @@ void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle)
 		fillRect.h -= w->borderSize + 1;
 	}
 
-	if (w->style == WINDOW_STYLE_FILLED) 
+	if (w->style == WINDOW_STYLE_FILLED)
 	{
 		// box, but possible a shader that needs filled
-		if (w->background) 
+		if (w->background)
 		{
 			Fade(&w->flags, &w->backColor[3], fadeClamp, &w->nextTime, fadeCycle, qtrue, fadeAmount);
 			DC->setColor(w->backColor);
 			DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
 			DC->setColor(NULL);
-		} 
-		else 
+		}
+		else
 		{
 			DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->backColor);
 		}
-	} 
-	else if (w->style == WINDOW_STYLE_GRADIENT) 
+	}
+	else if (w->style == WINDOW_STYLE_GRADIENT)
 	{
 		GradientBar_Paint(&fillRect, w->backColor);
-	// gradient bar
-	} 
-	else if (w->style == WINDOW_STYLE_SHADER) 
+	}
+	else if (w->style == WINDOW_STYLE_SHADER)
 	{
 #ifndef CGAME
-		if (w->flags & WINDOW_PLAYERCOLOR) 
+		if (w->flags & WINDOW_PLAYERCOLOR)
 		{
-			vec4_t	color;
-			color[0] = ui_char_color_red.integer/255.0f;
-			color[1] = ui_char_color_green.integer/255.0f;
-			color[2] = ui_char_color_blue.integer/255.0f;
+			color[0] = ui_char_color_red.integer / 255.0f;
+			color[1] = ui_char_color_green.integer / 255.0f;
+			color[2] = ui_char_color_blue.integer / 255.0f;
 			color[3] = 1;
 			DC->setColor(color);
 		}
-#endif // 
+#endif 
 
-		if (w->flags & WINDOW_FORECOLORSET) 
+		if (w->flags & WINDOW_FORECOLORSET)
 		{
 			DC->setColor(w->foreColor);
 		}
 		DC->drawHandlePic(fillRect.x, fillRect.y, fillRect.w, fillRect.h, w->background);
 		DC->setColor(NULL);
-	} 
-	else if (w->style == WINDOW_STYLE_TEAMCOLOR) 
+	}
+	else if (w->style == WINDOW_STYLE_TEAMCOLOR)
 	{
-		if (DC->getTeamColor) 
+		if (DC->getTeamColor)
 		{
 			DC->getTeamColor(&color);
 			DC->fillRect(fillRect.x, fillRect.y, fillRect.w, fillRect.h, color);
 		}
-	} 
-	else if (w->style == WINDOW_STYLE_CINEMATIC) 
+	}
+	else if (w->style == WINDOW_STYLE_CINEMATIC)
 	{
-		if (w->cinematic == -1) 
+		if (w->cinematic == -1)
 		{
 			w->cinematic = DC->playCinematic(w->cinematicName, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
-			if (w->cinematic == -1) 
+			if (w->cinematic == -1)
 			{
 				w->cinematic = -2;
 			}
-		} 
-		if (w->cinematic >= 0) 
+		}
+		if (w->cinematic >= 0)
 		{
 			DC->runCinematicFrame(w->cinematic);
 			DC->drawCinematic(w->cinematic, fillRect.x, fillRect.y, fillRect.w, fillRect.h);
 		}
 	}
 
-	if (w->border == WINDOW_BORDER_FULL) 
+	if (w->border == WINDOW_BORDER_FULL)
 	{
 		// full
 		// HACK HACK HACK
-		if (w->style == WINDOW_STYLE_TEAMCOLOR) 
+		if (w->style == WINDOW_STYLE_TEAMCOLOR)
 		{
-			if (color[0] > 0) 
-			{				
+			if (color[0] > 0)
+			{
 				// red
 				color[0] = 1;
 				color[1] = color[2] = .5;
-			} 
-			else 
+			}
+			else
 			{
 				color[2] = 1;
 				color[0] = color[1] = .5;
 			}
 			color[3] = 1;
 			DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, color);
-		} 
-		else 
+		}
+		else
 		{
 			DC->drawRect(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize, w->borderColor);
 		}
-	} 
-	else if (w->border == WINDOW_BORDER_HORZ) 
+	}
+	else if (w->border == WINDOW_BORDER_HORZ)
 	{
 		// top/bottom
 		DC->setColor(w->borderColor);
 		DC->drawTopBottom(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
-		DC->setColor( NULL );
-	} 
-	else if (w->border == WINDOW_BORDER_VERT) 
+		DC->setColor(NULL);
+	}
+	else if (w->border == WINDOW_BORDER_VERT)
 	{
 		// left right
 		DC->setColor(w->borderColor);
 		DC->drawSides(w->rect.x, w->rect.y, w->rect.w, w->rect.h, w->borderSize);
-		DC->setColor( NULL );
-	} 
-	else if (w->border == WINDOW_BORDER_KCGRADIENT) 
+		DC->setColor(NULL);
+	}
+	else if (w->border == WINDOW_BORDER_KCGRADIENT)
 	{
 		// this is just two gradient bars along each horz edge
 		rectDef_t r = w->rect;
@@ -846,6 +844,7 @@ void Window_Paint(Window *w, float fadeAmount, float fadeClamp, float fadeCycle)
 		GradientBar_Paint(&r, w->borderColor);
 	}
 }
+
 
 
 void Item_SetScreenCoords(itemDef_t *item, float x, float y) 
@@ -1271,84 +1270,85 @@ qboolean Script_SetItemColor(itemDef_t *item, char **args)
 	return qtrue;
 }
 
-qboolean Script_SetItemColorCvar(itemDef_t *item, char **args) 
+qboolean Script_SetItemColorCvar(itemDef_t* item, char** args)
 {
-	const char *itemname;
-	char	*colorCvarName,*holdBuf,*holdVal;
+	const char* itemname;
+	char* colorCvarName, * holdBuf, * holdVal;
 	char cvarBuf[1024];
-	const char *name;
-	vec4_t color;
+	const char* name;
+	vec4_t color = { 0, 0, 0, 1 };  // Initialize color to black (default RGBA = 0, 0, 0, 1)
 	int i;
-	vec4_t *out;
+	vec4_t* out;
 
 	// expecting type of color to set and 4 args for the color
-	if (String_Parse(args, &itemname) && String_Parse(args, &name)) 
+	if (String_Parse(args, &itemname) && String_Parse(args, &name))
 	{
-		itemDef_t	*item2;
-		int			j,count;
+		itemDef_t* item2;
+		int j, count;
 		char buff[1024];
 
-		// Is is specifying a cvar to get the item name from?
+		// Is it specifying a cvar to get the item name from?
 		if (itemname[0] == '*')
 		{
 			itemname += 1;
-		    DC->getCVarString(itemname, buff, sizeof(buff));
+			DC->getCVarString(itemname, buff, sizeof(buff));
 			itemname = buff;
 		}
 
-		count = Menu_ItemsMatchingGroup((menuDef_t *) item->parent, itemname);
+		count = Menu_ItemsMatchingGroup((menuDef_t*)item->parent, itemname);
 
 		// Get the cvar with the color
-		if (!String_Parse(args,(const char **) &colorCvarName))
+		if (!String_Parse(args, (const char**)&colorCvarName))
 		{
 			return qtrue;
 		}
 		else
 		{
 			DC->getCVarString(colorCvarName, cvarBuf, sizeof(cvarBuf));
-			
+
 			holdBuf = cvarBuf;
-			if (String_Parse(&holdBuf,(const char **) &holdVal))
+			if (String_Parse(&holdBuf, (const char**)&holdVal))
 			{
 				color[0] = atof(holdVal);
-				if (String_Parse(&holdBuf,(const char **) &holdVal))
+				if (String_Parse(&holdBuf, (const char**)&holdVal))
 				{
 					color[1] = atof(holdVal);
-					if (String_Parse(&holdBuf,(const char **) &holdVal))
+					if (String_Parse(&holdBuf, (const char**)&holdVal))
 					{
 						color[2] = atof(holdVal);
-						if (String_Parse(&holdBuf,(const char **) &holdVal))
+						if (String_Parse(&holdBuf, (const char**)&holdVal))
 						{
 							color[3] = atof(holdVal);
 						}
 					}
 				}
 			}
+			// If parsing failed, `color` will stay the initialized value {0, 0, 0, 1}
 		}
 
-		for (j = 0; j < count; j++) 
+		for (j = 0; j < count; j++)
 		{
-			item2 = Menu_GetMatchingItemByNumber((menuDef_t *) item->parent, j, itemname);
-			if (item2 != NULL) 
+			item2 = Menu_GetMatchingItemByNumber((menuDef_t*)item->parent, j, itemname);
+			if (item2 != NULL)
 			{
 				out = NULL;
-				if (Q_stricmp(name, "backcolor") == 0) 
+				if (Q_stricmp(name, "backcolor") == 0)
 				{
 					out = &item2->window.backColor;
-				} 
-				else if (Q_stricmp(name, "forecolor") == 0) 
+				}
+				else if (Q_stricmp(name, "forecolor") == 0)
 				{
 					out = &item2->window.foreColor;
 					item2->window.flags |= WINDOW_FORECOLORSET;
-				} 
-				else if (Q_stricmp(name, "bordercolor") == 0) 
+				}
+				else if (Q_stricmp(name, "bordercolor") == 0)
 				{
 					out = &item2->window.borderColor;
 				}
 
-				if (out) 
+				if (out)
 				{
-					for (i = 0; i < 4; i++) 
+					for (i = 0; i < 4; i++)
 					{
 						(*out)[i] = color[i];
 					}
@@ -1359,6 +1359,7 @@ qboolean Script_SetItemColorCvar(itemDef_t *item, char **args)
 
 	return qtrue;
 }
+
 
 qboolean Script_SetItemRect(itemDef_t *item, char **args) 
 {
@@ -2801,38 +2802,48 @@ int Item_ListBox_ThumbDrawPosition(itemDef_t *item)
 	}
 }
 
-float Item_Slider_ThumbPosition(itemDef_t *item) {
+float Item_Slider_ThumbPosition(itemDef_t* item) {
 	float value, range, x;
-	editFieldDef_t *editDef = (editFieldDef_t *) item->typeData;
+	editFieldDef_t* editDef = (editFieldDef_t*)item->typeData;
 
 	if (item->text) {
 		x = item->textRect.x + item->textRect.w + 8;
-	} else {
+	}
+	else {
 		x = item->window.rect.x;
 	}
 
-	if (editDef == NULL && item->cvar) {
-		return x;
+	// Check if editDef is NULL and if so, use default values or handle the case
+	if (editDef == NULL) {
+		if (item->cvar) {
+			return x; // If no valid editDef, return the default x
+		}
+		else {
+			// If neither editDef nor cvar is valid, handle error or default logic
+			// You could also set `value` to some default and return `x`
+			return x;
+		}
 	}
 
+	// Now it's safe to dereference editDef
 	value = DC->getCVarValue(item->cvar);
 
 	if (value < editDef->minVal) {
 		value = editDef->minVal;
-	} else if (value > editDef->maxVal) {
+	}
+	else if (value > editDef->maxVal) {
 		value = editDef->maxVal;
 	}
 
 	range = editDef->maxVal - editDef->minVal;
 	value -= editDef->minVal;
 	value /= range;
-	//value /= (editDef->maxVal - editDef->minVal);
 	value *= SLIDER_WIDTH;
 	x += value;
-	// vm fuckage
-	//x = x + (((float)value / editDef->maxVal) * SLIDER_WIDTH);
+
 	return x;
 }
+
 
 int Item_Slider_OverSlider(itemDef_t *item, float x, float y) {
 	rectDef_t r;

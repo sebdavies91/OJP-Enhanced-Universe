@@ -235,8 +235,8 @@ void multi_trigger( gentity_t *ent, gentity_t *activator )
 			return;
 		}
 
-		if (!activator->client ||
-			(activator->client->sess.sessionTeam != SIEGETEAM_TEAM1 && activator->client->sess.sessionTeam != SIEGETEAM_TEAM2))
+		if (activator && (!activator->client ||
+			(activator->client->sess.sessionTeam != SIEGETEAM_TEAM1 && activator->client->sess.sessionTeam != SIEGETEAM_TEAM2)))
 		{ //activator must be a valid client to begin with
 			return;
 		}

@@ -2440,31 +2440,37 @@ void UI_ReadLegalForce(void)
 	int forceTeam = 0;
 	qboolean updateForceLater = qfalse;
 
-	//First, stick them into a string.
+	// First, stick them into a string.
 	Com_sprintf(fcfString, sizeof(fcfString), "%i-%i-", uiForceRank, uiForceSide);
 	strPlace = strlen(fcfString);
 
-	//[ExpSys]
-	//added sanity check so we don't overflow fcfString.
-	while (forcePlace < NUM_TOTAL_SKILLS && strPlace < 1024)
-	//while (forcePlace < NUM_FORCE_POWERS)
-	//[/ExpSys]
+	// [ExpSys] Added sanity check to prevent overflow
+	while (forcePlace < NUM_TOTAL_SKILLS && strPlace < sizeof(fcfString) - 1) // Ensure there's space for null terminator
 	{
 		Com_sprintf(forceStringValue, sizeof(forceStringValue), "%i", uiRank[forcePlace].uiForcePowersRank);
-		//Just use the force digit even if multiple digits. Shouldn't be longer than 1.
-		fcfString[strPlace] = forceStringValue[0];
-		strPlace++;
+
+		// Ensure we don't exceed the buffer size of fcfString
+		if (strPlace < sizeof(fcfString) - 1) {
+			fcfString[strPlace] = forceStringValue[0];
+			strPlace++;
+		}
+
 		forcePlace++;
 	}
-	fcfString[strPlace] = '\n';
-	fcfString[strPlace+1] = 0;
+
+	// Add a newline and null terminator safely.
+	if (strPlace < sizeof(fcfString) - 1) {
+		fcfString[strPlace] = '\n';
+		strPlace++;
+	}
+	fcfString[strPlace] = '\0';  // Make sure the string is null-terminated.
 
 	info[0] = '\0';
 	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 
-	if (atoi( Info_ValueForKey( info, "g_forceBasedTeams" ) ))
+	if (atoi(Info_ValueForKey(info, "g_forceBasedTeams")))
 	{
-		switch((int)(trap_Cvar_VariableValue("ui_myteam")))
+		switch ((int)(trap_Cvar_VariableValue("ui_myteam")))
 		{
 		case TEAM_RED:
 			forceTeam = FORCE_DARKSIDE;
@@ -2476,13 +2482,14 @@ void UI_ReadLegalForce(void)
 			break;
 		}
 	}
-	//Second, legalize them.
-	if (!BG_LegalizedForcePowers(fcfString, uiMaxRank, ui_freeSaber.integer, forceTeam, atoi( Info_ValueForKey( info, "g_gametype" )), 0))
-	{ //if they were illegal, we should refresh them.
+
+	// Second, legalize them.
+	if (!BG_LegalizedForcePowers(fcfString, uiMaxRank, ui_freeSaber.integer, forceTeam, atoi(Info_ValueForKey(info, "g_gametype")), 0))
+	{ // if they were illegal, we should refresh them.
 		updateForceLater = qtrue;
 	}
 
-	//Lastly, put them back into the UI storage from the legalized string
+	// Lastly, put them back into the UI storage from the legalized string
 	i = 0;
 
 	while (fcfString[i] && fcfString[i] != '-')
@@ -2498,9 +2505,9 @@ void UI_ReadLegalForce(void)
 	iBuf = atoi(singleBuf);
 
 	if (iBuf > uiMaxRank || iBuf < 0)
-	{ //this force config uses a rank level higher than our currently restricted level.. so we can't use it
-	  //FIXME: Print a message indicating this to the user
-	//	return;
+	{ // this force config uses a rank level higher than our currently restricted level.. so we can't use it
+		// FIXME: Print a message indicating this to the user
+		// return;
 	}
 
 	uiForceRank = iBuf;
@@ -2524,28 +2531,13 @@ void UI_ReadLegalForce(void)
 		return;
 	}
 
-	//clear out the existing powers
-//	while (c < NUM_FORCE_POWERS)
-//	{
-//		uiRank[c].uiForcePowersRank = 0;
-//		c++;
-//	}
-//	uiForceUsed = 0;
 	//[ExpSys]
-//	uiForceAvailable = uiMaxRank;
-	//uiForceAvailable = forceMasteryPoints[uiForceRank];
-	//[/ExpSys]
-//	gTouchedForce = qtrue;
-
-	//[ExpSys]
-	for (c=0; fcfString[i] && c < NUM_TOTAL_SKILLS;c++,i++)
-	//for (c=0;fcfString[i]&&c<NUM_FORCE_POWERS;c++,i++)
-	//[/ExpSys]
+	for (c = 0; fcfString[i] && c < NUM_TOTAL_SKILLS; c++, i++)
 	{
 		singleBuf[0] = fcfString[i];
 		singleBuf[1] = 0;
-		iBuf = atoi(singleBuf);	// So, that means that Force Power "c" wants to be set to rank "iBuf".
-		
+		iBuf = atoi(singleBuf);    // So, that means that Force Power "c" wants to be set to rank "iBuf".
+
 		if (iBuf < 0)
 		{
 			iBuf = 0;
@@ -2554,24 +2546,15 @@ void UI_ReadLegalForce(void)
 		forcePowerRank = iBuf;
 
 		if (forcePowerRank > FORCE_LEVEL_3 || forcePowerRank < 0)
-		{ //err..  not correct
+		{ // err.. not correct
 			continue;  // skip this power
 		}
-
-		//[ForceSys]
-		/*
-		if (uiForcePowerDarkLight[c] && uiForcePowerDarkLight[c] != uiForceSide)
-		{ //Apparently the user has crafted a force config that has powers that don't fit with the config's side.
-			continue;  // skip this power
-		}
-		*/
-		//[/ForceSys]
 
 		// Accrue cost for each assigned rank for this power.
-		for (currank=FORCE_LEVEL_1;currank<=forcePowerRank;currank++)
-		{	
+		for (currank = FORCE_LEVEL_1; currank <= forcePowerRank; currank++)
+		{
 			if (bgForcePowerCost[c][currank] > uiForceAvailable)
-			{	// Break out, we can't afford any more power.
+			{    // Break out, we can't afford any more power.
 				break;
 			}
 			// Pay for this rank of this power.
@@ -2581,23 +2564,14 @@ void UI_ReadLegalForce(void)
 			uiRank[c].uiForcePowersRank++;
 		}
 	}
-
-	//[ExpSys]
-	/* don't automatically give Force jump
-	if (uiRank[FP_LEVITATION].uiForcePowersRank < 1)
-	{
-		uiRank[FP_LEVITATION].uiForcePowersRank=1;
-	}
-	*/
-	//[/ExpSys]
-	
+	// [/ExpSys]
 
 	int wDisable = 0;
-	int	gametype = 0;
-	
-	gametype = atoi(Info_ValueForKey(info, "g_gametype"));	
-	
-	trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) );
+	int gametype = 0;
+
+	gametype = atoi(Info_ValueForKey(info, "g_gametype"));
+
+	trap_GetConfigString(CS_SERVERINFO, info, sizeof(info));
 
 	if (gametype == GT_DUEL || gametype == GT_POWERDUEL)
 	{
@@ -2606,20 +2580,18 @@ void UI_ReadLegalForce(void)
 	else
 	{
 		wDisable = atoi(Info_ValueForKey(info, "g_weaponDisable"));
-	}	
-	if ( wDisable == WP_SABERSONLY )
-	{
-			
-	if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank < 1 && ui_freeSaber.integer)
-	{
-		uiRank[FP_SABER_OFFENSE].uiForcePowersRank=1;
 	}
-	if (uiRank[FP_SABER_DEFENSE].uiForcePowersRank < 1 && ui_freeSaber.integer)
+	if (wDisable == WP_SABERSONLY)
 	{
-		uiRank[FP_SABER_DEFENSE].uiForcePowersRank=1;
+		if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank < 1 && ui_freeSaber.integer)
+		{
+			uiRank[FP_SABER_OFFENSE].uiForcePowersRank = 1;
+		}
+		if (uiRank[FP_SABER_DEFENSE].uiForcePowersRank < 1 && ui_freeSaber.integer)
+		{
+			uiRank[FP_SABER_DEFENSE].uiForcePowersRank = 1;
+		}
 	}
-	}
-
 
 	UpdateForceUsed();
 
@@ -2629,6 +2601,8 @@ void UI_ReadLegalForce(void)
 		UI_UpdateClientForcePowers(NULL);
 	}
 }
+
+
 
 void UI_UpdateForcePowers()
 {

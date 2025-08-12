@@ -8109,9 +8109,9 @@ void PM_FinishWeaponChange( void ) {
 			if ( pm->ps->fd.saberAnimLevel == SS_DUAL )
 			{//holding second saber, activate it.
 				pm->ps->saberHolstered = 1;
-		PM_SetSaberMove(LS_DRAW);
-	}
-	else
+				PM_SetSaberMove(LS_DRAW);
+			}
+			else
 			{//not holding any sabers, make sure all our blades are all off.
 				pm->ps->saberHolstered = 2;
 			}
@@ -11781,7 +11781,7 @@ static void PM_Weapon( void )
 
 			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_4)
 				{
-				addTime =300;
+				addTime =260;
 			}	
 			else if(ent->client->ps.weapon == WP_BRYAR_OLD && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 				{
@@ -12821,9 +12821,9 @@ void BG_AdjustClientSpeed(playerState_t *ps, usercmd_t *cmd, int svTime)
 	if (ps->fd.forcePowersActive & (1 << FP_SPEED))
 	{
 		if(ps->fd.forcePowerLevel[FP_SPEED] >= FORCE_LEVEL_3)
-			ps->speed *= 7.0;
+			ps->speed *= 5.0;
 		else if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_2)
-			ps->speed *= 3.5;
+			ps->speed *= 3.0;
 		else if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_1)
 			ps->speed *= 1.75;//was 1.7
 		else
@@ -14559,23 +14559,25 @@ ID_INLINE void PM_CmdForSaberMoves(usercmd_t *ucmd)
 }
 
 //constrain him based on the angles of his vehicle and the caps
-void PM_VehicleViewAngles(playerState_t *ps, bgEntity_t *veh, usercmd_t *ucmd)
+void PM_VehicleViewAngles(playerState_t* ps, bgEntity_t* veh, usercmd_t* ucmd)
 {
-	Vehicle_t *pVeh = veh->m_pVehicle;
+	Vehicle_t* pVeh = veh->m_pVehicle;
 	qboolean setAngles = qtrue;
-	vec3_t clampMin;
-	vec3_t clampMax;
+	vec3_t clampMin = { 0 };  // Initialize to zero (or any reasonable default)
+	vec3_t clampMax = { 0 };  // Initialize to zero (or any reasonable default)
 	int i;
 
-	if ( veh->m_pVehicle->m_pPilot 
-		&& veh->m_pVehicle->m_pPilot->s.number == ps->clientNum )
-	{//set the pilot's viewangles to the vehicle's viewangles
+	if (veh->m_pVehicle->m_pPilot
+		&& veh->m_pVehicle->m_pPilot->s.number == ps->clientNum)
+	{
+		// set the pilot's viewangles to the vehicle's viewangles
 #ifdef VEH_CONTROL_SCHEME_4
-		if ( 1 )
-#else //VEH_CONTROL_SCHEME_4
-		if ( !BG_UnrestrainedPitchRoll( ps, veh->m_pVehicle ) )
-#endif //VEH_CONTROL_SCHEME_4
-		{//only if not if doing special free-roll/pitch control
+		if (1)
+#else // VEH_CONTROL_SCHEME_4
+		if (!BG_UnrestrainedPitchRoll(ps, veh->m_pVehicle))
+#endif // VEH_CONTROL_SCHEME_4
+		{
+			// only if not doing special free-roll/pitch control
 			setAngles = qtrue;
 			clampMin[PITCH] = -pVeh->m_pVehicleInfo->lookPitch;
 			clampMax[PITCH] = pVeh->m_pVehicleInfo->lookPitch;
@@ -14583,42 +14585,37 @@ void PM_VehicleViewAngles(playerState_t *ps, bgEntity_t *veh, usercmd_t *ucmd)
 			clampMin[ROLL] = clampMax[ROLL] = -1;
 		}
 	}
-	else 
+	else
 	{
-		//NOTE: passengers can look around freely, UNLESS they're controlling a turret!
-		for ( i = 0; i < MAX_VEHICLE_TURRETS; i++ )
+		// NOTE: passengers can look around freely, UNLESS they're controlling a turret!
+		for (i = 0; i < MAX_VEHICLE_TURRETS; i++)
 		{
-			if ( veh->m_pVehicle->m_pVehicleInfo->turret[i].passengerNum == ps->generic1 )
-			{//this turret is my station
-				//[Asteroids]
-				//nevermind, don't clamp
+			if (veh->m_pVehicle->m_pVehicleInfo->turret[i].passengerNum == ps->generic1)
+			{
+				// This turret is my station
+				// [Asteroids]
+				// nevermind, don't clamp
 				return;
-				/*
-				setAngles = qtrue;
-				clampMin[PITCH] = veh->m_pVehicle->m_pVehicleInfo->turret[i].pitchClampUp;
-				clampMax[PITCH] = veh->m_pVehicle->m_pVehicleInfo->turret[i].pitchClampDown;
-				clampMin[YAW] = veh->m_pVehicle->m_pVehicleInfo->turret[i].yawClampRight;
-				clampMax[YAW] = veh->m_pVehicle->m_pVehicleInfo->turret[i].yawClampLeft;
-				clampMin[ROLL] = clampMax[ROLL] = 0;
-				break;
-				*/
-				//[/Asteroids]
 			}
 		}
 	}
-	if ( setAngles )
+
+	if (setAngles)
 	{
-		for ( i = 0; i < 3; i++ )
-		{//clamp viewangles
-			if ( clampMin[i] == -1 || clampMax[i] == -1 )
-			{//no clamp
+		for (i = 0; i < 3; i++)
+		{
+			// Clamp viewangles
+			if (clampMin[i] == -1 || clampMax[i] == -1)
+			{
+				// No clamp
 			}
-			else if ( !clampMin[i] && !clampMax[i] )
-			{//no allowance
-				//ps->viewangles[i] = veh->playerState->viewangles[i];
+			else if (!clampMin[i] && !clampMax[i])
+			{
+				// No allowance
 			}
 			else
-			{//allowance
+			{
+				// Allowance
 				if (ps->viewangles[i] > clampMax[i])
 				{
 					ps->viewangles[i] = clampMax[i];
@@ -14633,6 +14630,7 @@ void PM_VehicleViewAngles(playerState_t *ps, bgEntity_t *veh, usercmd_t *ucmd)
 		PM_SetPMViewAngle(ps, ps->viewangles, ucmd);
 	}
 }
+
 
 /*
 //constrain him based on the angles of his vehicle and the caps
@@ -15641,7 +15639,7 @@ void PmoveSingle (pmove_t *pmove) {
 			veh->m_pVehicle->m_fTimeModifier = pml.frametime*60.0f;
 		}
 	}
-	else if (pm_entSelf->s.NPC_class!=CLASS_VEHICLE
+	else if (pm_entSelf && pm_entSelf->s.NPC_class!=CLASS_VEHICLE
 		&&pm->ps->m_iVehicleNum)
 	{
 		bgEntity_t *veh = pm_entVeh;
@@ -15973,8 +15971,8 @@ void PmoveSingle (pmove_t *pmove) {
 #endif
 #endif
 
-	if (pm_entSelf->s.NPC_class!=CLASS_VEHICLE
-		&&pm->ps->m_iVehicleNum)
+	if (pm_entSelf && pm_entSelf->s.NPC_class!=CLASS_VEHICLE
+		&& pm->ps->m_iVehicleNum)
 	{ //a player riding a vehicle
 		bgEntity_t *veh = pm_entVeh;
 
@@ -15987,7 +15985,7 @@ void PmoveSingle (pmove_t *pmove) {
 		}
 	}
 
-	if (!pm->ps->m_iVehicleNum &&
+	if (pm_entSelf && !pm->ps->m_iVehicleNum &&
 		pm_entSelf->s.NPC_class!=CLASS_VEHICLE&&
 		pm_entSelf->s.NPC_class!=CLASS_RANCOR&&
 		pm->ps->groundEntityNum < ENTITYNUM_WORLD &&
@@ -16141,8 +16139,8 @@ void PmoveSingle (pmove_t *pmove) {
 		noAnimate = qtrue;
 	}
 
-	if (pm_entSelf->s.NPC_class!=CLASS_VEHICLE
-		&&pm->ps->m_iVehicleNum)
+	if (pm_entSelf && pm_entSelf->s.NPC_class!=CLASS_VEHICLE
+		&& pm->ps->m_iVehicleNum)
 	{//don't even run physics on a player if he's on a vehicle - he goes where the vehicle goes
 	}
 	else
@@ -16284,7 +16282,7 @@ void PmoveSingle (pmove_t *pmove) {
 		}
 	}
 
-	if (pm_entSelf->s.NPC_class!=CLASS_VEHICLE
+	if (pm_entSelf && pm_entSelf->s.NPC_class!=CLASS_VEHICLE
 		&& pm->ps->m_iVehicleNum)
 	{ //riding a vehicle, see if we should do some anim overrides
 		PM_VehicleWeaponAnimate();
@@ -16726,7 +16724,11 @@ qboolean PM_CheckRollGetup( void )
 					PM_AddEvent( Q_irand( EV_COMBAT1, EV_COMBAT3 ) );
 					self->NPC->blockedSpeechDebounceTime = level.time + 1000;
 				}
-				G_PreDefSound(self->client->ps.origin, PDSOUND_FORCEJUMP);
+				if (self->client)
+				{
+					G_PreDefSound(self->client->ps.origin, PDSOUND_FORCEJUMP);
+				}
+
 				//G_SoundOnEnt( pm->gent, CHAN_BODY, "sound/weapons/force/jump.wav" ); //SP version
 #endif
 				//launch off ground?
@@ -16893,7 +16895,11 @@ qboolean PM_GettingUpFromKnockDown( float standheight, float crouchheight )
 							PM_AddEvent( Q_irand( EV_COMBAT1, EV_COMBAT3 ) );
 							self->NPC->blockedSpeechDebounceTime = level.time + 1000;
 						}
-						G_PreDefSound(self->client->ps.origin, PDSOUND_FORCEJUMP);
+						if (self->client)
+						{
+							G_PreDefSound(self->client->ps.origin, PDSOUND_FORCEJUMP);
+						}
+
 						//G_SoundOnEnt( pm->gent, CHAN_BODY, "sound/weapons/force/jump.wav" ); //SP version
 #endif
 

@@ -34,7 +34,7 @@ int BG_SoundIndex(char *sound)
 
 extern stringID_table_t FPTable[];
 
-#define MAX_SABER_DATA_SIZE 0x320000
+#define MAX_SABER_DATA_SIZE 0x500000
 static char SaberParms[MAX_SABER_DATA_SIZE];
 
 stringID_table_t SaberTable[] =

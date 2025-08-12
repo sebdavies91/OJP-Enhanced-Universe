@@ -418,7 +418,8 @@ typedef struct bot_state_s
 
 	qboolean			saberPower;
 	int					saberPowerTime;
-
+	int saberStyleBias;
+	int saberStyleBiasTime;
 	//RACC - Bot trying to do a Saber Challenge during this Clock time. 
 	int					botChallengingTime;
 

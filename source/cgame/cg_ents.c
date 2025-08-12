@@ -596,43 +596,48 @@ void CG_CreateBBRefEnts(entityState_t *s1, vec3_t origin )
 }
 
 // write in the axis and stuff
-void G2_BoltToGhoul2Model(centity_t *cent, refEntity_t *ent)
+void G2_BoltToGhoul2Model(centity_t* cent, refEntity_t* ent)
 {
-		// extract the wraith ID from the bolt info
+	// extract the wraith ID from the bolt info
 	int modelNum = cent->boltInfo >> MODEL_SHIFT;
-	int boltNum	= cent->boltInfo >> BOLT_SHIFT;
-	int	entNum = cent->boltInfo >> ENTITY_SHIFT;
- 	mdxaBone_t 		boltMatrix;
-	
+	int boltNum = cent->boltInfo >> BOLT_SHIFT;
+	int entNum = cent->boltInfo >> ENTITY_SHIFT;
+	mdxaBone_t   boltMatrix;
+
 	modelNum &= MODEL_AND;
 	boltNum &= BOLT_AND;
 	entNum &= ENTITY_AND;
 
+	// Check if entNum is within valid bounds for cg_entities
+	if (entNum < 0 || entNum >= MAX_GENTITIES) {
+		// If the index is invalid, exit early to prevent undefined behavior
+		return;
+	}
 
-	//NOTENOTE I put this here because the cgs.gamemodels array no longer gets initialized.
-	assert(0);		
+	// NOTENOTE I put this here because the cgs.gamemodels array no longer gets initialized.
+	assert(0);
 
-
- 	// go away and get me the bolt position for this frame please
+	// go away and get me the bolt position for this frame please
 	trap_G2API_GetBoltMatrix(cent->ghoul2, modelNum, boltNum, &boltMatrix, cg_entities[entNum].currentState.angles, cg_entities[entNum].currentState.origin, cg.time, cgs.gameModels, cent->modelScale);
 
 	// set up the axis and origin we need for the actual effect spawning
- 	ent->origin[0] = boltMatrix.matrix[0][3];
- 	ent->origin[1] = boltMatrix.matrix[1][3];
- 	ent->origin[2] = boltMatrix.matrix[2][3];
+	ent->origin[0] = boltMatrix.matrix[0][3];
+	ent->origin[1] = boltMatrix.matrix[1][3];
+	ent->origin[2] = boltMatrix.matrix[2][3];
 
- 	ent->axis[0][0] = boltMatrix.matrix[0][0];
- 	ent->axis[0][1] = boltMatrix.matrix[1][0];
- 	ent->axis[0][2] = boltMatrix.matrix[2][0];
+	ent->axis[0][0] = boltMatrix.matrix[0][0];
+	ent->axis[0][1] = boltMatrix.matrix[1][0];
+	ent->axis[0][2] = boltMatrix.matrix[2][0];
 
- 	ent->axis[1][0] = boltMatrix.matrix[0][1];
- 	ent->axis[1][1] = boltMatrix.matrix[1][1];
- 	ent->axis[1][2] = boltMatrix.matrix[2][1];
+	ent->axis[1][0] = boltMatrix.matrix[0][1];
+	ent->axis[1][1] = boltMatrix.matrix[1][1];
+	ent->axis[1][2] = boltMatrix.matrix[2][1];
 
- 	ent->axis[2][0] = boltMatrix.matrix[0][2];
- 	ent->axis[2][1] = boltMatrix.matrix[1][2];
- 	ent->axis[2][2] = boltMatrix.matrix[2][2];
+	ent->axis[2][0] = boltMatrix.matrix[0][2];
+	ent->axis[2][1] = boltMatrix.matrix[1][2];
+	ent->axis[2][2] = boltMatrix.matrix[2][2];
 }
+
 
 void ScaleModelAxis(refEntity_t	*ent)
 
@@ -3446,34 +3451,42 @@ void CG_AdjustPositionForMover( const vec3_t in, int moverNum, int fromTime, int
 CG_InterpolateEntityPosition
 =============================
 */
-static void CG_InterpolateEntityPosition( centity_t *cent ) {
-	vec3_t		current, next;
-	float		f;
+static void CG_InterpolateEntityPosition(centity_t* cent) {
+	vec3_t current, next;
+	float f;
 
 	// it would be an internal error to find an entity that interpolates without
 	// a snapshot ahead of the current one
-	if ( cg.nextSnap == NULL ) {
-		CG_Error( "CG_InterpoateEntityPosition: cg.nextSnap == NULL" );
+	if (cg.nextSnap == NULL) {
+		CG_Error("CG_InterpolateEntityPosition: cg.nextSnap == NULL");
 	}
 
 	f = cg.frameInterpolation;
 
 	// this will linearize a sine or parabolic curve, but it is important
 	// to not extrapolate player positions if more recent data is available
-	BG_EvaluateTrajectory( &cent->currentState.pos, cg.snap->serverTime, current );
-	BG_EvaluateTrajectory( &cent->nextState.pos, cg.nextSnap->serverTime, next );
+	BG_EvaluateTrajectory(&cent->currentState.pos, cg.snap->serverTime, current);
 
-	cent->lerpOrigin[0] = current[0] + f * ( next[0] - current[0] );
-	cent->lerpOrigin[1] = current[1] + f * ( next[1] - current[1] );
-	cent->lerpOrigin[2] = current[2] + f * ( next[2] - current[2] );
+	// Check if nextSnap is valid
+	if (cg.nextSnap != NULL) {
+		BG_EvaluateTrajectory(&cent->nextState.pos, cg.nextSnap->serverTime, next);
 
-	BG_EvaluateTrajectory( &cent->currentState.apos, cg.snap->serverTime, current );
-	BG_EvaluateTrajectory( &cent->nextState.apos, cg.nextSnap->serverTime, next );
+		// Perform interpolation
+		cent->lerpOrigin[0] = current[0] + f * (next[0] - current[0]);
+		cent->lerpOrigin[1] = current[1] + f * (next[1] - current[1]);
+		cent->lerpOrigin[2] = current[2] + f * (next[2] - current[2]);
+	}
 
-	cent->lerpAngles[0] = LerpAngle( current[0], next[0], f );
-	cent->lerpAngles[1] = LerpAngle( current[1], next[1], f );
-	cent->lerpAngles[2] = LerpAngle( current[2], next[2], f );
+	BG_EvaluateTrajectory(&cent->currentState.apos, cg.snap->serverTime, current);
+	if (cg.nextSnap != NULL) {
+		BG_EvaluateTrajectory(&cent->nextState.apos, cg.nextSnap->serverTime, next);
+
+		cent->lerpAngles[0] = LerpAngle(current[0], next[0], f);
+		cent->lerpAngles[1] = LerpAngle(current[1], next[1], f);
+		cent->lerpAngles[2] = LerpAngle(current[2], next[2], f);
+	}
 }
+
 
 /*
 ===============
@@ -4169,23 +4182,30 @@ functionend:
 	return;
 }
 
-void CG_Cube( vec3_t mins, vec3_t maxs, vec3_t color, float alpha ) 
+void CG_Cube(vec3_t mins, vec3_t maxs, vec3_t color, float alpha)
 {
-	vec3_t	rot={0,0,0};
-	int		vec[3];
-	int		axis, i;
+	vec3_t rot = { 0, 0, 0 };
+	int vec[3];
+	int axis, i;
 	addpolyArgStruct_t apArgs;
 
-	memset (&apArgs, 0, sizeof(apArgs));
+	memset(&apArgs, 0, sizeof(apArgs));
 
-	for ( axis = 0, vec[0] = 0, vec[1] = 1, vec[2] = 2; axis < 3; axis++, vec[0]++, vec[1]++, vec[2]++ )
+	for (axis = 0, vec[0] = 0, vec[1] = 1, vec[2] = 2; axis < 3; axis++, vec[0]++, vec[1]++, vec[2]++)
 	{
-		for ( i = 0; i < 3; i++ )
+		// Ensure that the index is always within bounds
+		for (i = 0; i < 3; i++)
 		{
-			if ( vec[i] > 2 )
+			if (vec[i] > 2)
 			{
 				vec[i] = 0;
 			}
+		}
+
+		// Bound check
+		if (vec[1] < 0 || vec[1] > 2 || vec[2] < 0 || vec[2] > 2)
+		{
+			return; // Prevent overwriting buffer
 		}
 
 		apArgs.p[0][vec[1]] = mins[vec[1]];
@@ -4196,26 +4216,28 @@ void CG_Cube( vec3_t mins, vec3_t maxs, vec3_t color, float alpha )
 
 		apArgs.p[2][vec[1]] = maxs[vec[1]];
 		apArgs.p[2][vec[2]] = maxs[vec[2]];
-		
+
 		apArgs.p[3][vec[1]] = maxs[vec[1]];
 		apArgs.p[3][vec[2]] = mins[vec[2]];
 
-		//- face
+		// Ensure no more than 3 values are written
 		apArgs.p[0][vec[0]] = apArgs.p[1][vec[0]] = apArgs.p[2][vec[0]] = apArgs.p[3][vec[0]] = mins[vec[0]];
 
 		apArgs.numVerts = 4;
 		apArgs.alpha1 = apArgs.alpha2 = alpha;
-		VectorCopy( color, apArgs.rgb1 );
-		VectorCopy( color, apArgs.rgb2 );
-		VectorCopy( rot, apArgs.rotationDelta );
+		VectorCopy(color, apArgs.rgb1);
+		VectorCopy(color, apArgs.rgb2);
+		VectorCopy(rot, apArgs.rotationDelta);
 		apArgs.killTime = cg.frametime;
 		apArgs.shader = cgs.media.solidWhite;
 
-		trap_FX_AddPoly( &apArgs );
+		trap_FX_AddPoly(&apArgs);
 
-		//+ face
+		// + face
 		apArgs.p[0][vec[0]] = apArgs.p[1][vec[0]] = apArgs.p[2][vec[0]] = apArgs.p[3][vec[0]] = maxs[vec[0]];
 
-		trap_FX_AddPoly( &apArgs );
+		trap_FX_AddPoly(&apArgs);
 	}
 }
+
+

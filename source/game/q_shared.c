@@ -350,73 +350,87 @@ const char *SkipWhitespace( const char *data, qboolean *hasNewLines ) {
 	return data;
 }
 
-int COM_Compress( char *data_p ) {
-	char *in, *out;
+int COM_Compress(char* data_p) {
+	// Return immediately if data_p is NULL
+	if (data_p == NULL) {
+		return 0; // Or you can return -1 if that's the preferred error code
+	}
+
+	char* in, * out;
 	int c;
 	qboolean newline = qfalse, whitespace = qfalse;
-	
+
 	in = out = data_p;
-	if (in) {
-		while ((c = *in) != 0) {
-			// skip double slash comments
-			if ( c == '/' && in[1] == '/' ) {
-				while (*in && *in != '\n') {
-					in++;
-				}
-				// skip /* */ comments
-			} else if ( c == '/' && in[1] == '*' ) {
-				while ( *in && ( *in != '*' || in[1] != '/' ) ) 
-					in++;
-				if ( *in ) 
-					in += 2;
-				// record when we hit a newline
-			} else if ( c == '\n' || c == '\r' ) {
-				newline = qtrue;
+
+	while ((c = *in) != 0) {
+		// skip double slash comments
+		if (c == '/' && in[1] == '/') {
+			while (*in && *in != '\n') {
 				in++;
-				// record when we hit whitespace
-			} else if ( c == ' ' || c == '\t') {
-				whitespace = qtrue;
+			}
+			// skip /* */ comments
+		}
+		else if (c == '/' && in[1] == '*') {
+			while (*in && (*in != '*' || in[1] != '/')) {
 				in++;
-				// an actual token
-			} else {
-				// if we have a pending newline, emit it (and it counts as whitespace)
-				if (newline) {
-					*out++ = '\n';
-					newline = qfalse;
-					whitespace = qfalse;
-				} if (whitespace) {
-					*out++ = ' ';
-					whitespace = qfalse;
-				}
-				
-				// copy quoted strings unmolested
-				if (c == '"') {
-					*out++ = c;
-					in++;
-					while (1) {
-						c = *in;
-						if (c && c != '"') {
-							*out++ = c;
-							in++;
-						} else {
-							break;
-						}
-					}
-					if (c == '"') {
+			}
+			if (*in)
+				in += 2;
+			// record when we hit a newline
+		}
+		else if (c == '\n' || c == '\r') {
+			newline = qtrue;
+			in++;
+			// record when we hit whitespace
+		}
+		else if (c == ' ' || c == '\t') {
+			whitespace = qtrue;
+			in++;
+			// an actual token
+		}
+		else {
+			// if we have a pending newline, emit it (and it counts as whitespace)
+			if (newline) {
+				*out++ = '\n';
+				newline = qfalse;
+				whitespace = qfalse;
+			}
+			if (whitespace) {
+				*out++ = ' ';
+				whitespace = qfalse;
+			}
+
+			// copy quoted strings unmolested
+			if (c == '"') {
+				*out++ = c;
+				in++;
+				while (1) {
+					c = *in;
+					if (c && c != '"') {
 						*out++ = c;
 						in++;
 					}
-				} else {
-					*out = c;
-					out++;
+					else {
+						break;
+					}
+				}
+				if (c == '"') {
+					*out++ = c;
 					in++;
 				}
 			}
+			else {
+				*out = c;
+				out++;
+				in++;
+			}
 		}
 	}
+
 	*out = 0;
 	return out - data_p;
 }
+
 
 char *COM_ParseExt( const char **data_p, qboolean allowLineBreaks )
 {
@@ -843,21 +857,28 @@ Q_strncpyz
 Safe strncpy that ensures a trailing zero
 =============
 */
-void Q_strncpyz( char *dest, const char *src, int destsize ) {
-  // bk001129 - also NULL dest
-  if ( !dest ) {
-    Com_Error( ERR_FATAL, "Q_strncpyz: NULL dest" );
-  }
-	if ( !src ) {
-		Com_Error( ERR_FATAL, "Q_strncpyz: NULL src" );
+void Q_strncpyz(char* dest, const char* src, int destsize) {
+	// Check for null pointers
+	if (!dest) {
+		Com_Error(ERR_FATAL, "Q_strncpyz: NULL dest");
+		return;  // Just in case, although unreachable after error.
 	}
-	if ( destsize < 1 ) {
-		Com_Error(ERR_FATAL,"Q_strncpyz: destsize < 1" ); 
+	if (!src) {
+		Com_Error(ERR_FATAL, "Q_strncpyz: NULL src");
+		return;  // Just in case, although unreachable after error.
 	}
 
-	strncpy( dest, src, destsize-1 );
-  dest[destsize-1] = 0;
+	// Check for invalid destination size
+	if (destsize < 1) {
+		Com_Error(ERR_FATAL, "Q_strncpyz: destsize < 1");
+		return;  // Just in case, although unreachable after error.
+	}
+
+	// Perform safe string copy
+	strncpy(dest, src, destsize - 1);  // Copy the string safely, leave space for null terminator
+	dest[destsize - 1] = '\0';  // Ensure null termination
 }
+
                  
 int Q_stricmpn (const char *s1, const char *s2, int n) {
 	int		c1, c2;
@@ -1108,26 +1129,29 @@ int Q_PrintStrlen( const char *string ) {
 
 
 //RACC - removes all the colorstring information and such from a string
-char *Q_CleanStr( char *string ) {
-	char*	d;
-	char*	s;
-	int		c;
+char* Q_CleanStr(char* string) {
+	if (string == NULL) {
+		return NULL;  // Return immediately if the input string is NULL
+	}
 
-	s = string;
-	d = string;
-	while ((c = *s) != 0 ) {
-		if ( Q_IsColorString( s ) ) {
-			s++;
-		}		
-		else if ( c >= 0x20 && c <= 0x7E ) {
-			*d++ = c;
+	char* d = string;
+	char* s = string;
+	int c;
+
+	while ((c = *s) != 0) {
+		if (Q_IsColorString(s)) {
+			s++;  // Skip color code
+		}
+		else if (c >= 0x20 && c <= 0x7E) {
+			*d++ = c;  // Copy printable characters
 		}
 		s++;
 	}
-	*d = '\0';
+	*d = '\0';  // Null-terminate the cleaned string
 
 	return string;
 }
+
 
 
 //[OverflowProtection]
@@ -1217,35 +1241,42 @@ FIXME: make this buffer size safe someday
 //[OverflowProtection]
 //Ensiform provided this new version which apprenently can't overflow and gives the char array pool circular indexing to
 //provide better protection against multiple va strings stepping on each other's data.
-char	* QDECL va( char *format, ... ) {
-	va_list		argptr;
-	#define	MAX_VA_STRING	32000
-	static char		temp_buffer[MAX_VA_STRING];
-	static char		string[MAX_VA_STRING];	// in case va is called by nested functions
-	static int		index = 0;
-	char	*buf;
+char* QDECL va(char* format, ...) {
+	va_list argptr;
+#define MAX_VA_STRING 32000
+	static char temp_buffer[MAX_VA_STRING];
+	static char string[MAX_VA_STRING];  // In case va is called by nested functions
+	static int index = 0;
+	char* buf;
 	int len;
 
+	va_start(argptr, format);
 
-	va_start (argptr, format);
-	vsprintf (temp_buffer, format,argptr);
-	va_end (argptr);
+	// Use vsnprintf to safely format the string into temp_buffer
+	len = vsnprintf(temp_buffer, MAX_VA_STRING, format, argptr);
+	va_end(argptr);
 
-	if ((len = strlen(temp_buffer)) >= MAX_VA_STRING) {
-		Com_Error( ERR_DROP, "Attempted to overrun string in call to va2()\n" );
+	// Check if the length of the formatted string exceeds the buffer size
+	if (len >= MAX_VA_STRING - 1) {
+		Com_Error(ERR_DROP, "Attempted to overrun string in call to va2()\n");
 	}
 
-	if (len + index >= MAX_VA_STRING-1) {
+	// If we can't fit the string into the current index space, reset index
+	if (len + index >= MAX_VA_STRING - 1) {
 		index = 0;
 	}
 
+	// Ensure that we're copying the string safely
 	buf = &string[index];
-	memcpy( buf, temp_buffer, len+1 );
+	memcpy(buf, temp_buffer, len + 1);  // Include the null terminator
 
+	// Update the index for the next use
 	index += len + 1;
 
 	return buf;
 }
+
+
 
 /* basejka code
 char	* QDECL va( const char *format, ... ) {
@@ -1436,55 +1467,72 @@ void Info_RemoveKey( char *s, const char *key ) {
 Info_RemoveKey_Big
 ===================
 */
-void Info_RemoveKey_Big( char *s, const char *key ) {
-	char	*start;
-	char	pkey[BIG_INFO_KEY];
-	char	value[BIG_INFO_VALUE];
-	char	*o;
+void Info_RemoveKey_Big(char* s, const char* key) {
+	char* start;
+	char* pkey = (char*)malloc(BIG_INFO_KEY);
+	char* value = (char*)malloc(BIG_INFO_VALUE);
+	char* o;
 
-	if ( strlen( s ) >= BIG_INFO_STRING ) {
-		Com_Error( ERR_DROP, "Info_RemoveKey_Big: oversize infostring" );
-	}
-
-	if (strchr (key, '\\')) {
+	if (!pkey || !value) {
+		if (pkey) free(pkey);
+		if (value) free(value);
+		Com_Error(ERR_DROP, "Info_RemoveKey_Big: malloc failed");
 		return;
 	}
 
-	while (1)
-	{
+	// Initialize only after confirming non-NULL
+	memset(pkey, 0, BIG_INFO_KEY);
+	memset(value, 0, BIG_INFO_VALUE);
+
+	if (strlen(s) >= BIG_INFO_STRING) {
+		free(pkey);
+		free(value);
+		Com_Error(ERR_DROP, "Info_RemoveKey_Big: oversize infostring");
+		return;
+	}
+
+	if (strchr(key, '\\')) {
+		goto cleanup;
+	}
+
+	while (1) {
 		start = s;
 		if (*s == '\\')
 			s++;
 		o = pkey;
-		while (*s != '\\')
-		{
+		while (*s != '\\') {
 			if (!*s)
-				return;
+				goto cleanup;
 			*o++ = *s++;
 		}
 		*o = 0;
 		s++;
 
 		o = value;
-		while (*s != '\\' && *s)
-		{
+		while (*s != '\\' && *s) {
 			if (!*s)
-				return;
+				goto cleanup;
 			*o++ = *s++;
 		}
 		*o = 0;
 
-		if (!strcmp (key, pkey) )
-		{
-			strcpy (start, s);	// remove this part
-			return;
+		if (!strcmp(key, pkey)) {
+			strcpy(start, s); // remove this part
+			break;
 		}
 
 		if (!*s)
-			return;
+			break;
 	}
 
+cleanup:
+	free(pkey);
+	free(value);
 }
+
+
+
+
 
 
 

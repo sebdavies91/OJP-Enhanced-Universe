@@ -2,7 +2,7 @@
 
 //static void R5D2_LookAround( void );
 float NPC_GetPainChance( gentity_t *self, int damage );
-extern void G_SoundOnEnt( gentity_t *ent, soundChannel_t channel, const char *soundPath );
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
 
 #define TURN_OFF   0x00000100
 
@@ -284,7 +284,11 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		return;
 	}
 	//[/CoOp]
-	VectorCopy( self->NPC->lastPathAngles, self->s.angles );
+	if (self->NPC)
+	{
+		VectorCopy(self->NPC->lastPathAngles, self->s.angles);
+	}
+
 
 	if ( self->client->NPC_class == CLASS_R5D2 )
 	{
@@ -299,8 +303,8 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 			{
 				if (!(self->spawnflags & 2))	// Doesn't have to ALWAYSDIE
 				{
-					if ((self->NPC->localState != LSTATE_SPINNING) && 
-						(!trap_G2API_GetSurfaceRenderStatus( self->ghoul2, 0, "head" )))
+					if (self->NPC && self->NPC->localState != LSTATE_SPINNING && 
+						!trap_G2API_GetSurfaceRenderStatus( self->ghoul2, 0, "head" ))
 					{
 						NPC_SetSurfaceOnOff( self, "head", TURN_OFF );
 
@@ -343,7 +347,11 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 				NPC_SetAnim( self, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
 
 				// Spin around in pain
-				self->NPC->localState = LSTATE_SPINNING;
+				if (self->NPC)
+				{
+					self->NPC->localState = LSTATE_SPINNING;
+				}
+
 				TIMER_Set( self, "roam", Q_irand(1000,2000));
 			} 
 		}
@@ -352,17 +360,28 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 	{
 		if ( mod == MOD_DEMP2 || mod == MOD_DEMP2_ALT || mod == MOD_ION_EXPLOSION || mod == MOD_ION_EXPLOSION_SPLASH)
 		{
-			self->NPC->localState = LSTATE_SPINNING;
+			if (self->NPC)
+			{
+				self->NPC->localState = LSTATE_SPINNING;
+			}
+
 			//self->s.powerups |= ( 1 << PW_SHOCKED );
 			//self->client->ps.powerups[PW_SHOCKED] = level.time + 3000;
 			self->client->ps.electrifyTime = level.time + 3000;
 		}
 		else
 		{
-			self->NPC->localState = LSTATE_BACKINGUP;
+			if (self->NPC)
+			{
+				self->NPC->localState = LSTATE_BACKINGUP;
+			}
+
+		}
+		if (self->NPC)
+		{
+			self->NPC->scriptFlags &= ~SCF_LOOK_FOR_ENEMIES;
 		}
 
-		self->NPC->scriptFlags &= ~SCF_LOOK_FOR_ENEMIES;
 	}
 	else if (self->client->NPC_class == CLASS_R2D2)
 	{
@@ -377,7 +396,7 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 			{
 				if (!(self->spawnflags & 2))	// Doesn't have to ALWAYSDIE
 				{
-					if ((self->NPC->localState != LSTATE_SPINNING) && 
+					if (self->NPC && (self->NPC->localState != LSTATE_SPINNING) &&
 						(!trap_G2API_GetSurfaceRenderStatus( self->ghoul2, 0, "head" )))
 					{
 						NPC_SetSurfaceOnOff( self, "head", TURN_OFF );
@@ -421,7 +440,11 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 				NPC_SetAnim( self, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
 
 				// Spin around in pain
-				self->NPC->localState = LSTATE_SPINNING;
+				if (self->NPC)
+				{
+					self->NPC->localState = LSTATE_SPINNING;
+				}
+
 				TIMER_Set( self, "roam", Q_irand(1000,2000));
 			}
 		} 

@@ -787,7 +787,10 @@ qboolean G_MissileImpact( gentity_t *ent, trace_t *trace ) {
 			qboolean didDmg = qfalse;
 
 			if( LogAccuracyHit( other, &g_entities[ent->r.ownerNum] ) ) {
+				if (g_entities[ent->r.ownerNum].client)
+				{
 				g_entities[ent->r.ownerNum].client->accuracy_hits++;
+				}
 				hitClient = qtrue;
 			}
 			BG_EvaluateTrajectoryDelta( &ent->s.pos, level.time, velocity );
@@ -1071,7 +1074,7 @@ extern int G_RealTrace(gentity_t *SaberAttacker, trace_t *tr, vec3_t start, vec3
 										int contentmask, int rSaberNum, int rBladeNum);
 //[/RealTrace]
 void G_RunMissile( gentity_t *ent ) {
-	vec3_t		origin, groundSpot;
+	vec3_t		origin, groundSpot = { 0.0f, 0.0f, 0.0f };
 	trace_t		tr;
 	int			passent;
 	qboolean	isKnockedSaber = qfalse;

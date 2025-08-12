@@ -184,7 +184,11 @@ void Rancor_DropVictim( gentity_t *self )
 				self->activator->NPC->nextBStateThink = level.time;
 			}
 			//clear their anim and let them fall
-			self->activator->client->ps.legsTimer = self->activator->client->ps.torsoTimer = 0;
+			if (self->activator->client)
+			{
+				self->activator->client->ps.legsTimer = self->activator->client->ps.torsoTimer = 0;
+			}
+
 		}
 		if ( self->enemy == self->activator )
 		{
@@ -810,8 +814,11 @@ void NPC_Rancor_Pain( gentity_t *self, gentity_t *attacker, int damage )
 					if ( self->health > 100 || hitByRancor )
 					{
 						TIMER_Remove( self, "attacking" );
+						if (self->NPC)
+						{
+							VectorCopy(self->NPC->lastPathAngles, self->s.angles);
+						}
 
-						VectorCopy( self->NPC->lastPathAngles, self->s.angles );
 
 						if ( self->count == 1 )
 						{

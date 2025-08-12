@@ -1015,7 +1015,7 @@ int ForcePowerUsableOn(gentity_t *attacker, gentity_t *other, forcePowers_t forc
 		return 0;
 	}
 	
-	if(IsMerc(other) && other->client->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
+	if(other && other->client && IsMerc(other) && other->client->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1)
 		return 1;
 
 	//Dueling fighters cannot use force powers on others, with the exception of force push when locked with each other
@@ -1033,11 +1033,11 @@ int ForcePowerUsableOn(gentity_t *attacker, gentity_t *other, forcePowers_t forc
 	//if(other && other->client && other->client->ps.stats[STAT_DODGE] <= DODGE_CRITICALLEVEL)
 	//	return 1;
 
-	if(other->client && other->client->ps.fd.saberAnimLevel == SS_DESANN
+	if(other && other->client && other->client->ps.fd.saberAnimLevel == SS_DESANN
 		&& other->client->ps.MISHAP_VARIABLE <= MISHAPLEVEL_HEAVY)
 		return 0;
 
-	if(forcePower == FP_TELEPATHY && other->client)
+	if(forcePower == FP_TELEPATHY && other && other->client)
 	{
 		switch(other->client->ps.fd.forcePowerLevel[FP_ABSORB])
 		{
@@ -1055,7 +1055,7 @@ int ForcePowerUsableOn(gentity_t *attacker, gentity_t *other, forcePowers_t forc
 			break;
 		}
 	}
-	else if(forcePower == FP_TEAM_HEAL && other->client)
+	else if(forcePower == FP_TEAM_HEAL && other && other->client)
 	{
 		switch(other->client->ps.fd.forcePowerLevel[FP_ABSORB])
 		{
@@ -1073,7 +1073,7 @@ int ForcePowerUsableOn(gentity_t *attacker, gentity_t *other, forcePowers_t forc
 			break;
 		}
 	}
-	else if(forcePower == FP_GRIP && other->client)
+	else if(forcePower == FP_GRIP && other && other->client)
 	{
 		switch(other->client->ps.fd.forcePowerLevel[FP_ABSORB])
 		{
@@ -8941,8 +8941,10 @@ void DoGraspAction(gentity_t *self, forcePowers_t forcePower)
 		trap_Trace(&tr, self->client->ps.origin, NULL, NULL, gripEnt->s.pos.trBase, self->s.number, MASK_PLAYERSOLID);
 
 	//[ForceSys]
+	if (gripEnt && gripEnt->client)
+	{ 
 	gripLevel = WP_AbsorbConversion(gripEnt, gripEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self, FP_GRIP, self->client->ps.fd.forcePowerLevel[FP_GRIP], forcePowerNeeded[self->client->ps.fd.forcePowerLevel[FP_GRIP]][FP_GRIP]);
-																													 
+	}
 	 
 																												
 
@@ -9259,8 +9261,10 @@ void DoGripAction(gentity_t *self, forcePowers_t forcePower)
 		trap_Trace(&tr, self->client->ps.origin, NULL, NULL, gripEnt->s.pos.trBase, self->s.number, MASK_PLAYERSOLID);
 
 	//[ForceSys]
-	gripLevel = WP_AbsorbConversion(gripEnt, gripEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self, FP_GRIP, self->client->ps.fd.forcePowerLevel[FP_GRIP], forcePowerNeeded[self->client->ps.fd.forcePowerLevel[FP_GRIP]][FP_GRIP]);
-																													 
+	if (gripEnt && gripEnt->client)
+	{
+		gripLevel = WP_AbsorbConversion(gripEnt, gripEnt->client->ps.fd.forcePowerLevel[FP_ABSORB], self, FP_GRIP, self->client->ps.fd.forcePowerLevel[FP_GRIP], forcePowerNeeded[self->client->ps.fd.forcePowerLevel[FP_GRIP]][FP_GRIP]);
+	}
 	 
 																												
 
@@ -12689,16 +12693,19 @@ void WP_ForcePowersUpdate( gentity_t *self, usercmd_t *ucmd )
 			WP_ForcePowerRun( self, (forcePowers_t)i, ucmd );
 		}
 	}
-	if ( self->client->ps.saberInFlight && self->client->ps.saberEntityNum )
-	{//don't regen force power while throwing saber
-		if ( self->client->ps.saberEntityNum < ENTITYNUM_NONE && self->client->ps.saberEntityNum > 0 )//player is 0
-		{//
-			if ( &g_entities[self->client->ps.saberEntityNum] != NULL && g_entities[self->client->ps.saberEntityNum].s.pos.trType == TR_LINEAR )
-			{//fell to the ground and we're trying to pull it back
+	if (self->client->ps.saberInFlight && self->client->ps.saberEntityNum)
+	{
+		// don't regen force power while throwing saber
+		if (self->client->ps.saberEntityNum < ENTITYNUM_NONE && self->client->ps.saberEntityNum > 0) // player is 0
+		{
+			// Check if the entity is valid and if its movement is linear (saber is on the ground)
+			if (g_entities[self->client->ps.saberEntityNum].inuse && g_entities[self->client->ps.saberEntityNum].s.pos.trType == TR_LINEAR)
+			{
 				usingForce = qtrue;
 			}
 		}
 	}
+
 		   
 		   
 	if ( !self->client->ps.fd.forcePowersActive || self->client->ps.fd.forcePowersActive == (1 << FP_DRAIN) )

@@ -749,7 +749,7 @@ float AngleDelta ( float angle1, float angle2 ) {
 SetPlaneSignbits
 =================
 */
-void SetPlaneSignbits (cplane_t *out) {
+void SetPlaneSignbits(struct cplane_s *out) {
 	int	bits, j;
 
 	// for fast box on planeside test
@@ -1241,13 +1241,13 @@ void _VectorCopy( const vec3_t in, vec3_t out ) {
 	out[2] = in[2];
 }
 
-void _VectorScale( const vec3_t in, vec_t scale, vec3_t out ) {
+void _VectorScale( const vec3_t in, float scale, vec3_t out ) {
 	out[0] = in[0]*scale;
 	out[1] = in[1]*scale;
 	out[2] = in[2]*scale;
 }
 
-void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out ) {
+void Vector4Scale( const vec4_t in, float scale, vec4_t out ) {
 	out[0] = in[0]*scale;
 	out[1] = in[1]*scale;
 	out[2] = in[2]*scale;

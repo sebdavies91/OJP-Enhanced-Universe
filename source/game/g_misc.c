@@ -3237,7 +3237,7 @@ void SP_target_screenshake(gentity_t *ent)
 	ent->use = Use_Target_Screenshake;
 }
 
-void LogExit( const char *string );
+void G_LogExit( const char *string );
 
 void Use_Target_Escapetrig( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
@@ -3265,7 +3265,7 @@ void Use_Target_Escapetrig( gentity_t *ent, gentity_t *other, gentity_t *activat
 			AddScore(activator, activator->client->ps.origin, 500);
 		}
 
-		LogExit("Escaped!");
+		G_LogExit("Escaped!");
 	}
 }
 
@@ -4634,7 +4634,7 @@ PWR_CELL - Adds one or more power cell packs that are compatible with the Disupt
 NO_FILL - Only puts selected ammo on the rack, it never fills up all three slots if only one or two items were checked
 */
 
-extern gitem_t	*FindItemForAmmo( ammo_t ammo );
+extern gitem_t	*BG_FindItemForAmmo( ammo_t ammo );
 void SP_misc_model_ammo_rack( gentity_t *ent )
 {
 // If BLASTER is checked...or nothing is checked then we'll do blasters

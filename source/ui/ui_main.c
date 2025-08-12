@@ -490,71 +490,90 @@ siege_Cvar_Set
 replacement for the trap to reduce cvar usage
 ===============
 */
-void siege_Cvar_Set( const char *cvarName, const char *value )
+void siege_Cvar_Set(const char* cvarName, const char* value)
 {
-	char **tmp;
+	char** tmp;
 	char ui_siegeInfo[MAX_STRING_CHARS];
 	int i;
-	if(!ui_siegeStruct)
+
+	if (!ui_siegeStruct)
 	{
-		trap_Cvar_VariableStringBuffer( "ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS );
-		sscanf(ui_siegeInfo,"%p",&ui_siegeStruct);
-		if(!ui_siegeStruct) return;
+		trap_Cvar_VariableStringBuffer("ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS);
+
+		// Check the return value of sscanf to ensure we successfully parsed the pointer
+		if (sscanf(ui_siegeInfo, "%p", &ui_siegeStruct) != 1)
+		{
+			return;  // If parsing fails, exit the function early
+		}
+
+		if (!ui_siegeStruct)
+			return;
 	}
-	for(tmp=ui_siegeStruct;*tmp;tmp+=2)
+
+	for (tmp = ui_siegeStruct; *tmp; tmp += 2)
 	{
-		if(*tmp && !strcmp(*tmp,cvarName)) { //cvar already exists, overwrite existing value
-			Q_strncpyz(*(tmp+1),value,256);  //:nervou
+		if (*tmp && !strcmp(*tmp, cvarName))  // cvar already exists, overwrite existing value
+		{
+			Q_strncpyz(*(tmp + 1), value, 256);  // :nervou
 			return;
 		}
 	}
+
 	i = tmp - ui_siegeStruct;
 	ui_siegeStruct[i] = siege_Str();
-	Q_strncpyz( ui_siegeStruct[i], cvarName, 256 );
-	ui_siegeStruct[i+1] = siege_Str();
-	Q_strncpyz( ui_siegeStruct[i+1], value, 256 );
-	ui_siegeStruct[i+2] = 0;
+	Q_strncpyz(ui_siegeStruct[i], cvarName, 256);
+	ui_siegeStruct[i + 1] = siege_Str();
+	Q_strncpyz(ui_siegeStruct[i + 1], value, 256);
+	ui_siegeStruct[i + 2] = 0;
 	return;
 }
 
-void siege_Cvar_VariableStringBuffer( char *var_name, char *buffer, int bufsize )
+
+void siege_Cvar_VariableStringBuffer(char* var_name, char* buffer, int bufsize)
 {
-	char **tmp;
+	char** tmp;
 	char ui_siegeInfo[MAX_STRING_CHARS];
-	if(!ui_siegeStruct[0])
+	if (!ui_siegeStruct[0])
 	{
-		trap_Cvar_VariableStringBuffer( "ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS );
-		sscanf(ui_siegeInfo,"%p",&ui_siegeStruct);
-		if(!ui_siegeStruct) return;
+		trap_Cvar_VariableStringBuffer("ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS);
+
+		// Minimal fix: check sscanf return value before assigning
+		if (sscanf(ui_siegeInfo, "%p", &ui_siegeStruct) != 1)
+			return;
+
+		if (!ui_siegeStruct)
+			return;
 	}
-	for(tmp=ui_siegeStruct;*tmp;tmp+=2)
+	for (tmp = ui_siegeStruct; *tmp; tmp += 2)
 	{
-		if(*tmp && !strcmp(*tmp,var_name)) {
-			Q_strncpyz(buffer,*(tmp+1),bufsize);
+		if (*tmp && !strcmp(*tmp, var_name))
+		{
+			Q_strncpyz(buffer, *(tmp + 1), bufsize);
 			return;
 		}
 	}
-	trap_Cvar_VariableStringBuffer( var_name, buffer, bufsize );
-	return;
+	trap_Cvar_VariableStringBuffer(var_name, buffer, bufsize);
 }
 
-int siege_Cvar_VariableValue( char *var_name )
+
+int siege_Cvar_VariableValue(char* var_name)
 {
-	char **tmp;
+	char** tmp;
 	char ui_siegeInfo[MAX_STRING_CHARS];
-	if(!ui_siegeStruct)
+	if (!ui_siegeStruct)
 	{
-		trap_Cvar_VariableStringBuffer( "ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS );
-		sscanf(ui_siegeInfo,"%p",&ui_siegeStruct);
-		if(!ui_siegeStruct) return trap_Cvar_VariableValue( var_name );
-	}
-	for(tmp=ui_siegeStruct;*tmp;tmp+=2)
-	{
-		if(*tmp && !strcmp(*tmp,var_name)) {
-			return atoi(*(tmp+1));
+		trap_Cvar_VariableStringBuffer("ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS);
+		if (sscanf(ui_siegeInfo, "%p", &ui_siegeStruct) != 1) {
+			return trap_Cvar_VariableValue(var_name);
 		}
 	}
-	return trap_Cvar_VariableValue( var_name );
+	for (tmp = ui_siegeStruct; *tmp; tmp += 2)
+	{
+		if (*tmp && !strcmp(*tmp, var_name)) {
+			return atoi(*(tmp + 1));
+		}
+	}
+	return trap_Cvar_VariableValue(var_name);
 }
 //[/SIEGECVARFIX]
 
@@ -1038,29 +1057,27 @@ void Text_Paint(float x, float y, float scale, vec4_t color, const char *text, f
 }
 
 
-void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const char *text, int cursorPos, char cursor, int limit, int style, int iMenuFont) 
+void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const char* text, int cursorPos, char cursor, int limit, int style, int iMenuFont)
 {
 	Text_Paint(x, y, scale, color, text, 0, limit, style, iMenuFont);
 
-	// now print the cursor as well...  (excuse the braces, it's for porting C++ to C)
-	//
+	// Now print the cursor as well...
 	{
 		char sTemp[1024];
 		int iCopyCount = limit ? MIN(strlen(text), limit) : strlen(text);
-			iCopyCount = MIN(iCopyCount,cursorPos);
-			iCopyCount = MIN(iCopyCount,sizeof(sTemp));
+		iCopyCount = MIN(iCopyCount, cursorPos);
+		iCopyCount = MIN(iCopyCount, sizeof(sTemp) - 1);  // Ensure iCopyCount does not exceed sTemp size
 
-			// copy text into temp buffer for pixel measure...
-			//			
-			strncpy(sTemp,text,iCopyCount);
-					sTemp[iCopyCount] = '\0';
+		// Copy text into temp buffer for pixel measure...
+		strncpy(sTemp, text, iCopyCount);
+		sTemp[iCopyCount] = '\0';  // Null-terminate string
 
-			{
-				int iFontIndex = MenuFontToHandle( iMenuFont );	
-				int iNextXpos  = trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale );
+		{
+			int iFontIndex = MenuFontToHandle(iMenuFont);
+			int iNextXpos = trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale);
 
-				Text_Paint(x+iNextXpos, y, scale, color, va("%c",cursor), 0, limit, style|ITEM_TEXTSTYLE_BLINK, iMenuFont);
-			}
+			Text_Paint(x + iNextXpos, y, scale, color, va("%c", cursor), 0, limit, style | ITEM_TEXTSTYLE_BLINK, iMenuFont);
+		}
 	}
 }
 
@@ -1900,15 +1917,22 @@ static void UI_DrawGameType(rectDef_t *rect, float scale, vec4_t color, int text
   Text_Paint(rect->x, rect->y, scale, color, UI_GetGameTypeName(uiInfo.gameTypes[ui_gameType.integer].gtEnum), 0, 0, textStyle, iMenuFont);
 }
 
-static void UI_DrawNetGameType(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) 
+static void UI_DrawNetGameType(rectDef_t* rect, float scale, vec4_t color, int textStyle, int iMenuFont)
 {
-	if (ui_netGameType.integer < 0 || ui_netGameType.integer >= uiInfo.numGameTypes) 
+	// Ensure ui_netGameType.integer is within valid range before using it
+	if (ui_netGameType.integer < 0 || ui_netGameType.integer >= uiInfo.numGameTypes)
 	{
 		trap_Cvar_Set("ui_netGameType", "0");
 		trap_Cvar_Set("ui_actualNetGameType", "0");
 	}
-	Text_Paint(rect->x, rect->y, scale, color, UI_GetGameTypeName(uiInfo.gameTypes[ui_netGameType.integer].gtEnum) , 0, 0, textStyle, iMenuFont);
+
+	// Ensure the index is valid before accessing the game type name
+	if (ui_netGameType.integer >= 0 && ui_netGameType.integer < uiInfo.numGameTypes)
+	{
+		Text_Paint(rect->x, rect->y, scale, color, UI_GetGameTypeName(uiInfo.gameTypes[ui_netGameType.integer].gtEnum), 0, 0, textStyle, iMenuFont);
+	}
 }
+
 
 static void UI_DrawAutoSwitch(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) {
 	int switchVal = trap_Cvar_VariableValue("cg_autoswitch");
@@ -1938,14 +1962,19 @@ static void UI_DrawAutoSwitch(rectDef_t *rect, float scale, vec4_t color, int te
 	}
 }
 
-static void UI_DrawJoinGameType(rectDef_t *rect, float scale, vec4_t color, int textStyle, int iMenuFont) 
+static void UI_DrawJoinGameType(rectDef_t* rect, float scale, vec4_t color, int textStyle, int iMenuFont)
 {
-	if (ui_joinGameType.integer < 0 || ui_joinGameType.integer > uiInfo.numJoinGameTypes) 
+	if (ui_joinGameType.integer < 0 || ui_joinGameType.integer >= uiInfo.numJoinGameTypes)
 	{
 		trap_Cvar_Set("ui_joinGameType", "0");
 	}
 
-	Text_Paint(rect->x, rect->y, scale, color, UI_GetGameTypeName(uiInfo.joinGameTypes[ui_joinGameType.integer].gtEnum) , 0, 0, textStyle, iMenuFont);
+	// Ensure ui_joinGameType.integer is within the valid range
+	int gameTypeIndex = ui_joinGameType.integer;
+	if (gameTypeIndex >= 0 && gameTypeIndex < uiInfo.numJoinGameTypes)
+	{
+		Text_Paint(rect->x, rect->y, scale, color, UI_GetGameTypeName(uiInfo.joinGameTypes[gameTypeIndex].gtEnum), 0, 0, textStyle, iMenuFont);
+	}
 }
 
 
@@ -2704,7 +2733,7 @@ void UpdateForceStatus()
 				Menu_ShowItemByName(menu, "playerforcespectate", qtrue);
 				
 				// This is disabled, always show both sides from spectator.
-				if ( 0 && atoi(Info_ValueForKey(info, "g_forceBasedTeams")))
+				if ( atoi(Info_ValueForKey(info, "g_forceBasedTeams")))
 				{	// Show red or blue based on what side is chosen.
 					if (uiForceSide==FORCE_LIGHTSIDE)
 					{
@@ -6031,25 +6060,25 @@ static void UI_UpdateSaberType( void )
 	}
 }
 
-static void UI_UpdateSaberHilt( qboolean secondSaber )
+static void UI_UpdateSaberHilt(qboolean secondSaber)
 {
-	menuDef_t *menu;
-	itemDef_t *item;
+	menuDef_t* menu;
+	itemDef_t* item;
 	char model[MAX_QPATH];
 	char modelPath[MAX_QPATH];
 	char skinPath[MAX_QPATH];
-	char *itemName;
-	char *saberCvarName;
-	int	animRunLength;
+	char* itemName;
+	char* saberCvarName;
+	int animRunLength;
 
-	menu = Menu_GetFocused();	// Get current menu (either video or ingame video, I would assume)
+	menu = Menu_GetFocused();  // Get current menu (either video or ingame video, I would assume)
 
 	if (!menu)
 	{
 		return;
 	}
 
-	if ( secondSaber )
+	if (secondSaber)
 	{
 		itemName = "saber2";
 		saberCvarName = "ui_saber2";
@@ -6060,33 +6089,40 @@ static void UI_UpdateSaberHilt( qboolean secondSaber )
 		saberCvarName = "ui_saber";
 	}
 
-	item = (itemDef_t *) Menu_FindItemByName(menu, itemName );
+	// Attempt to find the item by name
+	item = (itemDef_t*)Menu_FindItemByName(menu, itemName);
 
-	if(!item)
+	// Check if the item is NULL, if it is, return early or handle the error gracefully
+	if (!item)
 	{
-		Com_Error( ERR_FATAL, "UI_UpdateSaberHilt: Could not find item (%s) in menu (%s)", itemName, menu->window.name);
+		Com_Error(ERR_FATAL, "UI_UpdateSaberHilt: Could not find item (%s) in menu (%s)", itemName, menu->window.name);
+		return;  // Or you can return early instead of proceeding to the code that dereferences 'item'
 	}
 
-	trap_Cvar_VariableStringBuffer( saberCvarName, model, sizeof(model) );
+	trap_Cvar_VariableStringBuffer(saberCvarName, model, sizeof(model));
 
 	item->text = model;
-	//read this from the sabers.cfg
-	if ( UI_SaberModelForSaber( model, modelPath ) )
-	{//successfully found a model
-		ItemParse_asset_model_go( item, modelPath, &animRunLength );//set the model
-		//get the customSkin, if any
-		//COM_StripExtension( modelPath, skinPath );
-		//COM_DefaultExtension( skinPath, sizeof( skinPath ), ".skin" );
-		if ( UI_SaberSkinForSaber( model, skinPath ) )
+
+	// Read this from the sabers.cfg
+	if (UI_SaberModelForSaber(model, modelPath))
+	{ // Successfully found a model
+		ItemParse_asset_model_go(item, modelPath, &animRunLength);  // Set the model
+
+		// Get the customSkin, if any
+		// COM_StripExtension(modelPath, skinPath);
+		// COM_DefaultExtension(skinPath, sizeof(skinPath), ".skin");
+
+		if (UI_SaberSkinForSaber(model, skinPath))
 		{
-			ItemParse_model_g2skin_go( item, skinPath );//apply the skin
+			ItemParse_model_g2skin_go(item, skinPath);  // Apply the skin
 		}
 		else
 		{
-			ItemParse_model_g2skin_go( item, NULL );//apply the skin
+			ItemParse_model_g2skin_go(item, NULL);  // Apply the skin
 		}
 	}
 }
+
 
 static void UI_UpdateSaberColor( qboolean secondSaber )
 {
@@ -8544,121 +8580,111 @@ int UI_SiegeClassNum(siegeClass_t *scl)
 
 void UI_SetSiegeTeams(void)
 {
-	char			info[MAX_INFO_VALUE];
-	char			*mapname = NULL;
-	char			levelname[MAX_QPATH];
-	char			btime[1024];
-	char			teams[2048];
-	char			teamInfo[MAX_SIEGE_INFO_SIZE];
-	char			team1[1024];
-	char			team2[1024];
-	int				len = 0;
-	int				gametype;
-	fileHandle_t	f;
+    char            info[MAX_INFO_VALUE];
+    char* mapname = NULL;
+    char            levelname[MAX_QPATH];
+    char* btime;
+    char* teams;
+    char* teamInfo;
+    char* team1;
+    char* team2;
+    char* buf;
+    int             len = 0;
+    int             gametype;
+    fileHandle_t    f;
 
-	//Get the map name from the server info
-	if (trap_GetConfigString( CS_SERVERINFO, info, sizeof(info) ))
-	{
-		mapname = Info_ValueForKey( info, "mapname" );
-	}
+    // Use UI_AllocMem for memory allocation
+    UI_AllocMem((void**)&btime, 1024);
+    UI_AllocMem((void**)&teams, 2048);
+    UI_AllocMem((void**)&teamInfo, MAX_SIEGE_INFO_SIZE);
+    UI_AllocMem((void**)&team1, 1024);
+    UI_AllocMem((void**)&team2, 1024);
+    UI_AllocMem((void**)&buf, 1024);
 
-	if (!mapname || !mapname[0])
-	{
-		return;
-	}
+    // Check if any memory allocation failed
+    if (!btime || !teams || !teamInfo || !team1 || !team2 || !buf) {
+        // Allocation failed
+        goto cleanup;
+    }
 
-	gametype = atoi(Info_ValueForKey(info, "g_gametype"));
+    if (trap_GetConfigString(CS_SERVERINFO, info, sizeof(info))) {
+        mapname = Info_ValueForKey(info, "mapname");
+    }
 
-	//If the server we are connected to is not siege we cannot choose a class anyway
-	if (gametype != GT_SIEGE)
-	{
-		return;
-	}
+    if (!mapname || !mapname[0]) {
+        goto cleanup;
+    }
 
-	Com_sprintf(levelname, sizeof(levelname), "maps/%s.siege", mapname);
+    gametype = atoi(Info_ValueForKey(info, "g_gametype"));
 
-	if (!levelname[0])
-	{
-		return;
-	}
+    if (gametype != GT_SIEGE) {
+        goto cleanup;
+    }
 
-	len = trap_FS_FOpenFile(levelname, &f, FS_READ);
+    Com_sprintf(levelname, sizeof(levelname), "maps/%s.siege", mapname);
 
-	if (!f || len >= MAX_SIEGE_INFO_SIZE)
-	{
-		return;
-	}
+    len = trap_FS_FOpenFile(levelname, &f, FS_READ);
+    if (!f || len >= MAX_SIEGE_INFO_SIZE) {
+        goto cleanup;
+    }
 
-	trap_FS_Read(siege_info, len, f);
-	siege_info[len] = 0;	//ensure null terminated
+    trap_FS_Read(siege_info, len, f);
+    siege_info[len] = 0;
+    trap_FS_FCloseFile(f);
 
-	trap_FS_FCloseFile(f);
+    if (BG_SiegeGetValueGroup(siege_info, "Teams", teams)) {
+        siege_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, 1024);
+        if (buf[0] && Q_stricmp(buf, "none")) {
+            strcpy(team1, buf);
+        }
+        else {
+            BG_SiegeGetPairedValue(teams, "team1", team1);
+        }
 
-	//Found the .siege file
+        siege_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, 1024);
+        if (buf[0] && Q_stricmp(buf, "none")) {
+            strcpy(team2, buf);
+        }
+        else {
+            BG_SiegeGetPairedValue(teams, "team2", team2);
+        }
+    }
+    else {
+        goto cleanup;
+    }
 
-	if (BG_SiegeGetValueGroup(siege_info, "Teams", teams))
-	{
-		char buf[1024];
+    if (BG_SiegeGetValueGroup(siege_info, team1, teamInfo)) {
+        if (BG_SiegeGetPairedValue(teamInfo, "UseTeam", btime)) {
+            BG_SiegeSetTeamTheme(SIEGETEAM_TEAM1, btime);
+        }
+    }
+    if (BG_SiegeGetValueGroup(siege_info, team2, teamInfo)) {
+        if (BG_SiegeGetPairedValue(teamInfo, "UseTeam", btime)) {
+            BG_SiegeSetTeamTheme(SIEGETEAM_TEAM2, btime);
+        }
+    }
 
-		//[SIEGECVARFIX]
-		siege_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, 1024);
-		//trap_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, 1024);
-		//[/SIEGECVARFIX]
-		if (buf[0] && Q_stricmp(buf, "none"))
-		{
-			strcpy(team1, buf);
-		}
-		else
-		{
-			BG_SiegeGetPairedValue(teams, "team1", team1);
-		}
+    siegeTeam1 = BG_SiegeFindThemeForTeam(SIEGETEAM_TEAM1);
+    siegeTeam2 = BG_SiegeFindThemeForTeam(SIEGETEAM_TEAM2);
 
-		//[SIEGECVARFIX]
-		siege_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, 1024);
-		//trap_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, 1024);
-		//[/SIEGECVARFIX]
-		if (buf[0] && Q_stricmp(buf, "none"))
-		{
-			strcpy(team2, buf);
-		}
-		else
-		{
-			BG_SiegeGetPairedValue(teams, "team2", team2);
-		}
-	}
-	else
-	{
-		return;
-	}
+    if (!siegeTeam1 || !siegeTeam1->classes[0]) {
+        Com_Error(ERR_DROP, "Error loading teams in UI");
+    }
 
-	//Set the team themes so we know what classes to make available for selection
-	if (BG_SiegeGetValueGroup(siege_info, team1, teamInfo))
-	{
-		if (BG_SiegeGetPairedValue(teamInfo, "UseTeam", btime))
-		{
-			BG_SiegeSetTeamTheme(SIEGETEAM_TEAM1, btime);
-		}
-	}
-	if (BG_SiegeGetValueGroup(siege_info, team2, teamInfo))
-	{
-		if (BG_SiegeGetPairedValue(teamInfo, "UseTeam", btime))
-		{
-			BG_SiegeSetTeamTheme(SIEGETEAM_TEAM2, btime);
-		}
-	}
+    Menu_SetFeederSelection(NULL, FEEDER_SIEGE_TEAM1, 0, NULL);
+    Menu_SetFeederSelection(NULL, FEEDER_SIEGE_TEAM2, -1, NULL);
 
-	siegeTeam1 = BG_SiegeFindThemeForTeam(SIEGETEAM_TEAM1);
-	siegeTeam2 = BG_SiegeFindThemeForTeam(SIEGETEAM_TEAM2);
-
-	//set the default description for the default selection
-	if (!siegeTeam1 || !siegeTeam1->classes[0])
-	{
-		Com_Error(ERR_DROP, "Error loading teams in UI");
-	}
-
-	Menu_SetFeederSelection(NULL, FEEDER_SIEGE_TEAM1, 0, NULL);
-	Menu_SetFeederSelection(NULL, FEEDER_SIEGE_TEAM2, -1, NULL);
+cleanup:
+    // Use UI_FreeMem to free the allocated memory
+    UI_FreeMem(btime);
+    UI_FreeMem(teams);
+    UI_FreeMem(teamInfo);
+    UI_FreeMem(team1);
+    UI_FreeMem(team2);
+    UI_FreeMem(buf);
 }
+
+
 
 /*
 ==================
@@ -10516,114 +10542,120 @@ static qboolean bIsImageFile(const char* dirptr, const char* skinname)
 PlayerModel_BuildList
 =================
 */
-static void UI_BuildQ3Model_List( void )
+static void UI_BuildQ3Model_List(void)
 {
-	int		numdirs;
-	int		numfiles;
-	char	dirlist[8192];
-	char	filelist[8192];
-	char	skinname[64];
-	char*	dirptr;
-	char*	fileptr;
-	char*	check;
-	int		i;
-	int		j, k, p, s;
-	int		dirlen;
-	int		filelen;
+    int numdirs;
+    int numfiles;
+    char* dirlist;
+    char* filelist;
+    char skinname[64];
+    char* dirptr;
+    char* fileptr;
+    char* check;
+    int i;
+    int j, k, p, s;
+    int dirlen;
+    int filelen;
 
-	uiInfo.q3HeadCount = 0;
+    // Use UI_AllocMem instead of malloc
+    UI_AllocMem((void**)&dirlist, 8192);
+    UI_AllocMem((void**)&filelist, 8192);
 
-	// iterate directory of all player models
-	numdirs = trap_FS_GetFileList("models/players", "/", dirlist, 8192 );
-	dirptr  = dirlist;
-	for (i=0; i<numdirs && uiInfo.q3HeadCount < MAX_Q3PLAYERMODELS; i++,dirptr+=dirlen+1)
-	{
-		dirlen = strlen(dirptr);
-		
-		if (dirlen && dirptr[dirlen-1]=='/') dirptr[dirlen-1]='\0';
+    if (!dirlist || !filelist) {
+        // handle allocation failure if necessary
+        return;
+    }
 
-		if (!strcmp(dirptr,".") || !strcmp(dirptr,".."))
-			continue;
-			
+    uiInfo.q3HeadCount = 0;
 
-		numfiles = trap_FS_GetFileList( va("models/players/%s",dirptr), "skin", filelist, 8192 );
-		fileptr  = filelist;
-		for (j=0; j<numfiles && uiInfo.q3HeadCount < MAX_Q3PLAYERMODELS;j++,fileptr+=filelen+1)
-		{
-			int skinLen = 0;
+    // iterate directory of all player models
+    numdirs = trap_FS_GetFileList("models/players", "/", dirlist, 8192);
+    dirptr = dirlist;
+    for (i = 0; i < numdirs && uiInfo.q3HeadCount < MAX_Q3PLAYERMODELS; i++, dirptr += dirlen + 1)
+    {
+        dirlen = strlen(dirptr);
 
-			filelen = strlen(fileptr);
+        if (dirlen && dirptr[dirlen - 1] == '/')
+            dirptr[dirlen - 1] = '\0';
 
-			COM_StripExtension(fileptr,skinname);
+        if (!strcmp(dirptr, ".") || !strcmp(dirptr, ".."))
+            continue;
 
-			skinLen = strlen(skinname);
-			k = 0;
-			while (k < skinLen && skinname[k] && skinname[k] != '_')
-			{
-				k++;
-			}
-			if (skinname[k] == '_')
-			{
-				p = 0;
+        numfiles = trap_FS_GetFileList(va("models/players/%s", dirptr), "skin", filelist, 8192);
+        fileptr = filelist;
+        for (j = 0; j < numfiles && uiInfo.q3HeadCount < MAX_Q3PLAYERMODELS; j++, fileptr += filelen + 1)
+        {
+            int skinLen = 0;
 
-				while (skinname[k])
-				{
-					skinname[p] = skinname[k];
-					k++;
-					p++;
-				}
-				skinname[p] = '\0';
-			}
+            filelen = strlen(fileptr);
 
-			/*
-			Com_sprintf(fpath, 2048, "models/players/%s/icon%s.jpg", dirptr, skinname);
+            COM_StripExtension(fileptr, skinname);
 
-			trap_FS_FOpenFile(fpath, &f, FS_READ);
+            skinLen = strlen(skinname);
+            k = 0;
+            while (k < skinLen && skinname[k] && skinname[k] != '_')
+            {
+                k++;
+            }
+            if (skinname[k] == '_')
+            {
+                p = 0;
 
-			if (f)
-			*/
-			check = &skinname[1];
-			if (bIsImageFile(dirptr, check))
-			{ //if it exists
-				qboolean iconExists = qfalse;
+                while (skinname[k])
+                {
+                    skinname[p] = skinname[k];
+                    k++;
+                    p++;
+                }
+                skinname[p] = '\0';
+            }
 
-				//trap_FS_FCloseFile(f);
+            check = &skinname[1];
+            if (bIsImageFile(dirptr, check))
+            {
+                qboolean iconExists = qfalse;
 
-				if (skinname[0] == '_')
-				{ //change character to append properly
-					skinname[0] = '/';
-				}
+                if (skinname[0] == '_')
+                {
+                    skinname[0] = '/';
+                }
 
-				s = 0;
+                s = 0;
 
-				while (s < uiInfo.q3HeadCount)
-				{ //check for dupes
-					if (!Q_stricmp(va("%s%s", dirptr, skinname), uiInfo.q3HeadNames[s]))
-					{
-						iconExists = qtrue;
-						break;
-					}
-					s++;
-				}
+                while (s < uiInfo.q3HeadCount)
+                {
+                    if (!Q_stricmp(va("%s%s", dirptr, skinname), uiInfo.q3HeadNames[s]))
+                    {
+                        iconExists = qtrue;
+                        break;
+                    }
+                    s++;
+                }
 
-				if (iconExists)
-				{
-					continue;
-				}
+                if (iconExists)
+                {
+                    continue;
+                }
 
-				Com_sprintf( uiInfo.q3HeadNames[uiInfo.q3HeadCount], sizeof(uiInfo.q3HeadNames[uiInfo.q3HeadCount]), va("%s%s", dirptr, skinname));
-				uiInfo.q3HeadIcons[uiInfo.q3HeadCount++] = 0;//trap_R_RegisterShaderNoMip(fpath);
-				//rww - we are now registering them as they are drawn like the TA feeder, so as to decrease UI load time.
-			}
+                Com_sprintf(uiInfo.q3HeadNames[uiInfo.q3HeadCount], sizeof(uiInfo.q3HeadNames[uiInfo.q3HeadCount]), va("%s%s", dirptr, skinname));
+                uiInfo.q3HeadIcons[uiInfo.q3HeadCount++] = 0;
+            }
 
-			if (uiInfo.q3HeadCount >= MAX_Q3PLAYERMODELS)
-			{
-				return;
-			}
-		}
-	}	
+            if (uiInfo.q3HeadCount >= MAX_Q3PLAYERMODELS)
+            {
+                UI_FreeMem(dirlist);  // Use UI_FreeMem instead of free
+                UI_FreeMem(filelist); // Use UI_FreeMem instead of free
+                return;
+            }
+        }
+    }
 
+    // Use UI_FreeMem instead of free
+    UI_FreeMem(dirlist);
+    UI_FreeMem(filelist);
 }
+
+
 
 void UI_SiegeInit(void)
 {
@@ -10709,146 +10741,180 @@ static qboolean UI_ParseColorData(char* buf, playerSpeciesInfo_t *species,char*	
 UI_BuildPlayerModel_List
 =================
 */
-static void UI_BuildPlayerModel_List( qboolean inGameLoad )
+static void UI_BuildPlayerModel_List(qboolean inGameLoad)
 {
-	int		numdirs;
-	char	dirlist[8192];
-	char*	dirptr;
-	int		dirlen;
-	int		i;
-	int		j;
+    int numdirs;
+    char* dirlist;
+    UI_AllocMem((void**)&dirlist, 8192);  // Using UI_AllocMem instead of malloc
+    if (!dirlist) {
+        Com_Error(ERR_FATAL, "UI_BuildPlayerModel_List: malloc failed for dirlist");
+        return;
+    }
 
+    char* dirptr;
+    int dirlen;
+    int i;
+    int j;
 
-	uiInfo.playerSpeciesCount = 0;
-	uiInfo.playerSpeciesIndex = 0;
-	memset(uiInfo.playerSpecies, 0, sizeof (uiInfo.playerSpecies) );
+    uiInfo.playerSpeciesCount = 0;
+    uiInfo.playerSpeciesIndex = 0;
+    memset(uiInfo.playerSpecies, 0, sizeof(uiInfo.playerSpecies));
 
-	// iterate directory of all player models
-	numdirs = trap_FS_GetFileList("models/players", "/", dirlist, 8192 );
-	dirptr  = dirlist;
-	for (i=0; i<numdirs; i++,dirptr+=dirlen+1)
-	{
-		char	filelist[8192];
-		char*	fileptr;
-		int		filelen;
-		int f = 0;
-		char fpath[8192];
+    // iterate directory of all player models
+    numdirs = trap_FS_GetFileList("models/players", "/", dirlist, 8192);
+    dirptr = dirlist;
+    for (i = 0; i < numdirs; i++, dirptr += dirlen + 1)
+    {
+        char* filelist;
+        char* buffer;
+        char* fpath;
 
-		dirlen = strlen(dirptr);
-		
-		if (dirlen)
-		{
-			if (dirptr[dirlen-1]=='/')
-				dirptr[dirlen-1]='\0';
-		}
-		else
-		{
-			continue;
-		}
+        UI_AllocMem((void**)&filelist, 8192);  // Using UI_AllocMem instead of malloc
+        UI_AllocMem((void**)&buffer, 8192);   // Using UI_AllocMem instead of malloc
+        UI_AllocMem((void**)&fpath, 8192);    // Using UI_AllocMem instead of malloc
 
-		if (!strcmp(dirptr,".") || !strcmp(dirptr,".."))
-			continue;
-			
-		Com_sprintf(fpath, 8192, "models/players/%s/PlayerChoice.txt", dirptr);
-		filelen = trap_FS_FOpenFile(fpath, &f, FS_READ);
+        if (!filelist || !buffer || !fpath) {
+            Com_Error(ERR_FATAL, "UI_BuildPlayerModel_List: malloc failed");
+            UI_FreeMem(filelist);  // Using UI_FreeMem instead of free
+            UI_FreeMem(buffer);    // Using UI_FreeMem instead of free
+            UI_FreeMem(fpath);     // Using UI_FreeMem instead of free
+            UI_FreeMem(dirlist);   // Using UI_FreeMem instead of free
+            return;
+        }
 
-		if (f)
-		{ 
-			char buffer[8192];
-			char	skinname[64];
-			int		numfiles;
-			int		iSkinParts=0;
+        int filelen;
+        int f = 0;
 
-			trap_FS_Read(&buffer, filelen, f);
-			trap_FS_FCloseFile(f);
-			buffer[filelen] = 0;	//ensure trailing NULL
+        dirlen = strlen(dirptr);
 
-			//record this species
-			Q_strncpyz( uiInfo.playerSpecies[uiInfo.playerSpeciesCount].Name, dirptr, sizeof(uiInfo.playerSpecies[0].Name) );
+        if (dirlen)
+        {
+            if (dirptr[dirlen - 1] == '/')
+                dirptr[dirlen - 1] = '\0';
+        }
+        else
+        {
+            UI_FreeMem(filelist);  // Using UI_FreeMem instead of free
+            UI_FreeMem(buffer);    // Using UI_FreeMem instead of free
+            UI_FreeMem(fpath);     // Using UI_FreeMem instead of free
+            continue;
+        }
 
-			if (!UI_ParseColorData(buffer,&uiInfo.playerSpecies[uiInfo.playerSpeciesCount],fpath))
-			{
-				Com_Printf(S_COLOR_RED"UI_BuildPlayerModel_List: Errors parsing '%s'\n", fpath);
-			}
+        if (!strcmp(dirptr, ".") || !strcmp(dirptr, ".."))
+        {
+            UI_FreeMem(filelist);  // Using UI_FreeMem instead of free
+            UI_FreeMem(buffer);    // Using UI_FreeMem instead of free
+            UI_FreeMem(fpath);     // Using UI_FreeMem instead of free
+            continue;
+        }
 
-			numfiles = trap_FS_GetFileList( va("models/players/%s",dirptr), ".skin", filelist, 8192 );
-			fileptr  = filelist;
-			for (j=0; j<numfiles; j++,fileptr+=filelen+1)
-			{
-				if (trap_Cvar_VariableValue("fs_copyfiles") > 0 )
-				{
-					trap_FS_FOpenFile(va("models/players/%s/%s",dirptr,fileptr), &f, FS_READ);
-					if (f) trap_FS_FCloseFile(f);
-				}
+        Com_sprintf(fpath, 8192, "models/players/%s/PlayerChoice.txt", dirptr);
+        filelen = trap_FS_FOpenFile(fpath, &f, FS_READ);
 
-				filelen = strlen(fileptr);
-				COM_StripExtension(fileptr,skinname);
+        if (f)
+        {
+            char skinname[64];
+            int numfiles;
+            int iSkinParts = 0;
 
-				if (bIsImageFile(dirptr, skinname))
-				{ //if it exists
-					if (Q_stricmpn(skinname,"head_",5) == 0)
-					{
-						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadCount < MAX_PLAYERMODELS) 
-						{
-							Q_strncpyz(
-								uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadNames[uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadCount++], 
-								skinname, 
-								sizeof(uiInfo.playerSpecies[0].SkinHeadNames[0])
-								);
-							iSkinParts |= 1<<0;
-						}
-					} else
-					if (Q_stricmpn(skinname,"torso_",6) == 0)
-					{
-						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoCount < MAX_PLAYERMODELS) 
-						{
-							Q_strncpyz(uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoNames[uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoCount++], 
-								skinname, 
-								sizeof(uiInfo.playerSpecies[0].SkinTorsoNames[0])
-								);
-							iSkinParts |= 1<<1;
-						}
-					} else
-					if (Q_stricmpn(skinname,"lower_",6) == 0)
-					{
-						if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegCount < MAX_PLAYERMODELS) 
-						{
-							Q_strncpyz(uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegNames[uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegCount++], 
-								skinname, 
-								sizeof(uiInfo.playerSpecies[0].SkinLegNames[0]) 
-								);
-								iSkinParts |= 1<<2;
-						}
-					}
-					
-				}
-			}
-			if (iSkinParts != 7)
-			{	//didn't get a skin for each, then skip this model.
-				memset(&uiInfo.playerSpecies[uiInfo.playerSpeciesCount], 0, sizeof(uiInfo.playerSpecies[uiInfo.playerSpeciesCount]));//undo the colors
-				continue;
-			}
-			uiInfo.playerSpeciesCount++;
-			if (!inGameLoad && ui_PrecacheModels.integer)
-			{
-				int g2Model;
-				void *ghoul2 = 0;
-				Com_sprintf( fpath, sizeof( fpath ), "models/players/%s/model.glm", dirptr );
-				g2Model = trap_G2API_InitGhoul2Model(&ghoul2, fpath, 0, 0, 0, 0, 0);
-				if (g2Model >= 0)
-				{
-//					trap_G2API_RemoveGhoul2Model( &ghoul2, 0 );
-					trap_G2API_CleanGhoul2Models (&ghoul2);
-				}
-			}
-			if (uiInfo.playerSpeciesCount >= MAX_PLAYERMODELS)
-			{
-				return;
-			}
-		}
-	}	
+            trap_FS_Read(buffer, filelen, f);
+            trap_FS_FCloseFile(f);
+            buffer[filelen] = 0; // ensure trailing NULL
 
+            // record this species
+            Q_strncpyz(uiInfo.playerSpecies[uiInfo.playerSpeciesCount].Name, dirptr, sizeof(uiInfo.playerSpecies[0].Name));
+
+            if (!UI_ParseColorData(buffer, &uiInfo.playerSpecies[uiInfo.playerSpeciesCount], fpath))
+            {
+                Com_Printf(S_COLOR_RED "UI_BuildPlayerModel_List: Errors parsing '%s'\n", fpath);
+            }
+
+            numfiles = trap_FS_GetFileList(va("models/players/%s", dirptr), ".skin", filelist, 8192);
+            char* fileptr = filelist;
+            for (j = 0; j < numfiles; j++, fileptr += strlen(fileptr) + 1)
+            {
+                if (trap_Cvar_VariableValue("fs_copyfiles") > 0)
+                {
+                    trap_FS_FOpenFile(va("models/players/%s/%s", dirptr, fileptr), &f, FS_READ);
+                    if (f)
+                        trap_FS_FCloseFile(f);
+                }
+
+                COM_StripExtension(fileptr, skinname);
+
+                if (bIsImageFile(dirptr, skinname))
+                {
+                    if (Q_stricmpn(skinname, "head_", 5) == 0)
+                    {
+                        if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadCount < MAX_PLAYERMODELS)
+                        {
+                            Q_strncpyz(uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadNames[uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinHeadCount++],
+                                skinname,
+                                sizeof(uiInfo.playerSpecies[0].SkinHeadNames[0]));
+                            iSkinParts |= 1 << 0;
+                        }
+                    }
+                    else if (Q_stricmpn(skinname, "torso_", 6) == 0)
+                    {
+                        if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoCount < MAX_PLAYERMODELS)
+                        {
+                            Q_strncpyz(uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoNames[uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinTorsoCount++],
+                                skinname,
+                                sizeof(uiInfo.playerSpecies[0].SkinTorsoNames[0]));
+                            iSkinParts |= 1 << 1;
+                        }
+                    }
+                    else if (Q_stricmpn(skinname, "lower_", 6) == 0)
+                    {
+                        if (uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegCount < MAX_PLAYERMODELS)
+                        {
+                            Q_strncpyz(uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegNames[uiInfo.playerSpecies[uiInfo.playerSpeciesCount].SkinLegCount++],
+                                skinname,
+                                sizeof(uiInfo.playerSpecies[0].SkinLegNames[0]));
+                            iSkinParts |= 1 << 2;
+                        }
+                    }
+                }
+            }
+            if (iSkinParts != 7)
+            {   // didn't get a skin for each, then skip this model.
+                memset(&uiInfo.playerSpecies[uiInfo.playerSpeciesCount], 0, sizeof(uiInfo.playerSpecies[uiInfo.playerSpeciesCount])); //undo the colors
+                UI_FreeMem(filelist);  // Using UI_FreeMem instead of free
+                UI_FreeMem(buffer);    // Using UI_FreeMem instead of free
+                UI_FreeMem(fpath);     // Using UI_FreeMem instead of free
+                continue;
+            }
+            uiInfo.playerSpeciesCount++;
+            if (!inGameLoad && ui_PrecacheModels.integer)
+            {
+                int g2Model;
+                void* ghoul2 = 0;
+                Com_sprintf(fpath, 8192, "models/players/%s/model.glm", dirptr);
+                g2Model = trap_G2API_InitGhoul2Model(&ghoul2, fpath, 0, 0, 0, 0, 0);
+                if (g2Model >= 0)
+                {
+                    trap_G2API_CleanGhoul2Models(&ghoul2);
+                }
+            }
+            if (uiInfo.playerSpeciesCount >= MAX_PLAYERMODELS)
+            {
+                UI_FreeMem(filelist);  // Using UI_FreeMem instead of free
+                UI_FreeMem(buffer);    // Using UI_FreeMem instead of free
+                UI_FreeMem(fpath);     // Using UI_FreeMem instead of free
+                break;
+            }
+        }
+
+        UI_FreeMem(filelist);  // Using UI_FreeMem instead of free
+        UI_FreeMem(buffer);    // Using UI_FreeMem instead of free
+        UI_FreeMem(fpath);     // Using UI_FreeMem instead of free
+    }
+
+    UI_FreeMem(dirlist);  // Using UI_FreeMem instead of free
 }
+
+
+
 
 
 
@@ -11910,7 +11976,15 @@ void UI_AllocMem(void **ptr, int sze){
 void UI_FreeMem(void *ptr){
 	free(ptr);
 }
-void UI_ReaAllocMem(void **ptr, int sze, int count){
-	*ptr = realloc(*ptr, sze * count);
+void UI_ReaAllocMem(void** ptr, int sze, int count) {
+	void* temp = realloc(*ptr, sze * count);
+	if (temp == NULL) {
+		// Handle memory allocation failure, if needed
+		// You might log an error, exit the function, or return an error code
+		// For now, you can leave *ptr as-is (memory is not freed in case of failure)
+		return;
+	}
+
+	*ptr = temp;
 }
 //[/DynamicMemory_Sabers]

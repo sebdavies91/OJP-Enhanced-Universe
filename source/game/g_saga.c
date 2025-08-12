@@ -44,7 +44,7 @@ int ObjectiveDependancy[MAX_OBJECTIVES][MAX_OBJECTIVEDEPENDANCY];
 //[/TABBot]
 
 
-void LogExit( const char *string );
+void G_LogExit( const char *string );
 void SetTeamQuick(gentity_t *ent, int team, qboolean doBegin);
 
 static char gParseObjectives[MAX_SIEGE_INFO_SIZE];
@@ -105,336 +105,301 @@ void SiegeSetCompleteData(int team)
 
 void InitSiegeMode(void)
 {
-	//[RawMapName]
-	//vmCvar_t		mapname;
-	//[/RawMapName]
-	char			levelname[512];
-	char			teamIcon[128];
-	char			goalreq[64];
-	char			teams[2048];
-	char			objective[MAX_SIEGE_INFO_SIZE];
-	char			objecStr[8192];
-	//[TABBot]
-	int x = 0;
-	int y = 0;
-	char dependsOn[64];
-	//[/TABBot]
-	int				len = 0;
-	int				i = 0;
-//	int				j = 0;
-	int				objectiveNumTeam1 = 0;
-	int				objectiveNumTeam2 = 0;
-	fileHandle_t	f;
+    char levelname[512];
+    char teamIcon[128];
+    char goalreq[64];
+    char* teams = BG_Alloc(2048);  // Using BG_Alloc instead of malloc
+    char* objective = BG_Alloc(MAX_SIEGE_INFO_SIZE);  // Using BG_Alloc
+    char* objecStr = BG_Alloc(8192);  // Using BG_Alloc
+    int x = 0;
+    int y = 0;
+    char dependsOn[64];
+    int len = 0;
+    int i = 0;
+    int objectiveNumTeam1 = 0;
+    int objectiveNumTeam2 = 0;
+    fileHandle_t f;
 
-	if (g_gametype.integer != GT_SIEGE)
-	{
-		goto failure;
-	}
+    if (!teams || !objective || !objecStr) {
+        G_Error("InitSiegeMode: Memory allocation failed");
+        return;
+    }
 
-	//[TABBot]
-	//reset objective dependancy data
-	for(x = 0; x < MAX_OBJECTIVES; x++)
-	{
-		for(y = 0; y < MAX_OBJECTIVEDEPENDANCY; y++)
-		{
-			ObjectiveDependancy[x][y] = 0;
-		}
-	}
-	//[/TABBot]
+    // Zero out the allocated memory using memset
+    memset(teams, 0, 2048);
+    memset(objective, 0, MAX_SIEGE_INFO_SIZE);
+    memset(objecStr, 0, 8192);
 
-	//reset
-	SiegeSetCompleteData(0);
+    if (g_gametype.integer != GT_SIEGE)
+    {
+        goto failure;
+    }
 
-	//get pers data in case it existed from last level
-	if (g_siegeTeamSwitch.integer)
-	{
-		trap_SiegePersGet(&g_siegePersistant);
-		if (g_siegePersistant.beatingTime)
-		{
-			trap_SetConfigstring(CS_SIEGE_TIMEOVERRIDE, va("%i", g_siegePersistant.lastTime));
-		}
-		else
-		{
-			trap_SetConfigstring(CS_SIEGE_TIMEOVERRIDE, "0");
-		}
-	}
-	else
-	{ //hmm, ok, nothing.
-		trap_SetConfigstring(CS_SIEGE_TIMEOVERRIDE, "0");
-	}
+    // Reset objective dependency data
+    for (x = 0; x < MAX_OBJECTIVES; x++)
+    {
+        for (y = 0; y < MAX_OBJECTIVEDEPENDANCY; y++)
+        {
+            ObjectiveDependancy[x][y] = 0;  // Zero out each entry
+        }
+    }
 
-	imperial_goals_completed = 0;
-	rebel_goals_completed = 0;
+    // Reset
+    SiegeSetCompleteData(0);
 
-	//[RawMapName]
-	//trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
+    // Get persistent data if it existed from last level
+    if (g_siegeTeamSwitch.integer)
+    {
+        trap_SiegePersGet(&g_siegePersistant);
+        if (g_siegePersistant.beatingTime)
+        {
+            trap_SetConfigstring(CS_SIEGE_TIMEOVERRIDE, va("%i", g_siegePersistant.lastTime));
+        }
+        else
+        {
+            trap_SetConfigstring(CS_SIEGE_TIMEOVERRIDE, "0");
+        }
+    }
+    else
+    {
+        trap_SetConfigstring(CS_SIEGE_TIMEOVERRIDE, "0");
+    }
 
-	//Com_sprintf(levelname, sizeof(levelname), "maps/%s.siege\0", mapname.string);
-	
-	Com_sprintf(levelname, sizeof(levelname), "maps/%s.siege", level.rawmapname);
-	//[/RawMapName]
+    imperial_goals_completed = 0;
+    rebel_goals_completed = 0;
 
-	if ( /*!levelname ||*/ !levelname[0])
-	{
-		goto failure;
-	}
+    Com_sprintf(levelname, sizeof(levelname), "maps/%s.siege", level.rawmapname);
 
-	len = trap_FS_FOpenFile(levelname, &f, FS_READ);
+    if (!levelname[0])
+    {
+        goto failure;
+    }
 
-	if (!f || len >= MAX_SIEGE_INFO_SIZE)
-	{
-		//[MissingCloseFile]
-		trap_FS_FCloseFile(f);
-		//[/MissingCloseFile]
-		goto failure;
-	}
+    len = trap_FS_FOpenFile(levelname, &f, FS_READ);
 
-	trap_FS_Read(siege_info, len, f);
+    if (!f || len >= MAX_SIEGE_INFO_SIZE)
+    {
+        trap_FS_FCloseFile(f);
+        goto failure;
+    }
 
-	trap_FS_FCloseFile(f);
+    trap_FS_Read(siege_info, len, f);
 
-	siege_valid = 1;
+    trap_FS_FCloseFile(f);
 
-	//See if players should be specs or ingame preround
-	if (BG_SiegeGetPairedValue(siege_info, "preround_state", teams))
-	{
-		if (teams[0])
-		{
-			g_preroundState = atoi(teams);
-		}
-	}
+    siege_valid = 1;
 
-	if (BG_SiegeGetValueGroup(siege_info, "Teams", teams))
-	{
-		if (g_siegeTeam1.string[0] && Q_stricmp(g_siegeTeam1.string, "none"))
-		{ //check for override
-			strcpy(team1, g_siegeTeam1.string);
-		}
-		else
-		{ //otherwise use level default
-			BG_SiegeGetPairedValue(teams, "team1", team1);
-		}
+    // See if players should be specs or ingame preround
+    if (BG_SiegeGetPairedValue(siege_info, "preround_state", teams))
+    {
+        if (teams[0])
+        {
+            g_preroundState = atoi(teams);
+        }
+    }
 
-		if (g_siegeTeam2.string[0] && Q_stricmp(g_siegeTeam2.string, "none"))
-		{ //check for override
-			strcpy(team2, g_siegeTeam2.string);
-		}
-		else
-		{ //otherwise use level default
-			BG_SiegeGetPairedValue(teams, "team2", team2);
-		}
-	}
-	else
-	{
-		G_Error("Siege teams not defined");
-	}
+    if (BG_SiegeGetValueGroup(siege_info, "Teams", teams))
+    {
+        if (g_siegeTeam1.string[0] && Q_stricmp(g_siegeTeam1.string, "none"))
+        {
+            strcpy(team1, g_siegeTeam1.string);
+        }
+        else
+        {
+            BG_SiegeGetPairedValue(teams, "team1", team1);
+        }
 
-	if (BG_SiegeGetValueGroup(siege_info, team2, gParseObjectives))
-	{
-		if (BG_SiegeGetPairedValue(gParseObjectives, "TeamIcon", teamIcon))
-		{
-			trap_Cvar_Set( "team2_icon", teamIcon);
-		}
+        if (g_siegeTeam2.string[0] && Q_stricmp(g_siegeTeam2.string, "none"))
+        {
+            strcpy(team2, g_siegeTeam2.string);
+        }
+        else
+        {
+            BG_SiegeGetPairedValue(teams, "team2", team2);
+        }
+    }
+    else
+    {
+        G_Error("Siege teams not defined");
+    }
 
-		if (BG_SiegeGetPairedValue(gParseObjectives, "RequiredObjectives", goalreq))
-		{
-			rebel_goals_required = atoi(goalreq);
-		}
-		if (BG_SiegeGetPairedValue(gParseObjectives, "Timed", goalreq))
-		{
-			rebel_time_limit = atoi(goalreq)*1000;
-			if (g_siegeTeamSwitch.integer &&
-				g_siegePersistant.beatingTime)
-			{
-				gRebelCountdown = level.time + g_siegePersistant.lastTime;
-			}
-			else
-			{
-				gRebelCountdown = level.time + rebel_time_limit;
-			}
-		}
-		if (BG_SiegeGetPairedValue(gParseObjectives, "attackers", goalreq))
-		{
-			rebel_attackers = atoi(goalreq);
-		}
-	}
+    if (BG_SiegeGetValueGroup(siege_info, team2, gParseObjectives))
+    {
+        if (BG_SiegeGetPairedValue(gParseObjectives, "TeamIcon", teamIcon))
+        {
+            trap_Cvar_Set("team2_icon", teamIcon);
+        }
 
-	if (BG_SiegeGetValueGroup(siege_info, team1, gParseObjectives))
-	{
+        if (BG_SiegeGetPairedValue(gParseObjectives, "RequiredObjectives", goalreq))
+        {
+            rebel_goals_required = atoi(goalreq);
+        }
+        if (BG_SiegeGetPairedValue(gParseObjectives, "Timed", goalreq))
+        {
+            rebel_time_limit = atoi(goalreq) * 1000;
+            if (g_siegeTeamSwitch.integer &&
+                g_siegePersistant.beatingTime)
+            {
+                gRebelCountdown = level.time + g_siegePersistant.lastTime;
+            }
+            else
+            {
+                gRebelCountdown = level.time + rebel_time_limit;
+            }
+        }
+        if (BG_SiegeGetPairedValue(gParseObjectives, "attackers", goalreq))
+        {
+            rebel_attackers = atoi(goalreq);
+        }
+    }
 
-		if (BG_SiegeGetPairedValue(gParseObjectives, "TeamIcon", teamIcon))
-		{
-			trap_Cvar_Set( "team1_icon", teamIcon);
-		}
+    if (BG_SiegeGetValueGroup(siege_info, team1, gParseObjectives))
+    {
+        if (BG_SiegeGetPairedValue(gParseObjectives, "TeamIcon", teamIcon))
+        {
+            trap_Cvar_Set("team1_icon", teamIcon);
+        }
 
-		if (BG_SiegeGetPairedValue(gParseObjectives, "RequiredObjectives", goalreq))
-		{
-			imperial_goals_required = atoi(goalreq);
-		}
-		if (BG_SiegeGetPairedValue(gParseObjectives, "Timed", goalreq))
-		{
-			if (rebel_time_limit)
-			{
-				Com_Printf("Tried to set imperial time limit, but there's already a rebel time limit!\nOnly one team can have a time limit.\n");
-			}
-			else
-			{
-				imperial_time_limit = atoi(goalreq)*1000;
-				if (g_siegeTeamSwitch.integer &&
-					g_siegePersistant.beatingTime)
-				{
-					gImperialCountdown = level.time + g_siegePersistant.lastTime;
-				}
-				else
-				{
-					gImperialCountdown = level.time + imperial_time_limit;
-				}
-			}
-		}
-		if (BG_SiegeGetPairedValue(gParseObjectives, "attackers", goalreq))
-		{
-			imperial_attackers = atoi(goalreq);
-		}
-	}
+        if (BG_SiegeGetPairedValue(gParseObjectives, "RequiredObjectives", goalreq))
+        {
+            imperial_goals_required = atoi(goalreq);
+        }
+        if (BG_SiegeGetPairedValue(gParseObjectives, "Timed", goalreq))
+        {
+            if (rebel_time_limit)
+            {
+                Com_Printf("Tried to set imperial time limit, but there's already a rebel time limit!\nOnly one team can have a time limit.\n");
+            }
+            else
+            {
+                imperial_time_limit = atoi(goalreq) * 1000;
+                if (g_siegeTeamSwitch.integer &&
+                    g_siegePersistant.beatingTime)
+                {
+                    gImperialCountdown = level.time + g_siegePersistant.lastTime;
+                }
+                else
+                {
+                    gImperialCountdown = level.time + imperial_time_limit;
+                }
+            }
+        }
+        if (BG_SiegeGetPairedValue(gParseObjectives, "attackers", goalreq))
+        {
+            imperial_attackers = atoi(goalreq);
+        }
+    }
 
-	//Load the player class types
-	BG_SiegeLoadClasses(NULL);
+    // Load the player class types
+    BG_SiegeLoadClasses(NULL);
 
-	if (!bgNumSiegeClasses)
-	{ //We didn't find any?!
-		G_Error("Couldn't find any player classes for Siege");
-	}
+    if (!bgNumSiegeClasses)
+    {
+        G_Error("Couldn't find any player classes for Siege");
+    }
 
-	/*
-	//We could probably just see what teams are used on this level,
-	//then see what classes are used by those teams, and then precache
-	//all weapons for said classes. However, I'm just going to do them
-	//all for now.
-	while (i < bgNumSiegeClasses)
-	{
-		cl = &bgSiegeClasses[i];
-		j = 0;
+    // Now load the teams since we have class data.
+    BG_SiegeLoadTeams();
 
-		while (j < WP_NUM_WEAPONS)
-		{
-			if (cl->weapons & (1 << j))
-			{ //we use this weapon so register it.
-				RegisterItem(BG_FindItemForWeapon(j));
-			}
+    if (!bgNumSiegeTeams)
+    {
+        G_Error("Couldn't find any player teams for Siege");
+    }
 
-			j++;
-		}
+    // Get and set the team themes for each team. This will control which classes can be used on each team.
+    if (BG_SiegeGetValueGroup(siege_info, team1, gParseObjectives))
+    {
+        if (BG_SiegeGetPairedValue(gParseObjectives, "UseTeam", goalreq))
+        {
+            BG_SiegeSetTeamTheme(SIEGETEAM_TEAM1, goalreq);
+        }
 
-		i++;
-	}
-	*/
-	//Ok, I'm adding inventory item precaching now, so I'm finally going to optimize this
-	//to only do weapons/items for the current teams used on the level.
+        // Count objectives for this team
+        i = 1;
+        strcpy(objecStr, va("Objective%i", i));
+        while (BG_SiegeGetValueGroup(gParseObjectives, objecStr, objective))
+        {
+            // Check for objective dependency
+            x = 0;
+            strcpy(dependsOn, "DependsOn1");
+            while (x < MAX_OBJECTIVEDEPENDANCY && imperial_attackers)
+            {
+                if (BG_SiegeGetPairedValue(objective, dependsOn, goalreq))
+                {
+                    ObjectiveDependancy[i - 1][x] = atoi(goalreq);
+                }
+                x++;
+                strcpy(dependsOn, va("DependsOn%i", x + 1));
+            }
 
-	//Now load the teams since we have class data.
-	BG_SiegeLoadTeams();
+            objectiveNumTeam1++;
+            i++;
+            strcpy(objecStr, va("Objective%i", i));
+        }
+    }
 
-	if (!bgNumSiegeTeams)
-	{ //React same as with classes.
-		G_Error("Couldn't find any player teams for Siege");
-	}
+    if (BG_SiegeGetValueGroup(siege_info, team2, gParseObjectives))
+    {
+        if (BG_SiegeGetPairedValue(gParseObjectives, "UseTeam", goalreq))
+        {
+            BG_SiegeSetTeamTheme(SIEGETEAM_TEAM2, goalreq);
+        }
 
-	//Get and set the team themes for each team. This will control which classes can be
-	//used on each team.
-	if (BG_SiegeGetValueGroup(siege_info, team1, gParseObjectives))
-	{
-		if (BG_SiegeGetPairedValue(gParseObjectives, "UseTeam", goalreq))
-		{
-			BG_SiegeSetTeamTheme(SIEGETEAM_TEAM1, goalreq);
-		}
+        // Count objectives for this team
+        i = 1;
+        strcpy(objecStr, va("Objective%i", i));
+        while (BG_SiegeGetValueGroup(gParseObjectives, objecStr, objective))
+        {
+            // Check for objective dependency
+            x = 0;
+            strcpy(dependsOn, "DependsOn1");
+            while (x < MAX_OBJECTIVEDEPENDANCY && rebel_attackers)
+            {
+                if (BG_SiegeGetPairedValue(objective, dependsOn, goalreq))
+                {
+                    ObjectiveDependancy[i - 1][x] = atoi(goalreq);
+                }
+                x++;
+                strcpy(dependsOn, va("DependsOn%i", x + 1));
+            }
 
-		//Now count up the objectives for this team.
-		i = 1;
-		strcpy(objecStr, va("Objective%i", i));
-		while (BG_SiegeGetValueGroup(gParseObjectives, objecStr, objective))
-		{
-			//[TABBots]
-			//check for objective dependancy
-			x = 0;
-			strcpy(dependsOn, "DependsOn1");
-			while(x < MAX_OBJECTIVEDEPENDANCY && imperial_attackers)
-			{
-				if(BG_SiegeGetPairedValue(objective, dependsOn, goalreq))
-				{
-					ObjectiveDependancy[i-1][x] = atoi(goalreq);
-				}
-				x++;
-				strcpy(dependsOn, va("DependsOn%i", x+1));
-			}
-			//[/TABBots]
+            objectiveNumTeam2++;
+            i++;
+            strcpy(objecStr, va("Objective%i", i));
+        }
+    }
 
-			objectiveNumTeam1++;
-			i++;
-			strcpy(objecStr, va("Objective%i", i));
-		}
-	}
-	if (BG_SiegeGetValueGroup(siege_info, team2, gParseObjectives))
-	{
-		if (BG_SiegeGetPairedValue(gParseObjectives, "UseTeam", goalreq))
-		{
-			BG_SiegeSetTeamTheme(SIEGETEAM_TEAM2, goalreq);
-		}
+    // Set configstring to show status of all current objectives
+    strcpy(gObjectiveCfgStr, "t1");
+    while (objectiveNumTeam1 > 0)
+    {
+        Q_strcat(gObjectiveCfgStr, 1024, "-0");
+        objectiveNumTeam1--;
+    }
+    Q_strcat(gObjectiveCfgStr, 1024, "|t2");
+    while (objectiveNumTeam2 > 0)
+    {
+        Q_strcat(gObjectiveCfgStr, 1024, "-0");
+        objectiveNumTeam2--;
+    }
 
-		//Now count up the objectives for this team.
-		i = 1;
-		strcpy(objecStr, va("Objective%i", i));
-		while (BG_SiegeGetValueGroup(gParseObjectives, objecStr, objective))
-		{
-			//[TABBots]
-			//check for objective dependancy
-			x = 0;
-			strcpy(dependsOn, "DependsOn1");
-			while(x < MAX_OBJECTIVEDEPENDANCY && rebel_attackers)
-			{
-				if(BG_SiegeGetPairedValue(objective, dependsOn, goalreq))
-				{
-					ObjectiveDependancy[i-1][x] = atoi(goalreq);
-				}
-				x++;
-				strcpy(dependsOn, va("DependsOn%i", x+1));
-			}
-			//[/TABBots]
-			objectiveNumTeam2++;
-			i++;
-			strcpy(objecStr, va("Objective%i", i));
-		}
-	}
+    // Set the actual config string
+    trap_SetConfigstring(CS_SIEGE_OBJECTIVES, gObjectiveCfgStr);
 
-	//Set the configstring to show status of all current objectives
-	strcpy(gObjectiveCfgStr, "t1");
-	while (objectiveNumTeam1 > 0)
-	{ //mark them all as not completed since we just initialized
-		Q_strcat(gObjectiveCfgStr, 1024, "-0");
-		objectiveNumTeam1--;
-	}
-	//Finished doing team 1's objectives, now do team 2's
-	Q_strcat(gObjectiveCfgStr, 1024, "|t2");
-	while (objectiveNumTeam2 > 0)
-	{
-		Q_strcat(gObjectiveCfgStr, 1024, "-0");
-		objectiveNumTeam2--;
-	}
+    // Precache saber data for classes that use sabers on both teams
+    BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM1);
+    BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM2);
 
-	//And finally set the actual config string
-	trap_SetConfigstring(CS_SIEGE_OBJECTIVES, gObjectiveCfgStr);
+    G_SiegeRegisterWeaponsAndHoldables(SIEGETEAM_TEAM1);
+    G_SiegeRegisterWeaponsAndHoldables(SIEGETEAM_TEAM2);
 
-	//precache saber data for classes that use sabers on both teams
-	BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM1);
-	BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM2);
-
-	G_SiegeRegisterWeaponsAndHoldables(SIEGETEAM_TEAM1);
-	G_SiegeRegisterWeaponsAndHoldables(SIEGETEAM_TEAM2);
-
-	return;
+    return;
 
 failure:
-	siege_valid = 0;
+    siege_valid = 0;
+    // BG_Alloc does not need free in this case, assuming the memory management is handled elsewhere
 }
+
 
 void G_SiegeSetObjectiveComplete(int team, int objective, qboolean failIt)
 {
@@ -755,7 +720,7 @@ void SiegeRoundComplete(int winningteam, int winningclient)
 	{
 		if (!BG_SiegeGetPairedValue(gParseObjectives, "roundover_target", teamstr))
 		{ //didn't find the name of the thing to target upon win, just logexit now then.
-			LogExit( "Objectives completed" );
+			G_LogExit( "Objectives completed" );
 			return;
 		}
 		
@@ -1134,75 +1099,91 @@ void SiegeObjectiveCompleted(int team, int objective, int final, int client)
 	}
 }
 
-void siegeTriggerUse(gentity_t *ent, gentity_t *other, gentity_t *activator)
+void siegeTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
 {
-	char			teamstr[64];
-	char			objectivestr[64];
-	char			desiredobjective[MAX_SIEGE_INFO_SIZE];
-	int				clUser = ENTITYNUM_NONE;
-	int				final = 0;
-	int				i = 0;
+    char            teamstr[64];
+    char            objectivestr[64];
+    char*           desiredobjective;  // Changed from stack to pointer
+    int             clUser = ENTITYNUM_NONE;
+    int             final = 0;
+    int             i = 0;
 
-	if (!siege_valid)
-	{
-		return;
-	}
+    if (!siege_valid)
+    {
+        return;
+    }
 
-	if (!(ent->s.eFlags & EF_RADAROBJECT))
-	{ //toggle radar on and exit if it is not showing up already
-		ent->s.eFlags |= EF_RADAROBJECT;
-		return;
-	}
+    // Allocate large buffer on heap using BG_Alloc
+    desiredobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
+    if (!desiredobjective) {
+        // Allocation failed, just return safely
+        return;
+    }
 
-	if (activator && activator->client)
-	{ //activator will hopefully be the person who triggered this event
-		clUser = activator->s.number;
-	}
+    // Zero out the memory using memset
+    memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);
 
-	if (ent->side == SIEGETEAM_TEAM1)
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team1);
-	}
-	else
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team2);
-	}
+    if (!(ent->s.eFlags & EF_RADAROBJECT))
+    { // toggle radar on and exit if it is not showing up already
+        ent->s.eFlags |= EF_RADAROBJECT;
+        // No free, just memset to clear the allocated memory
+        memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
+        return;
+    }
 
-	if (BG_SiegeGetValueGroup(siege_info, teamstr, gParseObjectives))
-	{
-		Com_sprintf(objectivestr, sizeof(objectivestr), "Objective%i", ent->objective);
+    if (activator && activator->client)
+    { // activator will hopefully be the person who triggered this event
+        clUser = activator->s.number;
+    }
 
-		if (BG_SiegeGetValueGroup(gParseObjectives, objectivestr, desiredobjective))
-		{
-			if (BG_SiegeGetPairedValue(desiredobjective, "final", teamstr))
-			{
-				final = atoi(teamstr);
-			}
+    if (ent->side == SIEGETEAM_TEAM1)
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team1);
+    }
+    else
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team2);
+    }
 
-			if (BG_SiegeGetPairedValue(desiredobjective, "target", teamstr))
-			{
-				while (teamstr[i])
-				{
-					if (teamstr[i] == '\r' ||
-						teamstr[i] == '\n')
-					{
-						teamstr[i] = '\0';
-					}
+    if (BG_SiegeGetValueGroup(siege_info, teamstr, gParseObjectives))
+    {
+        Com_sprintf(objectivestr, sizeof(objectivestr), "Objective%i", ent->objective);
 
-					i++;
-				}
-				UseSiegeTarget(other, activator, teamstr);
-			}
+        if (BG_SiegeGetValueGroup(gParseObjectives, objectivestr, desiredobjective))
+        {
+            if (BG_SiegeGetPairedValue(desiredobjective, "final", teamstr))
+            {
+                final = atoi(teamstr);
+            }
 
-			if (ent->target && ent->target[0])
-			{ //use this too
-				UseSiegeTarget(other, activator, ent->target);
-			}
+            if (BG_SiegeGetPairedValue(desiredobjective, "target", teamstr))
+            {
+                while (teamstr[i])
+                {
+                    if (teamstr[i] == '\r' || teamstr[i] == '\n')
+                    {
+                        teamstr[i] = '\0';
+                    }
 
-			SiegeObjectiveCompleted(ent->side, ent->objective, final, clUser);
-		}
-	}
+                    i++;
+                }
+                UseSiegeTarget(other, activator, teamstr);
+            }
+
+            if (ent->target && ent->target[0])
+            { // use this too
+                UseSiegeTarget(other, activator, ent->target);
+            }
+
+            SiegeObjectiveCompleted(ent->side, ent->objective, final, clUser);
+        }
+    }
+
+    // No need to free, just clear the allocated memory
+    memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
 }
+
+
 
 /*QUAKED info_siege_objective (1 0 1) (-16 -16 -24) (16 16 32) ? x x STARTOFFRADAR
 STARTOFFRADAR - start not displaying on radar, don't display until used.
@@ -1310,75 +1291,81 @@ void SP_info_siege_radaricon (gentity_t *ent)
 	trap_LinkEntity(ent);
 }
 
-void decompTriggerUse(gentity_t *ent, gentity_t *other, gentity_t *activator)
+void decompTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
 {
-	int final = 0;
-	char teamstr[1024];
-	char objectivestr[64];
-	char desiredobjective[MAX_SIEGE_INFO_SIZE];
+    int final = 0;
+    char teamstr[1024];
+    char objectivestr[64];
+    char* desiredobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
 
-	if (gSiegeRoundEnded)
-	{
-		return;
-	}
+    if (!desiredobjective) {
+        // Handle allocation failure gracefully
+        return;
+    }
 
-	if (!G_SiegeGetCompletionStatus(ent->side, ent->objective))
-	{ //if it's not complete then there's nothing to do here
-		return;
-	}
+    if (gSiegeRoundEnded)
+    {
+        memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
+        return;
+    }
 
-	//Update the configstring status
-	G_SiegeSetObjectiveComplete(ent->side, ent->objective, qtrue);
+    if (!G_SiegeGetCompletionStatus(ent->side, ent->objective))
+    {
+        memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
+        return;
+    }
 
-	//[TABBots]
-	//Completing an objective for one side completes the objective for both sides so the objective valid stuff works right. 
-	//(which scans to see if the objective is finished for both sides.)
-	if (ent->side == SIEGETEAM_TEAM1)
-	{
-		G_SiegeSetObjectiveComplete(SIEGETEAM_TEAM2, ent->objective, qtrue);
-	}
-	else
-	{
-		G_SiegeSetObjectiveComplete(SIEGETEAM_TEAM1, ent->objective, qtrue);
-	}
-	//[/TABBots]
+    G_SiegeSetObjectiveComplete(ent->side, ent->objective, qtrue);
 
-	//Find out if this objective counts toward the final objective count
-   	if (ent->side == SIEGETEAM_TEAM1)
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team1);
-	}
-	else
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team2);
-	}
+    //[TABBots]
+    if (ent->side == SIEGETEAM_TEAM1)
+    {
+        G_SiegeSetObjectiveComplete(SIEGETEAM_TEAM2, ent->objective, qtrue);
+    }
+    else
+    {
+        G_SiegeSetObjectiveComplete(SIEGETEAM_TEAM1, ent->objective, qtrue);
+    }
+    //[/TABBots]
 
-	if (BG_SiegeGetValueGroup(siege_info, teamstr, gParseObjectives))
-	{
-		Com_sprintf(objectivestr, sizeof(objectivestr), "Objective%i", ent->objective);
+    if (ent->side == SIEGETEAM_TEAM1)
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team1);
+    }
+    else
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team2);
+    }
 
-		if (BG_SiegeGetValueGroup(gParseObjectives, objectivestr, desiredobjective))
-		{
-			if (BG_SiegeGetPairedValue(desiredobjective, "final", teamstr))
-			{
-				final = atoi(teamstr);
-			}
-		}
-	}
+    if (BG_SiegeGetValueGroup(siege_info, teamstr, gParseObjectives))
+    {
+        Com_sprintf(objectivestr, sizeof(objectivestr), "Objective%i", ent->objective);
 
-	//Subtract the goal num if applicable
-	if (final != -1)
-	{
-		if (ent->side == SIEGETEAM_TEAM1)
-		{
-			imperial_goals_completed--;
-		}
-		else
-		{
-			rebel_goals_completed--;
-		}
-	}
+        if (BG_SiegeGetValueGroup(gParseObjectives, objectivestr, desiredobjective))
+        {
+            if (BG_SiegeGetPairedValue(desiredobjective, "final", teamstr))
+            {
+                final = atoi(teamstr);
+            }
+        }
+    }
+
+    if (final != -1)
+    {
+        if (ent->side == SIEGETEAM_TEAM1)
+        {
+            imperial_goals_completed--;
+        }
+        else
+        {
+            rebel_goals_completed--;
+        }
+    }
+
+    // No need to free, just clear the allocated memory
+    memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
 }
+
 
 /*QUAKED info_siege_decomplete (1 0 1) (-16 -16 -24) (16 16 32)
 "objective" - specifies the objective to decomplete upon activation
@@ -1406,7 +1393,7 @@ void SP_info_siege_decomplete (gentity_t *ent)
 
 void siegeEndUse(gentity_t *ent, gentity_t *other, gentity_t *activator)
 {
-	LogExit("Round ended");
+	G_LogExit("Round ended");
 }
 
 /*QUAKED target_siege_end (1 0 1) (-16 -16 -24) (16 16 32)

@@ -233,47 +233,55 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 	}
 	else
 	{
-		vec4_t		color;
-		const char	*s;
-		int			xx;
+		vec4_t color;
+		const char* s;
+		int xx;
 
-		// draw the drop shadow
-		if (shadow) {
-			color[0] = color[1] = color[2] = 0;
-			color[3] = setColor[3];
-			trap_R_SetColor( color );
+		// Check if the string is NULL before attempting to use it
+		if (string != NULL) {
+			// Draw the drop shadow
+			if (shadow) {
+				color[0] = color[1] = color[2] = 0;
+				color[3] = setColor[3];
+				trap_R_SetColor(color);
+				s = string;
+				xx = x;
+				while (*s) {
+					if (Q_IsColorString(s)) {
+						s += 2;
+						continue;
+					}
+					CG_DrawChar(xx + 2, y + 2, charWidth, charHeight, *s);
+					xx += charWidth;
+					s++;
+				}
+			}
+
+			// Draw the colored text
 			s = string;
 			xx = x;
-			while ( *s ) {
-				if ( Q_IsColorString( s ) ) {
+			trap_R_SetColor(setColor);
+			while (*s) {
+				if (Q_IsColorString(s)) {
+					if (!forceColor) {
+						memcpy(color, g_color_table[ColorIndex(*(s + 1))], sizeof(color));
+						color[3] = setColor[3];
+						trap_R_SetColor(color);
+					}
 					s += 2;
 					continue;
 				}
-				CG_DrawChar( xx + 2, y + 2, charWidth, charHeight, *s );
+				CG_DrawChar(xx, y, charWidth, charHeight, *s);
 				xx += charWidth;
 				s++;
 			}
+			trap_R_SetColor(NULL);  // Reset color at the end
+		}
+		else {
+			// Handle the case where string is NULL, maybe log a warning
+			Com_Printf("Warning: NULL string passed to text drawing function.\n");
 		}
 
-		// draw the colored text
-		s = string;
-		xx = x;
-		trap_R_SetColor( setColor );
-		while ( *s ) {
-			if ( Q_IsColorString( s ) ) {
-				if ( !forceColor ) {
-					memcpy( color, g_color_table[ColorIndex(*(s+1))], sizeof( color ) );
-					color[3] = setColor[3];
-					trap_R_SetColor( color );
-				}
-				s += 2;
-				continue;
-			}
-			CG_DrawChar( xx, y, charWidth, charHeight, *s );
-			xx += charWidth;
-			s++;
-		}
-		trap_R_SetColor( NULL );
 	}
 }
 

@@ -125,67 +125,73 @@ void Create_Autosave( vec3_t origin, int size, qboolean teleportPlayers )
 
 
 void Load_Autosaves(void)
-{//load in our autosave from the .autosp
-	char			*s;
-	int				len;
-	fileHandle_t	f;
-	char			buf[MAX_AUTOSAVE_FILESIZE];
-	char			loadPath[MAX_QPATH];
-	vec3_t			positionData;
-	int				sizeData;
-	//[RawMapName]
-	//vmCvar_t		mapname;
-	//[/RawMapName]
-	qboolean		teleportPlayers = qfalse;
+{
+	// load in our autosave from the .autosp
+	char* s;
+	int             len;
+	fileHandle_t    f;
+	char            buf[MAX_AUTOSAVE_FILESIZE];
+	char            loadPath[MAX_QPATH];
+	vec3_t          positionData;
+	int             sizeData;
+	qboolean        teleportPlayers = qfalse;
 
 	G_Printf("^5Loading Autosave File Data...");
 
-	//[RawMapName]
-	//trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
-
-	//Com_sprintf(loadPath, MAX_QPATH, "maps/%s.autosp", mapname.string);
 	Com_sprintf(loadPath, sizeof(loadPath), "maps/%s.autosp", level.rawmapname);
-	//[/RawMapName]
 
-	len = trap_FS_FOpenFile( loadPath, &f, FS_READ );
-	if ( !f )
+	len = trap_FS_FOpenFile(loadPath, &f, FS_READ);
+	if (!f)
 	{
 		G_Printf("^5No autosave file found.\n");
 		return;
 	}
-	if ( !len )
-	{ //empty file
+	if (!len)
+	{ // empty file
 		G_Printf("^5Empty autosave file!\n");
-		trap_FS_FCloseFile( f );
+		trap_FS_FCloseFile(f);
 		return;
 	}
 
-	trap_FS_Read( buf, len, f );
-	trap_FS_FCloseFile( f );
+	trap_FS_Read(buf, len, f);
+	trap_FS_FCloseFile(f);
+
+	// Null-terminate the buffer explicitly to avoid potential issues with `s`
+	buf[len] = '\0';  // Ensure proper null-termination at the end of the buffer
 
 	s = buf;
 
-	while(*s != '\0' && s-buf < len)
+	while (*s != '\0' && s - buf < len)
 	{
-		if(*s == '\n')
-		{//hop over newlines
+		if (*s == '\n')
+		{ // hop over newlines
 			s++;
 			continue;
 		}
 
-		sscanf(s, "%f %f %f %i %i", &positionData[0], &positionData[1], &positionData[2], &sizeData, &teleportPlayers);
+		// Ensure sscanf doesn't go out of bounds
+		if (sscanf(s, "%f %f %f %i %i", &positionData[0], &positionData[1], &positionData[2], &sizeData, &teleportPlayers) == 5)
+		{
+			Create_Autosave(positionData, sizeData, teleportPlayers);
+		}
 
-		Create_Autosave( positionData, sizeData, teleportPlayers );
-
-		//advance to the end of the line
-		while(*s != '\n' && *s != '\0' && s-buf < len)
+		// advance to the end of the line
+		while (*s != '\n' && *s != '\0' && s - buf < len)
 		{
 			s++;
+		}
+
+		// Ensure proper null termination, since the string pointer might be advanced beyond the buffer length
+		if (s - buf >= len)
+		{
+			*s = '\0';
 		}
 	}
 
 	G_Printf("^5Done.\n");
 }
+
+
 
 
 void Save_Autosaves(void)

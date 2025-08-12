@@ -6,31 +6,29 @@
 #include "anims.h"
 #include "say.h"
 #include "../icarus/Q3_Interface.h"
-
 extern vec3_t playerMins;
 extern vec3_t playerMaxs;
 //extern void PM_SetAnimFinal(int *torsoAnim,int *legsAnim,int type,int anim,int priority,int *torsoAnimTimer,int *legsAnimTimer,gentity_t *gent);
-extern void G_SoundOnEnt( gentity_t *ent, soundChannel_t channel, const char *soundPath );
-extern void PM_SetTorsoAnimTimer( gentity_t *ent, int *torsoAnimTimer, int time );
-extern void PM_SetLegsAnimTimer( gentity_t *ent, int *legsAnimTimer, int time );
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
+extern void PM_SetTorsoAnimTimer( int time );
+extern void PM_SetLegsAnimTimer( int time );
 extern void NPC_BSNoClip ( void );
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
 extern void NPC_ApplyRoff (void);
 extern void NPC_TempLookTarget ( gentity_t *self, int lookEntNum, int minLookTime, int maxLookTime );
-extern void NPC_CheckPlayerAim ( void );
-extern void NPC_CheckAllClear ( void );
+//extern void NPC_CheckPlayerAim ( void );
+//extern void NPC_CheckAllClear ( void );
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
 extern qboolean NPC_CheckLookTarget( gentity_t *self );
 extern void NPC_SetLookTarget( gentity_t *self, int entNum, int clearTime );
 extern void Mark1_dying( gentity_t *self );
 extern void NPC_BSCinematic( void );
-extern int GetTime ( int lastTime );
+extern int BG_GetTime(void);
 //[CoOp]
 extern void G_CheckCharmed( gentity_t *self );
 extern qboolean Jedi_CultistDestroyer( gentity_t *self );
 //[/CoOp]
 extern void NPC_BSGM_Default( void );
-extern void NPC_CheckCharmed( void );
 extern qboolean Boba_Flying( gentity_t *self );
 
 extern vmCvar_t		g_saberRealisticCombat;
@@ -202,7 +200,7 @@ qboolean G_OkayToRemoveCorpse( gentity_t *self )
 	}
 
 	//RAFIXME - looks like SP has a better implimentation for this.  What about client 0?
-	if ( self->client->ps.heldByClient )
+	if (self->client && self->client->ps.heldByClient )
 	//if ( self->client->ps.heldByClient < ENTITYNUM_WORLD )
 	{//being dragged
 		return qfalse;
@@ -935,7 +933,7 @@ vec3_t NPCDEBUG_BLUE = {0.0, 0.0, 1.0};
 vec3_t NPCDEBUG_LIGHT_BLUE = {0.3f, 0.7f, 1.0};
 extern void G_Cube( vec3_t mins, vec3_t maxs, vec3_t color, float alpha );
 extern void G_Line( vec3_t start, vec3_t end, vec3_t color, float alpha );
-extern void G_Cylinder( vec3_t start, vec3_t end, float radius, vec3_t color );
+//extern void G_Cylinder( vec3_t start, vec3_t end, float radius, vec3_t color );
 
 //[CoOp]
 /* Not Used by anything.
@@ -1041,7 +1039,7 @@ void NPC_ApplyScriptFlags (void)
 	//[/CoOp]
 }
 
-void Q3_DebugPrint( int level, const char *format, ... );
+//extern void Q3_DebugPrint( int level, const char *format, ... );
 void NPC_HandleAIFlags (void)
 {
 	//[CoOp] SP Code
@@ -1408,9 +1406,9 @@ void NPC_BehaviorSet_Interrogator( int bState )
 	}
 }
 
-void NPC_BSImperialProbe_Attack( void );
-void NPC_BSImperialProbe_Patrol( void );
-void NPC_BSImperialProbe_Wait(void);
+void ImperialProbe_AttackDecision( void );
+void ImperialProbe_Patrol( void );
+void ImperialProbe_Wait(void);
 
 /*
 -------------------------
@@ -1911,7 +1909,7 @@ extern void NPC_BSEmplaced( void );
 extern qboolean NPC_CheckSurrender( void );
 extern void Boba_FlyStop( gentity_t *self );
 extern qboolean RT_Flying( gentity_t *self );
-extern void NPC_BSRT_Default( void );
+//extern void NPC_BSRT_Default( void );
 //[CoOp]
 										  
 extern void BubbleShield_Update(void);

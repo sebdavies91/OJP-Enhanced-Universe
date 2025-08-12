@@ -6,7 +6,7 @@
 
 extern qboolean BG_SabersOff( playerState_t *ps );
 
-extern void CG_DrawAlert( vec3_t origin, float rating );
+//extern void CG_DrawAlert( vec3_t origin, float rating );
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
 extern void ForceJump( gentity_t *self, usercmd_t *ucmd );
 extern vmCvar_t	g_saberRealisticCombat;
@@ -38,8 +38,8 @@ extern void NPC_ClearLookTarget( gentity_t *self );
 extern void NPC_SetLookTarget( gentity_t *self, int entNum, int clearTime );
 extern void NPC_TempLookTarget( gentity_t *self, int lookEntNum, int minLookTime, int maxLookTime );
 extern qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs, int ignore, int clipmask );
-extern qboolean NPC_CheckEnemyStealth( void );
-extern void G_SoundOnEnt( gentity_t *ent, soundChannel_t channel, const char *soundPath );
+extern qboolean NPC_CheckEnemyStealth(gentity_t* target);
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
 
 extern gitem_t	*BG_FindItemForAmmo( ammo_t ammo );
 
@@ -53,7 +53,7 @@ extern void ForceAbsorb( gentity_t *self );
 extern void ForceStasis( gentity_t *self );
 extern int WP_MissileBlockForBlock( int saberBlock );
 extern qboolean G_GetHitLocFromSurfName( gentity_t *ent, const char *surfName, int *hitLoc, vec3_t point, vec3_t dir, vec3_t bladeDir, int mod );
-extern qboolean WP_ForcePowerUsable( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
+extern qboolean WP_ForcePowerUsable(gentity_t* self, forcePowers_t forcePower);
 extern qboolean WP_ForcePowerAvailable( gentity_t *self, forcePowers_t forcePower, int overrideAmt );
 extern void WP_ForcePowerStop( gentity_t *self, forcePowers_t forcePower );
 extern void WP_DeactivateSaber( gentity_t *self, qboolean clearLength ); //clearLength = qfalse
@@ -778,7 +778,7 @@ void Boba_Precache( void )
 	G_EffectIndex( "boba/fthrw" );
 }
 
-extern void G_CreateG2AttachedWeaponModel( gentity_t *ent, const char *weaponModel, int boltNum, int weaponNum );
+//extern void G_CreateG2AttachedWeaponModel( gentity_t *ent, const char *weaponModel, int boltNum, int weaponNum );
 extern void ChangeWeapon( gentity_t *ent, int newWeapon );
 void Boba_ChangeWeapon( int wp )
 {
@@ -2109,18 +2109,41 @@ static void Jedi_AdjustSaberAnimLevel( gentity_t *self, int newLevel )
 
 	//[StanceSelection]
 	//override stance with special saber style if we're using special sabers
-	if(self->client->saber[0].model[0] && self->client->saber[1].model[0] 
-		&& !G_ValidSaberStyle(self, SS_DUAL) )
+	if (self->client->saber[0].model[0] && self->client->saber[1].model[0]
+		&& !G_ValidSaberStyle(self, SS_DUAL))
 	{
 		self->client->ps.fd.saberAnimLevel = SS_DUAL;
 		return;
 	}
 	else if (self->client->saber[0].numBlades > 1
-		&& WP_SaberCanTurnOffSomeBlades( &self->client->saber[0] )
-		&& !G_ValidSaberStyle(self, SS_STAFF) )
+		&& WP_SaberCanTurnOffSomeBlades(&self->client->saber[0])
+		&& !G_ValidSaberStyle(self, SS_STAFF))
 	{
 		self->client->ps.fd.saberAnimLevel = SS_STAFF;
 		return;
+	}
+	else
+	{
+		// Check for saber stance cooldown
+		if (self->client->saberStyleBiasTime < level.time)
+		{
+			int styleBias = Q_irand(1, 5); // 1=FAST, ..., 5=DESANN
+			int targetStance;
+
+			switch (styleBias)
+			{
+			case 5: targetStance = SS_DESANN; break;
+			case 4: targetStance = SS_TAVION; break;
+			case 3: targetStance = SS_STRONG; break;
+			case 2: targetStance = SS_MEDIUM; break;
+			default: targetStance = SS_FAST; break;
+			}
+
+			self->client->ps.fd.saberAnimLevel = targetStance;
+
+			// Set cooldown for next random change
+			self->client->saberStyleBiasTime = level.time + Q_irand(30000, 60000);
+		}
 	}
 	//[/StanceSelection]
 
@@ -2604,7 +2627,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 		{
 			if ( ((NPCInfo->scriptFlags&SCF_DONT_FIRE)||NPC->client->pers.maxHealth - NPC->health > NPC->client->pers.maxHealth*0.25f)//lost over 1/4 of our health or not firing
 				//[CoOp]
-				&& WP_ForcePowerUsable( NPC, FP_DRAIN, 20 )//know how to drain and have enough power
+				&& WP_ForcePowerUsable( NPC, FP_DRAIN)//know how to drain and have enough power
 				//&& NPC->client->ps.fd.forcePowersKnown&(1<<FP_DRAIN) //know how to drain
 				//&& WP_ForcePowerAvailable( NPC, FP_DRAIN, 20 )//have enough power
 				//[/CoOp]
@@ -2865,7 +2888,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 			}
 			//[CoOp]
 			//We'd like to be able to use saber throw when a lower ranked dude.
-			if ( (NPCInfo->rank >= RANK_LT_JG||WP_ForcePowerUsable( NPC, FP_SABERTHROW, 0 ))
+			if ( (NPCInfo->rank >= RANK_LT_JG||WP_ForcePowerUsable( NPC, FP_SABERTHROW))
 			//if ( NPCInfo->rank >= RANK_LT_JG 
 			//[/CoOp]
 				&& !Q_irand( 0, 5 ) 
@@ -2979,7 +3002,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 				if ( chanceScale 
 					&& (enemy_dist > Q_irand( 100, 200 ) || (NPCInfo->scriptFlags&SCF_DONT_FIRE) || (!Q_stricmp("Yoda",NPC->NPC_type)&&!Q_irand(0,3)) )
 					&& enemy_dist < 500 
-					&& (Q_irand( 0, chanceScale*10 )<5 || (NPC->enemy->client && NPC->enemy->client->ps.weapon != WP_SABER && !Q_irand( 0, chanceScale ) ) ) )
+					&& (Q_irand( 0, chanceScale*10 )<5 || (NPC->enemy && NPC->enemy->client && NPC->enemy->client->ps.weapon != WP_SABER && !Q_irand( 0, chanceScale ) ) ) )
 				{//else, randomly try some kind of attack every now and then
 						//FIXME: Cultist fencers don't have any of these fancy powers
 						//			the only thing they might be able to do is throw their saber
@@ -2988,7 +3011,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 						&& (!Q_irand( 0, 1 ) || NPC->s.weapon != WP_SABER) )
 					//if ( (NPCInfo->rank == RANK_ENSIGN || NPCInfo->rank > RANK_LT_JG) && !Q_irand( 0, 1 ) )
 					{
-						if ( WP_ForcePowerUsable( NPC, FP_PULL, 0 ) && !Q_irand( 0, 2 ) )
+						if ( WP_ForcePowerUsable( NPC, FP_PULL ) && !Q_irand( 0, 2 ) )
 						//if ( WP_ForcePowerAvailable( NPC, FP_PULL, 0 ) && !Q_irand( 0, 2 ) )
 						{
 							//force pull the guy to me!
@@ -3002,7 +3025,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 							}
 						}
 						//let lightning cultists spam the lightning.
-						else if ( WP_ForcePowerUsable( NPC, FP_LIGHTNING, 0 ) && (( (NPCInfo->scriptFlags & SCF_DONT_FIRE) && Q_stricmp( "cultist_lightning", NPC->NPC_type )) || Q_irand( 0, 1 ) ) )
+						else if ( WP_ForcePowerUsable( NPC, FP_LIGHTNING ) && (( (NPCInfo->scriptFlags & SCF_DONT_FIRE) && Q_stricmp( "cultist_lightning", NPC->NPC_type )) || Q_irand( 0, 1 ) ) )
 						//else if ( WP_ForcePowerAvailable( NPC, FP_LIGHTNING, 0 ) && Q_irand( 0, 1 ) )
 						{
 							ForceLightning( NPC );
@@ -3038,7 +3061,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 							TIMER_Set( NPC, "attackDelay", NPC->client->ps.weaponTime );
 						}
 						//rwwFIXMEFIXME: After new drain stuff from SP is in re-enable this.
-						else if ( WP_ForcePowerUsable( NPC, FP_GRIP, 0 )
+						else if ( WP_ForcePowerUsable( NPC, FP_GRIP)
 								&& NPC->enemy 
 								&& InFOV3( NPC->enemy->r.currentOrigin, NPC->r.currentOrigin, 
 								NPC->client->ps.viewangles, 20, 30 ) )
@@ -3080,7 +3103,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 					{
 						//[CoOp]
 						//we want to be able to toss if we'll a lower rank
-						if ( (NPCInfo->rank >= RANK_LT_JG ||WP_ForcePowerUsable( NPC, FP_SABERTHROW, 0 ))
+						if ( (NPCInfo->rank >= RANK_LT_JG ||WP_ForcePowerUsable( NPC, FP_SABERTHROW ))
 						//if ( NPCInfo->rank >= RANK_LT_JG 	
 						//[/CoOp]
 							&& !(NPC->client->ps.fd.forcePowersActive&(1 << FP_SPEED))
@@ -3095,7 +3118,7 @@ static void Jedi_CombatDistance( int enemy_dist )
 				{//approach enemy
 					if ( TIMER_Done( NPC, "parryTime" ) || NPCInfo->rank > RANK_LT )
 					{//not parrying
-						if ( !NPC->enemy->client || NPC->enemy->client->ps.groundEntityNum != ENTITYNUM_NONE )
+						if (NPC->enemy && ( !NPC->enemy->client || NPC->enemy->client->ps.groundEntityNum != ENTITYNUM_NONE ))
 						{//they're on the ground, so advance
 							if ( enemy_dist > 200 || !(NPCInfo->scriptFlags&SCF_DONT_FIRE) )
 							{//far away or allowed to use saber
@@ -3313,7 +3336,7 @@ evasionType_t Jedi_CheckFlipEvasions( gentity_t *self, float rightdot, float zdi
 	//WALL-RUNS
 	//WALL-FLIPS
 	//FIXME: if facing a wall, do forward wall-walk-backflip
-	if ( self->client->ps.legsAnim == BOTH_WALL_RUN_LEFT || self->client->ps.legsAnim == BOTH_WALL_RUN_RIGHT )
+	if (self->client && ( self->client->ps.legsAnim == BOTH_WALL_RUN_LEFT || self->client->ps.legsAnim == BOTH_WALL_RUN_RIGHT ))
 	{//already running on a wall
 		vec3_t right, fwdAngles;
 		int		anim = -1;
@@ -3369,7 +3392,7 @@ evasionType_t Jedi_CheckFlipEvasions( gentity_t *self, float rightdot, float zdi
 			return EVASION_OTHER;
 		}
 	}
-	else if ( self->client->NPC_class != CLASS_DESANN //desann doesn't do these kind of frilly acrobatics
+	else if (self->client && self->NPC && self->client->NPC_class != CLASS_DESANN //desann doesn't do these kind of frilly acrobatics
 		&& (self->NPC->rank == RANK_CREWMAN || self->NPC->rank >= RANK_LT) 
 		&& Q_irand( 0, 1 ) 
 		&& !BG_InRoll( &self->client->ps, self->client->ps.legsAnim )
@@ -8659,7 +8682,7 @@ static void Jedi_Attack( void )
 	}
 
 	//If we don't have an enemy, just idle
-	if ( NPC->enemy->s.weapon == WP_TURRET && !Q_stricmp( "PAS", NPC->enemy->classname ) )
+	if (NPC->enemy && NPC->enemy->s.weapon == WP_TURRET && !Q_stricmp( "PAS", NPC->enemy->classname ) )
 	{
 		if ( NPC->enemy->count <= 0 )
 		{//it's out of ammo
@@ -8677,7 +8700,7 @@ static void Jedi_Attack( void )
 	}
 	//[CoOp]
 	//charmed SP code
-	if ( NPC->enemy->NPC  
+	if (NPC->enemy && NPC->enemy->NPC
 		&& NPC->enemy->NPC->charmedTime > level.time )
 	{//my enemy was charmed
 		if ( OnSameTeam( NPC, NPC->enemy ) )

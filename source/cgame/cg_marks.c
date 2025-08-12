@@ -44,19 +44,35 @@ void	CG_InitMarkPolys( void ) {
 CG_FreeMarkPoly
 ==================
 */
-void CG_FreeMarkPoly( markPoly_t *le ) {
-	if ( !le->prevMark ) {
-		CG_Error( "CG_FreeLocalEntity: not active" );
+void CG_FreeMarkPoly(markPoly_t* le) {
+	// Check if 'le' is NULL to avoid dereferencing a NULL pointer
+	if (!le) {
+		CG_Error("CG_FreeMarkPoly: 'le' is NULL");
+		return; // Return early to prevent further code execution
 	}
 
-	// remove from the doubly linked active list
-	le->prevMark->nextMark = le->nextMark;
-	le->nextMark->prevMark = le->prevMark;
+	// Check if 'le->prevMark' is NULL before attempting to access it
+	if (!le->prevMark) {
+		CG_Error("CG_FreeMarkPoly: 'le->prevMark' is NULL");
+		return; // Return early to prevent further code execution
+	}
 
-	// the free list is only singly linked
+	// Remove from the doubly linked active list
+	if (le->prevMark) {
+		le->prevMark->nextMark = le->nextMark;
+	}
+	if (le->nextMark) {
+		le->nextMark->prevMark = le->prevMark;
+	}
+
+	// The free list is singly linked
 	le->nextMark = cg_freeMarkPolys;
 	cg_freeMarkPolys = le;
 }
+
+
+
+
 
 /*
 ===================
@@ -65,31 +81,40 @@ CG_AllocMark
 Will allways succeed, even if it requires freeing an old active mark
 ===================
 */
-markPoly_t	*CG_AllocMark( void ) {
-	markPoly_t	*le;
+markPoly_t* CG_AllocMark(void) {
+	markPoly_t* le;
 	int time;
 
-	if ( !cg_freeMarkPolys ) {
-		// no free entities, so free the one at the end of the chain
-		// remove the oldest active entity
+	if (!cg_freeMarkPolys) {
+		// No free entities, so free the one at the end of the chain
+		// Remove the oldest active entity
 		time = cg_activeMarkPolys.prevMark->time;
 		while (cg_activeMarkPolys.prevMark && time == cg_activeMarkPolys.prevMark->time) {
-			CG_FreeMarkPoly( cg_activeMarkPolys.prevMark );
+			CG_FreeMarkPoly(cg_activeMarkPolys.prevMark);
 		}
+	}
+
+	// Check if cg_freeMarkPolys is NULL before using it
+	if (!cg_freeMarkPolys) {
+		// Handle the error, either return NULL or allocate a new entity
+		return NULL;  // or allocate a new entity if required
 	}
 
 	le = cg_freeMarkPolys;
 	cg_freeMarkPolys = cg_freeMarkPolys->nextMark;
 
-	memset( le, 0, sizeof( *le ) );
+	// Now, it's safe to call memset
+	memset(le, 0, sizeof(*le));
 
-	// link into the active list
+	// Link into the active list
 	le->nextMark = cg_activeMarkPolys.nextMark;
 	le->prevMark = &cg_activeMarkPolys;
 	cg_activeMarkPolys.nextMark->prevMark = le;
 	cg_activeMarkPolys.nextMark = le;
+
 	return le;
 }
+
 
 
 
@@ -375,7 +400,7 @@ static int	numShaderAnims;
 // done.
 
 #define		PARTICLE_GRAVITY	40
-#define		MAX_PARTICLES	1024
+#define		MAX_PARTICLES	4096
 
 cparticle_t	*active_particles, *free_particles;
 cparticle_t	particles[MAX_PARTICLES];
@@ -392,40 +417,36 @@ float			oldtime;
 CL_ClearParticles
 ===============
 */
-void CG_ClearParticles (void)
+void CG_ClearParticles(void)
 {
-	int		i;
+	int i;
 
-	memset( particles, 0, sizeof(particles) );
+	// Ensure particles array is large enough for cl_numparticles elements
+	if (cl_numparticles > MAX_PARTICLES) {
+		cl_numparticles = MAX_PARTICLES;  // Prevent overrun by limiting to max
+	}
+
+	memset(particles, 0, sizeof(particles));
 
 	free_particles = &particles[0];
 	active_particles = NULL;
 
-	for (i=0 ;i<cl_numparticles ; i++)
-	{
-		particles[i].next = &particles[i+1];
+	// Ensure we're within the bounds of the array
+	for (i = 0; i < cl_numparticles - 1; i++) {
+		particles[i].next = &particles[i + 1];
 		particles[i].type = 0;
 	}
-	particles[cl_numparticles-1].next = NULL;
+	// Null terminate the last element
+	if (cl_numparticles > 0) {
+		particles[cl_numparticles - 1].next = NULL;
+	}
 
 	oldtime = cg.time;
 
-	/*
-	// Ridah, init the shaderAnims
-	for (i=0; shaderAnimNames[i]; i++) {
-		int j;
-
-		for (j=0; j<shaderAnimCounts[i]; j++) {
-			shaderAnims[i][j] = trap_R_RegisterShader( va("%s%i", shaderAnimNames[i], j+1) );
-		}
-	}
-	numShaderAnims = i;
-	*/
 	numShaderAnims = 0;
-	// done.
-
 	initparticles = qtrue;
 }
+
 
 
 /*

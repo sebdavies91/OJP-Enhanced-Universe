@@ -118,6 +118,7 @@ extern float NPC_MaxDistSquaredForWeapon( void );
 extern qboolean NPC_EvaluateShot( int hit, qboolean glassOK );
 extern int NPC_ShotEntity( gentity_t *ent, vec3_t impactPos ); //impactedPos = NULL
 
+
 //NPC_formation
 extern qboolean NPC_SlideMoveToGoal (void);
 extern float NPC_FindClosestTeammate (gentity_t *self);
@@ -129,6 +130,7 @@ extern void NPC_DropFormation (gentity_t *self);
 extern void NPC_ReorderFormation (gentity_t *self);
 extern void NPC_InsertIntoFormation (gentity_t *self);
 extern void NPC_DeleteFromFormation (gentity_t *self);
+
 
 #define COLLISION_RADIUS 32
 #define NUM_POSITIONS 30

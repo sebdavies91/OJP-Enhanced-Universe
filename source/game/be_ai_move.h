@@ -86,6 +86,8 @@ typedef struct bot_avoidspot_s
 	int type;
 } bot_avoidspot_t;
 
+
+
 //resets the whole move state
 void BotResetMoveState(int movestate);
 //moves the bot to the given goal

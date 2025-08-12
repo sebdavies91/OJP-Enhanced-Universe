@@ -90,7 +90,7 @@ void NPC_Blocked( gentity_t *self, gentity_t *blocker )
 	//Debug_Printf( debugNPCAI, DEBUG_LEVEL_WARNING, "%s: Excuse me, %s %s!\n", self->targetname, blocker->classname, blocker->targetname );
 	
 	//If we're being blocked by the player, say something to them
-	if ( ( blocker->s.number == 0 ) && ( ( blocker->client->playerTeam == self->client->playerTeam ) ) )
+	if (blocker->client &&  blocker->s.number == 0  &&   blocker->client->playerTeam == self->client->playerTeam   )
 	{
 		//guys in formation are not trying to get to a critical point, 
 		//don't make them yell at the player (unless they have an enemy and
@@ -295,7 +295,7 @@ qboolean NAV_ClearPathToPoint( gentity_t *self, vec3_t pmins, vec3_t pmaxs, vec3
 		{
 			if ( NAVDEBUG_showCollision )
 			{
-				if ( trace.entityNum < ENTITYNUM_WORLD && (&g_entities[trace.entityNum] != NULL) && g_entities[trace.entityNum].s.eType != ET_MOVER )
+				if ( trace.entityNum < ENTITYNUM_WORLD  && g_entities[trace.entityNum].s.eType != ET_MOVER )
 				{
 					vec3_t	p1, p2;
 					G_DrawEdge( point, trace.endpos, EDGE_PATH );
@@ -328,7 +328,7 @@ qboolean NAV_ClearPathToPoint( gentity_t *self, vec3_t pmins, vec3_t pmaxs, vec3
 
 		if ( NAVDEBUG_showCollision )
 		{
-			if ( trace.entityNum < ENTITYNUM_WORLD && (&g_entities[trace.entityNum] != NULL) && g_entities[trace.entityNum].s.eType != ET_MOVER )
+			if ( trace.entityNum < ENTITYNUM_WORLD  && g_entities[trace.entityNum].s.eType != ET_MOVER )
 			{
 				vec3_t	p1, p2;
 				G_DrawEdge( self->r.currentOrigin, trace.endpos, EDGE_PATH );
@@ -956,7 +956,10 @@ qboolean NAV_AvoidCollision( gentity_t *self, gentity_t *goal, navInfo_t *info )
 	//Our path is clear, just move there
 	if ( NAVDEBUG_showCollision )
 	{
+		if(self)
+		{ 
 		G_DrawEdge( self->r.currentOrigin, movepos, EDGE_PATH );
+		}
 	}
 
 	return qtrue;

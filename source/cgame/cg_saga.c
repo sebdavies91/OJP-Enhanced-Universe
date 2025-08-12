@@ -51,137 +51,164 @@ siege_Cvar_Set
 replacement for the trap to reduce cvar usage
 ===============
 */
-void siege_Cvar_Set( char *cvarName, char *value )
+void siege_Cvar_Set(char* cvarName, char* value)
 {
-	char **tmp;
+	char** tmp;
 	char ui_siegeInfo[MAX_STRING_CHARS];
 	int i;
-	if(!ui_siegeStruct)
+	if (!ui_siegeStruct)
 	{
-		trap_Cvar_VariableStringBuffer( "ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS );
-		sscanf(ui_siegeInfo,"%p",&ui_siegeStruct);
-		if(!ui_siegeStruct) return;
+		trap_Cvar_VariableStringBuffer("ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS);
+		if (sscanf(ui_siegeInfo, "%p", &ui_siegeStruct) != 1)
+		{
+			return;
+		}
+		if (!ui_siegeStruct)
+			return;
 	}
-	for(tmp=ui_siegeStruct;*tmp;tmp+=2)
+	for (tmp = ui_siegeStruct; *tmp; tmp += 2)
 	{
-		if(*tmp && !strcmp(*tmp,cvarName)) { //cvar already exists, overwrite existing value
-			Q_strncpyz(*(tmp+1),value,256);  //:nervou
+		if (*tmp && !strcmp(*tmp, cvarName))
+		{ // cvar already exists, overwrite existing value
+			Q_strncpyz(*(tmp + 1), value, 256);  // :nervou
 			return;
 		}
 	}
 	i = tmp - ui_siegeStruct;
 	ui_siegeStruct[i] = siege_Str();
-	Q_strncpyz( ui_siegeStruct[i], cvarName, 256 );
-	ui_siegeStruct[i+1] = siege_Str();
-	Q_strncpyz( ui_siegeStruct[i+1], value, 256 );
-	ui_siegeStruct[i+2] = 0;
+	Q_strncpyz(ui_siegeStruct[i], cvarName, 256);
+	ui_siegeStruct[i + 1] = siege_Str();
+	Q_strncpyz(ui_siegeStruct[i + 1], value, 256);
+	ui_siegeStruct[i + 2] = 0;
 	return;
 }
 
-void siege_Cvar_VariableStringBuffer( char *var_name, char *buffer, int bufsize )
+
+void siege_Cvar_VariableStringBuffer(char* var_name, char* buffer, int bufsize)
 {
-	char **tmp;
+	char** tmp;
 	char ui_siegeInfo[MAX_STRING_CHARS];
-	if(!ui_siegeStruct)
+	if (!ui_siegeStruct)
 	{
-		trap_Cvar_VariableStringBuffer( "ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS );
-		sscanf(ui_siegeInfo,"%p",&ui_siegeStruct);
-		if(!ui_siegeStruct) return;
+		trap_Cvar_VariableStringBuffer("ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS);
+		if (sscanf(ui_siegeInfo, "%p", &ui_siegeStruct) != 1) {
+			return;  // sscanf failed, bail out
+		}
+		if (!ui_siegeStruct)
+			return;
 	}
-	for(tmp=ui_siegeStruct;*tmp;tmp+=2)
+	for (tmp = ui_siegeStruct; *tmp; tmp += 2)
 	{
-		if(*tmp && !strcmp(*tmp,var_name)) {
-			Q_strncpyz(buffer,*(tmp+1),bufsize);
+		if (*tmp && !strcmp(*tmp, var_name)) {
+			Q_strncpyz(buffer, *(tmp + 1), bufsize);
 			return;
 		}
 	}
-	trap_Cvar_VariableStringBuffer( var_name, buffer, bufsize );
+	trap_Cvar_VariableStringBuffer(var_name, buffer, bufsize);
 	return;
 }
 
+
 void siegecvarlist(void)
 {
-	char **tmp;
+	char** tmp;
 	char ui_siegeInfo[MAX_STRING_CHARS];
-	if(!ui_siegeStruct)
+
+	if (!ui_siegeStruct)
 	{
-		trap_Cvar_VariableStringBuffer( "ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS );
-		sscanf(ui_siegeInfo,"%p",&ui_siegeStruct);
-		if(!ui_siegeStruct) return;
+		trap_Cvar_VariableStringBuffer("ui_siegeInfo", ui_siegeInfo, MAX_STRING_CHARS);
+		if (sscanf(ui_siegeInfo, "%p", &ui_siegeStruct) != 1 || !ui_siegeStruct)
+			return;
 	}
-	for(tmp=ui_siegeStruct;*tmp;tmp+=2)
+	for (tmp = ui_siegeStruct; *tmp; tmp += 2)
 	{
-		CG_Printf("\t%s \"%s\"\n",*tmp,*(tmp+1));
+		CG_Printf("\t%s \"%s\"\n", *tmp, *(tmp + 1));
 	}
-	CG_Printf("%d total cvars\n",(tmp-ui_siegeStruct)/2);
+	CG_Printf("%d total cvars\n", (tmp - ui_siegeStruct) / 2);
 }
 //[/SIEGECVARFIX]
 
 void CG_PrecacheSiegeObjectiveAssetsForTeam(int myTeam)
 {
-	char			teamstr[64];
-	char			objstr[256];
-	char			foundobjective[MAX_SIEGE_INFO_SIZE];
+    char teamstr[64];
+    char* objstr = NULL;
+    char* foundobjective = NULL;
 
-	if (!siege_valid)
-	{
-		CG_Error("Siege data does not exist on client!\n");
-		return;
-	}
+    if (!siege_valid)
+    {
+        CG_Error("Siege data does not exist on client!\n");
+        return;
+    }
 
-	if (myTeam == SIEGETEAM_TEAM1)
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team1);
-	}
-	else
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team2);
-	}
+    // Replacing malloc with BG_Alloc and initializing memory
+    objstr = (char*)BG_Alloc(256);  // Replaced malloc
+    foundobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);  // Replaced malloc
+    if (!objstr || !foundobjective) {
+        if (objstr) memset(objstr, 0, 256);  // Replaced free with memset
+        if (foundobjective) memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);  // Replaced free with memset
+        CG_Error("Memory allocation failed in CG_PrecacheSiegeObjectiveAssetsForTeam\n");
+        return;
+    }
 
-	if (BG_SiegeGetValueGroup(siege_info, teamstr, cgParseObjectives))
-	{
-		int i = 1;
-		while (i < 32)
-		{ //eh, just try 32 I guess
-			Com_sprintf(objstr, sizeof(objstr), "Objective%i", i);
+    if (myTeam == SIEGETEAM_TEAM1)
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team1);
+    }
+    else
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team2);
+    }
 
-			if (BG_SiegeGetValueGroup(cgParseObjectives, objstr, foundobjective))
-			{
-				char str[MAX_QPATH];
+    if (BG_SiegeGetValueGroup(siege_info, teamstr, cgParseObjectives))
+    {
+        int i = 1;
+        while (i < 32)
+        { //eh, just try 32 I guess
+            Com_sprintf(objstr, 256, "Objective%i", i);
 
-				if (BG_SiegeGetPairedValue(foundobjective, "sound_team1", str))
-				{
-					trap_S_RegisterSound(str);
-				}
-				if (BG_SiegeGetPairedValue(foundobjective, "sound_team2", str))
-				{
-					trap_S_RegisterSound(str);
-				}
-				if (BG_SiegeGetPairedValue(foundobjective, "objgfx", str))
-				{
-					trap_R_RegisterShaderNoMip(str);
-				}
-				if (BG_SiegeGetPairedValue(foundobjective, "mapicon", str))
-				{
-					trap_R_RegisterShaderNoMip(str);
-				}
-				if (BG_SiegeGetPairedValue(foundobjective, "litmapicon", str))
-				{
-					trap_R_RegisterShaderNoMip(str);
-				}
-				if (BG_SiegeGetPairedValue(foundobjective, "donemapicon", str))
-				{
-					trap_R_RegisterShaderNoMip(str);
-				}
-			}
-			else
-			{ //no more
-				break;
-			}
-			i++;
-		}
-	}
+            if (BG_SiegeGetValueGroup(cgParseObjectives, objstr, foundobjective))
+            {
+                char str[MAX_QPATH];
+
+                if (BG_SiegeGetPairedValue(foundobjective, "sound_team1", str))
+                {
+                    trap_S_RegisterSound(str);
+                }
+                if (BG_SiegeGetPairedValue(foundobjective, "sound_team2", str))
+                {
+                    trap_S_RegisterSound(str);
+                }
+                if (BG_SiegeGetPairedValue(foundobjective, "objgfx", str))
+                {
+                    trap_R_RegisterShaderNoMip(str);
+                }
+                if (BG_SiegeGetPairedValue(foundobjective, "mapicon", str))
+                {
+                    trap_R_RegisterShaderNoMip(str);
+                }
+                if (BG_SiegeGetPairedValue(foundobjective, "litmapicon", str))
+                {
+                    trap_R_RegisterShaderNoMip(str);
+                }
+                if (BG_SiegeGetPairedValue(foundobjective, "donemapicon", str))
+                {
+                    trap_R_RegisterShaderNoMip(str);
+                }
+            }
+            else
+            { //no more
+                break;
+            }
+            i++;
+        }
+    }
+
+    // Replacing free with memset
+    if (objstr) memset(objstr, 0, 256);  // Replaced free with memset
+    if (foundobjective) memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);  // Replaced free with memset
 }
+
+
 
 void CG_PrecachePlayersForSiegeTeam(int team)
 {
@@ -227,40 +254,53 @@ void CG_PrecachePlayersForSiegeTeam(int team)
 
 void CG_InitSiegeMode(void)
 {
-	char			levelname[MAX_QPATH];
-	char			btime[1024];
-	char			teams[2048];
-	char			teamInfo[MAX_SIEGE_INFO_SIZE];
-	int				len = 0;
-	int				i = 0;
-	int				j = 0;
-	siegeClass_t		*cl;
-	siegeTeam_t		*sTeam;
-	fileHandle_t	f;
-	char			teamIcon[128];
+	// Increase levelname size to MAX_QPATH to avoid overrun
+	char levelname[MAX_QPATH];
+
+	// Move large buffers to heap instead of stack
+	char* btime = (char*)BG_Alloc(1024);
+	char* teams = (char*)BG_Alloc(2048);
+	char* teamInfo = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
+	char teamIcon[128];
+
+	int len = 0;
+	int i = 0;
+	int j = 0;
+	siegeClass_t* cl;
+	siegeTeam_t* sTeam;
+	fileHandle_t f;
+
+	if (!btime || !teams || !teamInfo) {
+		// handle memory allocation failure
+		CG_Error("Memory allocation failed in CG_InitSiegeMode");
+		return;
+	}
 
 	if (cgs.gametype != GT_SIEGE)
 	{
 		goto failure;
 	}
 
-	Com_sprintf(levelname, sizeof(levelname), "%s\0", cgs.mapname);
+	Com_sprintf(levelname, sizeof(levelname), "%s", cgs.mapname);
 
-	i = strlen(levelname)-1;
+	i = strlen(levelname) - 1;
+
+	// Ensure 'i' is within bounds, no larger than MAX_QPATH - 2
+	if (i >= (MAX_QPATH - 1)) {
+		i = MAX_QPATH - 2;  // Leave space for the null terminator
+	}
 
 	while (i > 0 && levelname[i] && levelname[i] != '.')
 	{
 		i--;
 	}
 
-	if (!i)
+	if (i > 0)
 	{
-		goto failure;
+		levelname[i] = '\0'; // kill the ".bsp"
 	}
 
-	levelname[i] = '\0'; //kill the ".bsp"
-
-	Com_sprintf(levelname, sizeof(levelname), "%s.siege\0", levelname); 
+	Com_sprintf(levelname, sizeof(levelname), "%s.siege", levelname);
 
 	if (!levelname[0])
 	{
@@ -284,10 +324,7 @@ void CG_InitSiegeMode(void)
 	{
 		char buf[1024];
 
-		//[SIEGECVARFIX]
-		siege_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, 1024);
-		//trap_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, 1024);
-		//[SIEGECVARFIX]
+		siege_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, sizeof(buf));
 		if (buf[0] && Q_stricmp(buf, "none"))
 		{
 			strcpy(team1, buf);
@@ -298,9 +335,9 @@ void CG_InitSiegeMode(void)
 		}
 
 		if (team1[0] == '@')
-		{ //it's a damn stringed reference.
+		{
 			char b[256];
-			trap_SP_GetStringTextString(team1+1, b, 256);
+			trap_SP_GetStringTextString(team1 + 1, b, sizeof(b));
 			trap_Cvar_Set("cg_siegeTeam1Name", b);
 		}
 		else
@@ -308,10 +345,7 @@ void CG_InitSiegeMode(void)
 			trap_Cvar_Set("cg_siegeTeam1Name", team1);
 		}
 
-		//[SIEGECVARFIX]
-		siege_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, 1024);
-		//trap_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, 1024);
-		//[/SIEGECVARFIX]
+		siege_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, sizeof(buf));
 		if (buf[0] && Q_stricmp(buf, "none"))
 		{
 			strcpy(team2, buf);
@@ -322,9 +356,9 @@ void CG_InitSiegeMode(void)
 		}
 
 		if (team2[0] == '@')
-		{ //it's a damn stringed reference.
+		{
 			char b[256];
-			trap_SP_GetStringTextString(team2+1, b, 256);
+			trap_SP_GetStringTextString(team2 + 1, b, sizeof(b));
 			trap_Cvar_Set("cg_siegeTeam2Name", b);
 		}
 		else
@@ -341,13 +375,13 @@ void CG_InitSiegeMode(void)
 	{
 		if (BG_SiegeGetPairedValue(teamInfo, "TeamIcon", teamIcon))
 		{
-			trap_Cvar_Set( "team1_icon", teamIcon);
+			trap_Cvar_Set("team1_icon", teamIcon);
 		}
 
 		if (BG_SiegeGetPairedValue(teamInfo, "Timed", btime))
 		{
-			team1Timed = atoi(btime)*1000;
-			CG_SetSiegeTimerCvar ( team1Timed );
+			team1Timed = atoi(btime) * 1000;
+			CG_SetSiegeTimerCvar(team1Timed);
 		}
 		else
 		{
@@ -381,13 +415,13 @@ void CG_InitSiegeMode(void)
 	{
 		if (BG_SiegeGetPairedValue(teamInfo, "TeamIcon", teamIcon))
 		{
-			trap_Cvar_Set( "team2_icon", teamIcon);
+			trap_Cvar_Set("team2_icon", teamIcon);
 		}
 
 		if (BG_SiegeGetPairedValue(teamInfo, "Timed", btime))
 		{
-			team2Timed = atoi(btime)*1000;
-			CG_SetSiegeTimerCvar ( team2Timed );
+			team2Timed = atoi(btime) * 1000;
+			CG_SetSiegeTimerCvar(team2Timed);
 		}
 		else
 		{
@@ -399,24 +433,23 @@ void CG_InitSiegeMode(void)
 		CG_Error("No team entry for '%s'\n", team2);
 	}
 
-	//Load the player class types
+	// Load the player class types
 	BG_SiegeLoadClasses(NULL);
 
 	if (!bgNumSiegeClasses)
-	{ //We didn't find any?!
+	{
 		CG_Error("Couldn't find any player classes for Siege");
 	}
 
-	//Now load the teams since we have class data.
+	// Now load the teams since we have class data.
 	BG_SiegeLoadTeams();
 
 	if (!bgNumSiegeTeams)
-	{ //React same as with classes.
+	{
 		CG_Error("Couldn't find any player teams for Siege");
 	}
 
-	//Get and set the team themes for each team. This will control which classes can be
-	//used on each team.
+	// Get and set the team themes for each team.
 	if (BG_SiegeGetValueGroup(siege_info, team1, teamInfo))
 	{
 		if (BG_SiegeGetPairedValue(teamInfo, "UseTeam", btime))
@@ -448,8 +481,6 @@ void CG_InitSiegeMode(void)
 		}
 	}
 
-	//Now go through the classes used by the loaded teams and try to precache
-	//any forced models or forced skins.
 	i = SIEGETEAM_TEAM1;
 
 	while (i <= SIEGETEAM_TEAM2)
@@ -463,7 +494,6 @@ void CG_InitSiegeMode(void)
 			continue;
 		}
 
-		//Get custom team shaders while we're at it.
 		if (i == SIEGETEAM_TEAM1)
 		{
 			cgSiegeTeam1PlShader = sTeam->friendlyShader;
@@ -478,15 +508,15 @@ void CG_InitSiegeMode(void)
 			cl = sTeam->classes[j];
 
 			if (cl->forcedModel[0])
-			{ //This class has a forced model, so precache it.
+			{
 				trap_R_RegisterModel(va("models/players/%s/model.glm", cl->forcedModel));
 
 				if (cl->forcedSkin[0])
-				{ //also has a forced skin, precache it.
-					char *useSkinName;
+				{
+					char* useSkinName;
 
 					if (strchr(cl->forcedSkin, '|'))
-					{//three part skin
+					{
 						useSkinName = va("models/players/%s/|%s", cl->forcedModel, cl->forcedSkin);
 					}
 					else
@@ -497,13 +527,12 @@ void CG_InitSiegeMode(void)
 					trap_R_RegisterSkin(useSkinName);
 				}
 			}
-			
+
 			j++;
 		}
 		i++;
 	}
 
-	//precache saber data for classes that use sabers on both teams
 	BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM1);
 	BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM2);
 
@@ -516,10 +545,21 @@ void CG_InitSiegeMode(void)
 	CG_PrecacheSiegeObjectiveAssetsForTeam(SIEGETEAM_TEAM1);
 	CG_PrecacheSiegeObjectiveAssetsForTeam(SIEGETEAM_TEAM2);
 
+	// Replacing free with memset to clear out memory after use
+	memset(btime, 0, 1024);
+	memset(teams, 0, 2048);
+	memset(teamInfo, 0, MAX_SIEGE_INFO_SIZE);
+
 	return;
+
 failure:
 	siege_valid = 0;
+	if (btime) memset(btime, 0, 1024);
+	if (teams) memset(teams, 0, 2048);
+	if (teamInfo) memset(teamInfo, 0, MAX_SIEGE_INFO_SIZE);
 }
+
+
 
 CGAME_INLINE char *CG_SiegeObjectiveBuffer(int team, int objective)
 {
@@ -1029,16 +1069,18 @@ void CG_SiegeBriefingDisplay(int team, int dontshow)
 	}
 }
 
-void CG_SiegeObjectiveCompleted(centity_t *ent, int won, int objectivenum)
+#include <stdlib.h> // For malloc and free
+
+void CG_SiegeObjectiveCompleted(centity_t* ent, int won, int objectivenum)
 {
 	int				myTeam;
 	char			teamstr[64];
 	char			objstr[256];
-	char			foundobjective[MAX_SIEGE_INFO_SIZE];
+	char* foundobjective = NULL;  // moved to heap
 	char			appstring[1024];
 	char			soundstr[1024];
 	int				success = 0;
-	playerState_t	*ps = NULL;
+	playerState_t* ps = NULL;
 
 	if (!siege_valid)
 	{
@@ -1047,7 +1089,7 @@ void CG_SiegeObjectiveCompleted(centity_t *ent, int won, int objectivenum)
 	}
 
 	if (cg.snap)
-	{ //this should always be true, if it isn't though use the predicted ps as a fallback
+	{
 		ps = &cg.snap->ps;
 	}
 	else
@@ -1061,10 +1103,20 @@ void CG_SiegeObjectiveCompleted(centity_t *ent, int won, int objectivenum)
 		return;
 	}
 
+	// Allocate the large buffer on heap using BG_Alloc
+	foundobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
+	if (!foundobjective)
+	{
+		CG_Error("Failed to allocate memory for foundobjective\n");
+		return;
+	}
+
 	myTeam = ps->persistant[PERS_TEAM];
 
 	if (myTeam == TEAM_SPECTATOR)
 	{
+		// Reset memory using memset instead of free
+		memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);
 		return;
 	}
 
@@ -1113,19 +1165,6 @@ void CG_SiegeObjectiveCompleted(centity_t *ent, int won, int objectivenum)
 			{
 				Com_sprintf(soundstr, sizeof(soundstr), appstring);
 			}
-			/*
-			else
-			{
-				if (myTeam != won)
-				{
-					Com_sprintf(soundstr, sizeof(soundstr), DEFAULT_LOSE_OBJECTIVE);
-				}
-				else
-				{
-					Com_sprintf(soundstr, sizeof(soundstr), DEFAULT_WIN_OBJECTIVE);
-				}
-			}
-			*/
 
 			if (soundstr[0])
 			{
@@ -1133,7 +1172,12 @@ void CG_SiegeObjectiveCompleted(centity_t *ent, int won, int objectivenum)
 			}
 		}
 	}
+
+	// Reset memory using memset instead of free
+	memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);
 }
+
+
 
 siegeExtended_t cg_siegeExtendedData[MAX_CLIENTS];
 

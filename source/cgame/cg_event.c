@@ -685,17 +685,17 @@ clientkilled:
 			vehMessage = qtrue;
 			break;	
 		case MOD_ICE:
-			message = "KILLED_FREEZER";
+			message = "KILLED_ICE";
 			vehMessage = qtrue;
 			break;
 		case MOD_ICE_EXPLOSION:
 		case MOD_ICE_EXPLOSION_SPLASH:		
-			message = "KILLED_FREEZER_EXPLOSION";
+			message = "KILLED_ICE_EXPLOSION";
 			vehMessage = qtrue;
 			break;
 		case MOD_ION_EXPLOSION:
 		case MOD_ION_EXPLOSION_SPLASH:		
-			message = "KILLED_ION_EXPLOSION";
+			message = "KILLED_DEMP2";
 			vehMessage = qtrue;
 			break;
 		case MOD_SONIC:
@@ -716,7 +716,10 @@ clientkilled:
 			message = "KILLED_FLASH_EXPLOSION";
 			vehMessage = qtrue;
 			break;
-		case MOD_FORCE_DESTRUCTION:			
+		case MOD_FORCE_DESTRUCTION:
+			message = "KILLED_DESTRUCTION";	
+			vehMessage = qtrue;
+			break;			
 		default:
 			message = "KILLED_GENERIC";
 			break;
@@ -1889,65 +1892,67 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	//new saberlock clash effects
 	case EV_SABERLOCK:
 	{
-		//entity is in saberlock, render blade lock and sound effects
-		centity_t *enemy;
-		clientInfo_t *enemyClient = NULL;
-		clientInfo_t *client = NULL;
+		// entity is in saberlock, render blade lock and sound effects
+		centity_t* enemy;
+		clientInfo_t* enemyClient = NULL;
+		clientInfo_t* client = NULL;
 
-		if(es->eventParm < 0 && es->eventParm >= ENTITYNUM_WORLD)
-		{//invalid entity number.  This is possible with limited bits of eventParm
+		if (es->eventParm < 0 || es->eventParm >= MAX_GENTITIES)  // Validate the range of eventParm
+		{
 			break;
 		}
 
 		enemy = &cg_entities[es->eventParm];
 
-		if(!enemy || !enemy->ghoul2 || !cent || !cent->ghoul2)
-		{//no enemy data, can't do our visual effects.
+		if (!enemy || !enemy->ghoul2 || !cent || !cent->ghoul2)
+		{
+			// no enemy data, can't do our visual effects.
 			break;
 		}
 
-		if(es->number != cg.snap->ps.clientNum  //not the client
-			&& (es->eventParm == cg.snap->ps.clientNum //other lock player is the client
-				|| es->eventParm < es->number) )  //other player has lower entity number.
-		{//don't render the effects twice.
+		if (es->number != cg.snap->ps.clientNum  // not the client
+			&& (es->eventParm == cg.snap->ps.clientNum // other lock player is the client
+				|| es->eventParm < es->number))  // other player has lower entity number.
+		{
+			// don't render the effects twice.
 			break;
 		}
 
-		//set client
-		if ( cg_entities[es->number].currentState.eType == ET_NPC )
+		// set client
+		if (cg_entities[es->number].currentState.eType == ET_NPC)
 		{
 			client = cg_entities[es->number].npcClient;
 		}
-		else if ( es->number < MAX_CLIENTS )
+		else if (es->number < MAX_CLIENTS)
 		{
 			client = &cgs.clientinfo[es->number];
 		}
 
-		if ( cg_entities[es->eventParm].currentState.eType == ET_NPC )
+		if (cg_entities[es->eventParm].currentState.eType == ET_NPC)
 		{
 			enemyClient = cg_entities[es->eventParm].npcClient;
 		}
-		else if ( es->number < MAX_CLIENTS )
+		else if (es->eventParm < MAX_CLIENTS)
 		{
 			enemyClient = &cgs.clientinfo[es->eventParm];
 		}
 
-		if ( client && client->infoValid && enemyClient && enemyClient->infoValid )
+		if (client && client->infoValid && enemyClient && enemyClient->infoValid)
 		{
-			vec3_t		ourBase, ourTip, theirBase, theirTip;
-			mdxaBone_t	boltMatrix;
-			vec3_t		flashPoint, temp;
-			qboolean	cullPass = qfalse;
-			qhandle_t	blockSound = trap_S_RegisterSound(va( "sound/weapons/saber/saberblock%d.wav", Q_irand(6, 9) ));
+			vec3_t ourBase, ourTip, theirBase, theirTip;
+			mdxaBone_t boltMatrix;
+			vec3_t flashPoint, temp;
+			qboolean cullPass = qfalse;
+			qhandle_t blockSound = trap_S_RegisterSound(va("sound/weapons/saber/saberblock%d.wav", Q_irand(6, 9)));
 
-			//get our blade
-			trap_G2API_GetBoltMatrix(cent->ghoul2, 1, 0, &boltMatrix, cent->lerpAngles, cent->lerpOrigin, 
+			// get our blade
+			trap_G2API_GetBoltMatrix(cent->ghoul2, 1, 0, &boltMatrix, cent->lerpAngles, cent->lerpOrigin,
 				cg.time, cgs.gameModels, cent->modelScale);
 			BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, ourBase);
 			BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, temp);
 			VectorMA(ourBase, client->saber[0].blade[0].length, temp, ourTip);
 
-			//get their blade.
+			// get their blade.
 			trap_G2API_GetBoltMatrix(enemy->ghoul2, 1, 0, &boltMatrix, enemy->lerpAngles, enemy->lerpOrigin,
 				cg.time, cgs.gameModels, enemy->modelScale);
 			BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, theirBase);
@@ -1957,14 +1962,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			ShortestLineSegBewteen2LineSegs(ourBase, ourTip, theirBase, theirTip, flashPoint, temp);
 
 			/*
-			ShortestLineSegBewteen2LineSegs( client->saber[0].blade[0].trail.base, 
-				client->saber[0].blade[0].trail.tip, 
-				enemyClient->saber[0].blade[0].trail.base, 
+			ShortestLineSegBewteen2LineSegs( client->saber[0].blade[0].trail.base,
+				client->saber[0].blade[0].trail.tip,
+				enemyClient->saber[0].blade[0].trail.base,
 				enemyClient->saber[0].blade[0].trail.tip, flashPoint, tempPoint);
 			*/
 
 			/*
-			// 74145: Removed by OpenJK?	 						   
+			// 74145: Removed by OpenJK?
 			if (cg.mInRMG)
 			{
 				trace_t tr;
@@ -1992,24 +1997,25 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			{
 				vec3_t fxDir;
 
-				//angle setup
+				// angle setup
 				VectorCopy(vec3_origin, fxDir);
 				if (!fxDir[0] && !fxDir[1] && !fxDir[2])
 				{
 					fxDir[1] = 1;
 				}
 
-				if(client->saberLockSoundDebounce < cg.time)
+				if (client->saberLockSoundDebounce < cg.time)
 				{
-					trap_S_StartSound(flashPoint, es->number, CHAN_AUTO, blockSound );
+					trap_S_StartSound(flashPoint, es->number, CHAN_AUTO, blockSound);
 					client->saberLockSoundDebounce = cg.time + 200;
 				}
 
-				trap_FX_PlayEffectID( cgs.effects.mSaberFriction, flashPoint, fxDir, -1, -1 );
+				trap_FX_PlayEffectID(cgs.effects.mSaberFriction, flashPoint, fxDir, -1, -1);
 			}
 		}
 	}
-		break;
+	break;
+
 
 	/* replaced with EV_SABERLOCK
 	case EV_JUMP_PAD:

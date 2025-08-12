@@ -2193,7 +2193,7 @@ void CG_LoadMenus(const char *menuFile);
 void CG_KeyEvent(int key, qboolean down);
 void CG_MouseEvent(int x, int y);
 void CG_EventHandling(int type);
-void CG_RankRunFrame( void );
+void CG_RankRunFrame( void );							 
 void CG_SetScoreSelection(void *menu);
 void CG_BuildSpectatorString(void);
 void CG_NextInventory_f(void);
@@ -2219,7 +2219,7 @@ void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demo
 Ghoul2 Insert Start
 */
 
-void CG_TestG2Model_f (void);
+void CG_TestModel_f (void);
 void CG_TestModelSurfaceOnOff_f(void);
 void CG_ListModelSurfaces_f (void);
 void CG_ListModelBones_f (void);
@@ -2238,7 +2238,7 @@ void CG_DrawPic( float x, float y, float width, float height, qhandle_t hShader 
 void CG_DrawRotatePic( float x, float y, float width, float height,float angle, qhandle_t hShader );
 void CG_DrawRotatePic2( float x, float y, float width, float height,float angle, qhandle_t hShader );
 void CG_DrawString( float x, float y, const char *string, 
-				   float charWidth, float charHeight, const float *modulate );
+				   float charWidth, float charHeight, const float *modulate );														  
 
 void CG_DrawNumField (int x, int y, int width, int value,int charWidth,int charHeight,int style,qboolean zeroFill);
 
@@ -2252,7 +2252,7 @@ void CG_DrawSmallStringColor( int x, int y, const char *s, vec4_t color );
 int CG_DrawStrlen( const char *str );
 
 float	*CG_FadeColor( int startMsec, int totalMsec );
-float *CG_TeamColor( int team );
+void CG_GetTeamColor(vec4_t* color);
 void CG_TileClear( void );
 void CG_ColorForHealth( vec4_t hcolor );
 void CG_GetColorForHealth( int health, int armor, vec4_t hcolor );
@@ -2407,8 +2407,8 @@ void CG_AddPlayerWeapon( refEntity_t *parent, playerState_t *ps, centity_t *cent
 void CG_DrawWeaponSelect( void );
 void CG_DrawIconBackground(void);
 
-void CG_OutOfAmmoChange( int oldWeapon );	// should this be in pmove?
-void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi );			   
+void CG_OutOfAmmoChange( int oldWeapon );	// should this be in pmove?   
+void CG_GrappleTrail( centity_t *ent, const weaponInfo_t *wi );																		 
 
 //
 // cg_marks.c
@@ -2765,7 +2765,7 @@ void trap_CIN_SetExtents (int handle, int x, int y, int w, int h);
 
 void trap_SnapVector( float *v );
 
-qboolean	trap_loadCamera(const char *name);
+qboolean	trap_loadCamera(const char *name);										   
 void		trap_startCamera(int time);
 qboolean	trap_getCameraInfo(int time, vec3_t *origin, vec3_t *angles);
 

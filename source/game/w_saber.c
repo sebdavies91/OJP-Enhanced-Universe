@@ -600,13 +600,11 @@ void SaberGotHit( gentity_t *self, gentity_t *other, trace_t *trace )
 
 qboolean BG_SuperBreakLoseAnim( int anim );
 
-GAME_INLINE void SetSaberBoxSize(gentity_t *saberent)
+GAME_INLINE void SetSaberBoxSize(gentity_t* saberent)
 {
-	gentity_t *owner = NULL;
+	gentity_t* owner = NULL;
 	vec3_t saberOrg, saberTip;
-	int i;
-	int j = 0;
-	int k = 0;
+	int i, j = 0, k = 0;
 	qboolean dualSabers = qfalse;
 	qboolean alwaysBlock[MAX_SABERS][MAX_BLADES];
 	qboolean forceBlock = qfalse;
@@ -629,38 +627,38 @@ GAME_INLINE void SetSaberBoxSize(gentity_t *saberent)
 		return;
 	}
 
-	if (  owner->client->saber[1].model[0] )
+	if (owner->client->saber[1].model[0])
 	{
 		dualSabers = qtrue;
 	}
 
-	if ( PM_SaberInBrokenParry(owner->client->ps.saberMove)
-		|| BG_SuperBreakLoseAnim( owner->client->ps.torsoAnim ) )
+	if (PM_SaberInBrokenParry(owner->client->ps.saberMove)
+		|| BG_SuperBreakLoseAnim(owner->client->ps.torsoAnim))
 	{ //let swings go right through when we're in this state
-		for ( i = 0; i < MAX_SABERS; i++ )
+		for (i = 0; i < MAX_SABERS; i++)
 		{
-			if ( i > 0 && !dualSabers )
-			{//not using a second saber, set it to not blocking
-				for ( j = 0; j < MAX_BLADES; j++ )
+			if (i > 0 && !dualSabers)
+			{ //not using a second saber, set it to not blocking
+				for (j = 0; j < MAX_BLADES; j++)
 				{
 					alwaysBlock[i][j] = qfalse;
 				}
 			}
 			else
 			{
-				if ( (owner->client->saber[i].saberFlags2&SFL2_ALWAYS_BLOCK) )
+				if ((owner->client->saber[i].saberFlags2 & SFL2_ALWAYS_BLOCK))
 				{
-					for ( j = 0; j < owner->client->saber[i].numBlades; j++ )
+					for (j = 0; j < owner->client->saber[i].numBlades; j++)
 					{
 						alwaysBlock[i][j] = qtrue;
 						forceBlock = qtrue;
 					}
 				}
-				if ( owner->client->saber[i].bladeStyle2Start > 0 )
+				if (owner->client->saber[i].bladeStyle2Start > 0)
 				{
-					for ( j = owner->client->saber[i].bladeStyle2Start; j < owner->client->saber[i].numBlades; j++ )
+					for (j = owner->client->saber[i].bladeStyle2Start; j < owner->client->saber[i].numBlades; j++)
 					{
-						if ( (owner->client->saber[i].saberFlags2&SFL2_ALWAYS_BLOCK2) )
+						if ((owner->client->saber[i].saberFlags2 & SFL2_ALWAYS_BLOCK2))
 						{
 							alwaysBlock[i][j] = qtrue;
 							forceBlock = qtrue;
@@ -673,10 +671,10 @@ GAME_INLINE void SetSaberBoxSize(gentity_t *saberent)
 				}
 			}
 		}
-		if ( !forceBlock )
-		{//no sabers/blades to FORCE to be on, so turn off blocking altogether
-			VectorSet( saberent->r.mins, 0, 0, 0 );
-			VectorSet( saberent->r.maxs, 0, 0, 0 );
+		if (!forceBlock)
+		{ //no sabers/blades to FORCE to be on, so turn off blocking altogether
+			VectorSet(saberent->r.mins, 0, 0, 0);
+			VectorSet(saberent->r.maxs, 0, 0, 0);
 #ifndef FINAL_BUILD
 			if (g_saberDebugPrint.integer > 1)
 			{
@@ -690,34 +688,34 @@ GAME_INLINE void SetSaberBoxSize(gentity_t *saberent)
 	if ((level.time - owner->client->lastSaberStorageTime) > 200 ||
 		(level.time - owner->client->saber[j].blade[k].storageTime) > 100)
 	{ //it's been too long since we got a reliable point storage, so use the defaults and leave.
-		VectorSet( saberent->r.mins, -SABER_BOX_SIZE, -SABER_BOX_SIZE, -SABER_BOX_SIZE );
-		VectorSet( saberent->r.maxs, SABER_BOX_SIZE, SABER_BOX_SIZE, SABER_BOX_SIZE );
+		VectorSet(saberent->r.mins, -SABER_BOX_SIZE, -SABER_BOX_SIZE, -SABER_BOX_SIZE);
+		VectorSet(saberent->r.maxs, SABER_BOX_SIZE, SABER_BOX_SIZE, SABER_BOX_SIZE);
 		return;
 	}
 
-	if ( dualSabers
-		|| owner->client->saber[0].numBlades > 1 )
-	{//dual sabers or multi-blade saber
-		if ( owner->client->ps.saberHolstered > 1 )
-		{//entirely off
+	if (dualSabers || owner->client->saber[0].numBlades > 1)
+	{ //dual sabers or multi-blade saber
+		if (owner->client->ps.saberHolstered > 1)
+		{ //entirely off
 			//no blocking at all
-			VectorSet( saberent->r.mins, 0, 0, 0 );
-			VectorSet( saberent->r.maxs, 0, 0, 0 );
+			VectorSet(saberent->r.mins, 0, 0, 0);
+			VectorSet(saberent->r.maxs, 0, 0, 0);
 			return;
 		}
 	}
 	else
-	{//single saber
-		if ( owner->client->ps.saberHolstered )
-		{//off
+	{ //single saber
+		if (owner->client->ps.saberHolstered)
+		{ //off
 			//no blocking at all
-			VectorSet( saberent->r.mins, 0, 0, 0 );
-			VectorSet( saberent->r.maxs, 0, 0, 0 );
+			VectorSet(saberent->r.mins, 0, 0, 0);
+			VectorSet(saberent->r.maxs, 0, 0, 0);
 			return;
 		}
 	}
-	//Start out at the saber origin, then go through all the blades and push out the extents
-	//for each blade, then set the box relative to the origin.
+
+	// Start out at the saber origin, then go through all the blades and push out the extents
+	// for each blade, then set the box relative to the origin.
 	VectorCopy(saberent->r.currentOrigin, saberent->r.mins);
 	VectorCopy(saberent->r.currentOrigin, saberent->r.maxs);
 
@@ -725,62 +723,71 @@ GAME_INLINE void SetSaberBoxSize(gentity_t *saberent)
 	{
 		for (j = 0; j < MAX_SABERS; j++)
 		{
+			// Ensure we don't go out of bounds when accessing saber[j]
+			if (j >= MAX_SABERS) {
+				break;
+			}
+
 			if (!owner->client->saber[j].model[0])
 			{
 				break;
 			}
-			if ( dualSabers
-				&& owner->client->ps.saberHolstered == 1 
-				&& j == 1 )
-			{ //this mother is holstered, get outta here.
+
+			if (dualSabers && owner->client->ps.saberHolstered == 1 && j == 1)
+			{ // this saber is holstered, skip it
 				j++;
 				continue;
 			}
+
 			for (k = 0; k < owner->client->saber[j].numBlades; k++)
 			{
-				if ( k > 0 )
-				{//not the first blade
-					if ( !dualSabers )
-					{//using a single saber
-						if ( owner->client->saber[j].numBlades > 1 )
-						{//with multiple blades
-							if( owner->client->ps.saberHolstered == 1 )
-							{//all blades after the first one are off
+				if (k > 0)
+				{
+					if (!dualSabers)
+					{
+						if (owner->client->saber[j].numBlades > 1)
+						{
+							if (owner->client->ps.saberHolstered == 1)
+							{ // all blades after the first one are off
 								break;
 							}
 						}
 					}
-				}			
-				if ( forceBlock )
-				{//only do blocking with blades that are marked to block
-					if ( !alwaysBlock[j][k] )
-					{//this blade shouldn't be blocking
+				}
+
+				if (forceBlock)
+				{ // only do blocking with blades that are marked to block
+					if (!alwaysBlock[j][k])
+					{
 						continue;
 					}
 				}
-				//VectorMA(owner->client->saber[j].blade[k].muzzlePoint, owner->client->saber[j].blade[k].lengthMax*0.5f, owner->client->saber[j].blade[k].muzzleDir, saberOrg);
+
+				// Now perform the calculation and update saber box size
 				VectorCopy(owner->client->saber[j].blade[k].muzzlePoint, saberOrg);
 				VectorMA(owner->client->saber[j].blade[k].muzzlePoint, owner->client->saber[j].blade[k].lengthMax, owner->client->saber[j].blade[k].muzzleDir, saberTip);
 
-				if (saberOrg[i] < saberent->r.mins[i])
+				// Update the saber bounding box min/max extents
+				for (int l = 0; l < 3; l++)
 				{
-					saberent->r.mins[i] = saberOrg[i];
-				}
-				if (saberTip[i] < saberent->r.mins[i])
-				{
-					saberent->r.mins[i] = saberTip[i];
-				}
+					if (saberOrg[l] < saberent->r.mins[l])
+					{
+						saberent->r.mins[l] = saberOrg[l];
+					}
+					if (saberTip[l] < saberent->r.mins[l])
+					{
+						saberent->r.mins[l] = saberTip[l];
+					}
 
-				if (saberOrg[i] > saberent->r.maxs[i])
-				{
-					saberent->r.maxs[i] = saberOrg[i];
+					if (saberOrg[l] > saberent->r.maxs[l])
+					{
+						saberent->r.maxs[l] = saberOrg[l];
+					}
+					if (saberTip[l] > saberent->r.maxs[l])
+					{
+						saberent->r.maxs[l] = saberTip[l];
+					}
 				}
-				if (saberTip[i] > saberent->r.maxs[i])
-				{
-					saberent->r.maxs[i] = saberTip[i];
-				}
-
-				//G_TestLine(saberOrg, saberTip, 0x0000ff, 50);
 			}
 		}
 	}
@@ -1061,10 +1068,14 @@ GAME_INLINE void G_G2NPCAngles(gentity_t *ent, vec3_t legs[3], vec3_t angles)
 				lookAngles[PITCH] = lookAngles[ROLL] = 0;//droids can't pitch or roll their heads
 				if ( looking )
 				{//want to keep doing this lerp behavior for a full second after stopped looking (so don't snap)
-					ent->client->renderInfo.lookingDebounceTime = level.time + 1000;
+					if (ent && ent->client)
+					{
+						ent->client->renderInfo.lookingDebounceTime = level.time + 1000;
+					}
+
 				}
 			}
-			if ( ent->client->renderInfo.lookingDebounceTime > level.time )
+			if (ent && ent->client && ent->client->renderInfo.lookingDebounceTime > level.time )
 			{	//adjust for current body orientation
 				vec3_t	oldLookAngles;
 
@@ -1088,9 +1099,13 @@ GAME_INLINE void G_G2NPCAngles(gentity_t *ent, vec3_t legs[3], vec3_t angles)
 			}
 			else
 			{//Remember current lookAngles next time
-				VectorCopy( lookAngles, ent->client->renderInfo.lastHeadAngles );
+				if (ent && ent->client)
+				{
+					VectorCopy(lookAngles, ent->client->renderInfo.lastHeadAngles);
+				}
+
 			}
-			if ( ent->client->NPC_class == CLASS_ATST )
+			if (ent && ent->client && ent->client->NPC_class == CLASS_ATST )
 			{
 				VectorCopy( ent->client->ps.viewangles, lookAngles );
 				lookAngles[0] = lookAngles[2] = 0;
@@ -1098,8 +1113,11 @@ GAME_INLINE void G_G2NPCAngles(gentity_t *ent, vec3_t legs[3], vec3_t angles)
 			}
 			else
 			{
+			if(ent && ent->client)
+			{
 				lookAngles[PITCH] = lookAngles[ROLL] = 0;
 				lookAngles[YAW] -= ent->client->ps.viewangles[YAW];
+			}
 			}
 
 			NPC_SetBoneAngles(ent, craniumBone, lookAngles);
@@ -1230,7 +1248,11 @@ GAME_INLINE void G_G2PlayerAngles( gentity_t *ent, vec3_t legs[3], vec3_t legsAn
 			}
 			else
 			{ //This shouldn't happen, but just in case it does, we'll have a failsafe.
-				ent->client->ikStatus = qfalse;
+				if (ent && ent->client)
+				{
+					ent->client->ikStatus = qfalse;
+				}
+
 			}
 
 			if (lHandBolt)
@@ -6753,15 +6775,11 @@ qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int h
 
 //[SaberSys]
 //racc - OJP Enhanced completely rewritten CheckSaberDamage function.  This is the heart of the saber system beast.
-void SabBeh_SetupSaberMechanics( gentity_t *self, sabmech_t *mechSelf, 
-								gentity_t *otherOwner, sabmech_t *mechOther, vec3_t hitLoc, 
-								qboolean *didHit, qboolean otherHitSaberBlade );
 extern qboolean BG_SaberInTransitionDamageMove( playerState_t *ps );
 extern qboolean BG_SaberInFullDamageMove( playerState_t *ps, int AnimIndex );
 extern qboolean BG_InSlowBounce(playerState_t *ps);
 void DebounceSaberImpact(gentity_t *self, gentity_t *otherSaberer, 
 						 int rSaberNum, int rBladeNum, int sabimpactentitynum);
-void OJP_SetSlowBounce(gentity_t* self, gentity_t* attacker);
 qboolean G_InAttackParry(gentity_t *self);
 GAME_INLINE qboolean CheckSaberDamage(gentity_t *self, int rSaberNum, int rBladeNum, vec3_t saberStart, vec3_t saberEnd, qboolean doInterpolate, int trMask, qboolean extrapolate )
 {
@@ -8104,7 +8122,7 @@ void WP_SaberStartMissileBlockCheck( gentity_t *self, usercmd_t *ucmd  )
 			{
 				Jedi_Ambush( self );
 			}
-			if ( self->client->NPC_class == CLASS_BOBAFETT 
+			if (self->client && self->client->NPC_class == CLASS_BOBAFETT
 				&& (self->client->ps.eFlags2&EF2_FLYING)//moveType == MT_FLYSWIM 
 				&& incoming->methodOfDeath != MOD_ROCKET_HOMING )
 			{//a hovering Boba Fett, not a tracking rocket
@@ -8121,7 +8139,7 @@ void WP_SaberStartMissileBlockCheck( gentity_t *self, usercmd_t *ucmd  )
 			}
 			else if ( Jedi_SaberBlockGo( self, &self->NPC->last_ucmd, NULL, NULL, incoming, 0.0f ) != EVASION_NONE )
 			{//make sure to turn on your saber if it's not on
-				if ( self->client->NPC_class != CLASS_BOBAFETT )
+				if (self->client && self->client->NPC_class != CLASS_BOBAFETT )
 				{
 					//self->client->ps.SaberActivate();
 					WP_ActivateSaber(self);
@@ -8134,7 +8152,7 @@ void WP_SaberStartMissileBlockCheck( gentity_t *self, usercmd_t *ucmd  )
 
 			//[DodgeSys]
 			//make sure your saber is on but only if it's turned off now.
-			if(self->client->ps.saberHolstered == 2)
+			if(self->client && self->client->ps.saberHolstered == 2)
 			{
 				WP_ActivateSaber(self);
 			}
@@ -8787,6 +8805,11 @@ void DownedSaberThink(gentity_t *saberent)
 		saberOwn->client->ps.forceHandExtend == HANDEXTEND_SABERPULL || //trying useing toggle saber
 		((saberOwn->client->pers.cmd.buttons & BUTTON_FORCEPOWER) 
 		&& saberOwn->client->ps.fd.forcePowerSelected == FP_SABERTHROW) ) ) //using saber throw thru force power selection
+	{//we want to pull back the saber.
+		pullBack = qtrue;
+	}
+	
+	if ((level.time - saberOwn->client->ps.saberDidThrowTime) > 20000)
 	{//we want to pull back the saber.
 		pullBack = qtrue;
 	}
@@ -12017,7 +12040,7 @@ nextStep:
 
 				//[SaberThrowSys]
 				//racc - we don't really need this variable anymore.
-				//self->client->ps.saberDidThrowTime = level.time;
+				self->client->ps.saberDidThrowTime = level.time;
 				//[/SaberThrowSys]
 
 				self->client->dangerTime = level.time;

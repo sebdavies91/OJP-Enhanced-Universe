@@ -1110,7 +1110,7 @@ NPC_ValidEnemy
 /* moved to NPC_Combat.c and converted to SP version.
 qboolean NPC_ValidEnemy( gentity_t *ent )
 {
-	int entTeam = TEAM_FREE;
+	int entTeam = NPCTEAM_FREE;
 	//Must be a valid pointer
 	if ( ent == NULL )
 		return qfalse;
@@ -1753,33 +1753,40 @@ void NPC_SetLookTarget( gentity_t *self, int entNum, int clearTime )
 NPC_CheckLookTarget
 -------------------------
 */
-qboolean NPC_CheckLookTarget( gentity_t *self )
+qboolean NPC_CheckLookTarget(gentity_t* self)
 {
-	if ( self->client )
+	if (self->client)
 	{
-		if ( self->client->renderInfo.lookTarget >= 0 && self->client->renderInfo.lookTarget < ENTITYNUM_WORLD )
-		{//within valid range
-			if ( (&g_entities[self->client->renderInfo.lookTarget] == NULL) || !g_entities[self->client->renderInfo.lookTarget].inuse )
-			{//lookTarget not inuse or not valid anymore
-				NPC_ClearLookTarget( self );
+		if (self->client->renderInfo.lookTarget >= 0 && self->client->renderInfo.lookTarget < ENTITYNUM_WORLD)
+		{
+			gentity_t* targetEntity = &g_entities[self->client->renderInfo.lookTarget];
+
+			// Check if the entity is valid (in use and not NULL)
+			if (!targetEntity->inuse)
+			{
+				// The look target is no longer in use
+				NPC_ClearLookTarget(self);
 			}
-			else if ( self->client->renderInfo.lookTargetClearTime && self->client->renderInfo.lookTargetClearTime < level.time )
-			{//Time to clear lookTarget
-				NPC_ClearLookTarget( self );
+			else if (self->client->renderInfo.lookTargetClearTime && self->client->renderInfo.lookTargetClearTime < level.time)
+			{
+				// Time has passed to clear the look target
+				NPC_ClearLookTarget(self);
 			}
-			else if ( g_entities[self->client->renderInfo.lookTarget].client && self->enemy && (&g_entities[self->client->renderInfo.lookTarget] != self->enemy) )
-			{//should always look at current enemy if engaged in battle... FIXME: this could override certain scripted lookTargets...???
-				NPC_ClearLookTarget( self );
+			else if (targetEntity->client && self->enemy && targetEntity != self->enemy)
+			{
+				// If there is an enemy and the look target isn't the enemy, clear the look target
+				NPC_ClearLookTarget(self);
 			}
 			else
 			{
-				return qtrue;
+				return qtrue; // Valid look target
 			}
 		}
 	}
 
 	return qfalse;
 }
+
 
 /*
 -------------------------

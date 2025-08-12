@@ -56,6 +56,5 @@
   ui_shared.c
   WalkerNPC.c
   Generating Code...
-AnimalNPC.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
      Creating library .\../Debug/cgamex86.lib and object .\../Debug/cgamex86.exp
   JK2_cgame.vcxproj -> E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\ojpenhanced\cgamex86.dll

@@ -207,7 +207,7 @@ void BeamOut (gentity_t *self)
 	self->nextthink = level.time + 1500;
 	self->think = Disappear;
 	self->client->squadname = NULL;
-	self->client->playerTeam = self->s.teamowner = TEAM_FREE;
+	self->client->playerTeam = self->s.teamowner = NPCTEAM_FREE;
 	//self->r.svFlags |= SVF_BEAMING; //this appears unused in SP as well
 }
 */
@@ -771,7 +771,7 @@ void NPC_BSFollowLeader_LookAtLeader(void)
 }
 //[/CoOp]
 
-
+qboolean NPC_SlideMoveToGoal(void);
 void NPC_BSFollowLeader (void)
 {
 	vec3_t		vec;
@@ -1982,7 +1982,7 @@ qboolean NPC_CanSurrender( void )
 
 
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
-extern void WP_DropWeapon( gentity_t *dropper, vec3_t velocity );
+//extern void WP_DropWeapon( gentity_t *dropper, vec3_t velocity );
 extern void ChangeWeapon( gentity_t *ent, int newWeapon );
 void NPC_Surrender( void )
 {//FIXME: say "don't shoot!" if we weren't already surrendering

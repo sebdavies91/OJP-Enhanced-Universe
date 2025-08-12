@@ -1213,8 +1213,40 @@ Fixes to Update 60 13/07/2025
 
 
 
-P.S. Set the server max rate to 25000 or set the ultrafast option in the in game optimize tab for a smooth game experience.
+Update 61 12/08/2025
+
+1) Performed 244 fixes to the SW OJP Enhanced Universe source code fixing many warnings that not necessarily were shown during the compilation. Such fixes should provide an improved gameplay both in the SP and MP maps with more bots and NPCS.  
+
+2) Increased MAX_PARTICLES from 1024 to 4096 to allow more effects to be presented on screen.
+
+3) Increased the CG_SHARED_BUFFER and G_SHARED_BUFFER memory to 128 mb both for c_game (client) as well as game (server) to allow a much larger handling of data.
+
+4) Increased MAX_POOL_SIZE memory to 128 mb for c_game (client), game (server) as well as UI (menus) to allow a much larger handling of data.
+
+5) Fixed the blades not appearing when throwing the saber and having two saber hilts in a single blade style.
+
+6) From now on while your saber is stuck in a wall and you are using a single saber or saber staff you can punch and kick while if you are using 2 sabers you can still use the second one. 
+
+7) All bots using single sabers will randomize their saber style after each 30 seconds or 1 minute while all bots using 2 sabers or saberstaffs will always use their corresponding style.
+
+8) All NPCs using single sabers will randomize their saber style after each 30 seconds or 1 minute while all NPCs using 2 sabers or saberstaffs will always use their corresponding style.
+
+9) Reduced force speed at all levels as it was made previously made too fast, specially at level 3.
+
+10) The Blaster-Rocket Gauntlet used by super battle droids now has a faster fire rate.
+
+11) Increased MAX_BOTS_TEXT to 256 kb allowing the addition of even more bots in bots list.
+
+12) Increased MAX_SABER_DATA_SIZE to 5 Mb allowing the addition of even more sabers.
+
+13) Added additional models with their corresponding bots within their associated faction.
+
+14) Increased MAX_STRING_SIZE to 512 kb to allow the tranfer of longer strings in game.
+
+15) Equipped all jedi and sith bots with their corresponding saber hilt in both the standard and expanded versions.
+
 
 PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
+
 
 THANK YOU VERY MUCH TO THE CURRENT AND OLD MEMBERS OF THE JK COMMUNITY, OJP, MB2, Open JK, KOTF AND JKG TEAMS. WITHOUT YOU, STAR WARS OPEN JEDI PROJECT ENHANCED EXPANDED WOULD NOT BE A REALITY. ALL OF YOU CAN CONSIDER YOURSELVES TO BE COAUTHORS OF THIS VERSION OF STAR WARS OPEN JEDI PROJECT ENHANCED UNIVERSE.!!!!!!!!!!!!!

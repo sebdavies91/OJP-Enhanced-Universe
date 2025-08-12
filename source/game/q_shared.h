@@ -122,7 +122,6 @@ extern int g_G2AllocServer;
   you will have to add your own version for support in the VM.
 
  **********************************************************************/
-
 #ifdef Q3_VM
 
 #include "bg_lib.h"
@@ -436,8 +435,9 @@ typedef enum {
 
 void *Hunk_Alloc( int size, ha_pref preference );
 
+
 void Com_Memset (void* dest, const int val, const size_t count);
-void Com_Memcpy (void* dest, const void* src, const size_t count);
+void Com_Memcpy (void* dest, const void* src, const size_t count);																
 
 #define CIN_system	1
 #define CIN_loop	2
@@ -1396,12 +1396,13 @@ void CrossProduct( const vec3_t v1, const vec3_t v2, vec3_t cross );
 
 vec_t VectorNormalize (vec3_t v);		// returns vector length
 vec_t VectorNormalize2( const vec3_t v, vec3_t out );
-void Vector4Scale( const vec4_t in, vec_t scale, vec4_t out );
+void Vector4Scale( const vec4_t in, float scale, vec4_t out );
 void VectorRotate( vec3_t in, vec3_t matrix[3], vec3_t out );
 int Q_log2(int val);
 
 float Q_acos(float c);
-float Q_asin(float c);
+float Q_asin(float c);				  
+
 
 int		Q_rand( int *seed );
 float	Q_random( int *seed );
@@ -1416,10 +1417,10 @@ void AnglesToAxis( const vec3_t angles, vec3_t axis[3] );
 void AxisClear( vec3_t axis[3] );
 void AxisCopy( vec3_t in[3], vec3_t out[3] );
 
-void SetPlaneSignbits( struct cplane_s *out );
+void SetPlaneSignbits(struct cplane_s* out);
 int BoxOnPlaneSide (vec3_t emins, vec3_t emaxs, struct cplane_s *plane);
 
-double	fmod( double x, double y );
+
 float	AngleMod(float a);
 float	LerpAngle (float from, float to, float frac);
 float	AngleSubtract( float a1, float a2 );
@@ -1592,7 +1593,7 @@ char	* QDECL va( char *format, ... );
 //
 char *Info_ValueForKey( const char *s, const char *key );
 void Info_RemoveKey( char *s, const char *key );
-void Info_RemoveKey_big( char *s, const char *key );
+void Info_RemoveKey_Big( char *s, const char *key );
 void Info_SetValueForKey( char *s, const char *key, const char *value );
 void Info_SetValueForKey_Big( char *s, const char *key, const char *value );
 qboolean Info_Validate( const char *s );
@@ -1869,7 +1870,7 @@ Ghoul2 Insert End
 
 #define	RESERVED_CONFIGSTRINGS	2	// game can't modify below this, only the system can
 
-#define	MAX_GAMESTATE_CHARS	64000
+#define	MAX_GAMESTATE_CHARS	131072
 typedef struct {
 	int			stringOffsets[MAX_CONFIGSTRINGS];
 	char		stringData[MAX_GAMESTATE_CHARS];
@@ -2938,11 +2939,12 @@ Ghoul2 Insert End
 
 // define the new memory tags for the zone, used by all modules now
 //
-#define TAGDEF(blah) TAG_ ## blah
+#define TAGDEF(blah) TAG_##blah
+
+// wrap the include in a valid enum structure
 typedef enum {
-	#include "../qcommon/tags.h"
-} memtag;
-typedef unsigned int memtag_t;
+#include "../qcommon/tags.h"
+} memtag_t;
 
 //rww - conveniently toggle "gore" code, for model decals and stuff.
 #define _G2_GORE

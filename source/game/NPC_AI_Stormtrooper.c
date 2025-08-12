@@ -12,7 +12,7 @@ extern void NPC_TempLookTarget( gentity_t *self, int lookEntNum, int minLookTime
 extern qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs, int ignore, int clipmask );
 extern void ChangeWeapon( gentity_t *ent, int newWeapon );
 extern void NPC_CheckGetNewWeapon( void );
-extern int GetTime ( int lastTime );
+extern int BG_GetTime(void);
 extern void NPC_AimAdjust( int change );
 extern qboolean FlyingCreature( gentity_t *ent );
 //[CoOp]

@@ -101,28 +101,40 @@ int G_ParseInfos( char *buf, int max, char *infos[] ) {
 G_LoadArenasFromFile
 ===============
 */
-static void G_LoadArenasFromFile( char *filename ) {
-	int				len;
-	fileHandle_t	f;
-	char			buf[MAX_ARENAS_TEXT];
+static void G_LoadArenasFromFile(char* filename) {
+    int len;
+    fileHandle_t f;
+    char* buf = (char*)BG_Alloc(MAX_ARENAS_TEXT);  // Replaced malloc with BG_Alloc
 
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) {
-		trap_Printf( va( S_COLOR_RED "file not found: %s\n", filename ) );
-		return;
-	}
-	if ( len >= MAX_ARENAS_TEXT ) {
-		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT ) );
-		trap_FS_FCloseFile( f );
-		return;
-	}
+    if (!buf) {
+        trap_Printf(va(S_COLOR_RED "memory allocation failed for arena buffer\n"));
+        return;
+    }
 
-	trap_FS_Read( buf, len, f );
-	buf[len] = 0;
-	trap_FS_FCloseFile( f );
+    len = trap_FS_FOpenFile(filename, &f, FS_READ);
+    if (!f) {
+        trap_Printf(va(S_COLOR_RED "file not found: %s\n", filename));
+        memset(buf, 0, MAX_ARENAS_TEXT);  // Replaced free with memset to zero out the buffer
+        return;
+    }
 
-	g_numArenas += G_ParseInfos( buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas] );
+    if (len >= MAX_ARENAS_TEXT) {
+        trap_Printf(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_ARENAS_TEXT));
+        trap_FS_FCloseFile(f);
+        memset(buf, 0, MAX_ARENAS_TEXT);  // Zero out the buffer instead of freeing
+        return;
+    }
+
+    trap_FS_Read(buf, len, f);
+    buf[len] = 0;
+    trap_FS_FCloseFile(f);
+
+    g_numArenas += G_ParseInfos(buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas]);
+
+    memset(buf, 0, MAX_ARENAS_TEXT);  // Zero out the buffer instead of freeing
 }
+
+
 
 int G_GetMapTypeBits(char *type)
 {
@@ -1950,28 +1962,40 @@ static void G_SpawnBots( char *botList, int baseDelay ) {
 G_LoadBotsFromFile
 ===============
 */
-static void G_LoadBotsFromFile( char *filename ) {
-	int				len;
-	fileHandle_t	f;
-	char			buf[MAX_BOTS_TEXT];
+static void G_LoadBotsFromFile(char* filename) {
+    int len;
+    fileHandle_t f;
+    char* buf = (char*)BG_Alloc(MAX_BOTS_TEXT);  // Replaced malloc with BG_Alloc
 
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) {
-		trap_Printf( va( S_COLOR_RED "file not found: %s\n", filename ) );
-		return;
-	}
-	if ( len >= MAX_BOTS_TEXT ) {
-		trap_Printf( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT ) );
-		trap_FS_FCloseFile( f );
-		return;
-	}
+    if (!buf) {
+        trap_Printf(S_COLOR_RED "ERROR: BG_Alloc failed in G_LoadBotsFromFile\n");
+        return;
+    }
 
-	trap_FS_Read( buf, len, f );
-	buf[len] = 0;
-	trap_FS_FCloseFile( f );
+    len = trap_FS_FOpenFile(filename, &f, FS_READ);
+    if (!f) {
+        trap_Printf(va(S_COLOR_RED "file not found: %s\n", filename));
+        memset(buf, 0, MAX_BOTS_TEXT);  // Replaced free with memset to zero out the buffer
+        return;
+    }
 
-	g_numBots += G_ParseInfos( buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots] );
+    if (len >= MAX_BOTS_TEXT) {
+        trap_Printf(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT));
+        trap_FS_FCloseFile(f);
+        memset(buf, 0, MAX_BOTS_TEXT);  // Zero out the buffer instead of freeing
+        return;
+    }
+
+    trap_FS_Read(buf, len, f);
+    buf[len] = 0;
+    trap_FS_FCloseFile(f);
+
+    g_numBots += G_ParseInfos(buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots]);
+
+    memset(buf, 0, MAX_BOTS_TEXT);  // Zero out the buffer instead of freeing
 }
+
+
 
 /*
 ===============

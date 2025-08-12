@@ -665,16 +665,32 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 			}
 			else
 			{
-				if (stringData[0] == '*')
-				{
+				if (stringData[0] == '*') {
 					animEvents[curAnimEvent].eventData[AED_SOUNDINDEX_START] = 0;
 					animEvents[curAnimEvent].eventData[AED_CSOUND_RANDSTART] = 0;
-					if (!animEvents[curAnimEvent].stringData)
-					{ //eh, whatever. no dynamic stuff, so this will do.
-						animEvents[curAnimEvent].stringData = (char *) BG_Alloc(MAX_QPATH);
+
+					// Ensure stringData pointer is valid before using it
+					if (!animEvents[curAnimEvent].stringData) {
+						animEvents[curAnimEvent].stringData = (char*)BG_Alloc(MAX_QPATH); // Allocate memory for stringData
+						if (!animEvents[curAnimEvent].stringData) {
+							// If allocation fails, handle the error, for example:
+							Com_Error(ERR_FATAL, "Memory allocation for animEvents[curAnimEvent].stringData failed");
+							return;  // Early exit or handle accordingly
+						}
 					}
-					strcpy( animEvents[curAnimEvent].stringData, stringData );
+
+					// Check if stringData is valid and non-null
+					if (stringData) {
+						// Safe to copy the string since stringData is valid
+						strncpy(animEvents[curAnimEvent].stringData, stringData, MAX_QPATH - 1);
+						animEvents[curAnimEvent].stringData[MAX_QPATH - 1] = '\0';  // Ensure null-termination
+					}
+					else {
+						// Handle the case where stringData is NULL (optional)
+						animEvents[curAnimEvent].stringData[0] = '\0';  // Clear the string if invalid
+					}
 				}
+
 				else
 				{
 					animEvents[curAnimEvent].eventData[AED_SOUNDINDEX_START] = trap_S_RegisterSound( stringData );
@@ -861,200 +877,214 @@ cgLoadedEvents_t cgAllEvents[MAX_ANIM_FILES];
 int cgNumAnimEvents = 1;
 static int cg_animParseIncluding = 0;
 
-int CG_ParseAnimationEvtFile( char *as_filename, int animFileIndex, int eventFileIndex ) 
+int CG_ParseAnimationEvtFile(char* as_filename, int animFileIndex, int eventFileIndex)
 {
-	const char	*text_p;
-	int			len;
-	const char	*token;
-	char		text[160000];
-	char		sfilename[MAX_QPATH];
-	fileHandle_t	f;
-	int			i, j, upper_i, lower_i;
-	int				usedIndex = -1;
-	animevent_t	*legsAnimEvents;
-	animevent_t	*torsoAnimEvents;
-	animation_t		*animations;
-	int				forcedIndex;
-	qboolean		triedbaseskelevents = qfalse;
-	
-	assert(animFileIndex < MAX_ANIM_FILES);
-	assert(eventFileIndex < MAX_ANIM_FILES);
+    const char* text_p;
+    int len;
+    const char* token;
+    char* text = NULL;  // Changed from large stack buffer to heap pointer
+    char sfilename[MAX_QPATH];
+    fileHandle_t f;
+    int i, j, upper_i, lower_i;
+    int usedIndex = -1;
+    animevent_t* legsAnimEvents;
+    animevent_t* torsoAnimEvents;
+    animation_t* animations;
+    int forcedIndex;
+    qboolean triedbaseskelevents = qfalse;
 
-	if ( animFileIndex < 0 || animFileIndex >= MAX_ANIM_FILES || eventFileIndex >= MAX_ANIM_FILES)
-	{
-		return 0;
-	}
+    assert(animFileIndex < MAX_ANIM_FILES);
+    assert(eventFileIndex < MAX_ANIM_FILES);
 
-	if (eventFileIndex == -1)
-	{
-		forcedIndex = 0;
-	}
-	else
-	{
-		forcedIndex = eventFileIndex;
-	}
+    if (animFileIndex < 0 || animFileIndex >= MAX_ANIM_FILES || eventFileIndex >= MAX_ANIM_FILES)
+    {
+        return 0;
+    }
 
-	if (cg_animParseIncluding <= 0)
-	{ //if we should be parsing an included file, skip this part
-		if ( cgAllEvents[forcedIndex].eventsParsed )
-		{//already cached this one
-			return forcedIndex;
-		}
-	}
+    if (eventFileIndex == -1)
+    {
+        forcedIndex = 0;
+    }
+    else
+    {
+        forcedIndex = eventFileIndex;
+    }
+
+    if (cg_animParseIncluding <= 0)
+    { // if we should be parsing an included file, skip this part
+        if (cgAllEvents[forcedIndex].eventsParsed)
+        { // already cached this one
+            return forcedIndex;
+        }
+    }
 
 trybaseskel:
 
-	legsAnimEvents = cgAllEvents[forcedIndex].legsAnimEvents;
-	torsoAnimEvents = cgAllEvents[forcedIndex].torsoAnimEvents;
-	animations = bgAllAnims[animFileIndex].anims;
+    legsAnimEvents = cgAllEvents[forcedIndex].legsAnimEvents;
+    torsoAnimEvents = cgAllEvents[forcedIndex].torsoAnimEvents;
+    animations = bgAllAnims[animFileIndex].anims;
 
-	if (cg_animParseIncluding <= 0)
-	{ //if we should be parsing an included file, skip this part
-		//Go through and see if this filename is already in the table.
-		i = 0;
-		while (i < cgNumAnimEvents && forcedIndex != 0)
-		{
-			if (!Q_stricmp(as_filename, cgAllEvents[i].filename))
-			{ //looks like we have it already.
-				return i;
-			}
-			i++;
-		}
-	}
+    if (cg_animParseIncluding <= 0)
+    { // if we should be parsing an included file, skip this part
+        // Go through and see if this filename is already in the table.
+        i = 0;
+        while (i < cgNumAnimEvents && forcedIndex != 0)
+        {
+            if (!Q_stricmp(as_filename, cgAllEvents[i].filename))
+            { // looks like we have it already.
+                return i;
+            }
+            i++;
+        }
+    }
 
-	// Load and parse animevents.cfg file
-	Com_sprintf( sfilename, sizeof( sfilename ), "%sanimevents.cfg", as_filename );
-	
-	
+    // Load and parse animevents.cfg file
+    Com_sprintf(sfilename, sizeof(sfilename), "%sanimevents.cfg", as_filename);
 
-	if (cg_animParseIncluding <= 0)
-	{ //should already be done if we're including
-		//initialize anim event array
-		for( i = 0; i < MAX_ANIM_EVENTS; i++ )
-		{
-			//Type of event
-			torsoAnimEvents[i].eventType = AEV_NONE;
-			legsAnimEvents[i].eventType = AEV_NONE;
-			//Frame to play event on
-			torsoAnimEvents[i].keyFrame = -1;	
-			legsAnimEvents[i].keyFrame = -1;
-			//we allow storage of one string, temporarily (in case we have to look up an index later, then make sure to set stringData to NULL so we only do the look-up once)
-			torsoAnimEvents[i].stringData = NULL;
-			legsAnimEvents[i].stringData = NULL;
-			//Unique IDs, can be soundIndex of sound file to play OR effect index or footstep type, etc.
-			for ( j = 0; j < AED_ARRAY_SIZE; j++ )
-			{
-				torsoAnimEvents[i].eventData[j] = -1;
-				legsAnimEvents[i].eventData[j] = -1;
-			}
-			//[AMBIENTEV]
-			torsoAnimEvents[i].ambtime= 0;
-			legsAnimEvents[i].ambtime = 0;
+    if (cg_animParseIncluding <= 0)
+    { // should already be done if we're including
+        // initialize anim event array
+        for (i = 0; i < MAX_ANIM_EVENTS; i++)
+        {
+            // Type of event
+            torsoAnimEvents[i].eventType = AEV_NONE;
+            legsAnimEvents[i].eventType = AEV_NONE;
+            // Frame to play event on
+            torsoAnimEvents[i].keyFrame = -1;
+            legsAnimEvents[i].keyFrame = -1;
+            // we allow storage of one string, temporarily (in case we have to look up an index later, then make sure to set stringData to NULL so we only do the look-up once)
+            torsoAnimEvents[i].stringData = NULL;
+            legsAnimEvents[i].stringData = NULL;
+            // Unique IDs, can be soundIndex of sound file to play OR effect index or footstep type, etc.
+            for (j = 0; j < AED_ARRAY_SIZE; j++)
+            {
+                torsoAnimEvents[i].eventData[j] = -1;
+                legsAnimEvents[i].eventData[j] = -1;
+            }
+            // [AMBIENTEV]
+            torsoAnimEvents[i].ambtime = 0;
+            legsAnimEvents[i].ambtime = 0;
 
+            torsoAnimEvents[i].ambrandom = 0;
+            legsAnimEvents[i].ambrandom = 0;
+            // [/AMBIENTEV]
+        }
+    }
 
-			torsoAnimEvents[i].ambrandom = 0;
-			legsAnimEvents[i].ambrandom = 0;
-			//[/AMBIENTEV]
-		}
-	}
+    // Allocate buffer for file read (160000 bytes)
+    text = (char*)BG_Alloc(160000);  // Replace malloc with BG_Alloc
+    if (!text)
+    {
+        Com_Printf("Error: Could not allocate memory for animevents.cfg text buffer\n");
+        return 0;
+    }
 
-	// load the file
-	len = trap_FS_FOpenFile( sfilename, &f, FS_READ );
-	if ( len <= 0 ) 
-	{//no file
-		if( !triedbaseskelevents )
-		{//ok let's try using the base animevents for this model's skeleton.
-			char	SkelName[MAX_QPATH];
-			char	*slash = NULL;
+    // load the file
+    len = trap_FS_FOpenFile(sfilename, &f, FS_READ);
+    if (len <= 0)
+    { // no file
+        if (!triedbaseskelevents)
+        { // ok let's try using the base animevents for this model's skeleton.
+            char SkelName[MAX_QPATH];
+            char* slash = NULL;
 
-			Q_strncpyz( SkelName, bgAllAnims[animFileIndex].filename, sizeof( SkelName ) );
-			//Remove the animation.cfg section of the filename
-			slash = strrchr( SkelName, '/' );
-			if ( slash )
-			{//move forward one character and then cut off the char string
-				slash++;
-				*slash = 0;
-			}
-			strcpy(as_filename, SkelName );
-			
-			triedbaseskelevents = qtrue;
-			goto trybaseskel;
-		}
-		else
-		{//ok, that didn't work either
-			goto fin;
-		}
-	}
-	if ( len >= sizeof( text ) - 1 ) 
-	{
-		trap_FS_FCloseFile(f);
+            Q_strncpyz(SkelName, bgAllAnims[animFileIndex].filename, sizeof(SkelName));
+            // Remove the animation.cfg section of the filename
+            slash = strrchr(SkelName, '/');
+            if (slash)
+            { // move forward one character and then cut off the char string
+                slash++;
+                *slash = 0;
+            }
+            strcpy(as_filename, SkelName);
+
+            triedbaseskelevents = qtrue;
+            goto trybaseskel;
+        }
+        else
+        { // ok, that didn't work either
+            goto fin;
+        }
+    }
+    if (len >= 160000 - 1)
+    {
+        trap_FS_FCloseFile(f);
 #ifndef FINAL_BUILD
-		Com_Error(ERR_DROP, "File %s too long\n", sfilename );
+        Com_Error(ERR_DROP, "File %s too long\n", sfilename);
 #else
-		Com_Printf( "File %s too long\n", sfilename );
+        Com_Printf("File %s too long\n", sfilename);
 #endif
-		goto fin;
-	}
+        goto fin;
+    }
 
+    trap_FS_Read(text, len, f);
+    text[len] = 0;
+    trap_FS_FCloseFile(f);
 
-	trap_FS_Read( text, len, f );
-	text[len] = 0;
-	trap_FS_FCloseFile( f );
+    // parse the text
+    text_p = text;
+    upper_i = 0;
+    lower_i = 0;
 
-	// parse the text
-	text_p = text;
-	upper_i =0;
-	lower_i =0;
+    // read information for batches of sounds (UPPER or LOWER)
+    while (1)
+    {
+        // Get base frame of sequence
+        token = COM_Parse(&text_p);
+        if (!token || !token[0])
+        {
+            break;
+        }
 
-	// read information for batches of sounds (UPPER or LOWER)
-	while ( 1 ) 
-	{
-		// Get base frame of sequence
-		token = COM_Parse( &text_p );
-		if ( !token || !token[0] ) 
-		{
-			break;
-		}
+        if (!Q_stricmp(token, "include")) // grab from another animevents.cfg
+        {                                // NOTE: you REALLY should NOT do this after the main block of UPPERSOUNDS and LOWERSOUNDS
+            const char* include_filename = COM_Parse(&text_p);
+            if (include_filename != NULL)
+            {
+                char fullIPath[MAX_QPATH];
+                strcpy(fullIPath, va("models/players/%s/", include_filename));
+                cg_animParseIncluding++;
+                CG_ParseAnimationEvtFile(fullIPath, animFileIndex, forcedIndex);
+                cg_animParseIncluding--;
+            }
+        }
 
-		if ( !Q_stricmp(token,"include") )	// grab from another animevents.cfg
-		{//NOTE: you REALLY should NOT do this after the main block of UPPERSOUNDS and LOWERSOUNDS
-			const char	*include_filename = COM_Parse( &text_p );
-			if ( include_filename != NULL )
-			{
-				char fullIPath[MAX_QPATH];
-				strcpy(fullIPath, va("models/players/%s/", include_filename));
-				cg_animParseIncluding++;
-				CG_ParseAnimationEvtFile( fullIPath, animFileIndex, forcedIndex );
-				cg_animParseIncluding--;
-			}
-		}
+        if (!Q_stricmp(token, "UPPEREVENTS")) // A batch of upper sounds
+        {
+            ParseAnimationEvtBlock(as_filename, torsoAnimEvents, animations, &upper_i, &text_p);
+        }
 
-		if ( !Q_stricmp(token,"UPPEREVENTS") )	// A batch of upper sounds
-		{
-			ParseAnimationEvtBlock( as_filename, torsoAnimEvents, animations, &upper_i, &text_p ); 
-		}
+        else if (!Q_stricmp(token, "LOWEREVENTS")) // A batch of lower sounds
+        {
+            ParseAnimationEvtBlock(as_filename, legsAnimEvents, animations, &lower_i, &text_p);
+        }
+    }
 
-		else if ( !Q_stricmp(token,"LOWEREVENTS") )	// A batch of lower sounds
-		{
-			ParseAnimationEvtBlock( as_filename, legsAnimEvents, animations, &lower_i, &text_p ); 
-		}
-	}
+    usedIndex = forcedIndex;
 
-	usedIndex = forcedIndex;
 fin:
-	//Mark this anim set so that we know we tried to load he sounds, don't care if the load failed
-	if (cg_animParseIncluding <= 0)
-	{ //if we should be parsing an included file, skip this part
-		cgAllEvents[forcedIndex].eventsParsed = qtrue;
-		strcpy(cgAllEvents[forcedIndex].filename, as_filename);
-		if (forcedIndex)
-		{
-			cgNumAnimEvents++;
-		}
-	}
+    // Replace free with memset
+    if (text)
+    {
+        memset(text, 0, 160000);  // "free" replacement with memset to clear the buffer
+        text = NULL;
+    }
 
-	return usedIndex;
+    // Mark this anim set so that we know we tried to load he sounds, don't care if the load failed
+    if (cg_animParseIncluding <= 0)
+    { // if we should be parsing an included file, skip this part
+        cgAllEvents[forcedIndex].eventsParsed = qtrue;
+        strcpy(cgAllEvents[forcedIndex].filename, as_filename);
+        if (forcedIndex)
+        {
+            cgNumAnimEvents++;
+        }
+    }
+
+    return usedIndex;
 }
+
+
 //[/ANIMEVENTS]  End moving of animevent bg functions
 
 void CG_Disintegration(centity_t *cent, refEntity_t *ent);
@@ -1221,112 +1251,118 @@ CLIENT INFO
 =============================================================================
 */
 #define MAX_SURF_LIST_SIZE	1024
-qboolean CG_ParseSurfsFile( const char *modelName, const char *skinName, char *surfOff, char *surfOn ) 
+qboolean CG_ParseSurfsFile(const char* modelName, const char* skinName, char* surfOff, char* surfOn)
 {
-	const char	*text_p;
+	const char* text_p;
 	int			len;
-	const char	*token;
-	const char	*value;
-	char		text[40000];
+	const char* token;
+	const char* value;
 	char		sfilename[MAX_QPATH];
 	fileHandle_t	f;
 	int			i = 0;
+	char* text = NULL;  // moved from stack to heap
 
 	while (skinName && skinName[i])
 	{
 		if (skinName[i] == '|')
-		{ //this is a multi-part skin, said skins do not support .surf files
+		{ // this is a multi-part skin, said skins do not support .surf files
 			return qfalse;
 		}
-
 		i++;
 	}
 
-
 	// Load and parse .surf file
-	Com_sprintf( sfilename, sizeof( sfilename ), "models/players/%s/model_%s.surf", modelName, skinName );
+	Com_sprintf(sfilename, sizeof(sfilename), "models/players/%s/model_%s.surf", modelName, skinName);
 
 	// load the file
-	len = trap_FS_FOpenFile( sfilename, &f, FS_READ );
-	if ( len <= 0) 
-	{//no file
+	len = trap_FS_FOpenFile(sfilename, &f, FS_READ);
+	if (len <= 0)
+	{ // no file
 		return qfalse;
 	}
-	if ( len >= sizeof( text ) - 1 ) 
+	if (len >= 40000 - 1)
 	{
-		Com_Printf( "File %s too long\n", sfilename );
-
-//[TicketFix143]
-    // Though too big to read, this was still a valid
-    // file, so we need to close it!
-    trap_FS_FCloseFile( f ); 
-//[/TicketFix143]
-
+		Com_Printf("File %s too long\n", sfilename);
+		trap_FS_FCloseFile(f);
 		return qfalse;
 	}
 
-	trap_FS_Read( text, len, f );
+	// Replacing malloc with BG_Alloc
+	text = (char*)BG_Alloc(len + 1);
+	if (!text) {
+		trap_FS_FCloseFile(f);
+		Com_Printf("Memory allocation failed in CG_ParseSurfsFile\n");
+		return qfalse;
+	}
+
+	trap_FS_Read(text, len, f);
 	text[len] = 0;
-	trap_FS_FCloseFile( f );
+	trap_FS_FCloseFile(f);
 
 	// parse the text
 	text_p = text;
 
-	memset( (char *)surfOff, 0, sizeof(surfOff) );
-	memset( (char *)surfOn, 0, sizeof(surfOn) );
-
-											 
-
+	// Replace free with memset
+	memset((char*)surfOff, 0, MAX_SURF_LIST_SIZE);
+	memset((char*)surfOn, 0, MAX_SURF_LIST_SIZE);
 
 	// read information for surfOff and surfOn
-	while ( 1 ) 
+	while (1)
 	{
-		token = COM_ParseExt( &text_p, qtrue );
-		if ( !token || !token[0] ) 
+		token = COM_ParseExt(&text_p, qtrue);
+		if (!token || !token[0])
 		{
 			break;
 		}
 
 		// surfOff
-		if ( !Q_stricmp( token, "surfOff" ) ) 
+		if (!Q_stricmp(token, "surfOff"))
 		{
-			if ( COM_ParseString( &text_p, &value ) ) 
+			if (COM_ParseString(&text_p, &value))
 			{
 				continue;
 			}
-			if ( surfOff && surfOff[0] )
+			if (surfOff && surfOff[0])
 			{
-				Q_strcat( surfOff, MAX_SURF_LIST_SIZE, "," );
-				Q_strcat( surfOff, MAX_SURF_LIST_SIZE, value );
+				Q_strcat(surfOff, MAX_SURF_LIST_SIZE, ",");
+				Q_strcat(surfOff, MAX_SURF_LIST_SIZE, value);
 			}
 			else
 			{
-				Q_strncpyz( surfOff, value, MAX_SURF_LIST_SIZE );
+				Q_strncpyz(surfOff, value, MAX_SURF_LIST_SIZE);
 			}
 			continue;
 		}
-		
+
 		// surfOn
-		if ( !Q_stricmp( token, "surfOn" ) ) 
+		if (!Q_stricmp(token, "surfOn"))
 		{
-			if ( COM_ParseString( &text_p, &value ) ) 
+			if (COM_ParseString(&text_p, &value))
 			{
 				continue;
 			}
-			if ( surfOn && surfOn[0] )
+			if (surfOn && surfOn[0])
 			{
-				Q_strcat( surfOn, MAX_SURF_LIST_SIZE, ",");
-				Q_strcat( surfOn, MAX_SURF_LIST_SIZE, value );
+				Q_strcat(surfOn, MAX_SURF_LIST_SIZE, ",");
+				Q_strcat(surfOn, MAX_SURF_LIST_SIZE, value);
 			}
 			else
 			{
-				Q_strncpyz( surfOn, value, MAX_SURF_LIST_SIZE );
+				Q_strncpyz(surfOn, value, MAX_SURF_LIST_SIZE);
 			}
 			continue;
 		}
 	}
+
+	// Replace free with BG_Alloc cleanup (no need to free text)
+	// BG_Alloc does not require explicit cleanup, but you may want to use memset for clearing memory in some cases.
+	memset(text, 0, len + 1);  // Optionally clear the allocated memory
+	// BG_Free(text); if BG_Free was available
+
 	return qtrue;
 }
+
+
 
 
 //[TrueView]
@@ -1345,17 +1381,17 @@ qboolean BG_IsValidCharacterModel(const char *modelName, const char *skinName);
 qboolean BG_ValidateSkinForTeam( const char *modelName, char *skinName, int team, float *colors );
 							 
 
-static qboolean CG_RegisterClientModelname( clientInfo_t *ci, const char *modelName, const char *skinName, const char *teamName, int clientNum ) {
+static qboolean CG_RegisterClientModelname(clientInfo_t* ci, const char* modelName, const char* skinName, const char* teamName, int clientNum) {
 	int handle;
-	char		afilename[MAX_QPATH];
-	char		/**GLAName,*/ *slash;
-	char		GLAName[MAX_QPATH];
-	vec3_t	tempVec = {0,0,0};
-	qboolean badModel = qfalse;
-	char	surfOff[MAX_SURF_LIST_SIZE];
-	char	surfOn[MAX_SURF_LIST_SIZE];
-	int		checkSkin;
-	char	*useSkinName;
+	char        afilename[MAX_QPATH];
+	char* slash;
+	char        GLAName[MAX_QPATH];
+	vec3_t      tempVec = { 0,0,0 };
+	qboolean    badModel = qfalse;
+	char        surfOff[MAX_SURF_LIST_SIZE];
+	char        surfOn[MAX_SURF_LIST_SIZE];
+	int         checkSkin;
+	char* useSkinName;
 
 	//[TrueView]
 	//Warning flag for models that are incompatible with True View
@@ -1388,9 +1424,9 @@ retryModel:
 		skinName = "default";
 	}
 
-	if ( cgs.gametype >= GT_TEAM && !cgs.jediVmerc && cgs.gametype != GT_SIEGE )
+	if (cgs.gametype >= GT_TEAM && !cgs.jediVmerc && cgs.gametype != GT_SIEGE)
 	{ //We won't force colors for siege.
-		BG_ValidateSkinForTeam( ci->modelName, ci->skinName, ci->team, ci->colorOverride );
+		BG_ValidateSkinForTeam(ci->modelName, ci->skinName, ci->team, ci->colorOverride);
 		skinName = ci->skinName;
 	}
 	else
@@ -1400,9 +1436,9 @@ retryModel:
 
 	// fix for transparent custom skin parts
 	if (strchr(skinName, '|')
-		&& strstr(skinName,"head")
-		&& strstr(skinName,"torso")
-		&& strstr(skinName,"lower"))  
+		&& strstr(skinName, "head")
+		&& strstr(skinName, "torso")
+		&& strstr(skinName, "lower"))
 	{//three part skin
 		useSkinName = va("models/players/%s/|%s", modelName, skinName);
 	}
@@ -1421,10 +1457,10 @@ retryModel:
 	{ //fallback to the default skin
 		ci->torsoSkin = trap_R_RegisterSkin(va("models/players/%s/model_default.skin", modelName, skinName));
 	}
-	Com_sprintf( afilename, sizeof( afilename ), "models/players/%s/model.glm", modelName );
+	Com_sprintf(afilename, sizeof(afilename), "models/players/%s/model.glm", modelName);
 	handle = trap_G2API_InitGhoul2Model(&ci->ghoul2Model, afilename, 0, ci->torsoSkin, 0, 0, 0);
 
-	if (handle<0)
+	if (handle < 0)
 	{
 		return qfalse;
 	}
@@ -1435,7 +1471,7 @@ retryModel:
 
 	GLAName[0] = 0;
 
-	trap_G2API_GetGLAName( ci->ghoul2Model, 0, GLAName);
+	trap_G2API_GetGLAName(ci->ghoul2Model, 0, GLAName);
 	if (GLAName[0] != 0)
 	{
 		if (!strstr(GLAName, "players/_humanoid/") /*&&
@@ -1453,14 +1489,14 @@ retryModel:
 			badModel = qtrue;
 			goto retryModel;
 		}
-		Q_strncpyz( afilename, GLAName, sizeof( afilename ));
-		slash = Q_strrchr( afilename, '/' );
-		if ( slash )
+		Q_strncpyz(afilename, GLAName, sizeof(afilename));
+		slash = Q_strrchr(afilename, '/');
+		if (slash)
 		{
 			strcpy(slash, "/animation.cfg");
-		}	// Now afilename holds just the path to the animation.cfg
-		else 
-		{	// Didn't find any slashes, this is a raw filename right in base (whish isn't a good thing)
+		}    // Now afilename holds just the path to the animation.cfg
+		else
+		{    // Didn't find any slashes, this is a raw filename right in base (whish isn't a good thing)
 			return qfalse;
 		}
 
@@ -1468,88 +1504,70 @@ retryModel:
 		if (Q_stricmp(afilename, "models/players/_humanoid/animation.cfg") /*&&
 			Q_stricmp(afilename, "models/players/rockettrooper/animation.cfg")*/)
 		{
-			Com_Printf( "Model does not use supported animation config.\n");
+			Com_Printf("Model does not use supported animation config.\n");
 			return qfalse;
 		}
 		else if (BG_ParseAnimationFile("models/players/_humanoid/animation.cfg", bgHumanoidAnimations, qtrue) == -1)
 		{
-			Com_Printf( "Failed to load animation file models/players/_humanoid/animation.cfg\n" );
+			Com_Printf("Failed to load animation file models/players/_humanoid/animation.cfg\n");
 			return qfalse;
 		}
 
 		//[ANIMEVENTS]
-		CG_ParseAnimationEvtFile( "models/players/_humanoid/", 0, -1 ); //get the sounds for the humanoid anims
+		CG_ParseAnimationEvtFile("models/players/_humanoid/", 0, -1); //get the sounds for the humanoid anims
 		//BG_ParseAnimationEvtFile( "models/players/_humanoid/", 0, -1 ); //get the sounds for the humanoid anims
 		//[/ANIMEVENTS]
-//		if (cgs.gametype == GT_SIEGE)
-//		{
-//			BG_ParseAnimationEvtFile( "models/players/rockettrooper/", 1, 1 ); //parse rockettrooper too
-//		}
-		//For the time being, we're going to have all real players use the generic humanoid soundset and that's it.
-		//Only npc's will use model-specific soundsets.
-
-	//	BG_ParseAnimationSndFile(va("models/players/%s/", modelName), 0, -1);
 	}
-	//[ANIMEVENTS]
 	else if (!cgAllEvents[0].eventsParsed)
-	//else if (!bgAllEvents[0].eventsParsed)
 	{ //make sure the player anim sounds are loaded even if the anims already are
-		CG_ParseAnimationEvtFile( "models/players/_humanoid/", 0, -1 );
-		//BG_ParseAnimationEvtFile( "models/players/_humanoid/", 0, -1 );
-	//[/ANIMEVENTS]
-//		if (cgs.gametype == GT_SIEGE)
-//		{
-//			BG_ParseAnimationEvtFile( "models/players/rockettrooper/", 1, 1 );
-//		}
+		CG_ParseAnimationEvtFile("models/players/_humanoid/", 0, -1);
 	}
 
-	if ( CG_ParseSurfsFile( modelName, skinName, surfOff, surfOn ) )
+	if (CG_ParseSurfsFile(modelName, skinName, surfOff, surfOn))
 	{//turn on/off any surfs
-		const char	*token;
-		const char	*p;
+		const char* token;
+		const char* p;
 
 		//Now turn on/off any surfaces
-		if ( surfOff[0] )
+		if (surfOff[0])
 		{
 			p = surfOff;
-													 
-			while ( 1 ) 
+
+			while (1)
 			{
-				token = COM_ParseExt( &p, qtrue );
-				if ( !token[0] ) 
+				token = COM_ParseExt(&p, qtrue);
+				if (!token[0])
 				{//reached end of list
 					break;
 				}
 				//turn off this surf
-				trap_G2API_SetSurfaceOnOff( ci->ghoul2Model, token, 0x00000002/*G2SURFACEFLAG_OFF*/ );
+				trap_G2API_SetSurfaceOnOff(ci->ghoul2Model, token, 0x00000002/*G2SURFACEFLAG_OFF*/);
 			}
 		}
-		if ( surfOn[0] )
+		if (surfOn[0])
 		{
 			p = surfOn;
-															
-			while ( 1 )
+
+			while (1)
 			{
-				token = COM_ParseExt( &p, qtrue );
-				if ( !token[0] ) 
+				token = COM_ParseExt(&p, qtrue);
+				if (!token[0])
 				{//reached end of list
 					break;
 				}
 				//turn on this surf
-				trap_G2API_SetSurfaceOnOff( ci->ghoul2Model, token, 0 );
+				trap_G2API_SetSurfaceOnOff(ci->ghoul2Model, token, 0);
 			}
 		}
 	}
 
-
 	ci->bolt_rhand = trap_G2API_AddBolt(ci->ghoul2Model, 0, "*r_hand");
 
-	
 	if (!trap_G2API_SetBoneAnim(ci->ghoul2Model, 0, "model_root", 0, 12, BONE_ANIM_OVERRIDE_LOOP, 1.0f, cg.time, -1, -1))
 	{
 		badModel = qtrue;
 	}
-	
+
 	if (!trap_G2API_SetBoneAngles(ci->ghoul2Model, 0, "upper_lumbar", tempVec, BONE_ANGLES_POSTMULT, POSITIVE_X, NEGATIVE_Y, NEGATIVE_Z, NULL, 0, cg.time))
 	{
 		badModel = qtrue;
@@ -1626,49 +1644,33 @@ retryModel:
 		trap_G2API_SetSurfaceOnOff(ci->ghoul2Model, "torso_ljet", TURN_OFF);
 	}
 
-//	ent->s.radius = 90;
-
 	if (clientNum != -1)
 	{
-		/*
-		if (cg_entities[clientNum].ghoul2 && trap_G2_HaveWeGhoul2Models(cg_entities[clientNum].ghoul2))
-		{
-			trap_G2API_CleanGhoul2Models(&(cg_entities[clientNum].ghoul2));
-		}
-		trap_G2API_DuplicateGhoul2Instance(ci->ghoul2Model, &cg_entities[clientNum].ghoul2);	
-		*/
-
 		cg_entities[clientNum].ghoul2weapon = NULL;
 	}
 
-	Q_strncpyz (ci->teamName, teamName, sizeof(ci->teamName));
+	Q_strncpyz(ci->teamName, teamName, sizeof(ci->teamName));
 
 	// Model icon for drawing the portrait on screen
+	ci->modelIcon = trap_R_RegisterShaderNoMip(va("models/players/%s/icon_%s", modelName, skinName));
 
-
-	
-
-	
-		ci->modelIcon = trap_R_RegisterShaderNoMip(va("models/players/%s/icon_%s", modelName, skinName));
-	
 	if (!ci->modelIcon)
 	{
-        int i = 0;
+		int i = 0;
 		int j;
 		char iconName[1024];
 		strcpy(iconName, "icon_");
 		j = strlen(iconName);
-		while (skinName[i] && skinName[i] != '|' && j < 1024)
+		while (skinName[i] && skinName[i] != '|' && j < sizeof(iconName) - 1) // fix buffer overrun
 		{
-            iconName[j] = skinName[i];
+			iconName[j] = skinName[i];
 			j++;
-			i++;
 		}
-		iconName[j] = 0;
+		iconName[j] = 0; // Null-terminate the string
 		if (skinName[i] == '|')
-		{ //looks like it actually may be a custom model skin, let's try getting the icon...
-		//[RACC] - This appears to be relevent to the custom model icons
-			ci->modelIcon = trap_R_RegisterShaderNoMip ( va ( "models/players/%s/%s", modelName, iconName ) );
+		{
+			// Custom skin path logic
+			ci->modelIcon = trap_R_RegisterShaderNoMip(va("models/players/%s/%s", modelName, iconName));
 		}
 	}
 
@@ -2614,11 +2616,6 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	int k = 0;
 	qboolean saberUpdate[MAX_SABERS];
 
-			
-										   
-		 
-	  
-
 	ci = &cgs.clientinfo[clientNum];
 
 	oldGhoul2 = ci->ghoul2Model;
@@ -2657,16 +2654,6 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 			//[/VisualWeapons]
 			k++;
 		}
-
-			
-																	   
-																   
-						
-							
-
-																							  
-									  
-	  
 
 		memset( ci, 0, sizeof( *ci ) );
 		return;		// player just left
@@ -2992,26 +2979,6 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		newInfo.colorOverride[0] = newInfo.colorOverride[1] = newInfo.colorOverride[2] = 0.0f;
 	}
 
-			
-						   
-						   
-
-												  
-  
-																							  
-																								  
-
-								
-
-						   
-												 
-
-									
-
-								 
-  
-	  
-
 	// scan for an existing clientinfo that matches this modelname
 	// so we can avoid loading checks if possible
 	if ( !CG_ScanForExistingClientInfo( &newInfo, clientNum ) ) {
@@ -3067,140 +3034,137 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	}
 
 	// Check if the ghoul2 model changed in any way.  This is safer than assuming we have a legal cent shile loading info.
-	if (entitiesInitialized && ci->ghoul2Model && (oldGhoul2 != ci->ghoul2Model))
-  
-	{	// Copy the new ghoul2 model to the centity.
-											  
-		animation_t *anim;
-		centity_t *cent = &cg_entities[clientNum];
-		
-		anim = &bgHumanoidAnimations[ (cg_entities[clientNum].currentState.legsAnim) ];
-
-		if (anim)
+	if (clientNum >= 0 && clientNum < MAX_CLIENTS) // Ensure clientNum is within valid bounds
+	{
+		if (entitiesInitialized && ci->ghoul2Model && (oldGhoul2 != ci->ghoul2Model))
 		{
-			int flags = BONE_ANIM_OVERRIDE_FREEZE;
-			int firstFrame = anim->firstFrame;
-			int setFrame = -1;
-			float animSpeed = 50.0f / anim->frameLerp;
+			// Copy the new ghoul2 model to the centity.
+			animation_t* anim;
+			centity_t* cent = &cg_entities[clientNum];
 
-			if (anim->loopFrames != -1)
+			anim = &bgHumanoidAnimations[(cg_entities[clientNum].currentState.legsAnim)];
+
+			if (anim)
 			{
-				flags = BONE_ANIM_OVERRIDE_LOOP;
-			}
+				int flags = BONE_ANIM_OVERRIDE_FREEZE;
+				int firstFrame = anim->firstFrame;
+				int setFrame = -1;
+				float animSpeed = 50.0f / anim->frameLerp;
 
-			if (cent->pe.legs.frame >= anim->firstFrame && cent->pe.legs.frame <= (anim->firstFrame + anim->numFrames))
-			{
-				setFrame = cent->pe.legs.frame;
-			}
-
-			//rww - Set the animation again because it just got reset due to the model change															
-			trap_G2API_SetBoneAnim(ci->ghoul2Model, 0, "model_root", firstFrame, anim->firstFrame + anim->numFrames, flags, animSpeed, cg.time, setFrame, 150);
-
-			cg_entities[clientNum].currentState.legsAnim = 0;
-		}
-
-		anim = &bgHumanoidAnimations[ (cg_entities[clientNum].currentState.torsoAnim) ];
-
-		if (anim)
-		{
-			int flags = BONE_ANIM_OVERRIDE_FREEZE;
-			int firstFrame = anim->firstFrame;
-			int setFrame = -1;
-			float animSpeed = 50.0f / anim->frameLerp;
-
-			if (anim->loopFrames != -1)
-			{
-				flags = BONE_ANIM_OVERRIDE_LOOP;
-			}
-
-			if (cent->pe.torso.frame >= anim->firstFrame && cent->pe.torso.frame <= (anim->firstFrame + anim->numFrames))
-			{
-				setFrame = cent->pe.torso.frame;
-			}
-
-			//rww - Set the animation again because it just got reset due to the model change											
-			trap_G2API_SetBoneAnim(ci->ghoul2Model, 0, "lower_lumbar", firstFrame, anim->firstFrame + anim->numFrames, flags, animSpeed, cg.time, setFrame, 150);
-
-			cg_entities[clientNum].currentState.torsoAnim = 0;
-		}
-
-		if (cg_entities[clientNum].ghoul2 && trap_G2_HaveWeGhoul2Models(cg_entities[clientNum].ghoul2))
-		{
-			trap_G2API_CleanGhoul2Models(&cg_entities[clientNum].ghoul2);
-		}
-		trap_G2API_DuplicateGhoul2Instance(ci->ghoul2Model, &cg_entities[clientNum].ghoul2);
-
-		if (clientNum != -1)
-		{
-			//Attach the instance to this entity num so we can make use of client-server
-			//shared operations if possible.
-			trap_G2API_AttachInstanceToEntNum(cg_entities[clientNum].ghoul2, clientNum, qfalse);
-		}
-
-		if (trap_G2API_AddBolt(cg_entities[clientNum].ghoul2, 0, "face") == -1)
-		{ //check now to see if we have this bone for setting anims and such
-			cg_entities[clientNum].noFace = qtrue;
-		}
-
-		cg_entities[clientNum].localAnimIndex = CG_G2SkelForModel(cg_entities[clientNum].ghoul2);
-		//[ANIMEVENTS]
-		//This might cause slow down whenever someone with a new animevent.cfg joins the game.  Oh well.
-		cg_entities[clientNum].eventAnimIndex = CG_ParseAnimationEvtFile( va("models/players/%s/", ci->modelName), cg_entities[clientNum].localAnimIndex, cgNumAnimEvents );
-		//cg_entities[clientNum].eventAnimIndex = CG_G2EvIndexForModel(cg_entities[clientNum].ghoul2, cg_entities[clientNum].localAnimIndex);
-		//[/ANIMEVENTS]
-
-		if (cg_entities[clientNum].currentState.number != cg.predictedPlayerState.clientNum &&
-			cg_entities[clientNum].currentState.weapon == WP_SABER)
-		{
-			cg_entities[clientNum].weapon = cg_entities[clientNum].currentState.weapon;
-			if (cg_entities[clientNum].ghoul2 && ci->ghoul2Model)
-			{
-
-				CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
-				cg_entities[clientNum].ghoul2weapon = CG_G2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
-				//[DualPistols]
-				if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
-					(cg_entities[clientNum].currentState.weapon == WP_BRYAR_PISTOL))
+				if (anim->loopFrames != -1)
 				{
-					//CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
-					cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
+					flags = BONE_ANIM_OVERRIDE_LOOP;
 				}
-				else if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
-					(cg_entities[clientNum].currentState.weapon == WP_BRYAR_OLD))
-				{
-					//CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
-					cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
-				}
-				else if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
-					(cg_entities[clientNum].currentState.weapon == WP_STUN_BATON))
-				{
-					//CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
-					cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
-				}
-				else
-				{
-					cg_entities[clientNum].ghoul2weapon2 = NULL;
-				}
-				//[/DualPistols]					
-				
 
+				if (cent->pe.legs.frame >= anim->firstFrame && cent->pe.legs.frame <= (anim->firstFrame + anim->numFrames))
+				{
+					setFrame = cent->pe.legs.frame;
+				}
+
+				//rww - Set the animation again because it just got reset due to the model change
+				trap_G2API_SetBoneAnim(ci->ghoul2Model, 0, "model_root", firstFrame, anim->firstFrame + anim->numFrames, flags, animSpeed, cg.time, setFrame, 150);
+
+				cg_entities[clientNum].currentState.legsAnim = 0;
 			}
-			if (!cg_entities[clientNum].currentState.saberHolstered)
-			{ //if not holstered set length and desired length for both blades to full right now.
-				int j;
-				BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
-				BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
 
-				i = 0;
-				while (i < MAX_SABERS)
+			anim = &bgHumanoidAnimations[(cg_entities[clientNum].currentState.torsoAnim)];
+
+			if (anim)
+			{
+				int flags = BONE_ANIM_OVERRIDE_FREEZE;
+				int firstFrame = anim->firstFrame;
+				int setFrame = -1;
+				float animSpeed = 50.0f / anim->frameLerp;
+
+				if (anim->loopFrames != -1)
 				{
-					j = 0;
-					while (j < ci->saber[i].numBlades)
+					flags = BONE_ANIM_OVERRIDE_LOOP;
+				}
+
+				if (cent->pe.torso.frame >= anim->firstFrame && cent->pe.torso.frame <= (anim->firstFrame + anim->numFrames))
+				{
+					setFrame = cent->pe.torso.frame;
+				}
+
+				//rww - Set the animation again because it just got reset due to the model change
+				trap_G2API_SetBoneAnim(ci->ghoul2Model, 0, "lower_lumbar", firstFrame, anim->firstFrame + anim->numFrames, flags, animSpeed, cg.time, setFrame, 150);
+
+				cg_entities[clientNum].currentState.torsoAnim = 0;
+			}
+
+			if (cg_entities[clientNum].ghoul2 && trap_G2_HaveWeGhoul2Models(cg_entities[clientNum].ghoul2))
+			{
+				trap_G2API_CleanGhoul2Models(&cg_entities[clientNum].ghoul2);
+			}
+			trap_G2API_DuplicateGhoul2Instance(ci->ghoul2Model, &cg_entities[clientNum].ghoul2);
+
+			if (clientNum != -1)
+			{
+				// Attach the instance to this entity num so we can make use of client-server
+				// shared operations if possible.
+				trap_G2API_AttachInstanceToEntNum(cg_entities[clientNum].ghoul2, clientNum, qfalse);
+			}
+
+			if (trap_G2API_AddBolt(cg_entities[clientNum].ghoul2, 0, "face") == -1)
+			{ // Check now to see if we have this bone for setting anims and such
+				cg_entities[clientNum].noFace = qtrue;
+			}
+
+			cg_entities[clientNum].localAnimIndex = CG_G2SkelForModel(cg_entities[clientNum].ghoul2);
+
+			// [ANIMEVENTS]
+			cg_entities[clientNum].eventAnimIndex = CG_ParseAnimationEvtFile(va("models/players/%s/", ci->modelName), cg_entities[clientNum].localAnimIndex, cgNumAnimEvents);
+			// [/ANIMEVENTS]
+
+			if (cg_entities[clientNum].currentState.number != cg.predictedPlayerState.clientNum &&
+				cg_entities[clientNum].currentState.weapon == WP_SABER)
+			{
+				cg_entities[clientNum].weapon = cg_entities[clientNum].currentState.weapon;
+				if (cg_entities[clientNum].ghoul2 && ci->ghoul2Model)
+				{
+					CG_CopyG2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon, cg_entities[clientNum].ghoul2);
+					cg_entities[clientNum].ghoul2weapon = CG_G2WeaponInstance(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
+
+					// [DualPistols]
+					if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
+						(cg_entities[clientNum].currentState.weapon == WP_BRYAR_PISTOL))
 					{
-						ci->saber[i].blade[j].length = ci->saber[i].blade[j].lengthMax;
-						j++;
+						cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
 					}
-					i++;
+					else if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
+						(cg_entities[clientNum].currentState.weapon == WP_BRYAR_OLD))
+					{
+						cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
+					}
+					else if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
+						(cg_entities[clientNum].currentState.weapon == WP_STUN_BATON))
+					{
+						cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum], cg_entities[clientNum].currentState.weapon);
+					}
+					else
+					{
+						cg_entities[clientNum].ghoul2weapon2 = NULL;
+					}
+					// [/DualPistols]
+				}
+
+				if (!cg_entities[clientNum].currentState.saberHolstered)
+				{ // If not holstered set length and desired length for both blades to full right now.
+					int j;
+					BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
+					BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+
+					i = 0;
+					while (i < MAX_SABERS)
+					{
+						j = 0;
+						while (j < ci->saber[i].numBlades)
+						{
+							ci->saber[i].blade[j].length = ci->saber[i].blade[j].lengthMax;
+							j++;
+						}
+						i++;
+					}
 				}
 			}
 		}
@@ -10792,7 +10756,8 @@ void CG_AddGhoul2Mark(int shader, float size, vec3_t start, vec3_t end, int entn
 {
 	SSkinGoreData goreSkin;
 
-	assert(ghoul2);
+	if (!ghoul2 || !scale || !start || !end || !entposition)
+		return;
 
 	memset ( &goreSkin, 0, sizeof(goreSkin) );
 
@@ -15288,8 +15253,12 @@ void CG_HolsteredWeaponRender( centity_t *cent, clientInfo_t *ci, int holsterTyp
 	if(ojp_holsterdebug.integer == holsterType)
 	{//debug has been set for this holsterType, use the debug overrides
 		boneIndex = ojp_holsterdebug_boneindex.integer;
-		sscanf(ojp_holsterdebug_posoffset.string, "%f %f %f", &PosOffset[0], &PosOffset[1], &PosOffset[2]);
-		sscanf(ojp_holsterdebug_angoffset.string, "%f %f %f", &AngOffset[0], &AngOffset[1], &AngOffset[2]);
+		if (sscanf(ojp_holsterdebug_posoffset.string, "%f %f %f", &PosOffset[0], &PosOffset[1], &PosOffset[2]) != 3) {
+			VectorClear(PosOffset); // fallback if sscanf fails
+		}
+		if (sscanf(ojp_holsterdebug_angoffset.string, "%f %f %f", &AngOffset[0], &AngOffset[1], &AngOffset[2]) != 3) {
+			VectorClear(AngOffset); // fallback if sscanf fails
+		}
 	}
 	else
 	{//use the model's loaded data for this holsterType
@@ -19336,46 +19305,48 @@ SkipTrueView:
 
 
 	//If you've tricked this client.
-	if (CG_IsMindTricked(cg.snap->ps.fd.forceMindtrickTargetIndex,
-		cg.snap->ps.fd.forceMindtrickTargetIndex2,
-		cg.snap->ps.fd.forceMindtrickTargetIndex3,
-		cg.snap->ps.fd.forceMindtrickTargetIndex4,
-		cent->currentState.number))
-	{
-		if (cent->ghoul2)
-		{
-			vec3_t efOrg;
-			vec3_t tAng, fxAng;
-			vec3_t axis[3];
 
-			//VectorSet( tAng, 0, cent->pe.torso.yawAngle, 0 );
-			VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+		if (cg.snap && cent && CG_IsMindTricked(cg.snap->ps.fd.forceMindtrickTargetIndex,
+			cg.snap->ps.fd.forceMindtrickTargetIndex2,
+			cg.snap->ps.fd.forceMindtrickTargetIndex3,
+			cg.snap->ps.fd.forceMindtrickTargetIndex4,
+			cent->currentState.number)) {
+			if (cent->ghoul2) {
+				vec3_t efOrg;
+				vec3_t tAng, fxAng;
+				vec3_t axis[3];
 
-			trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_head, &boltMatrix, tAng, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				// Handle the transformations here
+				VectorSet(tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL]);
 
-			BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, efOrg);
-			BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, fxAng);
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_head, &boltMatrix, tAng, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
 
- 			axis[0][0] = boltMatrix.matrix[0][0];
- 			axis[0][1] = boltMatrix.matrix[1][0];
-		 	axis[0][2] = boltMatrix.matrix[2][0];
+				BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, efOrg);
+				BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, fxAng);
 
- 			axis[1][0] = boltMatrix.matrix[0][1];
- 			axis[1][1] = boltMatrix.matrix[1][1];
-		 	axis[1][2] = boltMatrix.matrix[2][1];
+				axis[0][0] = boltMatrix.matrix[0][0];
+				axis[0][1] = boltMatrix.matrix[1][0];
+				axis[0][2] = boltMatrix.matrix[2][0];
 
- 			axis[2][0] = boltMatrix.matrix[0][2];
- 			axis[2][1] = boltMatrix.matrix[1][2];
-		 	axis[2][2] = boltMatrix.matrix[2][2];
+				axis[1][0] = boltMatrix.matrix[0][1];
+				axis[1][1] = boltMatrix.matrix[1][1];
+				axis[1][2] = boltMatrix.matrix[2][1];
 
-			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
-			//trap_FX_PlayEntityEffectID(cgs.effects.mForceConfustionOld, efOrg, axis, -1, -1, -1, -1);
+				axis[2][0] = boltMatrix.matrix[0][2];
+				axis[2][1] = boltMatrix.matrix[1][2];
+				axis[2][2] = boltMatrix.matrix[2][2];
+
+				// FX handling (commented out in your code)
+				// trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
+				// trap_FX_PlayEntityEffectID(cgs.effects.mForceConfustionOld, efOrg, axis, -1, -1, -1, -1);
+			}
 		}
-	}
+
+
 	  
 
 	//[TrueView]
-		if (cgs.gametype == GT_HOLOCRON && cent->currentState.time2 && 
+		if (cent && cgs.gametype == GT_HOLOCRON && cent->currentState.time2 && 
 		((cg.renderingThirdPerson || cg_trueguns.integer || cg.predictedPlayerState.weapon == WP_SABER || cg.predictedPlayerState.weapon == WP_MELEE) 
 		|| cg.snap->ps.clientNum != cent->currentState.number))
 	//if (cgs.gametype == GT_HOLOCRON && cent->currentState.time2 && (cg.renderingThirdPerson || cg.snap->ps.clientNum != cent->currentState.number))
@@ -19525,7 +19496,8 @@ SkipTrueView:
 		}
 	}
   
-
+if(cent)
+{
 	if ((cent->currentState.powerups & (1 << PW_YSALAMIRI)) ||
 		(cgs.gametype == GT_CTY && ((cent->currentState.powerups & (1 << PW_REDFLAG)) || (cent->currentState.powerups & (1 << PW_BLUEFLAG)))) )
 	{
@@ -19561,13 +19533,14 @@ SkipTrueView:
 	{
 //		CG_DrawPlayerSphere(cent, cent->lerpOrigin, 1.0f, cgs.media.invulnerabilityShader );
 	}
+ }
 stillDoSaber:
 
 			  
 											  
 		
 
-	if ((cent->currentState.eFlags & EF_DEAD) && cent->currentState.weapon == WP_SABER)
+	if (cent && (cent->currentState.eFlags & EF_DEAD) && cent->currentState.weapon == WP_SABER)
 	{//racc - turn off saber if player died.
 		//cent->saberLength = 0;
 		BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
@@ -19577,7 +19550,7 @@ stillDoSaber:
 	}
 	//[SaberThrowSys]
 	//rearranged this code a little because sabers can now be returning without being active.
-	else if ( cent->currentState.weapon == WP_SABER )
+	else if (cent && cent->currentState.weapon == WP_SABER )
 	//else if (cent->currentState.weapon == WP_SABER 
 	//	&& cent->currentState.saberHolstered < 2 )
 	//[/SaberThrowSys]
@@ -19918,32 +19891,55 @@ stillDoSaber:
 				VectorCopy(saberEnt->lerpAngles, bladeAngles);
 				bladeAngles[ROLL] = 0;
 
-				//[SaberThrowSys]
-				//racc - set blade length of first saber for rendering
-				if ( cent->currentState.saberHolstered == 0 )
+
+
+				if ( ci->saber[1].model[0])	//dual sabers
+				{
+					//[SaberThrowSys]			
+					if(cent->currentState.saberHolstered == 1)
+					{
+					if(cent->currentState.saberInFlight  && (cg.snap->ps.fd.saberDrawAnimLevel == SS_DUAL || cg.snap->ps.fd.saberDrawAnimLevel == SS_STAFF))
+					{//if the saber has been knocked down, saberHolstered means the second saber is rendered instead of
+						//the first saber.
+						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
+
+					}
+					else
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, 0);
+						BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+					}
+					}
+					//BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+					//[/SaberThrowSys]
+					else
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
+						BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
+					}
+				}
+				else if ( ci->saber[0].numBlades > 1 )//staff
+				{//only first blade should be on
+					if(cent->currentState.saberHolstered == 1)
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, 0);
+					}
+					//BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+					//[/SaberThrowSys]
+					else
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
+					}
+				}
+				else
 				{
 					BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
 				}
-				else
-				{
-					BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
-				}
-
-
-
 				
-				//[/SaberThrowSys]
-
-				//racc - set render for the second saber's blade as needed
-				if ( ci->saber[1].model	//dual sabers
-					&& cent->currentState.saberHolstered == 1 )//second one off
-				{
-					BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
-				}
-				else
-				{
-					BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
-				}
 
 
 				
@@ -20067,43 +20063,51 @@ stillDoSaber:
 			}
 			else
 			{//racc - at least some of our blades are active.
-				if ( ci->saber[0].numBlades > 1//staff
-					&& cent->currentState.saberHolstered == 1 )//extra blades off
+				if ( ci->saber[1].model[0])	//dual sabers
+				{
+					//[SaberThrowSys]			
+					if(cent->currentState.saberHolstered == 1)
+					{
+					if(cent->currentState.saberInFlight  && (cg.snap->ps.fd.saberDrawAnimLevel == SS_DUAL || cg.snap->ps.fd.saberDrawAnimLevel == SS_STAFF))
+					{//if the saber has been knocked down, saberHolstered means the second saber is rendered instead of
+						//the first saber.
+						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
+
+					}
+					else
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, 0);
+						BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+					}
+					}
+					//BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+					//[/SaberThrowSys]
+					else
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
+						BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
+					}
+				}
+				else if ( ci->saber[0].numBlades > 1 )//staff
 				{//only first blade should be on
-					BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
-					BG_SI_SetDesiredLength(&ci->saber[0], -1, 0);
+					if(cent->currentState.saberHolstered == 1)
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, 0);
+					}
+					//BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
+					//[/SaberThrowSys]
+					else
+					{
+						BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
+					}
 				}
 				else
 				{
 					BG_SI_SetDesiredLength(&ci->saber[0], -1, -1);
-				}
-				if ( ci->saber[1].model[0]	//dual sabers
-	   
-					&& cent->currentState.saberHolstered == 1 )//second one off
-				{
-					//[SaberThrowSys]			
-					if(cent->currentState.saberInFlight && !cent->currentState.saberEntityNum)
-					{//if the saber has been knocked down, saberHolstered means the second saber is rendered instead of
-						//the first saber.
-						BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
-						BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
-																											 
-		
-
-		   
-	   
-					}
-					else
-					{
-						BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
-					}
-					//BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
-					//[/SaberThrowSys]
-					
-				}
-				else
-				{
-					BG_SI_SetDesiredLength(&ci->saber[1], -1, -1);
 				}
 			}
 
@@ -20218,7 +20222,7 @@ stillDoSaber:
 	}
 #endif
 
-	if (cent->currentState.weapon == WP_SABER)
+	if (cent && cent->currentState.weapon == WP_SABER)
 	{
 			
 									   
@@ -20352,7 +20356,7 @@ stillDoSaber:
 			
 									  
 	  
-	if (cent->currentState.saberInFlight && !cent->currentState.saberEntityNum)
+	if (cent && cent->currentState.saberInFlight && !cent->currentState.saberEntityNum)
 	{ //reset the length if the saber is knocked away
 		BG_SI_SetDesiredLength(&ci->saber[0], 0, -1);
 		BG_SI_SetDesiredLength(&ci->saber[1], 0, -1);
@@ -20370,7 +20374,7 @@ stillDoSaber:
 		cent->bolt2 = 0;
 	}
 
-	if (cent->currentState.eFlags & EF_DEAD)
+	if (cent && cent->currentState.eFlags & EF_DEAD)
 	{
 		if (cent->ghoul2 && cent->currentState.saberInFlight && g2HasWeapon)
 		{ //special case, kill the saber on a freshly dead player if another source says to.
@@ -20390,7 +20394,7 @@ stillDoSaber:
 		//goto endOfCall;
 	}
 
-	if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) && cg.snap->ps.clientNum != cent->currentState.number)
+	if (cg.snap && cent && (cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) && cg.snap->ps.clientNum != cent->currentState.number)
 	{
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 255;
@@ -20398,7 +20402,7 @@ stillDoSaber:
 		legs.renderfx |= RF_MINLIGHT;
 	}
 
-	if (cg.snap->ps.duelInProgress /*&& cent->currentState.number != cg.snap->ps.clientNum*/)
+	if (cg.snap && cent && cg.snap->ps.duelInProgress /*&& cent->currentState.number != cg.snap->ps.clientNum*/)
 	{ //I guess go ahead and glow your own client too in a duel
 		if (cent->currentState.number != cg.snap->ps.duelIndex &&
 			cent->currentState.number != cg.snap->ps.clientNum)
@@ -20482,7 +20486,7 @@ stillDoSaber:
 	}
 	else
 	{
-		if (cent->currentState.bolt1 && !(cent->currentState.eFlags & EF_DEAD) && cent->currentState.number != cg.snap->ps.clientNum && (!cg.snap->ps.duelInProgress || cg.snap->ps.duelIndex != cent->currentState.number))
+		if (cg.snap && cent && cent->currentState.bolt1 && !(cent->currentState.eFlags & EF_DEAD) && cent->currentState.number != cg.snap->ps.clientNum && (!cg.snap->ps.duelInProgress || cg.snap->ps.duelIndex != cent->currentState.number))
 		{
 			legs.shaderRGBA[0] = 50;
 			legs.shaderRGBA[1] = 50;
@@ -20491,7 +20495,7 @@ stillDoSaber:
 		}
 	}
 
-	if (cent->currentState.eFlags & EF_DISINTEGRATION)
+	if (cent && cent->currentState.eFlags & EF_DISINTEGRATION)
 	{
 		if (!cent->dustTrailTime)
 		{
@@ -20525,11 +20529,15 @@ stillDoSaber:
 	}
 	else
 	{
-		cent->dustTrailTime = 0;
-		cent->miscTime = 0;
+		if (cent)
+		{
+			cent->dustTrailTime = 0;
+			cent->miscTime = 0;
+		}
+
 	}
 
-	if (cent->currentState.powerups & (1 << PW_CLOAKED))
+	if (cent && cent->currentState.powerups & (1 << PW_CLOAKED))
 	{
 		if (!cent->cloaked)
 		{
@@ -20537,13 +20545,13 @@ stillDoSaber:
 			cent->uncloaking = cg.time + 2000;
 		}
 	}
-	else if (cent->cloaked)
+	else if (cent && cent->cloaked)
 	{
 		cent->cloaked = qfalse;
 		cent->uncloaking = cg.time + 2000;
 	}
 
-	if (cent->uncloaking > cg.time)
+	if (cent && cent->uncloaking > cg.time)
 	{//in the middle of cloaking
 		if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) 
 			&& cg.snap->ps.clientNum != cent->currentState.number)
@@ -20584,7 +20592,7 @@ stillDoSaber:
 			}
 		}
 	}
-	else if (( cent->currentState.powerups & ( 1 << PW_CLOAKED ))) 
+	else if (( cent && cent->currentState.powerups & ( 1 << PW_CLOAKED ))) 
 	{//fully cloaked
 		if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) 
 			&& cg.snap->ps.clientNum != cent->currentState.number)
@@ -20653,8 +20661,9 @@ stillDoSaber:
 			}
 		}
 	}
-
-	if (!(cent->currentState.powerups & (1 << PW_CLOAKED)))
+	if(cent)
+	{
+	if ( !(cent->currentState.powerups & (1 << PW_CLOAKED)))
 	{ //don't add the normal model if cloaked
 		CG_CheckThirdPersonAlpha( cent, &legs );
 			
@@ -20822,6 +20831,7 @@ stillDoSaber:
 			}
 		
 		}
+	 
 	//
 	// add the gun / barrel / flash
 	//
@@ -20841,9 +20851,9 @@ stillDoSaber:
 	
 	// add powerups floating behind the player
 	CG_PlayerPowerups( cent, &legs );
-
+	}
 	//[TrueView]
-	if ((cent->currentState.forcePowersActive & (1 << FP_RAGE)) &&
+	if (cent && (cent->currentState.forcePowersActive & (1 << FP_RAGE)) &&
 		(cg.renderingThirdPerson || cent->currentState.number != cg.snap->ps.clientNum
 		|| cg_trueguns.integer || cg.predictedPlayerState.weapon == WP_SABER
 		|| cg.predictedPlayerState.weapon == WP_MELEE))
@@ -20902,7 +20912,7 @@ stillDoSaber:
 	}
 	}
 
-	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 6))
+	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 6)
 	{ //aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 255;
@@ -20916,7 +20926,7 @@ stillDoSaber:
 		trap_R_AddRefEntityToScene( &legs );
 	}
 	
-	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 7))
+	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 7)
 	{ //aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 128;
@@ -20933,7 +20943,7 @@ stillDoSaber:
 
 
 
-	if(cent->currentState.powerups & ( 1 << PW_OVERLOADED ))
+	if(cent && cent->currentState.powerups & ( 1 << PW_OVERLOADED ))
 	{//while recovering from a parry, show a visual aid effect.	
 		legs.renderfx &= ~RF_FORCE_ENT_ALPHA;
 		legs.renderfx &= ~RF_MINLIGHT;
@@ -20957,7 +20967,7 @@ stillDoSaber:
 	}
 
 
-	if (!cg.snap->ps.duelInProgress && cent->currentState.bolt1 && !(cent->currentState.eFlags & EF_DEAD) && cent->currentState.number != cg.snap->ps.clientNum && (!cg.snap->ps.duelInProgress || cg.snap->ps.duelIndex != cent->currentState.number))
+	if (cg.snap && cent && !cg.snap->ps.duelInProgress && cent->currentState.bolt1 && !(cent->currentState.eFlags & EF_DEAD) && cent->currentState.number != cg.snap->ps.clientNum && (!cg.snap->ps.duelInProgress || cg.snap->ps.duelIndex != cent->currentState.number))
 	{
 		legs.shaderRGBA[0] = 50;
 		legs.shaderRGBA[1] = 50;
@@ -20974,8 +20984,8 @@ stillDoSaber:
 		trap_R_AddRefEntityToScene( &legs );
 	}
 
-	if ( CG_VehicleShouldDrawShields( cent ) //vehicle
-		|| (checkDroidShields && CG_VehicleShouldDrawShields( &cg_entities[cent->currentState.m_iVehicleNum] )) )//droid in vehicle
+	if ( cent && (CG_VehicleShouldDrawShields( cent ) //vehicle
+		|| checkDroidShields && CG_VehicleShouldDrawShields( &cg_entities[cent->currentState.m_iVehicleNum] ) ))//droid in vehicle
 	{//Vehicles have form-fitting shields
 		Vehicle_t *pVeh = cent->m_pVehicle;
 		if ( checkDroidShields )
@@ -21009,7 +21019,7 @@ stillDoSaber:
 	}
 	//For now, these two are using the old shield shader. This is just so that you
 	//can tell it apart from the JM/duel shaders, but it's still very obvious.
-	if (cent->currentState.forcePowersActive & (1 << FP_PROTECT))
+	if (cent && cent->currentState.forcePowersActive & (1 << FP_PROTECT))
 	{ //aborb is represented by green..
 	if(cent->currentState.userInt3 & (1 << FLAG_PROTECT2))
 	{
@@ -21076,7 +21086,7 @@ stillDoSaber:
 	//Showing only when the power has been active (absorbed something) recently now, instead of always.
 	//AND
 	//always show if it is you with the absorb on
-	if ((cent->currentState.number == cg.predictedPlayerState.clientNum && (cg.predictedPlayerState.fd.forcePowersActive & (1<<FP_ABSORB))) )
+	if (cent && cent->currentState.number == cg.predictedPlayerState.clientNum && cg.predictedPlayerState.fd.forcePowersActive & (1<<FP_ABSORB))
 	{
 	if(cent->currentState.userInt3 & (1 << FLAG_ABSORB2))	
 	{
@@ -21141,7 +21151,7 @@ stillDoSaber:
 	}
 	}
 
-	if (cent->currentState.isJediMaster && cg.snap->ps.clientNum != cent->currentState.number)
+	if (cg.snap && cent && cent->currentState.isJediMaster && cg.snap->ps.clientNum != cent->currentState.number)
 	{
 		legs.shaderRGBA[0] = 100;
 		legs.shaderRGBA[1] = 100;
@@ -21157,7 +21167,7 @@ stillDoSaber:
 		legs.renderfx &= ~RF_NODEPTH;
 	}
 
-	if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) && cg.snap->ps.clientNum != cent->currentState.number && cg_auraShell.integer)
+	if (cg.snap && cent && cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE) && cg.snap->ps.clientNum != cent->currentState.number && cg_auraShell.integer)
 	{
 		//[Enhanced sight] - colors imperial officers with keys with a blue hue like in sp
 		if( cent->currentState.NPC_class == CLASS_IMPERIAL && cent->currentState.generic1 == 100 )
@@ -21244,7 +21254,7 @@ stillDoSaber:
 
 
 
-	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 2))
+	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 2)
 	{
 		vec3_t tempAngles;
 
@@ -21286,7 +21296,7 @@ stillDoSaber:
 		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader2, qfalse );
 	}
 
-	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 3))
+	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 3)
 	{
 		vec3_t tempAngles;
 
@@ -21327,7 +21337,7 @@ stillDoSaber:
 		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader3, qfalse );
 	}
 	
-	if((cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 4))
+	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 4)
 	{
 		vec3_t tempAngles;
 
@@ -21370,7 +21380,7 @@ stillDoSaber:
 	}
 	// Electricity
 	//------------------------------------------------
-	if ( cent->currentState.emplacedOwner > cg.time ) 
+	if (cent &&  cent->currentState.emplacedOwner > cg.time ) 
 	{
 		int	dif = cent->currentState.emplacedOwner - cg.time;
 		vec3_t tempAngles;
@@ -21418,7 +21428,7 @@ stillDoSaber:
 
 
 
-	if (cent->currentState.powerups & (1 << PW_SHIELDHIT))
+	if (cent && cent->currentState.powerups & (1 << PW_SHIELDHIT))
 	{
 		/*
 		legs.shaderRGBA[0] = legs.shaderRGBA[1] = legs.shaderRGBA[2] = 255.0f * 0.5f;//t;

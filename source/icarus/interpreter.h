@@ -5,7 +5,7 @@
 
 #define ICARUS_VERSION	1.33
 
-#define MAX_STRING_SIZE	256
+#define MAX_STRING_SIZE	512
 #define	MAX_VAR_NAME	64
 
 typedef float	vector_t[3];

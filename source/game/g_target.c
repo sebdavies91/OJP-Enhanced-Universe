@@ -1193,7 +1193,7 @@ void Use_Autosave( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		VectorCopy(spawnloc, spawn->s.origin);
 	}
 
-	if(activator->client && activator->client->pers.netname[0])
+	if(activator && activator->client && activator->client->pers.netname[0])
 	{
 		trap_SendServerCommand(-1, va("cp \"%s^1 Reached Checkpoint.\n\"", activator->client->pers.netname));
 	}

@@ -17,7 +17,8 @@ static char		*ui_botInfos[MAX_BOTS];
 
 static int		ui_numArenas;
 static char		*ui_arenaInfos[MAX_ARENAS];
-
+void UI_AllocMem(void **ptr, int sze);
+void UI_FreeMem(void *ptr);
 /*
 ===============
 UI_ParseInfos
@@ -94,28 +95,40 @@ int UI_ParseInfos( char *buf, int max, char *infos[] ) {
 UI_LoadArenasFromFile
 ===============
 */
-static void UI_LoadArenasFromFile( char *filename ) {
-	int				len;
-	fileHandle_t	f;
-	char			buf[MAX_ARENAS_TEXT];
+static void UI_LoadArenasFromFile(char* filename) {
+    int len;
+    fileHandle_t f;
+    char* buf;
 
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) {
-		trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
-		return;
-	}
-	if ( len >= MAX_ARENAS_TEXT ) {
-		trap_Print( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT ) );
-		trap_FS_FCloseFile( f );
-		return;
-	}
+    // Use UI_AllocMem instead of malloc
+    UI_AllocMem((void**)&buf, MAX_ARENAS_TEXT);
+    if (!buf) {
+        trap_Print(S_COLOR_RED "Out of memory while loading arenas\n");
+        return;
+    }
 
-	trap_FS_Read( buf, len, f );
-	buf[len] = 0;
-	trap_FS_FCloseFile( f );
+    len = trap_FS_FOpenFile(filename, &f, FS_READ);
+    if (!f) {
+        trap_Print(va(S_COLOR_RED "file not found: %s\n", filename));
+        UI_FreeMem(buf);  // Use UI_FreeMem instead of free
+        return;
+    }
+    if (len >= MAX_ARENAS_TEXT) {
+        trap_Print(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_ARENAS_TEXT));
+        trap_FS_FCloseFile(f);
+        UI_FreeMem(buf);  // Use UI_FreeMem instead of free
+        return;
+    }
 
-	ui_numArenas += UI_ParseInfos( buf, MAX_ARENAS - ui_numArenas, &ui_arenaInfos[ui_numArenas] );
+    trap_FS_Read(buf, len, f);
+    buf[len] = 0;
+    trap_FS_FCloseFile(f);
+
+    ui_numArenas += UI_ParseInfos(buf, MAX_ARENAS - ui_numArenas, &ui_arenaInfos[ui_numArenas]);
+
+    UI_FreeMem(buf);  // Use UI_FreeMem instead of free
 }
+
 
 /*
 ===============
@@ -227,50 +240,55 @@ void UI_LoadArenas( void ) {
 UI_LoadBotsFromFile
 ===============
 */
-static void UI_LoadBotsFromFile( char *filename ) {
-	int				len;
-	fileHandle_t	f;
-	char			buf[MAX_BOTS_TEXT];
-	char			*stopMark;
+static void UI_LoadBotsFromFile(char* filename) {
+    int len;
+    fileHandle_t f;
+    char* buf;
+    char* stopMark;
 
-	len = trap_FS_FOpenFile( filename, &f, FS_READ );
-	if ( !f ) {
-		trap_Print( va( S_COLOR_RED "file not found: %s\n", filename ) );
-		return;
-	}
-	if ( len >= MAX_BOTS_TEXT ) {
-		trap_Print( va( S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT ) );
-		trap_FS_FCloseFile( f );
-		return;
-	}
+    // Use UI_AllocMem to allocate memory instead of malloc
+    UI_AllocMem((void**)&buf, MAX_BOTS_TEXT);
+    if (!buf) {
+        trap_Print(S_COLOR_RED "Failed to allocate memory for bot file\n");
+        return;
+    }
 
-	trap_FS_Read( buf, len, f );
-	buf[len] = 0;
+    len = trap_FS_FOpenFile(filename, &f, FS_READ);
+    if (!f) {
+        trap_Print(va(S_COLOR_RED "file not found: %s\n", filename));
+        UI_FreeMem(buf);  // Use UI_FreeMem instead of free
+        return;
+    }
+    if (len >= MAX_BOTS_TEXT) {
+        trap_Print(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT));
+        trap_FS_FCloseFile(f);
+        UI_FreeMem(buf);  // Use UI_FreeMem instead of free
+        return;
+    }
 
-	stopMark = strstr(buf, "@STOPHERE");
+    trap_FS_Read(buf, len, f);
+    buf[len] = 0;
 
-	//This bot is in place as a mark for modview's bot viewer.
-	//If we hit it just stop and trace back to the beginning of the bot define and cut the string off.
-	//This is only done in the UI and not the game so that "test" bots can be added manually and still
-	//not show up in the menu.
-	if (stopMark)
-	{
-		int startPoint = stopMark - buf;
+    stopMark = strstr(buf, "@STOPHERE");
 
-		while (buf[startPoint] != '{')
-		{
-			startPoint--;
-		}
+    if (stopMark) {
+        int startPoint = stopMark - buf;
+        while (startPoint > 0 && buf[startPoint] != '{') {
+            startPoint--;
+        }
+        buf[startPoint] = 0;
+    }
 
-		buf[startPoint] = 0;
-	}
+    trap_FS_FCloseFile(f);
 
-	trap_FS_FCloseFile( f );
+    COM_Compress(buf);
 
-	COM_Compress(buf);
+    ui_numBots += UI_ParseInfos(buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots]);
 
-	ui_numBots += UI_ParseInfos( buf, MAX_BOTS - ui_numBots, &ui_botInfos[ui_numBots] );
+    UI_FreeMem(buf);  // Use UI_FreeMem instead of free
 }
+
+
 
 /*
 ===============

@@ -3,10 +3,8 @@
 #include "anims.h"
 #include "w_saber.h"
 
-extern qboolean G_CheckForStrongAttackMomentum( gentity_t *self );
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
-extern void G_SoundOnEnt( gentity_t *ent, soundChannel_t channel, const char *soundPath );
-extern void cgi_S_StartSound( vec3_t origin, int entityNum, int entchannel, sfxHandle_t sfx );
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
 extern qboolean Q3_TaskIDPending( gentity_t *ent, taskID_t taskType );
 extern qboolean NPC_CheckLookTarget( gentity_t *self );
 extern void NPC_SetLookTarget( gentity_t *self, int entNum, int clearTime );
@@ -15,7 +13,7 @@ extern void Jedi_Ambush( gentity_t *self );
 extern qboolean NPC_SomeoneLookingAtMe(gentity_t *ent);
 
 extern qboolean BG_SaberInSpecialAttack( int anim );
-extern qboolean PM_SpinningSaberAnim( int anim );
+extern qboolean BG_SpinningSaberAnim( int anim );
 extern qboolean PM_SpinningAnim( int anim );
 extern qboolean PM_InKnockDown( playerState_t *ps );
 extern qboolean BG_FlippingAnim( int anim );
@@ -208,155 +206,117 @@ NPC_ChoosePainAnimation
 
 #define	MIN_PAIN_TIME	200
 
-extern int G_PickPainAnim( gentity_t *self, vec3_t point, int damage, int hitLoc );
-void NPC_ChoosePainAnimation( gentity_t *self, gentity_t *other, vec3_t point, int damage, int mod, int hitLoc, int voiceEvent )
+void NPC_ChoosePainAnimation(gentity_t* self, gentity_t* other, vec3_t point, int damage, int mod, int hitLoc, int voiceEvent)
 {
-	int		pain_anim = -1;
-	float	pain_chance;
-	
-	//If we've already taken pain, then don't take it again
-	if ( level.time < self->painDebounceTime && /*mod != MOD_ELECTROCUTE &&*/ mod != MOD_MELEE ) //rwwFIXMEFIXME: MOD_ELECTROCUTE
-	{//FIXME: if hit while recoving from losing a saber lock, we should still play a pain anim?
+	int pain_anim = -1;
+	float pain_chance;
+
+	// If we've already taken pain, then don't take it again
+	if (level.time < self->painDebounceTime && /*mod != MOD_ELECTROCUTE &&*/ mod != MOD_MELEE) {
+		// FIXME: if hit while recovering from losing a saber lock, we should still play a pain anim?
 		return;
 	}
-	
-	if ( self->s.weapon == WP_THERMAL && self->client->ps.weaponTime > 0 )
-	{//don't interrupt thermal throwing anim
+
+	if (self->s.weapon == WP_THERMAL && self->client->ps.weaponTime > 0) {
+		// don't interrupt thermal throwing anim
 		return;
 	}
-	else if ( self->client->NPC_class == CLASS_GALAKMECH )
-	{
-		if ( hitLoc == HL_GENERIC1 )
-		{//hit the antenna!
+	else if (self->client->NPC_class == CLASS_GALAKMECH) {
+		if (hitLoc == HL_GENERIC1) { // hit the antenna!
 			pain_chance = 1.0f;
-		//	self->s.powerups |= ( 1 << PW_SHOCKED );
-		//	self->client->ps.powerups[PW_SHOCKED] = level.time + Q_irand( 500, 2500 );
-			//rwwFIXMEFIXME: support for this
 		}
-	//	else if ( self->client->ps.powerups[PW_GALAK_SHIELD] )
-	//	{//shield up
-	//		return;
-	//	}
-		//rwwFIXMEFIXME: and this
-		else if ( self->health > 200 && damage < 100 )
-		{//have a *lot* of health
+		else if (self->health > 200 && damage < 100) { // have a lot of health
 			pain_chance = 0.05f;
 		}
-		else
-		{//the lower my health and greater the damage, the more likely I am to play a pain anim
-			pain_chance = (200.0f-self->health)/100.0f + damage/50.0f;
+		else { // the lower my health and greater the damage, the more likely I am to play a pain anim
+			pain_chance = (200.0f - self->health) / 100.0f + damage / 50.0f;
 		}
 	}
-	else if ( self->client && self->client->playerTeam == NPCTEAM_PLAYER && other && !other->s.number )
-	{//ally shot by player always complains
+	else if (self->client && self->client->playerTeam == NPCTEAM_PLAYER && other && !other->s.number) {
+		// ally shot by player always complains
 		pain_chance = 1.1f;
 	}
-	else 
-	{
-		if ( (other && other->s.weapon == WP_SABER) || /*mod == MOD_ELECTROCUTE ||*/ mod == MOD_CRUSH/*FIXME:MOD_FORCE_GRIP*/ )
-		{
-			pain_chance = 1.0f;//always take pain from saber
+	else {
+		if ((other && other->s.weapon == WP_SABER) || mod == MOD_CRUSH) {
+			pain_chance = 1.0f; // always take pain from saber
 		}
-		else if ( mod == MOD_MELEE )
-		{//higher in rank (skill) we are, less likely we are to be fazed by a punch
-			pain_chance = 1.0f - ((RANK_CAPTAIN-self->NPC->rank)/(float)RANK_CAPTAIN);
+		else if (mod == MOD_MELEE) {
+			// higher in rank (skill) we are, less likely we are to be fazed by a punch
+			pain_chance = 1.0f - ((RANK_CAPTAIN - self->NPC->rank) / (float)RANK_CAPTAIN);
 		}
-		else if ( self->client->NPC_class == CLASS_PROTOCOL )
-		{
+		else if (self->client && self->client->NPC_class == CLASS_PROTOCOL) {
 			pain_chance = 1.0f;
 		}
-		else
-		{
-			pain_chance = NPC_GetPainChance( self, damage );
+		else {
+			pain_chance = NPC_GetPainChance(self, damage);
 		}
-		if ( self->client->NPC_class == CLASS_DESANN )
-		{
+		if (self->client && self->client->NPC_class == CLASS_DESANN) {
 			pain_chance *= 0.5f;
 		}
 	}
 
-	//See if we're going to flinch
-	if ( random() < pain_chance )
-	{
+	// See if we're going to flinch
+	if (random() < pain_chance) {
 		int animLength;
 
-		//Pick and play our animation
-		if ( self->client->ps.fd.forceGripBeingGripped < level.time )
-		{//not being force-gripped or force-drained
-			if ( /*G_CheckForStrongAttackMomentum( self ) //rwwFIXMEFIXME: Is this needed?
-				||*/ PM_SpinningAnim( self->client->ps.legsAnim )
-				|| BG_SaberInSpecialAttack( self->client->ps.torsoAnim )
-				|| PM_InKnockDown( &self->client->ps )
-				|| PM_RollingAnim( self->client->ps.legsAnim )
-				|| (BG_FlippingAnim( self->client->ps.legsAnim )&&!PM_InCartwheel( self->client->ps.legsAnim )) )
-			{//strong attacks, rolls, knockdowns, flips and spins cannot be interrupted by pain
+		// Pick and play our animation
+		if (self->client && self->client->ps.fd.forceGripBeingGripped < level.time) {
+			// not being force-gripped or force-drained
+			if (PM_SpinningAnim(self->client->ps.legsAnim) || BG_SaberInSpecialAttack(self->client->ps.torsoAnim)
+				|| PM_InKnockDown(&self->client->ps) || PM_RollingAnim(self->client->ps.legsAnim)
+				|| (BG_FlippingAnim(self->client->ps.legsAnim) && !PM_InCartwheel(self->client->ps.legsAnim))) {
+				// strong attacks, rolls, knockdowns, flips, and spins cannot be interrupted by pain
 			}
-			else
-			{//play an anim
+			else {
+				// play an anim
 				int parts;
 
-				if ( self->client->NPC_class == CLASS_GALAKMECH )
-				{//only has 1 for now
-					//FIXME: never plays this, it seems...
+				if (self->client->NPC_class == CLASS_GALAKMECH) {
+					// only has 1 for now
 					pain_anim = BOTH_PAIN1;
 				}
-				else if ( mod == MOD_MELEE )
-				{
-					pain_anim = BG_PickAnim( self->localAnimIndex, BOTH_PAIN2, BOTH_PAIN3 );
+				else if (mod == MOD_MELEE) {
+					pain_anim = BG_PickAnim(self->localAnimIndex, BOTH_PAIN2, BOTH_PAIN3);
 				}
-				else if ( self->s.weapon == WP_SABER )
-				{//temp HACK: these are the only 2 pain anims that look good when holding a saber
-					pain_anim = BG_PickAnim( self->localAnimIndex, BOTH_PAIN2, BOTH_PAIN3 );
+				else if (self->s.weapon == WP_SABER) {
+					// temp HACK: these are the only 2 pain anims that look good when holding a saber
+					pain_anim = BG_PickAnim(self->localAnimIndex, BOTH_PAIN2, BOTH_PAIN3);
 				}
-				/*
-				else if ( mod != MOD_ELECTROCUTE )
-				{
-					pain_anim = G_PickPainAnim( self, point, damage, hitLoc );
-				}
-				*/
 
-				if ( pain_anim == -1 )
-				{
-					pain_anim = BG_PickAnim( self->localAnimIndex, BOTH_PAIN1, BOTH_PAIN18 );
+				if (pain_anim == -1) {
+					pain_anim = BG_PickAnim(self->localAnimIndex, BOTH_PAIN1, BOTH_PAIN18);
 				}
-				self->client->ps.fd.saberAnimLevel = FORCE_LEVEL_1;//next attack must be a quick attack
-				self->client->ps.saberMove = LS_READY;//don't finish whatever saber move you may have been in
+
+				// Ensure that 'pain_anim' is within valid bounds before accessing the array
+				if (pain_anim >= 0 && pain_anim < MAX_ANIMATIONS) {
+					animLength = bgAllAnims[self->localAnimIndex].anims[pain_anim].numFrames
+						* fabs((float)(bgHumanoidAnimations[pain_anim].frameLerp));
+					self->painDebounceTime = level.time + animLength;
+				}
+
+
+				self->client->ps.fd.saberAnimLevel = FORCE_LEVEL_1; // next attack must be a quick attack
+				self->client->ps.saberMove = LS_READY; // don't finish whatever saber move you may have been in
 				parts = SETANIM_BOTH;
-				if ( BG_CrouchAnim( self->client->ps.legsAnim ) || PM_InCartwheel( self->client->ps.legsAnim ) )
-				{
+				if (BG_CrouchAnim(self->client->ps.legsAnim) || PM_InCartwheel(self->client->ps.legsAnim)) {
 					parts = SETANIM_LEGS;
 				}
 
-				if (pain_anim != -1)
-				{
-					NPC_SetAnim( self, parts, pain_anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				if (pain_anim != -1) {
+					NPC_SetAnim(self, parts, pain_anim, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 				}
 			}
-			if ( voiceEvent != -1 )
-			{
-				G_AddVoiceEvent( self, voiceEvent, Q_irand( 2000, 4000 ) );
-			}
-			else
-			{
-				NPC_SetPainEvent( self );
-			}
-		}
-		else
-		{
-			G_AddVoiceEvent( self, Q_irand(EV_CHOKE1, EV_CHOKE3), 0 );
-		}
-		
-		//Setup the timing for it
-		/*
-		if ( mod == MOD_ELECTROCUTE )
-		{
-			self->painDebounceTime = level.time + 4000;
-		}
-		*/
-		animLength = bgAllAnims[self->localAnimIndex].anims[pain_anim].numFrames * fabs((float)(bgHumanoidAnimations[pain_anim].frameLerp));
 
-		self->painDebounceTime = level.time + animLength;
-		self->client->ps.weaponTime = 0;
+			if (voiceEvent != -1) {
+				G_AddVoiceEvent(self, voiceEvent, Q_irand(2000, 4000));
+			}
+			else {
+				NPC_SetPainEvent(self);
+			}
+		}
+		else {
+			G_AddVoiceEvent(self, Q_irand(EV_CHOKE1, EV_CHOKE3), 0);
+		}
 	}
 }
 
@@ -694,7 +654,7 @@ void NPC_Touch(gentity_t *self, gentity_t *other, trace_t *trace)
 		}
 	}
 
-	if ( other->client ) 
+	if (other && other->client ) 
 	{//FIXME:  if pushing against another bot, both ucmd.rightmove = 127???
 		//Except if not facing one another...
 		if ( other->health > 0 ) 
@@ -740,7 +700,7 @@ void NPC_Touch(gentity_t *self, gentity_t *other, trace_t *trace)
 	}
 	else 
 	{//FIXME: check for SVF_NONNPC_ENEMY flag here?
-		if ( other->health > 0 ) 
+		if (other && other->health > 0 ) 
 		{
 			//if ( NPC->enemy == other && (other->svFlags&SVF_NONNPC_ENEMY) )
 			if (0) //rwwFIXMEFIXME: Can probably just check if num < MAX_CLIENTS for non-npc enemy stuff
@@ -1118,7 +1078,7 @@ void NPC_UseResponse( gentity_t *self, gentity_t *user, qboolean useWhenDone )
 NPC_Use
 -------------------------
 */
-extern void Add_Batteries( gentity_t *ent, int *count );
+
 
 void NPC_Use( gentity_t *self, gentity_t *other, gentity_t *activator ) 
 {
@@ -1195,7 +1155,7 @@ void NPC_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 //		{//Heal me NOW, dammit!
 //			NPC_TakePatient( activator );
 //		}
-		else if ( !self->enemy 
+		else if (activator && !self->enemy 
 			&& activator->s.number == 0 
 			&& /*!gi.VoiceVolume[self->s.number] &&*/ !(self->NPC->scriptFlags&SCF_NO_RESPONSE) )
 			//rwwFIXMEFIXME: voice volume support?

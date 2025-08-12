@@ -42,7 +42,7 @@
 #endif
 
 #ifdef _JK2MP
-extern gentity_t *NPC_Spawn_Do( gentity_t *ent );
+extern gentity_t *NPC_Spawn_Go( gentity_t *ent );
 extern void NPC_SetAnim(gentity_t	*ent,int setAnimParts,int anim,int setAnimFlags);
 //[Asteroids]
 extern void G_DamageFromKiller( gentity_t *pEnt, gentity_t *pVehEnt, gentity_t *attacker, vec3_t org, int damage, int dflags, int mod );
@@ -50,16 +50,16 @@ extern void G_DamageFromKiller( gentity_t *pEnt, gentity_t *pVehEnt, gentity_t *
 
 #else
 
-extern gentity_t *NPC_Spawn_Do( gentity_t *pEnt, qboolean fullSpawnNow );
+extern gentity_t *NPC_Spawn_Go(gentity_t* ent);
 extern qboolean G_ClearLineOfSight(const vec3_t point1, const vec3_t point2, int ignore, int clipmask);
 
 extern qboolean G_SetG2PlayerModelInfo( gentity_t *pEnt, const char *modelName, const char *customSkin, const char *surfOff, const char *surfOn );
 extern void G_RemovePlayerModel( gentity_t *pEnt );
 extern void G_ChangePlayerModel( gentity_t *pEnt, const char *newModel );
 extern void G_RemoveWeaponModels( gentity_t *pEnt );
-extern void CG_ChangeWeapon( int num );
+extern void NPC_ChangeWeapon( int num );
 extern float DotToSpot( vec3_t spot, vec3_t from, vec3_t fromAngles );
-extern qboolean Q3_TaskIDPending( gentity_t *ent, taskID_t taskType );
+extern qboolean Q3_TaskIDPending(gentity_t* ent, taskID_t taskType);
 extern void SetClientViewAngle( gentity_t *ent, vec3_t angle );
 
 extern vmCvar_t	cg_thirdPersonAlpha;
@@ -67,9 +67,9 @@ extern vec3_t playerMins;
 extern vec3_t playerMaxs;
 extern cvar_t	*g_speederControlScheme;
 extern cvar_t *in_joystick;
-extern void PM_SetAnim(pmove_t	*pm,int setAnimParts,int anim,int setAnimFlags, int blendTime);
+extern void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
 extern int PM_AnimLength( int index, animNumber_t anim );
-extern void NPC_SetAnim(gentity_t	*ent,int setAnimParts,int anim,int setAnimFlags, int iBlend);
+extern void NPC_SetAnim(gentity_t* ent, int setAnimParts, int anim, int setAnimFlags)
 extern void G_Knockdown( gentity_t *self, gentity_t *attacker, const vec3_t pushDir, float strength, qboolean breakSaberLock );
 #endif
 
@@ -82,8 +82,8 @@ void G_VehUpdateShields( gentity_t *targ );
 extern void VEH_TurretThink( Vehicle_t *pVeh, gentity_t *parent, int turretNum );
 #endif
 #else
-extern void PM_SetTorsoAnimTimer( gentity_t *ent, int *torsoAnimTimer, int time );
-extern void PM_SetLegsAnimTimer( gentity_t *ent, int *legsAnimTimer, int time );
+extern void PM_SetTorsoAnimTimer(int time );
+extern void PM_SetLegsAnimTimer( int time );
 #endif
 
 extern qboolean BG_UnrestrainedPitchRoll( playerState_t *ps, Vehicle_t *pVeh );
@@ -205,9 +205,9 @@ void G_VehicleSpawn( gentity_t *self )
 	yaw = self->s.angles[YAW];
 	
 #ifdef _JK2MP
-	vehEnt = NPC_Spawn_Do( self );
+	vehEnt = NPC_Spawn_Go(self);
 #else
-	vehEnt = NPC_Spawn_Do( self, qtrue );
+	vehEnt = NPC_Spawn_Do( self);
 #endif
 	
 	if ( !vehEnt )
@@ -812,7 +812,10 @@ bool Board( Vehicle_t *pVeh, bgEntity_t *pEnt )
 	
 	// Make sure the entity knows it's in a vehicle.
 #ifdef _JK2MP
-	ent->client->ps.m_iVehicleNum = parent->s.number;
+	if (ent->client)
+	{
+		ent->client->ps.m_iVehicleNum = parent->s.number;
+	}
 	ent->r.ownerNum = parent->s.number;
 	ent->s.owner = ent->r.ownerNum; //for prediction
 	if (pVeh->m_pPilot == (bgEntity_t *)ent)
@@ -1898,13 +1901,17 @@ static bool Update( Vehicle_t *pVeh, const usercmd_t *pUmcd )
 	}
 
 	//keep the PS value in sync. set it up here in case we return below at some point.
-	if (pVeh->m_iBoarding)
+	if (parent && pVeh->m_iBoarding)
 	{
 		parent->client->ps.vehBoarding = qtrue;
 	}
 	else
 	{
-		parent->client->ps.vehBoarding = qfalse;
+		if (parent)
+		{
+			parent->client->ps.vehBoarding = qfalse;
+		}
+
 	}
 #endif
 
@@ -1940,14 +1947,18 @@ static bool Update( Vehicle_t *pVeh, const usercmd_t *pUmcd )
 		pVeh->m_pVehicleInfo->ProcessMoveCommands( pVeh );
 
 		// Setup the move direction.
-		if ( pVeh->m_pVehicleInfo->type == VH_FIGHTER )
+		if (parent && pVeh->m_pVehicleInfo->type == VH_FIGHTER )
 		{
 			AngleVectors( pVeh->m_vOrientation, parent->client->ps.moveDir, NULL, NULL ); 
 		}
 		else
 		{
 			VectorSet(vVehAngles, 0, pVeh->m_vOrientation[YAW], 0);
-			AngleVectors( vVehAngles, parent->client->ps.moveDir, NULL, NULL ); 
+			if (parent)
+			{
+				AngleVectors(vVehAngles, parent->client->ps.moveDir, NULL, NULL);
+			}
+
 		}
 		pVeh->m_pVehicleInfo->DeathUpdate( pVeh );
 		return false;
@@ -1955,7 +1966,7 @@ static bool Update( Vehicle_t *pVeh, const usercmd_t *pUmcd )
 	// Vehicle dead!
 
 #ifdef _JK2MP
-	else if ( parent->health <= 0 )
+	else if (parent && parent->health <= 0 )
 	{
 		// Instant kill.
 		if (pVeh->m_pVehicleInfo->type == VH_FIGHTER &&
@@ -1975,7 +1986,7 @@ static bool Update( Vehicle_t *pVeh, const usercmd_t *pUmcd )
 	
 #ifdef _JK2MP //special check in case someone disconnects/dies while boarding
 #ifdef QAGAME
-	if (parent->spawnflags & 1)
+	if (parent && parent->spawnflags & 1)
 	{
 		if (pVeh->m_pPilot || !pVeh->m_bHasHadPilot)
 		{
@@ -2269,11 +2280,15 @@ maintainSelfDuringBoarding:
 #ifdef _JK2MP
 		if ( !BG_UnrestrainedPitchRoll( pVeh->m_pPilot->playerState, pVeh ) )
 		{
-			vec3_t newVAngle;
-			newVAngle[PITCH] = pVeh->m_pPilot->playerState->viewangles[PITCH];
-			newVAngle[YAW] = pVeh->m_pPilot->playerState->viewangles[YAW];
-			newVAngle[ROLL] = pVeh->m_vOrientation[ROLL];
-			SetClientViewAngle( (gentity_t *)pVeh->m_pPilot, newVAngle );
+			if (pVeh->m_pPilot->playerState)
+			{
+				vec3_t newVAngle;
+				newVAngle[PITCH] = pVeh->m_pPilot->playerState->viewangles[PITCH];
+				newVAngle[YAW] = pVeh->m_pPilot->playerState->viewangles[YAW];
+				newVAngle[ROLL] = pVeh->m_vOrientation[ROLL];
+				SetClientViewAngle((gentity_t*)pVeh->m_pPilot, newVAngle);
+			}
+
 		}
 #else
 		if ( !BG_UnrestrainedPitchRoll( &pVeh->m_pPilot->client->ps, pVeh ) )
@@ -2329,14 +2344,17 @@ maintainSelfDuringBoarding:
 
 
 	// Setup the move direction.
-	if ( pVeh->m_pVehicleInfo->type == VH_FIGHTER )
+	if (parent && pVeh->m_pVehicleInfo->type == VH_FIGHTER )
 	{
 		AngleVectors( pVeh->m_vOrientation, parent->client->ps.moveDir, NULL, NULL ); 
 	}
 	else
 	{
 		VectorSet(vVehAngles, 0, pVeh->m_vOrientation[YAW], 0);
-		AngleVectors( vVehAngles, parent->client->ps.moveDir, NULL, NULL ); 
+		if (parent)
+		{
+			AngleVectors(vVehAngles, parent->client->ps.moveDir, NULL, NULL);
+		}
 	}
 
 #ifdef _JK2MP
@@ -2365,26 +2383,38 @@ maintainSelfDuringBoarding:
 			*/
 			
 			// 3 seconds max on death.
+			if (parent)
+			{
 			dmg = (float)parent->client->ps.stats[STAT_MAX_HEALTH] * pVeh->m_fTimeModifier / 180.0f;			
 			//FIXME: aside from bypassing shields, maybe set m_iShields to 0, too... ?
-			G_DamageFromKiller( parent, parent, parent, parent->client->ps.origin, dmg, DAMAGE_NO_SELF_PROTECTION|DAMAGE_NO_HIT_LOC|DAMAGE_NO_PROTECTION|DAMAGE_NO_ARMOR, MOD_SUICIDE );
+
+				G_DamageFromKiller(parent, parent, parent, parent->client->ps.origin, dmg, DAMAGE_NO_SELF_PROTECTION | DAMAGE_NO_HIT_LOC | DAMAGE_NO_PROTECTION | DAMAGE_NO_ARMOR, MOD_SUICIDE);
+			}
 			//[/Asteroids]
 		}
 		
 		//make sure playerstate value stays in sync
-		parent->client->ps.vehSurfaces = pVeh->m_iRemovedSurfaces;
+		if (parent)
+		{
+			parent->client->ps.vehSurfaces = pVeh->m_iRemovedSurfaces;
+		}
+
 	}
 #endif
 
 #ifdef _JK2MP
 	//keep the PS value in sync
-	if (pVeh->m_iBoarding)
+	if (parent && pVeh->m_iBoarding)
 	{
 		parent->client->ps.vehBoarding = qtrue;
 	}
 	else
 	{
-		parent->client->ps.vehBoarding = qfalse;
+		if (parent)
+		{
+			parent->client->ps.vehBoarding = qfalse;
+		}
+
 	}
 #endif
 
@@ -2450,6 +2480,8 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 						Anim = BOTH_ROLL_L;
 						pVeh->m_EjectDir = VEH_EJECT_LEFT;
 					}
+					if(rider)
+					{ 
 					VectorScale( parent->client->ps.velocity, 0.25f, rider->client->ps.velocity );
 #if 1
 					Vehicle_SetAnim( rider, SETANIM_BOTH, Anim, iFlags, iBlend );
@@ -2459,6 +2491,7 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 					//PM_SetAnim(pm,SETANIM_BOTH,anim,SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_HOLDLESS);
 					rider->client->ps.weaponTime = rider->client->ps.torsoAnimTimer - 200;//just to make sure it's cleared when roll is done
 					G_AddEvent( rider, EV_ROLL, 0 );
+					}
 					return false;
 				}
 			}
@@ -2477,7 +2510,8 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 					Anim = BOTH_VS_DISMOUNT_L;
 					pVeh->m_EjectDir = VEH_EJECT_LEFT;
 				}
-				
+				if(rider)
+				{ 
 				if ( pVeh->m_iBoarding <= 1 )
 				{
 					int iAnimLen;
@@ -2504,6 +2538,7 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 				VectorScale( parent->client->ps.velocity, 0.25f, rider->client->ps.velocity );
 
 				Vehicle_SetAnim( rider, SETANIM_BOTH, Anim, iFlags, iBlend );
+				}
 			}
 		}
 		// Flying, so just fall off.
@@ -2517,7 +2552,7 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 
 	// Getting off animation complete (if we had one going)?
 #ifdef _JK2MP
-	if ( pVeh->m_iBoarding < level.time && (rider->flags & FL_VEH_BOARDING) )
+	if (rider && pVeh->m_iBoarding < level.time && (rider->flags & FL_VEH_BOARDING) )
 	{
 		rider->flags &= ~FL_VEH_BOARDING;
 #else
@@ -2578,7 +2613,7 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 #endif
 //===================================================================
 
-			if ( pVeh->m_pVehicleInfo->Eject( pVeh, pRider, qfalse ) )
+			if ( pVeh->m_pVehicleInfo->Eject( pVeh, pRider, qfalse ) && rider && rider->client)
 			{
 				// Allow them to force jump off.
 				VectorScale( parent->client->ps.velocity, 0.5f, rider->client->ps.velocity );
@@ -2633,7 +2668,7 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 
 			if ( pVeh->m_pVehicleInfo->Eject( pVeh, pRider, qfalse ) )
 			{
-				if ( !(pVeh->m_ulFlags & VEH_FLYING) )
+				if ( !(pVeh->m_ulFlags & VEH_FLYING) && rider && rider->client)
 				{
 					VectorScale( parent->client->ps.velocity, 0.25f, rider->client->ps.velocity );
 #if 1

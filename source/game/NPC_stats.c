@@ -3646,13 +3646,12 @@ Ghoul2 Insert Start
 
 			if(!player)
 			{//no players have spawned in yet.  As such, wing it by using jan
-				int scan, rgb[3];
+				int rgb[3];
 				char *s2;
 				Q_strncpyz( playerModel, ojp_spmodel.string, sizeof(playerModel) );
 				s2 = va("%s", ojp_spmodelrgb.string);
-				scan = sscanf(s2, "%i %i %i", &rgb[0], &rgb[1], &rgb[2]);
 				*s2 = '\0';
-				if ( scan != 3 ) {
+				if ( sscanf(s2, "%i %i %i", &rgb[0], &rgb[1], &rgb[2]) != 3 ) {
 					G_Printf( "^3Warning: ojp_spmodelrgb could not parse out all 3 valid colors! Using Defaults.\n" );
 					rgb[0] = 255;
 					rgb[1] = 255;
@@ -3782,59 +3781,64 @@ Ghoul2 Insert End
 
 char npcParseBuffer[MAX_NPC_DATA_SIZE];
 
-void NPC_LoadParms( void ) 
+void NPC_LoadParms(void)
 {
-	int			len, totallen, npcExtFNLen, mainBlockLen, fileCnt, i;
-//	const char	*filename = "ext_data/NPC2.cfg";
-	char		/**buffer,*/ *holdChar, *marker;
-	char		npcExtensionListBuf[32768];			//	The list of file names read in
+	int len, totallen, npcExtFNLen, mainBlockLen, fileCnt, i;
+	char* holdChar, * marker;
+	char* npcExtensionListBuf;
 	fileHandle_t f;
 	len = 0;
 
-	//remember where to store the next one
+	// Allocate large buffer using BG_Alloc instead of malloc
+	npcExtensionListBuf = (char*)BG_Alloc(32768);  // Using BG_Alloc for memory allocation
+	if (!npcExtensionListBuf)
+	{
+		G_Error("NPC_LoadParms: Failed to allocate memory for npcExtensionListBuf");
+		return;
+	}
+
 	totallen = mainBlockLen = len;
-	marker = NPCParms+totallen;
+	marker = NPCParms + totallen;
 	*marker = 0;
 
-	//now load in the extra .npc extensions
-	fileCnt = trap_FS_GetFileList("ext_data/NPCs", ".npc", npcExtensionListBuf, sizeof(npcExtensionListBuf) );
+	fileCnt = trap_FS_GetFileList("ext_data/NPCs", ".npc", npcExtensionListBuf, 32768);
 
 	holdChar = npcExtensionListBuf;
-	for ( i = 0; i < fileCnt; i++, holdChar += npcExtFNLen + 1 ) 
+	for (i = 0; i < fileCnt; i++, holdChar += npcExtFNLen + 1)
 	{
-		npcExtFNLen = strlen( holdChar );
+		npcExtFNLen = strlen(holdChar);
 
-//		Com_Printf( "Parsing %s\n", holdChar );
+		len = trap_FS_FOpenFile(va("ext_data/NPCs/%s", holdChar), &f, FS_READ);
 
-		len = trap_FS_FOpenFile(va( "ext_data/NPCs/%s", holdChar), &f, FS_READ);
-
-		if ( len == -1 ) 
+		if (len == -1)
 		{
-			Com_Printf( "error reading file\n" );
+			Com_Printf("error reading file\n");
 		}
 		else
 		{
-			if ( totallen + len >= MAX_NPC_DATA_SIZE ) {
-				G_Error( "NPC extensions (*.npc) are too large" );
+			if (totallen + len >= MAX_NPC_DATA_SIZE)
+			{
+				G_Error("NPC extensions (*.npc) are too large");
 			}
 			trap_FS_Read(npcParseBuffer, len, f);
 			npcParseBuffer[len] = 0;
 
-			len = COM_Compress( npcParseBuffer );
+			len = COM_Compress(npcParseBuffer);
 
-			strcat( marker, npcParseBuffer );
+			strcat(marker, npcParseBuffer);
 			strcat(marker, "\n");
 			len++;
 			trap_FS_FCloseFile(f);
 
 			totallen += len;
-			marker = NPCParms+totallen;
-			//*marker = 0; //rww - make sure this is null or strcat will not append to the correct place
-			//rww  12/19/02-actually the probelm was npcParseBuffer not being nul-term'd, which could cause issues in the strcat too
+			marker = NPCParms + totallen;
 		}
 	}
 
+	// Replace free with memset to clear the buffer instead of freeing it
+	memset(npcExtensionListBuf, 0, 32768);  // Clear memory to ensure no dangling pointer issues
 }
+
 
 
 //[CoOp]
@@ -3850,7 +3854,7 @@ extern void NPC_Interrogator_Precache(gentity_t *self);
 extern void NPC_MineMonster_Precache( void );
 extern void NPC_Howler_Precache( void );
 extern void NPC_Rancor_Precache( void );
-extern void NPC_MutantRancor_Precache( void );
+//extern void NPC_MutantRancor_Precache( void );
 extern void NPC_Wampa_Precache( void );
 extern void NPC_ATST_Precache(void);
 extern void NPC_Sentry_Precache(void);
@@ -3858,12 +3862,12 @@ extern void NPC_Mark1_Precache(void);
 extern void NPC_Mark2_Precache(void);
 extern void NPC_Protocol_Precache( void );
 extern void Boba_Precache( void );
-extern void RT_Precache( void );
+//extern void RT_Precache( void );
 extern void SandCreature_Precache( void );
 extern void NPC_TavionScepter_Precache( void );
 extern void NPC_TavionSithSword_Precache( void );
 extern void NPC_Rosh_Dark_Precache( void );
-extern void NPC_Tusken_Precache( void );
+//extern void NPC_Tusken_Precache( void );
 extern void NPC_Saboteur_Precache( void );
 extern void NPC_CultistDestroyer_Precache( void );
 extern void NPC_GalakMech_Precache( void );

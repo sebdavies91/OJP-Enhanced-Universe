@@ -1523,7 +1523,7 @@ qboolean BG_CheckIncrementLockAnim( int anim, int winOrLose )
 //[SaberLockSys]
 extern void PM_AddEventWithParm( int newEvent, int parm );
 //[/SaberLockSys]
-extern qboolean ValidAnimFileIndex ( int index );
+//extern qboolean ValidAnimFileIndex ( int index );
 void PM_SaberLocked( void )
 {
 	int	remaining = 0;
@@ -2088,7 +2088,7 @@ saberMoveName_t PM_SaberLungeAttackMove( qboolean noSpecials )
 */
 		return LS_A_LUNGE;
 	}
-	else if(!noSpecials && pm->ps->fd.saberAnimLevel == SS_STAFF && saber1->numBlades == 1)
+	else if(saber1 && !noSpecials && pm->ps->fd.saberAnimLevel == SS_STAFF && saber1->numBlades == 1)
 	{
 						VectorCopy( pm->ps->viewangles, fwdAngles );
 		fwdAngles[PITCH] = fwdAngles[ROLL] = 0;
@@ -2382,59 +2382,67 @@ static qboolean PM_CanDoDualDoubleAttacks(void)
 	return qtrue;
 }
 
-static qboolean PM_CheckEnemyPresence( int dir, float radius )
-{ //anyone in this dir?
+static qboolean PM_CheckEnemyPresence(int dir, float radius)
+{
 	vec3_t angles;
-	vec3_t checkDir;
+	vec3_t checkDir = { 0.0f, 0.0f, 0.0f };  // Initialize checkDir to prevent uninitialized memory usage
 	vec3_t tTo;
 	vec3_t tMins, tMaxs;
 	trace_t tr;
 	const float tSize = 12.0f;
-	//sp uses a bbox ent list check, but.. that's not so easy/fast to
-	//do in predicted code. So I'll just do a single box trace in the proper direction,
-	//and take whatever is first hit.
 
+	// Set the bounding box size for the trace
 	VectorSet(tMins, -tSize, -tSize, -tSize);
 	VectorSet(tMaxs, tSize, tSize, tSize);
 
+	// Get the player's view angles
 	VectorCopy(pm->ps->viewangles, angles);
-	angles[PITCH] = 0.0f;
+	angles[PITCH] = 0.0f;  // Ignore pitch for directional checks
 
-	switch( dir )
+	// Set the check direction based on the provided dir
+	switch (dir)
 	{
 	case DIR_RIGHT:
-		AngleVectors( angles, NULL, checkDir, NULL );
+		AngleVectors(angles, NULL, checkDir, NULL);  // Right direction
 		break;
 	case DIR_LEFT:
-		AngleVectors( angles, NULL, checkDir, NULL );
-		VectorScale( checkDir, -1, checkDir );
+		AngleVectors(angles, NULL, checkDir, NULL);  // Left direction
+		VectorScale(checkDir, -1, checkDir);  // Reverse the direction
 		break;
 	case DIR_FRONT:
-		AngleVectors( angles, checkDir, NULL, NULL );
+		AngleVectors(angles, checkDir, NULL, NULL);  // Front direction
 		break;
 	case DIR_BACK:
-		AngleVectors( angles, checkDir, NULL, NULL );
-		VectorScale( checkDir, -1, checkDir );
+		AngleVectors(angles, checkDir, NULL, NULL);  // Back direction
+		VectorScale(checkDir, -1, checkDir);  // Reverse the direction
+		break;
+	default:
+		// Handle unexpected direction (optional: add a warning or log here)
 		break;
 	}
 
+	// Compute the end point of the trace based on direction and radius
 	VectorMA(pm->ps->origin, radius, checkDir, tTo);
+
+	// Perform the trace
 	pm->trace(&tr, pm->ps->origin, tMins, tMaxs, tTo, pm->ps->clientNum, MASK_PLAYERSOLID);
 
+	// If we hit something in the trace, check if it's an enemy
 	if (tr.fraction != 1.0f && tr.entityNum < ENTITYNUM_WORLD)
-	{ //let's see who we hit
-		bgEntity_t *bgEnt = PM_BGEntForNum(tr.entityNum);
+	{
+		bgEntity_t* bgEnt = PM_BGEntForNum(tr.entityNum);
 
-		if (bgEnt &&
-			(bgEnt->s.eType == ET_PLAYER || bgEnt->s.eType == ET_NPC))
-		{ //this guy can be considered an "enemy"... if he is on the same team, oh well. can't bg-check that (without a whole lot of hassle).
-			return qtrue;
+		// Check if the entity is a player or NPC (and not on the same team)
+		if (bgEnt && (bgEnt->s.eType == ET_PLAYER || bgEnt->s.eType == ET_NPC))
+		{
+			return qtrue;  // Enemy found
 		}
 	}
 
-	//no one in the trace
+	// No enemy found
 	return qfalse;
 }
+
 
 #define SABER_ALT_ATTACK_POWER		100//75?
 
@@ -3993,7 +4001,9 @@ void PM_WeaponLightsaber(void)
 		*/
 		//Old method, don't want to do this now because we want to finish up reflected attacks and things
 		//if our saber is pried out of our hands from one.
-		if ( pm->ps->fd.saberAnimLevel == SS_DUAL )
+		saberInfo_t *saber1 = BG_MySaber( pm->ps->clientNum, 0 );
+		saberInfo_t *saber2 = BG_MySaber( pm->ps->clientNum, 1 );
+		if ( saber2 && (pm->ps->fd.saberAnimLevel == SS_DUAL || pm->ps->fd.saberAnimLevel == SS_STAFF ))
 		{
 			//[SaberThrowSys]
 			if ( pm->ps->saberHolstered > 1 || !pm->ps->saberHolstered  )
@@ -4005,9 +4015,10 @@ void PM_WeaponLightsaber(void)
 		}
 		else
 		{
-			pm->cmd.buttons &= ~BUTTON_ATTACK;
+//			pm->cmd.buttons &= ~BUTTON_ATTACK;
+//			pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
 		}
-		pm->cmd.buttons &= ~BUTTON_ALT_ATTACK;
+
 	}
 
 	//[SaberSys]
@@ -4621,7 +4632,8 @@ weapChecks:
 		}
 
 	}
-
+	saberInfo_t *saber1 = BG_MySaber( pm->ps->clientNum, 0 );
+	saberInfo_t *saber2 = BG_MySaber( pm->ps->clientNum, 1 );
 	//[MELEE]
 	//moved the kick code to here so the player can kick while their saber is off.
 	if((pm->cmd.buttons & BUTTON_ALT_ATTACK) && !(pm->cmd.buttons & BUTTON_ATTACK) && PM_DoKick())
@@ -4630,13 +4642,14 @@ weapChecks:
 	}
 	//[/MELEE]
 	//[SaberThrowSys]
-	else if(pm->ps->saberInFlight && pm->ps->forceHandExtend != HANDEXTEND_SABERPULL 
-		&& pm->ps->fd.saberAnimLevel != SS_DUAL && (pm->cmd.buttons & BUTTON_ATTACK))
+	else if(pm->ps->saberInFlight && pm->ps->forceHandExtend != HANDEXTEND_SABERPULL &&(!saber2 || saber2
+		 && pm->ps->fd.saberAnimLevel != SS_DUAL && pm->ps->fd.saberAnimLevel != SS_STAFF ) && (pm->cmd.buttons & BUTTON_ATTACK))
 	{//don't have our saber so we can punch instead.
 		PM_DoPunch();
 		return;
 	}
 	//[/SaberThrowSys]
+
 
 	if (checkOnlyWeap)
 	{

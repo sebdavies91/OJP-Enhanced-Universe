@@ -160,7 +160,7 @@ void PM_VehicleImpact(bgEntity_t *pEnt, trace_t *trace)
 		//this was annoying me -rww
 		//FIXME: this shouldn't even be getting called when the vehicle is at rest!
 #ifdef QAGAME
-		if (hitEnt && (hitEnt->s.eType == ET_PLAYER || hitEnt->s.eType == ET_NPC) && pSelfVeh->m_pVehicleInfo->type == VH_FIGHTER)
+		if (pSelfVeh && hitEnt && (hitEnt->s.eType == ET_PLAYER || hitEnt->s.eType == ET_NPC) && pSelfVeh->m_pVehicleInfo->type == VH_FIGHTER)
 		{ //always smack players
 		}
 		else
@@ -586,8 +586,10 @@ void PM_VehicleImpact(bgEntity_t *pEnt, trace_t *trace)
 			}
 #else	//this is gonna result in "double effects" for the client doing the prediction.
 		//it doesn't look bad though. could just use predicted events, but I'm too lazy.
-			hitEnt = PM_BGEntForNum(trace->entityNum);
-
+			if(trace)
+			{
+				hitEnt = PM_BGEntForNum(trace->entityNum);
+			
 			if (!hitEnt || hitEnt->s.owner != pEnt->s.number)
 			{ //don't hit your own missiles!
 				AngleVectors( pSelfVeh->m_vOrientation, NULL, NULL, vehUp );
@@ -595,6 +597,7 @@ void PM_VehicleImpact(bgEntity_t *pEnt, trace_t *trace)
 				trap_FX_PlayEffectID( pSelfVeh->m_pVehicleInfo->iImpactFX, pm->ps->origin, vehUp, -1, -1 );
 
 				pSelfVeh->m_ulFlags |= VEH_CRASHING;
+			}
 			}
 #endif
 		}

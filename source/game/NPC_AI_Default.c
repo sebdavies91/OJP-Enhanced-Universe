@@ -613,6 +613,7 @@ finished:
 void NPC_BSMove(void)
 Move in a direction, face another
 */
+qboolean NPC_SlideMoveToGoal(void);
 void NPC_BSMove(void)
 {
 	gentity_t	*goal = NULL;
@@ -905,14 +906,17 @@ void NPC_BSDefault( void )
 				vec3_t	dir, angles;
 
 				NPCInfo->combatMove = qfalse;
-
-				VectorSubtract( NPCInfo->goalEntity->r.currentOrigin, NPC->r.currentOrigin, dir );
-				vectoangles( dir, angles );
-				NPCInfo->desiredYaw = angles[YAW];
-				if ( NPCInfo->goalEntity == NPC->enemy )
+				if (NPCInfo->goalEntity)
 				{
-					NPCInfo->desiredPitch = angles[PITCH];
+					VectorSubtract(NPCInfo->goalEntity->r.currentOrigin, NPC->r.currentOrigin, dir);
+					vectoangles(dir, angles);
+					NPCInfo->desiredYaw = angles[YAW];
+					if (NPCInfo->goalEntity == NPC->enemy)
+					{
+						NPCInfo->desiredPitch = angles[PITCH];
+					}
 				}
+
 			}
 
 			//set movement

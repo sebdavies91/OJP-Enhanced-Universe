@@ -12,7 +12,7 @@
 #include "q_shared.h"
 #include "botlib.h"		//bot lib interface
 #include "be_aas.h"
-
+#include "bg_public.h"
 //[SaberSys]
 //I think this isn't defined correctly.
 #include "../game/be_ea.h"
@@ -1047,15 +1047,21 @@ BotAISetupClient
 int BotAISetupClient(int client, struct bot_settings_s *settings, qboolean restart) {
 	bot_state_t *bs;
 
-	if (!botstates[client]) botstates[client] = (bot_state_t *) B_Alloc(sizeof(bot_state_t)); //G_Alloc(sizeof(bot_state_t));
-																			  //rww - G_Alloc bad! B_Alloc good.
+	if (!botstates[client]) {
+		botstates[client] = (bot_state_t*)B_Alloc(sizeof(bot_state_t));
+		if (!botstates[client]) {
+			BotAI_Print(PRT_FATAL, "BotAISetupClient: Failed to allocate bot state for client %d\n", client);
+			return qfalse;  // Return failure
+		}
+	}
 
 	memset(botstates[client], 0, sizeof(bot_state_t));
 
 	bs = botstates[client];
 
-	if (bs && bs->inuse) {
-		BotAI_Print(PRT_FATAL, "BotAISetupClient: client %d already setup\n", client);
+	// Ensure settings are valid before copying
+	if (settings == NULL) {
+		BotAI_Print(PRT_FATAL, "BotAISetupClient: Invalid bot settings for client %d\n", client);
 		return qfalse;
 	}
 
@@ -4595,8 +4601,11 @@ void GetIdealDestination(bot_state_t *bs)
 
 	//RACC - Go after your revenge enemy if you can get to him from there.
 	if (bs->revengeEnemy && bs->revengeEnemy->health > 0 &&
-		bs->revengeEnemy->client && (bs->revengeEnemy->client->pers.connected == CA_ACTIVE || bs->revengeEnemy->client->pers.connected == CA_AUTHORIZING))
-	{ //if we hate someone, always try to get to them
+		bs->revengeEnemy->client &&
+		((clientConnected_t)bs->revengeEnemy->client->pers.connected == (clientConnected_t)CA_ACTIVE ||
+			(clientConnected_t)bs->revengeEnemy->client->pers.connected == (clientConnected_t)CA_AUTHORIZING))
+	{
+		// if we hate someone, always try to get to them
 		if (bs->wpDestSwitchTime < level.time)
 		{
 			if (bs->revengeEnemy->client)
@@ -4618,7 +4627,9 @@ void GetIdealDestination(bot_state_t *bs)
 		}
 	}
 	else if (bs->squadLeader && bs->squadLeader->health > 0 &&
-		bs->squadLeader->client && (bs->squadLeader->client->pers.connected == CA_ACTIVE || bs->squadLeader->client->pers.connected == CA_AUTHORIZING))
+		bs->squadLeader->client &&
+		((clientConnected_t)bs->squadLeader->client->pers.connected == (clientConnected_t)CA_ACTIVE ||
+			(clientConnected_t)bs->squadLeader->client->pers.connected == (clientConnected_t)CA_AUTHORIZING))
 	{
 		if (bs->wpDestSwitchTime < level.time)
 		{
@@ -4640,6 +4651,7 @@ void GetIdealDestination(bot_state_t *bs)
 			}
 		}
 	}
+
 	else if (bs->currentEnemy)
 	{
 		if (bs->currentEnemy->client)
@@ -7333,35 +7345,64 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 		return;
 	}
 
-
-
-
-
 	if ((bs->cur_ps.weapon == WP_SABER)
 			&& bs->changeStyleDebounce < level.time)
 		{// Switch stance every so often...
 			bs->changeStyleDebounce = level.time + 200000;
 			Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
 		}
-	if (bs->cur_ps.weapon == WP_SABER && g_entities[bs->client].client->saber[0].model[0] && g_entities[bs->client].client->saber[1].model[0] )
-	{
-	if ( g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_DUAL)
-	{
 
-		Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
 
-	}
-	}
-	else if (bs->cur_ps.weapon == WP_SABER && g_entities[bs->client].client->saber[0].numBlades > 1 
-		&& WP_SaberCanTurnOffSomeBlades(&g_entities[bs->client].client->saber[0] )
-		)
-	{
-	if (g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_STAFF)
-	{
 
-		Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
+
+	if (bs->cur_ps.weapon == WP_SABER &&
+		g_entities[bs->client].client->saber[0].model[0] &&
+		g_entities[bs->client].client->saber[1].model[0])
+	{
+		// Dual sabers
+		if (g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_DUAL)
+		{
+			Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
+		}
 	}
+	else if (bs->cur_ps.weapon == WP_SABER &&
+		g_entities[bs->client].client->saber[0].numBlades > 1 &&
+		WP_SaberCanTurnOffSomeBlades(&g_entities[bs->client].client->saber[0]))
+	{
+		// Staff saber
+		if (g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_STAFF)
+		{
+			Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
+		}
 	}
+	else
+	{
+		// Regular saber style cycling
+		if (bs->saberStyleBiasTime < level.time)
+		{
+			bs->saberStyleBias = Q_irand(1, 5); // 1=FAST, 2=MEDIUM, ..., 5=DESANN
+			bs->saberStyleBiasTime = level.time + Q_irand(30000, 60000);
+		}
+
+		int targetStance;
+		switch (bs->saberStyleBias)
+		{
+		case 5: targetStance = SS_DESANN; break;
+		case 4: targetStance = SS_TAVION; break;
+		case 3: targetStance = SS_STRONG; break;
+		case 2: targetStance = SS_MEDIUM; break;
+		default: targetStance = SS_FAST; break;
+		}
+
+		if (g_entities[bs->client].client->ps.fd.saberAnimLevel != targetStance)
+		{
+			Cmd_SaberAttackCycle_f(&g_entities[bs->client]);
+		}
+	}
+
+
+
+
 	if(bs->cur_ps.saberLockTime > level.time)
 	{//bot is in a saber lock
 		//bots cheat by knowing their enemy's DP level, if they're low on DP, try to super break finish them.
@@ -7395,19 +7436,25 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 	}
 
 	//RACC - revenge Enemy became inactive.
+// Assuming 'clientConnected_t' and 'connstate_t' are different enums,
+// explicitly cast to the same type to avoid comparison issues.
+
 	if (bs->revengeEnemy && bs->revengeEnemy->client &&
-		bs->revengeEnemy->client->pers.connected != CA_ACTIVE && bs->revengeEnemy->client->pers.connected != CA_AUTHORIZING)
+		(clientConnected_t)bs->revengeEnemy->client->pers.connected != (clientConnected_t)CA_ACTIVE &&
+		(clientConnected_t)bs->revengeEnemy->client->pers.connected != (clientConnected_t)CA_AUTHORIZING)
 	{
 		bs->revengeEnemy = NULL;
 		bs->revengeHateLevel = 0;
 	}
 
-	//RACC - current enemy became inactive
+	// RACC - current enemy became inactive
 	if (bs->currentEnemy && bs->currentEnemy->client &&
-		bs->currentEnemy->client->pers.connected != CA_ACTIVE && bs->currentEnemy->client->pers.connected != CA_AUTHORIZING)
+		(clientConnected_t)bs->currentEnemy->client->pers.connected != (clientConnected_t)CA_ACTIVE &&
+		(clientConnected_t)bs->currentEnemy->client->pers.connected != (clientConnected_t)CA_AUTHORIZING)
 	{
 		bs->currentEnemy = NULL;
 	}
+
 
 	fjHalt = 0;
 
@@ -8265,10 +8312,9 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			}
 
 			//RACC - switch stance if you want to.
-	
+	/*
 
-			if ( g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_STAFF
-				&& g_entities[bs->client].client->ps.fd.saberAnimLevel != SS_DUAL )
+			if (  !g_entities[bs->client].client->saber[1].model[0] && !g_entities[bs->client].client->saber[0].numBlades > 1 && !WP_SaberCanTurnOffSomeBlades(&g_entities[bs->client].client->saber[0] ) )
 			{
 				//RACC - switch to heavy if you're attacking a health opponent,
 				//using a single saber, and have the red stance available.
@@ -8303,7 +8349,7 @@ void StandardBotAI(bot_state_t *bs, float thinktime)
 			{
 				saberRange *= 3;
 			}
-
+*/
 			if (bs->frame_Enemy_Len <= saberRange)
 			{
 				SaberCombatHandling(bs);

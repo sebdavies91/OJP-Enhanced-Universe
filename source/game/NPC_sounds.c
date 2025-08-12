@@ -86,10 +86,17 @@ void NPC_PlayConfusionSound( gentity_t *self )
 	}
 	//reset him to be totally unaware again
 	TIMER_Set( self, "enemyLastVisible", 0 );
-	self->NPC->tempBehavior = BS_DEFAULT;
+	if (self->NPC)
+	{
+		self->NPC->tempBehavior = BS_DEFAULT;
+	}
+
 	
 	//self->NPC->behaviorState = BS_PATROL;
 	G_ClearEnemy( self );//FIXME: or just self->enemy = NULL;?
+	if (self->NPC)
+	{
+		self->NPC->investigateCount = 0;
+	}
 
-	self->NPC->investigateCount = 0;
 }

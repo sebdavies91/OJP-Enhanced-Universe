@@ -2753,12 +2753,12 @@ void QDECL G_LogPrintf( const char *fmt, ... ) {
 
 /*
 ================
-LogExit
+G_LogExit
 
 Append information about this game to the log file
 ================
 */
-void LogExit( const char *string ) {
+void QDECL G_LogExit( const char *string ) {
 	int				i, numSorted;
 	gclient_t		*cl;
 //	qboolean		won = qtrue;
@@ -3240,13 +3240,13 @@ void CheckExitRules( void ) {
 		if (gEscapeTime < level.time)
 		{
 			gEscaping = qfalse;
-			LogExit( "Escape time ended." );
+			G_LogExit( "Escape time ended." );
 			return;
 		}
 		if (!numLiveClients)
 		{
 			gEscaping = qfalse;
-			LogExit( "Everyone failed to escape." );
+			G_LogExit( "Everyone failed to escape." );
 			return;
 		}
 	}
@@ -3272,7 +3272,7 @@ void CheckExitRules( void ) {
 				{
 					Com_Printf("POWERDUEL WIN CONDITION: Duel forfeit (1)\n");
 				}
-				LogExit("Duel forfeit.");
+				G_LogExit("Duel forfeit.");
 				return;
 			}
 		}
@@ -3304,7 +3304,7 @@ void CheckExitRules( void ) {
 				{
 					Com_Printf("POWERDUEL WIN CONDITION: Timelimit hit (1)\n");
 				}
-				LogExit( "Timelimit hit." );
+				G_LogExit( "Timelimit hit." );
 				return;
 			}
 		}
@@ -3323,7 +3323,7 @@ void CheckExitRules( void ) {
 		if (g_endPDuel)
 		{
 			g_endPDuel = qfalse;
-			LogExit("Powerduel ended.");
+			G_LogExit("Powerduel ended.");
 		}
 
 		//yeah, this stuff was completely insane.
@@ -3384,7 +3384,7 @@ void CheckExitRules( void ) {
 				{
 					Com_Printf("POWERDUEL WIN CONDITION: Coupled duelists won (1)\n");
 				}
-				LogExit( "Coupled duelists won." );
+				G_LogExit( "Coupled duelists won." );
 				gDuelExit = qfalse;
 			}
 			else if ((!g_entities[duelists[1]].inuse ||
@@ -3424,7 +3424,7 @@ void CheckExitRules( void ) {
 				{
 					Com_Printf("POWERDUEL WIN CONDITION: Lone duelist won (1)\n");
 				}
-				LogExit( "Lone duelist won." );
+				G_LogExit( "Lone duelist won." );
 				gDuelExit = qfalse;
 			}
 		}
@@ -3463,7 +3463,7 @@ void CheckExitRules( void ) {
 			{
 				Com_Printf("POWERDUEL WIN CONDITION: Kill limit (1)\n");
 			}
-			LogExit( sKillLimit );
+			G_LogExit( sKillLimit );
 			return;
 		}
 
@@ -3473,7 +3473,7 @@ void CheckExitRules( void ) {
 			{
 				Com_Printf("POWERDUEL WIN CONDITION: Kill limit (2)\n");
 			}
-			LogExit( sKillLimit );
+			G_LogExit( sKillLimit );
 			return;
 		}
 
@@ -3492,7 +3492,7 @@ void CheckExitRules( void ) {
 				{
 					Com_Printf("POWERDUEL WIN CONDITION: Duel limit hit (1)\n");
 				}
-				LogExit( "Duel limit hit." );
+				G_LogExit( "Duel limit hit." );
 				gDuelExit = qtrue;
 				trap_SendServerCommand( -1, va("print \"%s" S_COLOR_WHITE " hit the win limit.\n\"",
 					cl->pers.netname ) );
@@ -3504,7 +3504,7 @@ void CheckExitRules( void ) {
 				{
 					Com_Printf("POWERDUEL WIN CONDITION: Kill limit (3)\n");
 				}
-				LogExit( sKillLimit );
+				G_LogExit( sKillLimit );
 				gDuelExit = qfalse;
 				if (printLimit)
 				{
@@ -3525,14 +3525,14 @@ void CheckExitRules( void ) {
 		{
 			trap_SendServerCommand( -1,  va("print \"%s \"", G_GetStringEdString("MP_SVGAME", "PRINTREDTEAM")));
 			trap_SendServerCommand( -1,  va("print \"%s.\n\"", G_GetStringEdString("MP_SVGAME", "HIT_CAPTURE_LIMIT")));
-			LogExit( "Capturelimit hit." );
+			G_LogExit( "Capturelimit hit." );
 			return;
 		}
 
 		if ( level.teamScores[TEAM_BLUE] >= g_capturelimit.integer ) {
 			trap_SendServerCommand( -1,  va("print \"%s \"", G_GetStringEdString("MP_SVGAME", "PRINTBLUETEAM")));
 			trap_SendServerCommand( -1,  va("print \"%s.\n\"", G_GetStringEdString("MP_SVGAME", "HIT_CAPTURE_LIMIT")));
-			LogExit( "Capturelimit hit." );
+			G_LogExit( "Capturelimit hit." );
 			return;
 		}
 	}

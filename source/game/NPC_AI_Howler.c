@@ -448,7 +448,7 @@ static void Howler_Howl( void )
 
 //------------------------------
 //replaced with SP version
-void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
+extern void G_SoundOnEnt(gentity_t* ent, int channel, const char* soundPath);
 static void Howler_Attack( float enemyDist, qboolean howl )
 {
 	int dmg = (NPCInfo->localState==LSTATE_BERZERK)?5:2;
@@ -700,7 +700,7 @@ NPC_Howler_Pain
 -------------------------
 */
 //replaced with SP code
-void NPC_Howler_Pain( gentity_t *self, gentity_t *inflictor, gentity_t *other, const vec3_t point, int damage, int mod,int hitLoc ) 
+void NPC_Howler_Pain( gentity_t *self, gentity_t *inflictor, int damage) 
 {
 	if ( !self || !self->NPC )
 	{

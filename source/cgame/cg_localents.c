@@ -36,19 +36,47 @@ void	CG_InitLocalEntities( void ) {
 CG_FreeLocalEntity
 ==================
 */
-void CG_FreeLocalEntity( localEntity_t *le ) {
-	if ( !le->prev ) {
-		CG_Error( "CG_FreeLocalEntity: not active" );
+void CG_FreeLocalEntity(localEntity_t* le) {
+	// Check if the localEntity pointer is NULL right away
+	if (!le) {
+		CG_Error("CG_FreeLocalEntity: NULL localEntity passed!");
+		return; // This will stop the function and prevent any further dereferencing of NULL
 	}
 
-	// remove from the doubly linked active list
-	le->prev->next = le->next;
-	le->next->prev = le->prev;
+	// Check if 'prev' and 'next' are valid; if they are not, we might be dealing with a corrupted list
+	if (!le->prev && !le->next) {
+		CG_Error("CG_FreeLocalEntity: LocalEntity is not part of the active list (both 'prev' and 'next' are NULL).");
+		return; // Prevent dereferencing a corrupted entity
+	}
 
-	// the free list is only singly linked
+	// Make sure 'prev' is valid before trying to dereference it
+	if (!le->prev) {
+		CG_Error("CG_FreeLocalEntity: LocalEntity's 'prev' is NULL (Possible corrupted list or entity).");
+		return; // Prevent continuing with the function if the entity is not in a valid position in the list
+	}
+
+	// Make sure 'next' is valid before trying to dereference it
+	if (!le->next) {
+		CG_Error("CG_FreeLocalEntity: LocalEntity's 'next' is NULL (Possible corrupted list or entity).");
+		return; // Prevent continuing with the function if the entity is not properly linked
+	}
+
+	// Now proceed with removing the local entity from the active list
+	if (le->prev) {
+		le->prev->next = le->next;
+	}
+
+	if (le->next) {
+		le->next->prev = le->prev;
+	}
+
+	// Free the entity by adding it to the free list (this is a singly linked list)
 	le->next = cg_freeLocalEntities;
 	cg_freeLocalEntities = le;
 }
+
+
+
 
 /*
 ===================
@@ -57,27 +85,39 @@ CG_AllocLocalEntity
 Will allways succeed, even if it requires freeing an old active entity
 ===================
 */
-localEntity_t	*CG_AllocLocalEntity( void ) {
-	localEntity_t	*le;
+localEntity_t* CG_AllocLocalEntity(void) {
+	localEntity_t* le;
 
-	if ( !cg_freeLocalEntities ) {
-		// no free entities, so free the one at the end of the chain
-		// remove the oldest active entity
-		CG_FreeLocalEntity( cg_activeLocalEntities.prev );
+	// If there are no free local entities
+	if (!cg_freeLocalEntities) {
+		// Free the oldest active entity if no free entities are available
+		CG_FreeLocalEntity(cg_activeLocalEntities.prev);
 	}
 
+	// Get the next free local entity
 	le = cg_freeLocalEntities;
+
+	// If there is no free local entity available
+	if (!le) {
+		// Handle the case where no entity could be allocated, maybe return NULL or an error
+		return NULL;  // Or handle error more gracefully
+	}
+
+	// Move the pointer to the next free entity
 	cg_freeLocalEntities = cg_freeLocalEntities->next;
 
-	memset( le, 0, sizeof( *le ) );
+	// Clear the memory of the allocated entity
+	memset(le, 0, sizeof(*le));
 
-	// link into the active list
+	// Link into the active list
 	le->next = cg_activeLocalEntities.next;
 	le->prev = &cg_activeLocalEntities;
 	cg_activeLocalEntities.next->prev = le;
 	cg_activeLocalEntities.next = le;
+
 	return le;
 }
+
 
 
 /*

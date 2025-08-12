@@ -43,6 +43,8 @@ typedef struct bot_match_s
 	bot_matchvariable_t variables[MAX_MATCHVARIABLES];
 } bot_match_t;
 
+
+
 //setup the chat AI
 int BotSetupChatAI(void);
 //shutdown the chat AI

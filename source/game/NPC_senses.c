@@ -80,6 +80,24 @@ qboolean CanSee ( gentity_t *ent )
 	return qfalse;
 }
 
+float DotToSpot( vec3_t spot, vec3_t from, vec3_t fromAngles )
+{
+	vec3_t	dir, forward, angles;
+	float	dot;
+
+	VectorSubtract( spot, from, dir );
+	dir[2] = 0;
+	VectorNormalize( dir );
+
+	VectorCopy( fromAngles, angles );
+	angles[0] = 0;
+	AngleVectors( angles, forward, NULL, NULL );
+
+	dot = DotProduct( dir, forward );
+
+	return dot;
+}
+
 qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold )
 {//RACC - checks to see if spot is in front of from based on the viewangles fromAngle.
 	vec3_t	dir, forward, angles;
@@ -836,66 +854,52 @@ AddSoundEvent
 */
 qboolean RemoveOldestAlert( void );
 //[CoOp]
-void AddSoundEvent( gentity_t *owner, vec3_t position, float radius, alertEventLevel_e alertLevel, qboolean needLOS, qboolean onGround )
-//void AddSoundEvent( gentity_t *owner, vec3_t position, float radius, alertEventLevel_e alertLevel, qboolean needLOS )
-//[/CoOp]
+void AddSoundEvent(gentity_t* owner, vec3_t position, float radius, alertEventLevel_e alertLevel, qboolean needLOS, qboolean onGround)
 {
-	//FIXME: Handle this in another manner?
-	if ( level.numAlertEvents >= MAX_ALERT_EVENTS )
+	// Check if there is room for more alert events
+	if (level.numAlertEvents >= MAX_ALERT_EVENTS)
 	{
-		if ( !RemoveOldestAlert() )
-		{//how could that fail?
+		if (!RemoveOldestAlert())  // How could this fail?
+		{
 			return;
 		}
 	}
-	
-	if ( owner == NULL && alertLevel < AEL_DANGER )	//allows un-owned danger alerts
+
+	// Prevent adding events if the owner is NULL and the alert level is not 'danger'
+	if (owner == NULL && alertLevel < AEL_DANGER)
 		return;
 
-	//[CoOp]
-	//FIXME: why are Sand creatures suddenly crashlanding?
-	if ( owner && owner->client && owner->client->NPC_class == CLASS_SAND_CREATURE )
+	// Prevent events for sand creatures (if owner is a sand creature)
+	if (owner && owner->client && owner->client->NPC_class == CLASS_SAND_CREATURE)
 	{
 		return;
 	}
-	//[/CoOp]
 
-	//FIXME: if owner is not a player or player ally, and there are no player allies present,
-	//			perhaps we don't need to store the alert... unless we want the player to
-	//			react to enemy alert events in some way?
+	// Ensure position is valid (optional sanity check)
+	// #ifdef _DEBUG
+	// assert( !_isnan(position[0]) && !_isnan(position[1]) && !_isnan(position[2]) );
+	// #endif
 
-	//[CoOp]
-	//[RAFIXME] - impliment this?
-	/*
-	#ifdef _DEBUG
-	assert( !_isnan(position[0]) && !_isnan(position[1]) && !_isnan(position[2]) );
-	#endif
-	*/
-	//[/CoOp]
-
-	VectorCopy( position, level.alertEvents[ level.numAlertEvents ].position );
-
-	level.alertEvents[ level.numAlertEvents ].radius	= radius;
-	level.alertEvents[ level.numAlertEvents ].level		= alertLevel;
-	level.alertEvents[ level.numAlertEvents ].type		= AET_SOUND;
-	level.alertEvents[ level.numAlertEvents ].owner		= owner;
-	if ( needLOS )
-	{//a very low-level sound, when check this sound event, check for LOS
-		level.alertEvents[ level.numAlertEvents ].addLight	= 1;	//will force an LOS trace on this sound
-	}
-	else
+	// Check if there is room for another alert event
+	if (level.numAlertEvents < MAX_ALERT_EVENTS)
 	{
-		level.alertEvents[ level.numAlertEvents ].addLight	= 0;	//will force an LOS trace on this sound
-	}
-	//[CoOp]
-	level.alertEvents[ level.numAlertEvents ].onGround = onGround;
-	//[/CoOp]
-	
-	level.alertEvents[ level.numAlertEvents ].ID		= level.curAlertID++;
-	level.alertEvents[ level.numAlertEvents ].timestamp	= level.time;
+		// Copy position to the alert event
+		VectorCopy(position, level.alertEvents[level.numAlertEvents].position);
 
-	level.numAlertEvents++;
+		level.alertEvents[level.numAlertEvents].radius = radius;
+		level.alertEvents[level.numAlertEvents].level = alertLevel;
+		level.alertEvents[level.numAlertEvents].type = AET_SOUND;
+		level.alertEvents[level.numAlertEvents].owner = owner;
+		level.alertEvents[level.numAlertEvents].addLight = needLOS ? 1 : 0;
+		level.alertEvents[level.numAlertEvents].onGround = onGround;
+
+		level.alertEvents[level.numAlertEvents].ID = level.curAlertID++;
+		level.alertEvents[level.numAlertEvents].timestamp = level.time;
+
+		level.numAlertEvents++;  // Increment the number of events
+	}
 }
+
 
 /*
 -------------------------
@@ -903,42 +907,42 @@ AddSightEvent
 -------------------------
 */
 
-void AddSightEvent( gentity_t *owner, vec3_t position, float radius, alertEventLevel_e alertLevel, float addLight )
+void AddSightEvent(gentity_t* owner, vec3_t position, float radius, alertEventLevel_e alertLevel, float addLight)
 {
-	//FIXME: Handle this in another manner?
-	if ( level.numAlertEvents >= MAX_ALERT_EVENTS )
+	// Check if we have room for more alert events
+	if (level.numAlertEvents >= MAX_ALERT_EVENTS)
 	{
-		if ( !RemoveOldestAlert() )
-		{//how could that fail?
+		if (!RemoveOldestAlert())
+		{
+			// If we can't remove the oldest alert, just return
 			return;
 		}
 	}
 
-	if ( owner == NULL && alertLevel < AEL_DANGER )	//allows un-owned danger alerts
+	if (owner == NULL && alertLevel < AEL_DANGER)  // Allows un-owned danger alerts
 		return;
 
-	//FIXME: if owner is not a player or player ally, and there are no player allies present,
-	//			perhaps we don't need to store the alert... unless we want the player to
-	//			react to enemy alert events in some way?
-//[CoOp][RAFIXME] Impliment this?
-/*
-#ifdef _DEBUG
-	assert( !_isnan(position[0]) && !_isnan(position[1]) && !_isnan(position[2]) );
-#endif
-*/
-//[/CoOp]
-	VectorCopy( position, level.alertEvents[ level.numAlertEvents ].position );
+	// Ensure we don't exceed the array size (limit to MAX_ALERT_EVENTS - 1)
+	if (level.numAlertEvents >= MAX_ALERT_EVENTS)
+	{
+		return;  // Don't add the event if we have reached the max size
+	}
 
-	level.alertEvents[ level.numAlertEvents ].radius	= radius;
-	level.alertEvents[ level.numAlertEvents ].level		= alertLevel;
-	level.alertEvents[ level.numAlertEvents ].type		= AET_SIGHT;
-	level.alertEvents[ level.numAlertEvents ].owner		= owner;		
-	level.alertEvents[ level.numAlertEvents ].addLight	= addLight;	//will get added to actual light at that point when it's checked
-	level.alertEvents[ level.numAlertEvents ].ID		= level.curAlertID++;
-	level.alertEvents[ level.numAlertEvents ].timestamp	= level.time;
+	// Copy position to the alert event
+	VectorCopy(position, level.alertEvents[level.numAlertEvents].position);
 
+	level.alertEvents[level.numAlertEvents].radius = radius;
+	level.alertEvents[level.numAlertEvents].level = alertLevel;
+	level.alertEvents[level.numAlertEvents].type = AET_SIGHT;
+	level.alertEvents[level.numAlertEvents].owner = owner;
+	level.alertEvents[level.numAlertEvents].addLight = addLight;  // Add light value
+	level.alertEvents[level.numAlertEvents].ID = level.curAlertID++;
+	level.alertEvents[level.numAlertEvents].timestamp = level.time;
+
+	// Increment the number of alert events
 	level.numAlertEvents++;
 }
+
 
 /*
 -------------------------
@@ -1025,32 +1029,37 @@ G_ClearLOS
 */
 
 // Position to position
-qboolean G_ClearLOS( gentity_t *self, const vec3_t start, const vec3_t end )
-{//RACC - visual trace checks for a clear line of sight between two points.
-	trace_t		tr;
-	int			traceCount = 0;
-	
-	//FIXME: ENTITYNUM_NONE ok?
-	trap_Trace ( &tr, start, NULL, NULL, end, ENTITYNUM_NONE, CONTENTS_OPAQUE/*CONTENTS_SOLID*//*(CONTENTS_SOLID|CONTENTS_MONSTERCLIP)*/ );
-	while ( tr.fraction < 1.0 && traceCount < 3 )
-	{//can see through 3 panes of glass
-		if ( tr.entityNum < ENTITYNUM_WORLD )
-		{
-			if ( &g_entities[tr.entityNum] != NULL && (g_entities[tr.entityNum].r.svFlags&SVF_GLASS_BRUSH) )
-			{//can see through glass, trace again, ignoring me
-				trap_Trace ( &tr, tr.endpos, NULL, NULL, end, tr.entityNum, MASK_OPAQUE );
+qboolean G_ClearLOS(gentity_t* self, const vec3_t start, const vec3_t end)
+{
+	trace_t tr;
+	int traceCount = 0;
+
+	// Perform the initial trace
+	trap_Trace(&tr, start, NULL, NULL, end, ENTITYNUM_NONE, CONTENTS_OPAQUE);
+
+	while (tr.fraction < 1.0 && traceCount < 3) {
+		if (tr.entityNum < ENTITYNUM_WORLD) {
+			// Check if the entity is valid and is not NULL
+			gentity_t* trEntity = &g_entities[tr.entityNum];
+
+			if (trEntity != NULL && (trEntity->r.svFlags & SVF_GLASS_BRUSH)) {
+				// Can see through glass, so perform another trace, ignoring the current entity
+				trap_Trace(&tr, tr.endpos, NULL, NULL, end, tr.entityNum, MASK_OPAQUE);
 				traceCount++;
 				continue;
 			}
 		}
+		// If the trace is blocked by a non-glass entity, return false
 		return qfalse;
 	}
 
-	if ( tr.fraction == 1.0 ) 
+	// If the fraction is 1.0, then there was a clear line of sight
+	if (tr.fraction == 1.0)
 		return qtrue;
 
 	return qfalse;
 }
+
 
 //Entity to position
 qboolean G_ClearLOS2( gentity_t *self, gentity_t *ent, const vec3_t end )

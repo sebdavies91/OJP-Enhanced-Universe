@@ -26,6 +26,8 @@ typedef struct bot_goal_s
 	int iteminfo;				//item information
 } bot_goal_t;
 
+
+
 //reset the whole goal state, but keep the item weights
 void BotResetGoalState(int goalstate);
 //reset avoid goals
@@ -93,3 +95,4 @@ void BotFreeGoalState(int handle);
 int BotSetupGoalAI(void);
 //shut down the goal AI
 void BotShutdownGoalAI(void);
+

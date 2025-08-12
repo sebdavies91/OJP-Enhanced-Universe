@@ -5432,60 +5432,63 @@ void CG_CenterPrint( const char *str, int y, int charWidth ) {
 CG_DrawCenterString
 ===================
 */
-static void CG_DrawCenterString( void ) {
-	char	*start;
-	int		l;
-	int		x, y, w;
-	int h;
-	float	*color;
+static void CG_DrawCenterString(void) {
+	char* start;
+	int     l;
+	int     x, y, w;
+	int     h;
+	float* color;
 	const float scale = 1.0; //0.5
 
-	if ( !cg.centerPrintTime ) {
+	if (!cg.centerPrintTime) {
 		return;
 	}
 
-	color = CG_FadeColor( cg.centerPrintTime, 1000 * cg_centertime.value );
-	if ( !color ) {
+	color = CG_FadeColor(cg.centerPrintTime, 1000 * cg_centertime.value);
+	if (!color) {
 		return;
 	}
 
-	trap_R_SetColor( color );
+	trap_R_SetColor(color);
 
 	start = cg.centerPrint;
 
 	y = cg.centerPrintY - cg.centerPrintLines * BIGCHAR_HEIGHT / 2;
 
-	while ( 1 ) 
+	while (1)
 	{
 		char linebuffer[1024];
-		for ( l = 0; l < 50; l++ ) 
+		for (l = 0; l < 1023; l++)  // Ensure we do not overflow linebuffer
 		{
-			if ( !start[l] || start[l] == '\n' ) 
+			if (!start[l] || start[l] == '\n')
 			{
 				break;
 			}
 			linebuffer[l] = start[l];
 		}
-		linebuffer[l] = 0;
+		linebuffer[l] = 0;  // Null-terminate linebuffer
 
-		//[BugFix19]
-		if(!BG_IsWhiteSpace(start[l]) && !BG_IsWhiteSpace(linebuffer[l-1]) )
-		{//we might have cut a word off, attempt to find a spot where we won't cut words off at.
-			int savedL = l;
-			int counter = l-2;
+		//[BugFix19] Prevent reading past the end of 'start' or 'linebuffer'.
+		if (l == 1023 || (start[l] && start[l] != '\n'))  // Only check if it's not a newline
+		{
+			if (!BG_IsWhiteSpace(start[l]) && !BG_IsWhiteSpace(linebuffer[l - 1]))
+			{//we might have cut a word off, attempt to find a spot where we won't cut words off at.
+				int savedL = l;
+				int counter = l - 2;
 
-			for(; counter >= 0; counter--)
-			{
-				if(BG_IsWhiteSpace(start[counter]))
-				{//this location is whitespace, line break from this position
-					linebuffer[counter] = 0;
-					l = counter + 1;
-					break;
+				for (; counter >= 0; counter--)
+				{
+					if (BG_IsWhiteSpace(start[counter]))
+					{//this location is whitespace, line break from this position
+						linebuffer[counter] = 0;
+						l = counter + 1;
+						break;
+					}
 				}
-			}
-			if(counter < 0)
-			{//couldn't find a break in the text, just go ahead and cut off the word mid-word.
-				l = savedL;
+				if (counter < 0)
+				{//couldn't find a break in the text, just go ahead and cut off the word mid-word.
+					l = savedL;
+				}
 			}
 		}
 		//[/BugFix19]
@@ -5496,38 +5499,24 @@ static void CG_DrawCenterString( void ) {
 		CG_Text_Paint(x, y + h, scale, color, linebuffer, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
 		y += h + 6;
 
-		//[BugFix19]
-		//this method of advancing to new line from the start of the array was causing long lines without
-		//new lines to be totally truncated.
-		if(start[l] && start[l] == '\n')
-		{//next char is a newline, advance past
+		//[BugFix19] Safe newline handling
+		if (start[l] && start[l] == '\n')  // Ensure we don't run off the end of the string
+		{
 			l++;
 		}
 
-		if ( !start[l] )
-		{//end of string, we're done.
+		if (!start[l])
+		{// end of string, we're done.
 			break;
 		}
 
-		//advance pointer to the last character that we didn't read in.
+		// advance pointer to the last character that we didn't read in.
 		start = &start[l];
-		/*
-		while ( *start && ( *start != '\n' ) ) 
-		{
-			start++;
-		}
-
-		if ( !*start ) 
-		{
-			break;
-		}
-		start++;
-		*/
-		//[/BugFix19]
 	}
 
-	trap_R_SetColor( NULL );
+	trap_R_SetColor(NULL);
 }
+
 
 
 
@@ -7180,193 +7169,147 @@ CG_`Entity
 =================
 */
 #define MAX_XHAIR_DIST_ACCURACY	20000.0f
-static void CG_ScanForCrosshairEntity( void ) {
-	trace_t		trace;
-	vec3_t		start, end;
-	int			content;
-	int			ignore;
-	qboolean	bVehCheckTraceFromCamPos = qfalse;
+static void CG_ScanForCrosshairEntity(void) {
+	trace_t trace;
+	vec3_t start = { 0 }, end = { 0 };
+	vec3_t d_f = { 0 }, d_rt = { 0 }, d_up = { 0 };  // Ensure these vectors are initialized to 0
+	int content;
+	int ignore;
+	qboolean bVehCheckTraceFromCamPos = qfalse;
 
 	ignore = cg.predictedPlayerState.clientNum;
 
-	if ( cg_dynamicCrosshair.integer )
-	{
-		vec3_t d_f, d_rt, d_up;
-		/*
-		if ( cg.snap->ps.weapon == WP_NONE || 
-			cg.snap->ps.weapon == WP_SABER || 
-			cg.snap->ps.weapon == WP_STUN_BATON)
-		{
-			VectorCopy( cg.refdef.vieworg, start );
-			AngleVectors( cg.refdef.viewangles, d_f, d_rt, d_up );
-		}
-		else
-		*/
-		//For now we still want to draw the crosshair in relation to the player's world coordinates
-		//even if we have a melee weapon/no weapon.
-		if ( cg.predictedPlayerState.m_iVehicleNum && (cg.predictedPlayerState.eFlags&EF_NODRAW) )
-		{//we're *inside* a vehicle
-			//do the vehicle's crosshair instead
-			centity_t *veh = &cg_entities[cg.predictedPlayerState.m_iVehicleNum];
+	if (cg_dynamicCrosshair.integer) {
+		// Initialize directional vectors for calculations (already done above)
+		if (cg.predictedPlayerState.m_iVehicleNum && (cg.predictedPlayerState.eFlags & EF_NODRAW)) {
+			// We're inside a vehicle, adjust crosshair accordingly
+			centity_t* veh = &cg_entities[cg.predictedPlayerState.m_iVehicleNum];
 			qboolean gunner = qfalse;
 
-			//if (veh->currentState.owner == cg.predictedPlayerState.clientNum)
-			{ //the pilot
-				ignore = cg.predictedPlayerState.m_iVehicleNum;
-				gunner = CG_CalcVehicleMuzzlePoint(cg.predictedPlayerState.m_iVehicleNum, start, d_f, d_rt, d_up);
-			}
-			/*
-			else
-			{ //a passenger
-				ignore = cg.predictedPlayerState.m_iVehicleNum;
-				VectorCopy( veh->lerpOrigin, start );
-				AngleVectors( veh->lerpAngles, d_f, d_rt, d_up );
-				VectorMA(start, 32.0f, d_f, start); //super hack
-			}
-			*/
-			if ( veh->m_pVehicle 
-				&& veh->m_pVehicle->m_pVehicleInfo 
-				&& veh->m_pVehicle->m_pVehicleInfo->type == VH_FIGHTER 
-				&& cg.distanceCull > MAX_XHAIR_DIST_ACCURACY 
-				&& !gunner )
-			{	
-				//NOTE: on huge maps, the crosshair gets inaccurate at close range, 
-				//		so we'll do an extra G2 trace from the cg.refdef.vieworg
-				//		to see if we hit anything closer and auto-aim at it if so
+			// Adjusting for the vehicle's muzzle point or other calculations
+			ignore = cg.predictedPlayerState.m_iVehicleNum;
+			gunner = CG_CalcVehicleMuzzlePoint(cg.predictedPlayerState.m_iVehicleNum, start, d_f, d_rt, d_up);
+
+			if (veh->m_pVehicle && veh->m_pVehicle->m_pVehicleInfo &&
+				veh->m_pVehicle->m_pVehicleInfo->type == VH_FIGHTER &&
+				cg.distanceCull > MAX_XHAIR_DIST_ACCURACY && !gunner) {
+				// Additional logic for checking the trace if we're in a vehicle
 				bVehCheckTraceFromCamPos = qtrue;
 			}
 		}
 		else if (cg.snap && cg.snap->ps.weapon == WP_EMPLACED_GUN && cg.snap->ps.emplacedIndex &&
-			cg_entities[cg.snap->ps.emplacedIndex].ghoul2 && cg_entities[cg.snap->ps.emplacedIndex].currentState.weapon == WP_NONE)
-		{ //locked into our e-web, calc the muzzle from it
+			cg_entities[cg.snap->ps.emplacedIndex].ghoul2 && cg_entities[cg.snap->ps.emplacedIndex].currentState.weapon == WP_NONE) {
+			// Locked into an emplaced gun, calculate the muzzle point
 			CG_CalcEWebMuzzlePoint(&cg_entities[cg.snap->ps.emplacedIndex], start, d_f, d_rt, d_up);
 		}
-		else
-		{
-			if (cg.snap && cg.snap->ps.weapon == WP_EMPLACED_GUN && cg.snap->ps.emplacedIndex)
-			{
+		else {
+			if (cg.snap && cg.snap->ps.weapon == WP_EMPLACED_GUN && cg.snap->ps.emplacedIndex) {
 				vec3_t pitchConstraint;
 
 				ignore = cg.snap->ps.emplacedIndex;
 
 				VectorCopy(cg.refdef.viewangles, pitchConstraint);
-
-				if (cg.renderingThirdPerson)
-				{
+				if (cg.renderingThirdPerson) {
 					VectorCopy(cg.predictedPlayerState.viewangles, pitchConstraint);
 				}
-				else
-				{
+				else {
 					VectorCopy(cg.refdef.viewangles, pitchConstraint);
 				}
 
-				if (pitchConstraint[PITCH] > 40)
-				{
+				if (pitchConstraint[PITCH] > 40) {
 					pitchConstraint[PITCH] = 40;
 				}
 
-				AngleVectors( pitchConstraint, d_f, d_rt, d_up );
+				AngleVectors(pitchConstraint, d_f, d_rt, d_up);
 			}
-			else
-			{
-				vec3_t pitchConstraint;
+			else {
+				if (cg.snap) {
+					vec3_t pitchConstraint;
 
-				if (cg.renderingThirdPerson)
-				{
-					VectorCopy(cg.predictedPlayerState.viewangles, pitchConstraint);
-				}
-				else
-				{
-					VectorCopy(cg.refdef.viewangles, pitchConstraint);
-				}
+					if (cg.renderingThirdPerson) {
+						VectorCopy(cg.predictedPlayerState.viewangles, pitchConstraint);
+					}
+					else {
+						VectorCopy(cg.refdef.viewangles, pitchConstraint);
+					}
 
-				AngleVectors( pitchConstraint, d_f, d_rt, d_up );
+					AngleVectors(pitchConstraint, d_f, d_rt, d_up);
+				}
 			}
-			CG_CalcMuzzlePoint(cg.snap->ps.clientNum, start);
+			if (cg.snap) {
+				CG_CalcMuzzlePoint(cg.snap->ps.clientNum, start);
+			}
 		}
 
-		VectorMA( start, cg.distanceCull, d_f, end );
+		// Make sure start is calculated before we use it in the following line
+		VectorMA(start, cg.distanceCull, d_f, end);
 	}
-	else
-	{
-		VectorCopy( cg.refdef.vieworg, start );
-		VectorMA( start, 131072, cg.refdef.viewaxis[0], end );
+	else {
+		// If dynamic crosshair isn't enabled, use default logic
+		VectorCopy(cg.refdef.vieworg, start);  // Ensure start is set here
+		VectorMA(start, 131072, cg.refdef.viewaxis[0], end);
 	}
 
-	if ( cg_dynamicCrosshair.integer && cg_dynamicCrosshairPrecision.integer )
-	{ //then do a trace with ghoul2 models in mind
-		CG_G2Trace( &trace, start, vec3_origin, vec3_origin, end, 
-			ignore, CONTENTS_SOLID|CONTENTS_BODY );
-		if ( bVehCheckTraceFromCamPos )
-		{
-			//NOTE: this MUST stay up to date with the method used in WP_VehCheckTraceFromCamPos
-			centity_t *veh = &cg_entities[cg.predictedPlayerState.m_iVehicleNum];
-			trace_t	extraTrace;
-			vec3_t	viewDir2End, extraEnd;
-			float	minAutoAimDist = Distance( veh->lerpOrigin, cg.refdef.vieworg ) + (veh->m_pVehicle->m_pVehicleInfo->length/2.0f) + 200.0f;
+	// Additional checks for dynamic crosshair precision
+	if (cg_dynamicCrosshair.integer && cg_dynamicCrosshairPrecision.integer) {
+		// Perform trace using ghoul2 models in mind
+		CG_G2Trace(&trace, start, vec3_origin, vec3_origin, end, ignore, CONTENTS_SOLID | CONTENTS_BODY);
 
-			VectorSubtract( end, cg.refdef.vieworg, viewDir2End );
-			VectorNormalize( viewDir2End );
-			VectorMA( cg.refdef.vieworg, MAX_XHAIR_DIST_ACCURACY, viewDir2End, extraEnd );
-			CG_G2Trace( &extraTrace, cg.refdef.vieworg, vec3_origin, vec3_origin, extraEnd, 
-				ignore, CONTENTS_SOLID|CONTENTS_BODY );
-			if ( !extraTrace.allsolid
-				&& !extraTrace.startsolid )
-			{
-				if ( extraTrace.fraction < 1.0f )
-				{
-					if ( (extraTrace.fraction*MAX_XHAIR_DIST_ACCURACY) > minAutoAimDist )
-					{
-						if ( ((extraTrace.fraction*MAX_XHAIR_DIST_ACCURACY)-Distance( veh->lerpOrigin, cg.refdef.vieworg )) < (trace.fraction*cg.distanceCull) )
-						{//this trace hit *something* that's closer than the thing the main trace hit, so use this result instead
-							memcpy( &trace, &extraTrace, sizeof( trace_t ) );
+		if (bVehCheckTraceFromCamPos) {
+			// Handle vehicle-specific trace logic
+			centity_t* veh = &cg_entities[cg.predictedPlayerState.m_iVehicleNum];
+			trace_t extraTrace;
+			vec3_t viewDir2End, extraEnd;
+			float minAutoAimDist = Distance(veh->lerpOrigin, cg.refdef.vieworg) + (veh->m_pVehicle->m_pVehicleInfo->length / 2.0f) + 200.0f;
+
+			VectorSubtract(end, cg.refdef.vieworg, viewDir2End);
+			VectorNormalize(viewDir2End);
+			VectorMA(cg.refdef.vieworg, MAX_XHAIR_DIST_ACCURACY, viewDir2End, extraEnd);
+			CG_G2Trace(&extraTrace, cg.refdef.vieworg, vec3_origin, vec3_origin, extraEnd, ignore, CONTENTS_SOLID | CONTENTS_BODY);
+
+			if (!extraTrace.allsolid && !extraTrace.startsolid) {
+				if (extraTrace.fraction < 1.0f) {
+					if ((extraTrace.fraction * MAX_XHAIR_DIST_ACCURACY) > minAutoAimDist) {
+						if (((extraTrace.fraction * MAX_XHAIR_DIST_ACCURACY) - Distance(veh->lerpOrigin, cg.refdef.vieworg)) < (trace.fraction * cg.distanceCull)) {
+							memcpy(&trace, &extraTrace, sizeof(trace_t));
 						}
 					}
 				}
 			}
 		}
 	}
-	else
-	{
-		CG_Trace( &trace, start, vec3_origin, vec3_origin, end, 
-			ignore, CONTENTS_SOLID|CONTENTS_BODY );
+	else {
+		CG_Trace(&trace, start, vec3_origin, vec3_origin, end, ignore, CONTENTS_SOLID | CONTENTS_BODY);
 	}
 
-	if (trace.entityNum < MAX_CLIENTS)
-	{
-		if (CG_IsMindTricked(cg_entities[trace.entityNum].currentState.trickedentindex,
+	// Handle entity interaction when trace hits
+	if (trace.entityNum < MAX_CLIENTS) {
+		if (cg.snap && CG_IsMindTricked(cg_entities[trace.entityNum].currentState.trickedentindex,
 			cg_entities[trace.entityNum].currentState.trickedentindex2,
 			cg_entities[trace.entityNum].currentState.trickedentindex3,
 			cg_entities[trace.entityNum].currentState.trickedentindex4,
-			cg.snap->ps.clientNum))
-		{
-			if (cg.crosshairClientNum == trace.entityNum)
-			{
+			cg.snap->ps.clientNum)) {
+			if (cg.crosshairClientNum == trace.entityNum) {
 				cg.crosshairClientNum = ENTITYNUM_NONE;
 				cg.crosshairClientTime = 0;
 			}
 
 			CG_DrawCrosshair(trace.endpos, 0);
-
-			return; //this entity is mind-tricking the current client, so don't render it
+			return;
 		}
 	}
 
-	if (cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR)
-	{
-		if (trace.entityNum < /*MAX_CLIENTS*/ENTITYNUM_WORLD)
-		{
+	// Handle crosshair and drawing based on team and other conditions
+	if (cg.snap && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR) {
+		if (trace.entityNum < ENTITYNUM_WORLD) {
 			cg.crosshairClientNum = trace.entityNum;
 			cg.crosshairClientTime = cg.time;
 
-			if (cg.crosshairClientNum < ENTITYNUM_WORLD)
-			{
-				centity_t *veh = &cg_entities[cg.crosshairClientNum];
-
+			if (cg.crosshairClientNum < ENTITYNUM_WORLD) {
+				centity_t* veh = &cg_entities[cg.crosshairClientNum];
 				if (veh->currentState.eType == ET_NPC &&
 					veh->currentState.NPC_class == CLASS_VEHICLE &&
-					veh->currentState.owner < MAX_CLIENTS)
-				{ //draw the name of the pilot then
+					veh->currentState.owner < MAX_CLIENTS) {
 					cg.crosshairClientNum = veh->currentState.owner;
 					cg.crosshairVehNum = veh->currentState.number;
 					cg.crosshairVehTime = cg.time;
@@ -7375,23 +7318,21 @@ static void CG_ScanForCrosshairEntity( void ) {
 
 			CG_DrawCrosshair(trace.endpos, 1);
 		}
-		else
-		{
+		else {
 			CG_DrawCrosshair(trace.endpos, 0);
 		}
 	}
-//Raz: Put this back in so fading works again
-	if ( trace.entityNum >= MAX_CLIENTS ) {
+
+	// Handle fading in fog or invalid locations
+	if (trace.entityNum >= MAX_CLIENTS) {
 		return;
 	}
 
-	// if the player is in fog, don't show it
-	content = trap_CM_PointContents( trace.endpos, 0 );
-	if ( content & CONTENTS_FOG ) {
+	content = trap_CM_PointContents(trace.endpos, 0);
+	if (content & CONTENTS_FOG) {
 		return;
 	}
 
-	// update the fade timer
 	cg.crosshairClientNum = trace.entityNum;
 	cg.crosshairClientTime = cg.time;
 }
@@ -7862,7 +7803,7 @@ static void CG_DrawVote(void) {
 	//trap_SP_GetStringTextString("MENUS_YES", sYes, sizeof(sYes) );
 	//trap_SP_GetStringTextString("MENUS_NO",  sNo,  sizeof(sNo) );
 
-	if (*sParm && sParm[0])
+	if (sParm && sParm[0])
 	//if (sParm && sParm[0])
 	//[/VoteSys]
 	{

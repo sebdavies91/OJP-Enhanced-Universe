@@ -8,13 +8,15 @@ File Name and Version: OJPEnhancedStandard.rar
 
 Initial Release Date: 01-08-2020
 
-Current Release Date: 13-07-2025
+Current Release Date: 13-08-2025
 
 Filesize: 3.46 GB
 
 Installation Instructions: Copy and Paste all the included folders, libraries and executables inside the Jedi Academy/Gamedata folder.
 
-How to use: Either double click on "Play_SW_OJP_Enhanced_Universe_Vanilla" to execute the game via the vanilla executables or double click on "Play_SW_OJP_Enhanced_Universe_OpenJK" to execute the game via the Open JK executables.
+How to run: Either double click on "Play_SW_OJP_Enhanced_Universe_Vanilla" to execute the game via the vanilla executables (recommended) or double click on "Play_SW_OJP_Enhanced_Universe_OpenJK" to execute the game via the Open JK executables.
+
+While Playing: Type /rate 90000 in the console.
 
 Credits: Included in SWOJPEU_Standard_Credits.txt
 

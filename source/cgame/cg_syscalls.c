@@ -657,9 +657,17 @@ void trap_FX_PlayBoltedEffectID( int id, vec3_t org,
 	syscall( CG_FX_PLAY_BOLTED_EFFECT_ID, id, org, ghoul2, boltNum, entNum, modelNum, iLooptime, isRelative );
 }
 
-void trap_FX_AddScheduledEffects( qboolean skyPortal )
+void trap_FX_AddScheduledEffects(qboolean skyPortal)
 {
-	syscall( CG_FX_ADD_SCHEDULED_EFFECTS, skyPortal );
+	if (syscall == (dllSyscall_t)-1) {
+		trap_Error("trap_FX_AddScheduledEffects: syscall function pointer not initialized");
+		return;
+	}
+	if (skyPortal != qtrue && skyPortal != qfalse) {
+		trap_Error("trap_FX_AddScheduledEffects: Invalid value for skyPortal");
+		return;
+	}
+	syscall(CG_FX_ADD_SCHEDULED_EFFECTS, skyPortal);
 }
 
 void trap_FX_Draw2DEffects ( float screenXScale, float screenYScale )

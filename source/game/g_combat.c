@@ -2469,7 +2469,7 @@ void G_CheckVictoryScript(gentity_t *self)
 			self->NPC->blockedSpeechDebounceTime = 0;//get them ready to taunt
 			return;
 		}
-		if ( self->client && self->client->NPC_class == CLASS_GALAKMECH )
+		if (self->NPC && self->client && self->client->NPC_class == CLASS_GALAKMECH )
 		{
 			self->wait = 1;
 			TIMER_Set( self, "gloatTime", Q_irand( 5000, 8000 ) );
@@ -3035,7 +3035,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 	//Cheap method until/if I decide to put fancier stuff in (e.g. sabers falling out of hand and slowly
 	//holstering on death like sp)
-	if (self->client->ps.weapon == WP_SABER &&
+	if (self->client && self->client->ps.weapon == WP_SABER &&
 		!self->client->ps.saberHolstered &&
 		self->client->ps.saberEntityNum)
 	{
@@ -3072,14 +3072,15 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 	//Make sure the jetpack is turned off.
 	Jetpack_Off(self);
-
+	if(self->client)
+	{ 
 	self->client->ps.heldByClient = 0;
 	self->client->beingThrown = 0;
 	self->client->doingThrow = 0;
 	BG_ClearRocketLock( &self->client->ps );
 	self->client->isHacking = 0;
 	self->client->ps.hackingTime = 0;
-
+	}
 	if (inflictor && inflictor->activator && !inflictor->client && !attacker->client &&
 		inflictor->activator->client && inflictor->activator->inuse &&
 		inflictor->s.weapon == WP_TURRET)
@@ -3091,62 +3092,63 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	{
 		wasJediMaster = qtrue;
 	}
-
-	//[Flamethrower]
-	//turn off flamethrower
-	self->client->flameTime = 0;
-	self->client->ps.userInt3 &= ~(1 << FLAG_THROWER);
-	//[/Flamethrower]
-	//[Dioxisthrower]
-	//turn off dioxisthrower
-	self->client->dioxisTime = 0;
-	self->client->iceTime = 0;
-	self->client->ps.userInt3 &= ~(1 << FLAG_THROWER2);
-	//[/Dioxisthrower]
-
-
-	
-	//[Electroshocker]
-	//turn off electroshocker
-	self->client->electroshockerTime = 0;
-	self->client->ps.userInt3 &= ~(1 << FLAG_ADVANCEDTHROWER);
-	//[/Electroshocker]	
-	//[Lasersupport]
-	//turn off lasersupport
-	self->client->lasersupportTime = 0;
-	self->client->orbitalstrikeTime = 0;
-	self->client->ps.userInt3 &= ~(1 << FLAG_ADVANCEDTHROWER2);
-	//[/Lasersupport]	
-
-	
+	if (self->client)
+	{
+		//[Flamethrower]
+		//turn off flamethrower
+		self->client->flameTime = 0;
+		self->client->ps.userInt3 &= ~(1 << FLAG_THROWER);
+		//[/Flamethrower]
+		//[Dioxisthrower]
+		//turn off dioxisthrower
+		self->client->dioxisTime = 0;
+		self->client->iceTime = 0;
+		self->client->ps.userInt3 &= ~(1 << FLAG_THROWER2);
+		//[/Dioxisthrower]
 
 
 
-	self->client->stasisTime = 0;
-	self->client->insanityTime = 0;
-	self->client->lightningTime = 0;
-	self->client->judgementTime = 0;
-	
-	self->client->freezeTime = 0;		
-	self->client->burnTime = 0;
+		//[Electroshocker]
+		//turn off electroshocker
+		self->client->electroshockerTime = 0;
+		self->client->ps.userInt3 &= ~(1 << FLAG_ADVANCEDTHROWER);
+		//[/Electroshocker]	
+		//[Lasersupport]
+		//turn off lasersupport
+		self->client->lasersupportTime = 0;
+		self->client->orbitalstrikeTime = 0;
+		self->client->ps.userInt3 &= ~(1 << FLAG_ADVANCEDTHROWER2);
+		//[/Lasersupport]	
 
-	self->client->shockTime = 0;	
-	self->client->toxicTime = 0;
-	self->client->sonicTime = 0;
-	self->client->flashTime = 0;
-	
-	self->client->backpackrocketTime = 0;
-	self->client->specialcharacterSpawn = 0;
-	self->client->disablingTime = 0;
-	self->client->deathfieldTime = 0;	
-	self->client->deathsightTime = 0;
-	self->client->blindingTime = 0;	
-	self->client->repulseTime = 0;	
-	self->client->deathfieldbubbledamageTime = 0;
-	self->client->deathsightbubbledamageTime = 0;
-	self->client->semiTime = 0;
+
+
+
+
+		self->client->stasisTime = 0;
+		self->client->insanityTime = 0;
+		self->client->lightningTime = 0;
+		self->client->judgementTime = 0;
+
+		self->client->freezeTime = 0;
+		self->client->burnTime = 0;
+
+		self->client->shockTime = 0;
+		self->client->toxicTime = 0;
+		self->client->sonicTime = 0;
+		self->client->flashTime = 0;
+
+		self->client->backpackrocketTime = 0;
+		self->client->specialcharacterSpawn = 0;
+		self->client->disablingTime = 0;
+		self->client->deathfieldTime = 0;
+		self->client->deathsightTime = 0;
+		self->client->blindingTime = 0;
+		self->client->repulseTime = 0;
+		self->client->deathfieldbubbledamageTime = 0;
+		self->client->deathsightbubbledamageTime = 0;
+		self->client->semiTime = 0;
 		//[SeekerItemNpc]
-
+	}
 	//[/SeekerItemNpc]
 	//[NOBODYQUE]
 	//this is set earlier since some of the previous function calls depend on this being
@@ -3161,7 +3163,8 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	G_MuteSound(self->s.number, CHAN_WEAPON);
 
 	BlowDetpacks(self); //blow detpacks if they're planted
-
+	if(self->client)
+	{ 
 	self->client->ps.fd.forceDeactivateAll = 1;
 
 	if ((self == attacker || !attacker->client) &&
@@ -3188,13 +3191,14 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 		}
 	//[/Asteroids]
 	}
-
+	}
 	// check for an almost capture
 	CheckAlmostCapture( self, attacker );
-
+	if(self->client)
+	{ 
 	self->client->ps.pm_type = PM_DEAD;
 	self->client->ps.pm_flags &= ~PMF_STUCK_TO_WALL;
-
+	}
 	if ( attacker ) {
 		killer = attacker->s.number;
 		if ( attacker->client ) {
@@ -3217,11 +3221,12 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	} else {
 		obit = modNames[ meansOfDeath ];
 	}
-
+	if(self->client)
+	{ 
 	G_LogPrintf("Kill: %i %i %i: %s killed %s by %s\n", 
 		killer, self->s.number, meansOfDeath, killerName, 
 		self->client->pers.netname, obit );
-
+	}
 	if ( g_austrian.integer 
 		&& (g_gametype.integer == GT_DUEL) 
 		&& level.numPlayingClients >= 2 )
@@ -3240,7 +3245,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 			}
 		}
 	}
-
+	
 	G_LogWeaponKill(killer, meansOfDeath);
 	G_LogWeaponDeath(self->s.number, self->s.weapon);
 	if (attacker && attacker->client && attacker->inuse)
@@ -3269,9 +3274,10 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	//[/Asteroids]
 
 	self->enemy = attacker;
-
+	if(self->client)
+	{ 
 	self->client->ps.persistant[PERS_KILLED]++;
-
+	}
 	if (self == attacker)
 	{
 		self->client->ps.fd.suicides++;
@@ -3471,15 +3477,15 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 	// if I committed suicide, the flag does not fall, it returns.
 	if (meansOfDeath == MOD_SUICIDE) {
-		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
+		if (self->client && self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
 			Team_ReturnFlag( TEAM_FREE );
 			self->client->ps.powerups[PW_NEUTRALFLAG] = 0;
 		}
-		else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
+		else if (self->client && self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
 			Team_ReturnFlag( TEAM_RED );
 			self->client->ps.powerups[PW_REDFLAG] = 0;
 		}
-		else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
+		else if (self->client && self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
 			Team_ReturnFlag( TEAM_BLUE );
 			self->client->ps.powerups[PW_BLUEFLAG] = 0;
 		}
@@ -3497,13 +3503,13 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 		//[//CoOp]
 	}
 	else {
-		if ( self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
+		if (self->client && self->client->ps.powerups[PW_NEUTRALFLAG] ) {		// only happens in One Flag CTF
 			Team_ReturnFlag( TEAM_FREE );
 		}
-		else if ( self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
+		else if (self->client && self->client->ps.powerups[PW_REDFLAG] ) {		// only happens in standard CTF
 			Team_ReturnFlag( TEAM_RED );
 		}
-		else if ( self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
+		else if (self->client && self->client->ps.powerups[PW_BLUEFLAG] ) {	// only happens in standard CTF
 			Team_ReturnFlag( TEAM_BLUE );
 		}
 	}
@@ -3543,7 +3549,11 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 	{ //handled differently for NPCs
 		self->r.contents = CONTENTS_CORPSE;
 	}
-	self->client->ps.zoomMode = 0;	// Turn off zooming when we die
+	if (self->client)
+	{
+		self->client->ps.zoomMode = 0;	// Turn off zooming when we die
+	}
+
 
 	//rww - 07/19/02 - I removed this because it isn't working and it's ugly (for people on the outside)
 	/*
@@ -3568,15 +3578,19 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 	// don't allow respawn until the death anim is done
 	// g_forcerespawn may force spawning at some later time
+	if(self->client)
+	{ 
 	self->client->respawnTime = level.time + 1700;
-
+	
 	// remove powerups
 	memset( self->client->ps.powerups, 0, sizeof(self->client->ps.powerups) );
+
 	
 	//[BugFix40]
 	self->client->ps.stats[STAT_HOLDABLE_ITEMS] = 0;
 	self->client->ps.stats[STAT_HOLDABLE_ITEM] = 0;
 	//[/BugFix40]
+	}
 
 	// NOTENOTE No gib deaths right now, this is star wars.
 	/*
@@ -3602,7 +3616,8 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 			if ( self->health <= GIB_HEALTH ) {
 				self->health = GIB_HEALTH+1;
 			}
-
+			if(self->client)
+			{ 
 			self->client->respawnTime = level.time + 1000;//((self->client->animations[anim].numFrames*40)/(50.0f / self->client->animations[anim].frameLerp))+300;
 
 			sPMType = self->client->ps.pm_type;
@@ -3615,7 +3630,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 			self->client->ps.pm_type = sPMType;
 
-
+			}
 			//[FullDismemberment]
 			//weapon dismemberment so saber isn't the only one :)
 			if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_TURBLAST) || (meansOfDeath == MOD_FLECHETTE) || (meansOfDeath == MOD_FLECHETTE_ALT_SPLASH) || (meansOfDeath == MOD_CONC_ALT) || (meansOfDeath == MOD_THERMAL_SPLASH) || (meansOfDeath == MOD_FLAME_EXPLOSION_SPLASH)|| (meansOfDeath == MOD_DIOXIS_EXPLOSION_SPLASH) || (meansOfDeath == MOD_ICE_EXPLOSION_SPLASH)  || (meansOfDeath == MOD_ION_EXPLOSION_SPLASH) || (meansOfDeath == MOD_SONIC_EXPLOSION_SPLASH) || (meansOfDeath == MOD_FLASH_EXPLOSION_SPLASH) || (meansOfDeath == MOD_TRIP_MINE_SPLASH) || (meansOfDeath == MOD_TIMED_MINE_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_CRUSH) || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
@@ -3730,13 +3745,13 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 
 	if (g_gametype.integer == GT_POWERDUEL && !g_noPDuelCheck)
 	{ //powerduel checks
-		if (self->client->sess.duelTeam == DUELTEAM_LONE)
+		if (self->client && self->client->sess.duelTeam == DUELTEAM_LONE)
 		{ //automatically means a win as there is only one
 			G_AddPowerDuelScore(DUELTEAM_DOUBLE, 1);
 			G_AddPowerDuelLoserScore(DUELTEAM_LONE, 1);
 			g_endPDuel = qtrue;
 		}
-		else if (self->client->sess.duelTeam == DUELTEAM_DOUBLE)
+		else if (self->client && self->client->sess.duelTeam == DUELTEAM_DOUBLE)
 		{
 			int i = 0;
 			gentity_t *check;
@@ -4454,18 +4469,20 @@ void G_Dismember( gentity_t *ent, gentity_t *enemy, vec3_t point, int limbType, 
 		}
 	}
 
-	if (ent->s.eType == ET_NPC && ent->ghoul2 && limbName[0] && stubCapName[0] )
+	if (ent && ent->s.eType == ET_NPC && ent->ghoul2 && limbName[0] && stubCapName[0] )
 	{ //if it's an npc remove these surfs on the server too. For players we don't even care cause there's no further dismemberment after death.
 		trap_G2API_SetSurfaceOnOff(ent->ghoul2, limbName, 0x00000100);
 		trap_G2API_SetSurfaceOnOff(ent->ghoul2, stubCapName, 0);
 	}
-
+	if(ent)
+	{ 
 	limb->s.customRGBA[0] = ent->s.customRGBA[0];
 	limb->s.customRGBA[1] = ent->s.customRGBA[1];
 	limb->s.customRGBA[2] = ent->s.customRGBA[2];
 	limb->s.customRGBA[3] = ent->s.customRGBA[3];
 
 	trap_LinkEntity( limb );
+	}
 }
 
 void DismembermentTest(gentity_t *self)

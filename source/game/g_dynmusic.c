@@ -9,113 +9,131 @@ DynamicMusicGroup_t DMSData;		//holds all our dynamic music data
 void LoadDynamicMusicGroup(char *mapname, char *buffer);
 
 void LoadDynamicMusic(void)
-{//Tries to load dynamic music data for this map.
-	int				len = 0;
-	fileHandle_t	f;
-	char			buffer[DMS_INFO_SIZE];
-	vmCvar_t	mapname;
+{
+    // Tries to load dynamic music data for this map.
+    int len = 0;
+    fileHandle_t f;
+    char* buffer;  // use pointer now
+    vmCvar_t mapname;
 
-	//Open up the dynamic music file
-	len = trap_FS_FOpenFile("ext_data/dms.dat", &f, FS_READ);
+    // Allocate memory using BG_Alloc instead of malloc
+    buffer = (char*)BG_Alloc(DMS_INFO_SIZE);
+    if (!buffer) {
+        G_Printf("LoadDynamicMusic() Error: Memory allocation failed.\n");
+        return;
+    }
 
-	if (!f)
-	{//file open error
-		G_Printf("LoadDynamicMusic() Error: Couldn't open ext_data/dms.dat\n");
-		return;
-	}
+    // Open up the dynamic music file
+    len = trap_FS_FOpenFile("ext_data/dms.dat", &f, FS_READ);
 
-	if(len >= DMS_INFO_SIZE)
-	{//file too large for buffer
-		G_Printf("LoadDynamicMusic() Error: dms.dat too big.\n");
-		return;
-	}
+    if (!f) {
+        // File open error
+        G_Printf("LoadDynamicMusic() Error: Couldn't open ext_data/dms.dat\n");
+        memset(buffer, 0, DMS_INFO_SIZE);  // Use memset to "free" memory
+        return;
+    }
 
-	trap_FS_Read(buffer, len, f);	//read data in buffer
+    if (len >= DMS_INFO_SIZE) {
+        // File too large for buffer
+        G_Printf("LoadDynamicMusic() Error: dms.dat too big.\n");
+        trap_FS_FCloseFile(f);
+        memset(buffer, 0, DMS_INFO_SIZE);  // Use memset to "free" memory
+        return;
+    }
 
-	trap_FS_FCloseFile(f);	//close file
+    trap_FS_Read(buffer, len, f);  // Read data in buffer
+    trap_FS_FCloseFile(f);         // Close file
 
-	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
-	
-	LoadDynamicMusicGroup(mapname.string, buffer);
+    trap_Cvar_Register(&mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM);
+
+    LoadDynamicMusicGroup(mapname.string, buffer);
+
+    // Use memset instead of free to "clear" memory
+    memset(buffer, 0, DMS_INFO_SIZE);
 }
+
+
 
 
 //init the DMS data for the given song/song type
 extern int BG_SiegeGetPairedValue(char *buf, char *key, char *outbuf);
 extern int BG_SiegeGetValueGroup(char *buf, char *group, char *outbuf);
-void LoadDMSSongData(char *buffer, char *song, DynamicMusicSet_t *songData, char *mapname)
+void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char* mapname)
 {
-	char SongGroup[DMS_INFO_SIZE];
-	char *transition;		//pointer used to advance the checks for transitions
-	char transitionGroup[DMS_INFO_SIZE];
-	char Value[MAX_QPATH];
-	int numTransitions = 0;
-	int numExits = 0;						
+    char* SongGroup = (char*)BG_Alloc(DMS_INFO_SIZE);  // Replacing malloc with BG_Alloc
+    char* transitionGroup = (char*)BG_Alloc(DMS_INFO_SIZE);  // Replacing malloc with BG_Alloc
+    char* transition;  // pointer used to advance the checks for transitions
+    char Value[MAX_QPATH];
+    int numTransitions = 0;
+    int numExits = 0;
 
-	BG_SiegeGetValueGroup(buffer, "musicfiles", SongGroup);
+    if (!SongGroup || !transitionGroup) {
+        G_Printf("LoadDMSSongData Error: Memory allocation failed.\n");
+        if (SongGroup) memset(SongGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+        if (transitionGroup) memset(transitionGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+        return;
+    }
 
-	//find our specific song
-	if(!BG_SiegeGetValueGroup(SongGroup, song, SongGroup))
-	{
-		G_Printf("LoadDMSSongData Error: Couldn't find song data for DMS song %s.\n",
-			song);
-		return;
-	}
+    BG_SiegeGetValueGroup(buffer, "musicfiles", SongGroup);
 
-	//convert/store the name of the music file
-	strcpy(songData->fileName, va("music/%s/%s.mp3", mapname, song));	
+    // find our specific song
+    if (!BG_SiegeGetValueGroup(SongGroup, song, SongGroup)) {
+        G_Printf("LoadDMSSongData Error: Couldn't find song data for DMS song %s.\n", song);
+        memset(SongGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+        memset(transitionGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+        return;
+    }
 
-	songData->numTransitions = 0;	//init the struct's number of transitions.
+    // convert/store the name of the music file
+    strcpy(songData->fileName, va("music/%s/%s.mp3", mapname, song));
 
-	//start loading in transition data
-	transition = strstr(SongGroup, "exit");
-	while(transition)
-	{//still have a transition file to add
+    songData->numTransitions = 0; // init the struct's number of transitions
 
-		if(numTransitions >= MAX_DMS_TRANSITIONS)
-		{//too many transitions!
-			G_Printf("LoadDMSSongData Error:  Too many transitions found.\n");
-			return;
-		}
+    // start loading in transition data
+    transition = strstr(SongGroup, "exit");
+    while (transition) {
+        if (numTransitions >= MAX_DMS_TRANSITIONS) {
+            G_Printf("LoadDMSSongData Error: Too many transitions found.\n");
+            break;
+        }
 
-		//setting up the new transition data slot
-		songData->Transitions[numTransitions].numExitPoints = 0;
+        // setting up the new transition data slot
+        songData->Transitions[numTransitions].numExitPoints = 0;
 
-		//grab this transition group
-		BG_SiegeGetValueGroup(transition, "exit", transitionGroup);
+        // grab this transition group
+        BG_SiegeGetValueGroup(transition, "exit", transitionGroup);
 
-		//find transition file name
-		BG_SiegeGetPairedValue(transitionGroup, "nextfile", Value);
-		strcpy(songData->Transitions[numTransitions].fileName, 
-			va("music/%s/%s.mp3", mapname, Value));
+        // find transition file name
+        BG_SiegeGetPairedValue(transitionGroup, "nextfile", Value);
+        strcpy(songData->Transitions[numTransitions].fileName,
+               va("music/%s/%s.mp3", mapname, Value));
 
-		//load in exit points for this transition file
-		while(BG_SiegeGetPairedValue(transitionGroup, va("time%i", numExits), Value))
-		{
-			if(numExits >= MAX_DMS_EXITPOINTS)
-			{//too many transitions!
-				G_Printf("LoadDMSSongData Error:  Too many transitions found.\n");
-				return;
-			}
+        // load in exit points for this transition file
+        while (BG_SiegeGetPairedValue(transitionGroup, va("time%i", numExits), Value)) {
+            if (numExits >= MAX_DMS_EXITPOINTS) {
+                G_Printf("LoadDMSSongData Error: Too many exit points.\n");
+                break;
+            }
 
-			songData->Transitions[numTransitions].exitPoints[numExits] 
-			= atoi(Value) * 1000;
+            songData->Transitions[numTransitions].exitPoints[numExits] = atoi(Value) * 1000;
+            songData->Transitions[numTransitions].numExitPoints++;
+            numExits++;
+        }
 
-			numExits++;
-			songData->Transitions[numTransitions].numExitPoints++;
-		}
-	
-		//increase the number of transitions in the songData
-		songData->numTransitions++;
+        songData->numTransitions++;
+        numTransitions++;
+        numExits = 0;
 
-		numTransitions++;
-		numExits = 0;
+        // advance the transition pointer past the current exit data group
+        transition += 4;
+        transition = strstr(transition, "exit");
+    }
 
-		//advance the transition pointer pass the current exit data group
-		transition += 4;
-		transition = strstr(transition, "exit");
-	}
+    memset(SongGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+    memset(transitionGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
 }
+
+
 
 
 void LoadLengthforSong(char *buffer, DynamicMusicSet_t *song)
@@ -165,110 +183,129 @@ void LoadLengthforSong(char *buffer, DynamicMusicSet_t *song)
 //loads in the song lengths for the DMS music files
 void LoadDMSSongLengths(void)
 {
-	char buffer[DMS_INFO_SIZE];
-	fileHandle_t	f;
-	int len;
+    char* buffer;
+    fileHandle_t f;
+    int len;
 
-	if(!DMSData.valid)
-	{//oh boy, no DMSData.  Probably means that this map doesn't use DMS.
-		return;
-	}
+    if (!DMSData.valid)
+    { 
+        // no DMSData. Probably means this map doesn't use DMS.
+        return;
+    }
 
-	//Open up the dynamic music file
-	len = trap_FS_FOpenFile(DMS_MUSICLENGTH_FILENAME, &f, FS_READ);
+    // Replace malloc with BG_Alloc
+    buffer = (char*)BG_Alloc(DMS_INFO_SIZE);  // BG_Alloc should allocate memory
+    if (!buffer)
+    {
+        G_Printf("LoadDMSSongLengths() Error: BG_Alloc failed.\n");
+        return;
+    }
 
-	if (!f)
-	{//file open error
-		G_Printf("LoadDynamicMusic() Error: Couldn't open ext_data/dms.dat\n");
-		return;
-	}
+    // Open up the dynamic music file
+    len = trap_FS_FOpenFile(DMS_MUSICLENGTH_FILENAME, &f, FS_READ);
+    if (!f)
+    {
+        G_Printf("LoadDynamicMusic() Error: Couldn't open %s\n", DMS_MUSICLENGTH_FILENAME);
+        // Instead of free, use memset to zero out the memory
+        memset(buffer, 0, DMS_INFO_SIZE);  // Zero out the buffer (not actually freeing it)
+        return;
+    }
 
-	if(len >= DMS_INFO_SIZE)
-	{//file too large for buffer
-		G_Printf("LoadDynamicMusic() Error: dms.dat too big.\n");
-		return;
-	}
+    if (len >= DMS_INFO_SIZE)
+    {
+        G_Printf("LoadDynamicMusic() Error: %s too big.\n", DMS_MUSICLENGTH_FILENAME);
+        trap_FS_FCloseFile(f);
+        memset(buffer, 0, DMS_INFO_SIZE);  // Zero out the buffer before returning
+        return;
+    }
 
-	trap_FS_Read(buffer, len, f);	//read data in buffer
+    trap_FS_Read(buffer, len, f); // read data into buffer
+    buffer[len] = '\0';           // null-terminate
+    trap_FS_FCloseFile(f);
 
-	trap_FS_FCloseFile(f);	//close file
+    if (!BG_SiegeGetValueGroup(buffer, "musiclengths", buffer))
+    {
+        G_Printf("LoadDMSSongLengths Error: Couldn't find musiclengths group in %s.\n", DMS_MUSICLENGTH_FILENAME);
+    }
 
-	if(!BG_SiegeGetValueGroup(buffer, "musiclengths", buffer))
-	{
-		G_Printf("LoadDMSSongLengths Error:  Couldn't find musiclengths define group in musiclength.dat.\n");
-	}
+    if (DMSData.actionMusic.valid)
+    {
+        LoadLengthforSong(buffer, &DMSData.actionMusic);
+    }
+    if (DMSData.exploreMusic.valid)
+    {
+        LoadLengthforSong(buffer, &DMSData.exploreMusic);
+    }
+    if (DMSData.bossMusic.valid)
+    {
+        LoadLengthforSong(buffer, &DMSData.bossMusic);
+    }
 
-	if(DMSData.actionMusic.valid)
-	{//load the action music lengths
-		LoadLengthforSong(buffer, &DMSData.actionMusic);
-	}
-
-	if(DMSData.exploreMusic.valid)
-	{//load the explore music lengths
-		LoadLengthforSong(buffer, &DMSData.exploreMusic);
-	}
-
-	if(DMSData.bossMusic.valid)
-	{//load the boss music lengths
-		LoadLengthforSong(buffer, &DMSData.bossMusic);
-	}
+    // Replace free with memset to clear the buffer
+    memset(buffer, 0, DMS_INFO_SIZE);  // Zero out the buffer instead of freeing
 }
+
+
 
 
 //loads in the DMS data for this map
-void LoadDynamicMusicGroup(char *mapname, char *buffer)
+void LoadDynamicMusicGroup(char* mapname, char* buffer)
 {
-	char text[MAX_QPATH];
-	char MapMusicGroup[DMS_INFO_SIZE];
+    char text[MAX_QPATH];
+    char* MapMusicGroup = (char*)BG_Alloc(DMS_INFO_SIZE);  // Replaced malloc with BG_Alloc
+    if (!MapMusicGroup) {
+        G_Printf("LoadDynamicMusicGroup Error: Failed to allocate memory.\n");
+        return;
+    }
 
-	//initialize DMSData
-	DMSData.valid = qfalse;
-	DMSData.actionMusic.valid = qfalse;
-	DMSData.exploreMusic.valid = qfalse;
-	DMSData.bossMusic.valid = qfalse;
+    // initialize DMSData
+    DMSData.valid = qfalse;
+    DMSData.actionMusic.valid = qfalse;
+    DMSData.exploreMusic.valid = qfalse;
+    DMSData.bossMusic.valid = qfalse;
 
-	BG_SiegeGetValueGroup(buffer, "levelmusic", MapMusicGroup);
+    BG_SiegeGetValueGroup(buffer, "levelmusic", MapMusicGroup);
 
-	if(!BG_SiegeGetValueGroup(MapMusicGroup, mapname, MapMusicGroup))
-	{
-		G_Printf("LoadDynamicMusicGroup Error:  Couldn't find DMS entry for this map.\n");
-		return;
-	}
+    if (!BG_SiegeGetValueGroup(MapMusicGroup, mapname, MapMusicGroup)) {
+        G_Printf("LoadDynamicMusicGroup Error: Couldn't find DMS entry for this map.\n");
+        memset(MapMusicGroup, 0, DMS_INFO_SIZE);  // Replace free with memset to zero out the buffer
+        return;
+    }
 
-	if(BG_SiegeGetPairedValue(MapMusicGroup, "uses", text))
-	{//this map uses the dynamic music set of another map.  Look for that set
-		LoadDynamicMusicGroup( text, buffer );
-		return;
-	}
+    if (BG_SiegeGetPairedValue(MapMusicGroup, "uses", text)) {
+        LoadDynamicMusicGroup(text, buffer);  // recursion is safe, this one uses its own buffer
+        memset(MapMusicGroup, 0, DMS_INFO_SIZE);  // Zero out the memory
+        return;
+    }
 
-	//at this point, we have the dynamic music group for this map, init the
-	//DMSData data slot.
-	DMSData.valid = qtrue;
-	DMSData.dmDebounceTime = -1;
-	DMSData.dmBeatTime = 0;
-	DMSData.dmState = DM_AUTO;
-	DMSData.olddmState = DM_AUTO;
+    // init DMSData
+    DMSData.valid = qtrue;
+    DMSData.dmDebounceTime = -1;
+    DMSData.dmBeatTime = 0;
+    DMSData.dmState = DM_AUTO;
+    DMSData.olddmState = DM_AUTO;
 
-	if(BG_SiegeGetPairedValue(MapMusicGroup, "explore", text))
-	{//have explore music for this map
-		DMSData.exploreMusic.valid = qtrue;
-		LoadDMSSongData(buffer, text, &DMSData.exploreMusic, mapname);
-	}
+    if (BG_SiegeGetPairedValue(MapMusicGroup, "explore", text)) {
+        DMSData.exploreMusic.valid = qtrue;
+        LoadDMSSongData(buffer, text, &DMSData.exploreMusic, mapname);
+    }
 
-	if(BG_SiegeGetPairedValue(MapMusicGroup, "action", text))
-	{//have action music for this map
-		DMSData.actionMusic.valid = qtrue;
-		LoadDMSSongData(buffer, text, &DMSData.actionMusic, mapname);
-	}
+    if (BG_SiegeGetPairedValue(MapMusicGroup, "action", text)) {
+        DMSData.actionMusic.valid = qtrue;
+        LoadDMSSongData(buffer, text, &DMSData.actionMusic, mapname);
+    }
 
-	if(BG_SiegeGetPairedValue(MapMusicGroup, "boss", text))
-	{//have boss music for this map
-		DMSData.bossMusic.valid = qtrue;
-		LoadDMSSongData(buffer, text, &DMSData.bossMusic, mapname);
-	}
+    if (BG_SiegeGetPairedValue(MapMusicGroup, "boss", text)) {
+        DMSData.bossMusic.valid = qtrue;
+        LoadDMSSongData(buffer, text, &DMSData.bossMusic, mapname);
+    }
 
-	LoadDMSSongLengths();
+    LoadDMSSongLengths();
+
+    memset(MapMusicGroup, 0, DMS_INFO_SIZE);  // Zero out the memory before returning
 }
+
+
 
 
 //Do the transitions between DMS action/explore DMS states

@@ -665,8 +665,8 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 
 	len = rlen;
 
-	readbuf = (char *)B_TempAlloc(1024);
-	group = (char *)B_TempAlloc(65536);
+	readbuf = (char *)B_TempAlloc(2048);
+	group = (char *)B_TempAlloc(131072);
 
 	if (!GetValueGroup(buf, "GeneralBotInfo", group))
 	{
@@ -1639,8 +1639,8 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 	}
 
 	B_TempFree(131072); //buf
-	B_TempFree(1024); //readbuf
-	B_TempFree(65536); //group
+	B_TempFree(2048); //readbuf
+	B_TempFree(131072); //group
 	trap_FS_FCloseFile(f);
 }
 

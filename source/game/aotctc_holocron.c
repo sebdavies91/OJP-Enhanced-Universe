@@ -60,27 +60,39 @@ void Init_Holocron_Table ( void )
 //===========================================================================
 // Routine      : AOTCTC_Holocron_Add
 // Description  : Adds a holocron position to the array.
-void AOTCTC_Holocron_Add ( gentity_t *ent )
+void AOTCTC_Holocron_Add(gentity_t* ent)
 {
+	// Check for the correct game type
 	if (g_gametype.integer != GT_HOLOCRON)
 		return;
 
-	if (number_of_holocronpositions > MAX_HOLOCRON_POSITIONS)
+	// Ensure we don't exceed the array size
+	if (number_of_holocronpositions >= MAX_HOLOCRON_POSITIONS)
 	{
 		G_Printf("^3Warning! ^5Hit maximum holocron positions (^7%i^5)!\n", MAX_HOLOCRON_POSITIONS);
 		return;
 	}
 
-	VectorCopy(ent->r.currentOrigin, holocrons[number_of_holocronpositions].origin);
-	holocrons[number_of_holocronpositions].type = HC_RANDOM; // For now randomly lay them from places in the list.
+	// Make sure the position is valid before adding to the array
+	if (ent && ent->r.currentOrigin)
+	{
+		VectorCopy(ent->r.currentOrigin, holocrons[number_of_holocronpositions].origin);
+		holocrons[number_of_holocronpositions].type = HC_RANDOM; // Random type as placeholder for now.
 
-	G_Printf("^5Holocron number ^7%i^5 added at position ^7%f %f %f^5.\n", 
-		number_of_holocronpositions, 
-		holocrons[number_of_holocronpositions].origin[0],
-		holocrons[number_of_holocronpositions].origin[1],
-		holocrons[number_of_holocronpositions].origin[2] );
+		// Log the added holocron's position
+		G_Printf("^5Holocron number ^7%i^5 added at position ^7%f %f %f^5.\n",
+			number_of_holocronpositions,
+			holocrons[number_of_holocronpositions].origin[0],
+			holocrons[number_of_holocronpositions].origin[1],
+			holocrons[number_of_holocronpositions].origin[2]);
 
-	number_of_holocronpositions++; // Will always be in front of the actual number by one while creating.
+		// Increment the number of holocrons after adding
+		number_of_holocronpositions++;
+	}
+	else
+	{
+		G_Printf("^3Error: Invalid entity or position for holocron.\n");
+	}
 }
 
 //===========================================================================
@@ -101,6 +113,9 @@ void AOTCTC_Holocron_Loadpositions( void )
 	//[RawMapName]
 	//vmCvar_t		mapname;
 	//[/RawMapName]
+	// 
+	// Initialize the stats array to avoid reading uninitialized memory
+	memset(stats, 0, sizeof(stats));
 
 	G_Printf("^5Loading holocron position table...");
 

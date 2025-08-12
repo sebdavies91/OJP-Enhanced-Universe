@@ -67,7 +67,7 @@
 #define MOD_EXPLOSIVE MOD_SUICIDE
 #else
 #define bgEntity_t gentity_t
-extern void NPC_SetAnim(gentity_t	*ent,int setAnimParts,int anim,int setAnimFlags, int iBlend);
+extern void NPC_SetAnim(gentity_t* ent, int setAnimParts, int anim, int setAnimFlags);
 #endif
 
 extern float DotToSpot( vec3_t spot, vec3_t from, vec3_t fromAngles );
@@ -77,7 +77,7 @@ extern vec3_t playerMins;
 extern vec3_t playerMaxs;
 extern cvar_t	*g_speederControlScheme;
 extern void ChangeWeapon( gentity_t *ent, int newWeapon );
-extern void PM_SetAnim(pmove_t	*pm,int setAnimParts,int anim,int setAnimFlags, int blendTime);
+extern void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
 extern int PM_AnimLength( int index, animNumber_t anim );
 #endif
 
@@ -418,8 +418,8 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 	speedIdleAccel = pVeh->m_pVehicleInfo->accelIdle * pVeh->m_fTimeModifier;
 	speedMin = pVeh->m_pVehicleInfo->speedMin;
 
-	if ( parentPS->speed || parentPS->groundEntityNum == ENTITYNUM_NONE  ||
-		 pVeh->m_ucmd.forwardmove || pVeh->m_ucmd.upmove > 0 )
+	if (parentPS && (parentPS->speed || parentPS->groundEntityNum == ENTITYNUM_NONE  ||
+		 pVeh->m_ucmd.forwardmove || pVeh->m_ucmd.upmove > 0 ))
 	{ 
 		if ( pVeh->m_ucmd.forwardmove > 0 && speedInc )
 		{
@@ -467,11 +467,11 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 		}
 	}
 
-	if ( parentPS->speed > speedMax )
+	if (parentPS && parentPS->speed > speedMax )
 	{
 		parentPS->speed = speedMax;
 	}
-	else if ( parentPS->speed < speedMin )
+	else if (parentPS && parentPS->speed < speedMin )
 	{
 		parentPS->speed = speedMin;
 	}
@@ -599,7 +599,7 @@ void ProcessOrientCommands( Vehicle_t *pVeh )
 
 #ifdef QAGAME
 
-extern void PM_SetAnim(pmove_t	*pm,int setAnimParts,int anim,int setAnimFlags, int blendTime);
+extern void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
 extern int PM_AnimLength( int index, animNumber_t anim );
 
 // This function makes sure that the vehicle is properly animated.
@@ -612,12 +612,12 @@ void AnimateVehicle( Vehicle_t *pVeh )
 //rest of file is shared
 
 #ifndef	_JK2MP
-extern void CG_ChangeWeapon( int num );
+extern void NPC_ChangeWeapon( int num );
 #endif
 
 
 #ifndef _JK2MP
-extern void G_StartMatrixEffect( gentity_t *ent, int meFlags = 0, int length = 1000, float timeScale = 0.0f, int spinTime = 0 );
+extern void G_StartMatrixEffect(gentity_t* ent);
 #endif
 
 

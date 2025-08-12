@@ -12,6 +12,5 @@
   ui_shared.c
   ui_syscalls.c
   Generating Code...
-bg_misc.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
      Creating library .\../Debug/uix86.lib and object .\../Debug/uix86.exp
   ui.vcxproj -> E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\ojpenhanced\uix86.dll

@@ -950,116 +950,116 @@ but any server game effects are handled here
 */
 qboolean BG_InKnockDownOnly( int anim );
 
-void ClientEvents( gentity_t *ent, int oldEventSequence ) {
-	int		i;//, j;
-	int		event;
-	gclient_t *client;
-	int		damage;
-	vec3_t	dir;
-	qboolean fired=qfalse,altFired=qfalse;
-//	vec3_t	origin, angles;
-//	qboolean	fired;
-//	gitem_t *item;
-//	gentity_t *drop;
+void ClientEvents(gentity_t* ent, int oldEventSequence) {
+	int i;  // , j;
+	int event;
+	gclient_t* client;
+	int damage;
+	vec3_t dir;
+	qboolean fired = qfalse, altFired = qfalse;
+
+	// Check if 'ent' or 'ent->client' is NULL
+	if (!ent || !ent->client) {
+		return;  // Early exit if client is NULL
+	}
 
 	client = ent->client;
 
-	if ( oldEventSequence < client->ps.eventSequence - MAX_PS_EVENTS ) {
+	// Adjust the oldEventSequence to avoid overflow
+	if (oldEventSequence < client->ps.eventSequence - MAX_PS_EVENTS) {
 		oldEventSequence = client->ps.eventSequence - MAX_PS_EVENTS;
 	}
-	for ( i = oldEventSequence ; i < client->ps.eventSequence ; i++ ) {
-		event = client->ps.events[ i & (MAX_PS_EVENTS-1) ];
 
-		switch ( event ) {
+	// Process each event
+	for (i = oldEventSequence; i < client->ps.eventSequence; i++) {
+		event = client->ps.events[i & (MAX_PS_EVENTS - 1)];
+
+		switch (event) {
 		case EV_FALL:
 		case EV_ROLL:
-			{
-				int delta = client->ps.eventParms[ i & (MAX_PS_EVENTS-1) ];
-				qboolean knockDownage = qfalse;
+		{
+			int delta = client->ps.eventParms[i & (MAX_PS_EVENTS - 1)];
+			qboolean knockDownage = qfalse;
 
-				if (ent->client && ent->client->ps.fallingToDeath)
-				{
+			if (ent->client && ent->client->ps.fallingToDeath) {
+				break;
+			}
+
+			if (ent->s.eType != ET_PLAYER) {
+				break; // Not a player model
+			}
+
+			if (g_dmflags.integer & DF_NO_FALLING) {
+				break; // Falling damage disabled
+			}
+
+			if (ent->client && BG_InKnockDownOnly(ent->client->ps.legsAnim)) {
+				if (delta <= 14) {
 					break;
 				}
-
-				if ( ent->s.eType != ET_PLAYER )
-				{
-					break;		// not in the player model
-				}
-				
-				if ( g_dmflags.integer & DF_NO_FALLING )
-				{
+				knockDownage = qtrue;
+			}
+			else {
+				if (delta <= 44) {
 					break;
-				}
-
-				if (BG_InKnockDownOnly(ent->client->ps.legsAnim))
-				{
-					if (delta <= 14)
-					{
-						break;
-					}
-					knockDownage = qtrue;
-				}
-				else
-				{
-					if (delta <= 44)
-					{
-						break;
-					}
-				}
-
-				if (knockDownage)
-				{
-					damage = delta*1; //you suffer for falling unprepared. A lot. Makes throws and things useful, and more realistic I suppose.
-				}
-				else
-				{
-					if (delta > 60)
-					{ //longer falls hurt more
-						damage = delta*1; //good enough for now, I guess
-					}
-					else
-					{
-						damage = delta*0.16; //good enough for now, I guess
-					}
-				}
-
-				VectorSet (dir, 0, 0, 1);
-				ent->pain_debounce_time = level.time + 200;	// no normal pain sound
-				//[CoOp]
-				//[SuperDindon]
-				if (!ent->noFallDamage)
-					G_Damage (ent, NULL, NULL, NULL, NULL, damage, DAMAGE_NO_ARMOR, MOD_FALLING);
-				//[/CoOp]
-
-				if (ent->health < 1)
-				{
-					G_Sound(ent, CHAN_AUTO, G_SoundIndex( "sound/player/fallsplat.wav" ));
 				}
 			}
-			break;
+
+			// Calculate fall damage
+			if (knockDownage) {
+				damage = delta * 1; // More damage for unprepared fall
+			}
+			else {
+				if (delta > 60) {
+					damage = delta * 1; // Larger falls cause more damage
+				}
+				else {
+					damage = delta * 0.16; // Smaller falls cause less damage
+				}
+			}
+
+			// Set up fall damage direction
+			VectorSet(dir, 0, 0, 1);
+			ent->pain_debounce_time = level.time + 200; // No normal pain sound
+
+			// Apply fall damage if not exempted
+			if (!ent->noFallDamage) {
+				G_Damage(ent, NULL, NULL, NULL, NULL, damage, DAMAGE_NO_ARMOR, MOD_FALLING);
+			}
+
+			// Play sound if the player is dead
+			if (ent->health < 1) {
+				G_Sound(ent, CHAN_AUTO, G_SoundIndex("sound/player/fallsplat.wav"));
+			}
+		}
+		break;
+
 		case EV_FIRE_WEAPON:
-			//[Reload]
-			if(ent->reloadTime > 0)
+			// If the player is reloading, ignore the fire event
+			if (ent->reloadTime > 0) {
 				return;
-			//[/Reload]
-			FireWeapon( ent, qfalse );
+			}
+			// Fire the weapon
+			FireWeapon(ent, qfalse);
 			ent->client->dangerTime = level.time;
 			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
 			ent->client->invulnerableTimer = 0;
-			fired=qtrue;
+			fired = qtrue;
 			break;
 
 		case EV_ALT_FIRE:
-			if(ent->client->ps.weapon == WP_BOWCASTER)
-				return;
-			if(pm->ps->eFlags2 & EF2_NOALTFIRE)
-				return;
-			FireWeapon( ent, qtrue );
+			// Check conditions for alt fire
+			if (ent->client->ps.weapon == WP_BOWCASTER) {
+				return; // No alt fire for bowcaster
+			}
+			if (pm->ps->eFlags2 & EF2_NOALTFIRE) {
+				return; // Alt fire disabled
+			}
+			FireWeapon(ent, qtrue);
 			ent->client->dangerTime = level.time;
 			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
 			ent->client->invulnerableTimer = 0;
-			altFired=qtrue;
+			altFired = qtrue;
 			break;
 
 		case EV_SABER_ATTACK:
@@ -1068,66 +1068,61 @@ void ClientEvents( gentity_t *ent, int oldEventSequence ) {
 			ent->client->invulnerableTimer = 0;
 			break;
 
-		//rww - Note that these must be in the same order (ITEM#-wise) as they are in holdable_t
-		case EV_USE_ITEM1: //seeker droid
+			// Item use events
+		case EV_USE_ITEM1: // seeker droid
 			ItemUse_Seeker(ent);
 			break;
-		case EV_USE_ITEM2: //shield
+		case EV_USE_ITEM2: // shield
 			ItemUse_Shield(ent);
 			break;
-		case EV_USE_ITEM3: //medpack
+		case EV_USE_ITEM3: // medpack
 			ItemUse_MedPack(ent);
 			break;
-		case EV_USE_ITEM4: //shieldbooster
+		case EV_USE_ITEM4: // shieldbooster
 			ItemUse_ShieldBooster(ent);
 			break;
-		case EV_USE_ITEM5: //binoculars
+		case EV_USE_ITEM5: // binoculars
 			ItemUse_Binoculars(ent);
 			break;
-		case EV_USE_ITEM6: //sentry gun
+		case EV_USE_ITEM6: // sentry gun
 			ItemUse_Sentry(ent);
 			break;
-		case EV_USE_ITEM7: //jetpack
+		case EV_USE_ITEM7: // jetpack
 			ItemUse_Jetpack(ent);
 			break;
-		case EV_USE_ITEM8: //squad team
+		case EV_USE_ITEM8: // squad team
 			ItemUse_SquadTeam(ent);
 			break;
-		case EV_USE_ITEM9: //vehicle mount
+		case EV_USE_ITEM9: // vehicle mount
 			ItemUse_VehicleMount(ent);
 			break;
-		case EV_USE_ITEM10: //eweb
+		case EV_USE_ITEM10: // eweb
 			ItemUse_UseEWeb(ent);
 			break;
-		case EV_USE_ITEM11: //cloak
+		case EV_USE_ITEM11: // cloak
 			ItemUse_UseCloak(ent);
 			break;
-		//[Flamethrower]
-		case EV_USE_ITEM12: //flamethrower
+
+			// New item use cases
+		case EV_USE_ITEM12: // flamethrower
 			ItemUse_FlameThrower(ent);
 			break;
-		//[/Flamethrower]
-				//[Electroshocker]
-		case EV_USE_ITEM13: //electroshocker
+		case EV_USE_ITEM13: // electroshocker
 			ItemUse_Electroshocker(ent);
 			break;
-		//[/Electroshocker]	
-							//[Sphereshield]
-		case EV_USE_ITEM14: //sphereshield
+		case EV_USE_ITEM14: // sphereshield
 			ItemUse_UseSphereshield(ent);
 			break;
-		//[/Sphereshield]
-		case EV_USE_ITEM15: //sphereshield
+		case EV_USE_ITEM15: // overload
 			ItemUse_UseOverload(ent);
 			break;
-		//[/Sphereshield]
 
 		default:
 			break;
 		}
 	}
-
 }
+
 
 
 //[KnockdownSys][SPPortComplete]
@@ -2580,8 +2575,8 @@ extern qboolean WP_SaberCanTurnOffSomeBlades( saberInfo_t *saber );
 void ClientThink_real( gentity_t *ent ) {
 	gclient_t	*client;
 	pmove_t		pm;
-	int			oldEventSequence;
-	int			msec;
+	int			oldEventSequence = 0;
+	int			msec = 0;
 	usercmd_t	*ucmd;
 	qboolean	isNPC = qfalse;
 	qboolean	controlledByPlayer = qfalse;
@@ -2719,8 +2714,7 @@ void ClientThink_real( gentity_t *ent ) {
 				ent->client->saberCycleQueue = ent->client->ps.fd.saberAnimLevel;
 			}
 			
-			if(!ent->client->ps.saberInFlight)
-			{//can't switch saber holster settings if saber is out.
+				//can't switch saber holster settings if saber is out.
 				if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0]
 					&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
 					&& ent->client->ps.fd.saberAnimLevel != SS_STAFF
@@ -2736,9 +2730,10 @@ void ClientThink_real( gentity_t *ent ) {
 				{//using staff saber, but not the staff style, turn off blade
 					ent->client->ps.saberHolstered = 1;
 				}
-			}
-		}
+			
 
+		}
+	
 		/*
 		else if (client->saber[0].model[0] && client->saber[1].model[0])
 		{ //with two sabs always use akimbo style
@@ -2796,7 +2791,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	//[CoOp]
-	if (client->ps.clientNum < MAX_CLIENTS)
+	if (client && client->ps.clientNum < MAX_CLIENTS)
 	{//player stuff
 		if ( in_camera )
 		{
@@ -2851,8 +2846,10 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		ucmd->serverTime = client->ps.commandTime + 100;
 	}
-
-	msec = ucmd->serverTime - client->ps.commandTime;
+	if (client)
+	{
+		msec = ucmd->serverTime - client->ps.commandTime;
+	
 	// following others may result in bad times, but we still want
 	// to check for follow toggles
 	if ( msec < 1 && client->sess.spectatorState != SPECTATOR_FOLLOW ) {
@@ -3026,11 +3023,11 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.eFlags &= ~EF_JETPACK_ACTIVE;
 		client->ps.eFlags &= ~EF_JETPACK_FLAMING;
 	}
-
+	}
 #define	SLOWDOWN_DIST	128.0f
 #define	MIN_NPC_SPEED	16.0f
 
-	if (client->bodyGrabIndex != ENTITYNUM_NONE)
+	if (client && client->bodyGrabIndex != ENTITYNUM_NONE)
 	{
 		gentity_t *grabbed = &g_entities[client->bodyGrabIndex];
 
@@ -3080,7 +3077,7 @@ void ClientThink_real( gentity_t *ent ) {
 			}
 		}
 	}
-	else if (ent->client->ps.forceHandExtend == HANDEXTEND_DRAGGING)
+	else if (ent->client && ent->client->ps.forceHandExtend == HANDEXTEND_DRAGGING)
 	{
 		ent->client->ps.forceHandExtend = HANDEXTEND_WEAPONREADY;
 	}
@@ -3250,7 +3247,7 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 		client->ps.basespeed = client->ps.speed;
 	}
-	else if (!client->ps.m_iVehicleNum &&
+	else if (client && !client->ps.m_iVehicleNum &&
 		(!ent->NPC || ent->s.NPC_class != CLASS_VEHICLE)) //if riding a vehicle it will manage our speed and such
 	{
 		// set speed
@@ -3274,7 +3271,7 @@ void ClientThink_real( gentity_t *ent ) {
 		client->ps.basespeed = client->ps.speed;
 	}
 
-	if ( !ent->NPC || !(ent->NPC->aiFlags&NPCAI_CUSTOM_GRAVITY) )
+	if (client && ( !ent->NPC || !(ent->NPC->aiFlags&NPCAI_CUSTOM_GRAVITY) ))
 	{//use global gravity
 		if (ent->NPC && ent->s.NPC_class == CLASS_VEHICLE &&
 			ent->m_pVehicle && ent->m_pVehicle->m_pVehicleInfo->gravity)
@@ -3306,7 +3303,7 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
-	if (ent->client->ps.duelInProgress)
+	if (client && ent->client->ps.duelInProgress)
 	{//racc - we're in a private duel.
 		gentity_t *duelAgainst = &g_entities[ent->client->ps.duelIndex];
 
@@ -3770,7 +3767,7 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
-	if (ent->client->doingThrow > level.time)
+	if (ent->client && ent->client->doingThrow > level.time)
 	{
 		gentity_t *throwee = &g_entities[ent->client->throwingIndex];
 
@@ -3795,7 +3792,7 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 
-	if (ent->client->beingThrown > level.time)
+	if (ent->client && ent->client->beingThrown > level.time)
 	{
 		gentity_t *thrower = &g_entities[ent->client->throwingIndex];
 
@@ -3962,7 +3959,7 @@ void ClientThink_real( gentity_t *ent ) {
 			}
 		}
 	}
-	else if (ent->client->ps.heldByClient)
+	else if (ent->client && ent->client->ps.heldByClient)
 	{
 		ent->client->ps.heldByClient = 0;
 	}
@@ -3994,7 +3991,11 @@ void ClientThink_real( gentity_t *ent ) {
 	//BG_AdjustClientSpeed(&client->ps, &client->pers.cmd, level.time);
 
 	// set up for pmove
-	oldEventSequence = client->ps.eventSequence;
+	if (client)
+	{
+		oldEventSequence = client->ps.eventSequence;
+	
+
 
 	memset (&pm, 0, sizeof(pm));
 
@@ -4163,12 +4164,12 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 	}
 	*/
-
+	}
 	//Set up bg entity data
 	pm.baseEnt = (bgEntity_t *)g_entities;
 	pm.entSize = sizeof(gentity_t);
 
-	if (ent->client->ps.saberLockTime > level.time)
+	if (ent->client && ent->client->ps.saberLockTime > level.time)
 	{//racc - handle saberlocks
 		gentity_t *blockOpp = &g_entities[ent->client->ps.saberLockEnemy];
 
@@ -4184,7 +4185,7 @@ void ClientThink_real( gentity_t *ent ) {
 		}
 
 		//[SaberLockSys]
-		if(ent->client->pers.cmd.buttons & BUTTON_ALT_ATTACK && ent->client->pers.cmd.forwardmove < 0
+		if(ent->client && ent->client->pers.cmd.buttons & BUTTON_ALT_ATTACK && ent->client->pers.cmd.forwardmove < 0
 			&& ent->client->ps.fd.forcePower >= FATIGUE_SABERLOCK_BREAK
 			&& !( ent->client->ps.stats[STAT_DODGE] < DODGE_CRITICALLEVEL 
 			|| ent->client->ps.MISHAP_VARIABLE <= MISHAPLEVEL_HEAVY))
@@ -4340,7 +4341,11 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 	else
 	{
-		ent->client->ps.saberLockFrame = 0;
+		if (ent->client)
+		{
+			ent->client->ps.saberLockFrame = 0;
+		}
+
 		//check for taunt
 		if ( (pm.cmd.generic_cmd == GENCMD_ENGAGE_DUEL) && (g_gametype.integer == GT_DUEL || g_gametype.integer == GT_POWERDUEL) )
 		{//already in a duel, make it a taunt command
@@ -4403,7 +4408,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 	Pmove (&pm);
 
-	if (ent->client->solidHack)
+	if (ent->client && ent->client->solidHack)
 	{
 		if (ent->client->solidHack > level.time)
 		{ //whee!
@@ -4474,7 +4479,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	//[Asteroids]
-	if ( ent->client->ps.groundEntityNum < ENTITYNUM_WORLD )
+	if (ent->client && ent->client->ps.groundEntityNum < ENTITYNUM_WORLD )
 	{//standing on an ent
 		gentity_t *groundEnt = &g_entities[ent->client->ps.groundEntityNum];
 		if ( groundEnt
@@ -4496,7 +4501,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 	//[/Asteroids]
 
-	if (pm.cmd.generic_cmd &&
+	if (ent->client && pm.cmd.generic_cmd &&
 		(pm.cmd.generic_cmd != ent->client->lastGenCmd || ent->client->lastGenCmdTime < level.time))
 	{
 		ent->client->lastGenCmd = pm.cmd.generic_cmd;
@@ -4805,28 +4810,39 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 
 	// save results of pmove
-	if ( ent->client->ps.eventSequence != oldEventSequence ) {
+	if (ent->client && ent->client->ps.eventSequence != oldEventSequence ) {
 		ent->eventTime = level.time;
 	}
 	if (g_smoothClients.integer)
 	{
-		BG_PlayerStateToEntityStateExtraPolate( &ent->client->ps, &ent->s, ent->client->ps.commandTime, qfalse );
+		if (ent->client)
+		{
+			BG_PlayerStateToEntityStateExtraPolate(&ent->client->ps, &ent->s, ent->client->ps.commandTime, qfalse);
+		}
+
 		//rww - 12-03-02 - Don't snap the origin of players! It screws prediction all up.
 	}
 	else {
-		BG_PlayerStateToEntityState( &ent->client->ps, &ent->s, qfalse );
+		if (ent->client)
+		{
+			BG_PlayerStateToEntityState(&ent->client->ps, &ent->s, qfalse);
+		}
+		
 	}
 
 	if (isNPC)
 	{
 		ent->s.eType = ET_NPC;
 	}
+	if (ent->client)
+	{
+		SendPendingPredictableEvents(&ent->client->ps);
+	}
 
-	SendPendingPredictableEvents( &ent->client->ps );
 
 //===================grapplemod========================
 
-	if ((m_enable_grapple.integer == 1) &&
+	if (ent->client && m_enable_grapple.integer == 1 &&
 		ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_GRAPPLE) )
 	{
 		if ( 
@@ -4852,7 +4868,7 @@ void ClientThink_real( gentity_t *ent ) {
 				ent->client->hookDebounceTime = level.time + hookChangeProtectTime.integer;
 			}
 		}
-		else if ( client->hook && (client->fireHeld == qfalse ||
+		else if (client && client->hook && (client->fireHeld == qfalse ||
 			!(pm.cmd.buttons & BUTTON_GRAPPLE) ||
 			(ent->client->ps.pm_type == PM_DEAD)) )
 		{
@@ -4861,7 +4877,7 @@ void ClientThink_real( gentity_t *ent ) {
 	}
 	else
 	{
-		if ( client->hook && (client->fireHeld == qfalse ||
+		if (client && client->hook && (client->fireHeld == qfalse ||
 			!(pm.cmd.buttons & BUTTON_GRAPPLE) ||
 			(ent->client->ps.pm_type == PM_DEAD)) )
 		{
@@ -4895,7 +4911,7 @@ void ClientThink_real( gentity_t *ent ) {
 		//TODO: Use
 //		TryUse( ent );
 	}
-	if ((ent->client->pers.cmd.buttons & BUTTON_USE) && ent->client->ps.useDelay < level.time)
+	if (ent->client && ent->client->pers.cmd.buttons & BUTTON_USE && ent->client->ps.useDelay < level.time)
 	{
 		TryUse(ent);
 		ent->client->ps.useDelay = level.time + 100;
@@ -4903,12 +4919,16 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// link entity now, after any personal teleporters have been used
 	trap_LinkEntity (ent);
-	if ( !ent->client->noclip ) {
+	if (ent->client && !ent->client->noclip ) {
 		G_TouchTriggers( ent );
 	}
 
 	// NOTE: now copy the exact origin over otherwise clients can be snapped into solid
-	VectorCopy( ent->client->ps.origin, ent->r.currentOrigin );
+	if (ent->client)
+	{
+		VectorCopy(ent->client->ps.origin, ent->r.currentOrigin);
+	}
+
 
 	//test for solid areas in the AAS file
 //	BotTestAAS(ent->r.currentOrigin);
@@ -4917,20 +4937,23 @@ void ClientThink_real( gentity_t *ent ) {
 	ClientImpacts( ent, &pm );
 
 	// save results of triggers and client events
-	if (ent->client->ps.eventSequence != oldEventSequence) {
+	if (ent->client && ent->client->ps.eventSequence != oldEventSequence) {
 		ent->eventTime = level.time;
 	}
-
-	// swap and latch button actions
-	client->oldbuttons = client->buttons;
-	client->buttons = ucmd->buttons;
-	client->latched_buttons |= client->buttons & ~client->oldbuttons;
-
+	if (client)
+	{
+		// swap and latch button actions
+		client->oldbuttons = client->buttons;
+		client->buttons = ucmd->buttons;
+		client->latched_buttons |= client->buttons & ~client->oldbuttons;
+	}
 //	G_VehicleAttachDroidUnit( ent );
 
 	// Did we kick someone in our pmove sequence?
 	if ( !(pm.cmd.buttons & BUTTON_GRAPPLE) )
 	{
+		if(client)
+		{ 
 		gentity_t *faceKicked = &g_entities[client->ps.forceKickFlip-1];
 
 		if (faceKicked && faceKicked->client && (!OnSameTeam(ent, faceKicked) || g_friendlyFire.integer) &&
@@ -4980,13 +5003,15 @@ void ClientThink_real( gentity_t *ent ) {
 
 				G_Sound( faceKicked, CHAN_AUTO, G_SoundIndex( va("sound/weapons/melee/punch%d", Q_irand(1, 4)) ) );
 			}
+			
 		}
 
 		client->ps.forceKickFlip = 0;
+		}
 	}
 
 	// check for respawning
-	if ( client->ps.stats[STAT_HEALTH] <= 0 
+	if (client && client->ps.stats[STAT_HEALTH] <= 0 
 		&& !(client->ps.eFlags2&EF2_HELD_BY_MONSTER)//can't respawn while being eaten
 		&& ent->s.eType != ET_NPC ) {
 		// wait for the attack button to be pressed

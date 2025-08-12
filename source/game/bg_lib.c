@@ -6,7 +6,7 @@
 // compiled for the virtual machine
 
 #include "q_shared.h"
-
+#include "bg_lib.h"
 /*-
  * Copyright (c) 1992, 1993
  *	The Regents of the University of California.  All rights reserved.
@@ -102,24 +102,26 @@ static char *med3(char* a, char* b, char* c, cmp_t* cmp)
               :(cmp(b, c) > 0 ? b : (cmp(a, c) < 0 ? a : c ));
 }
 
-void qsort( void* a, size_t n, size_t es, cmp_t* cmp)
+void qsort(void* a, size_t n, size_t es, cmp_t* cmp)
 {
-	char *pa, *pb, *pc, *pd, *pl, *pm, *pn;
+	char* pa, * pb, * pc, * pd, * pl, * pm, * pn;
 	int d, r, swaptype, swap_cnt;
 
-loop:	SWAPINIT(a, es);
+loop:
+	SWAPINIT(a, es);
 	swap_cnt = 0;
 	if (n < 7) {
-		for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
-			for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0;
-			     pl -= es)
+		for (pm = (char*)a + es; pm < (char*)a + n * es; pm += es)
+			for (pl = pm; pl > (char*)a && cmp(pl - es, pl) > 0;
+				pl -= es)
 				swap(pl, pl - es);
 		return;
 	}
-	pm = (char *)a + (n / 2) * es;
+
+	pm = (char*)a + (n / 2) * es;
 	if (n > 7) {
-		pl = a;
-		pn = (char *)a + (n - 1) * es;
+		pl = (char*)a;
+		pn = (char*)a + (n - 1) * es;
 		if (n > 40) {
 			d = (n / 8) * es;
 			pl = med3(pl, pl + d, pl + 2 * d, cmp);
@@ -128,10 +130,11 @@ loop:	SWAPINIT(a, es);
 		}
 		pm = med3(pl, pm, pn, cmp);
 	}
-	swap(a, pm);
-	pa = pb = (char *)a + es;
 
-	pc = pd = (char *)a + (n - 1) * es;
+	swap((char*)a, pm);
+	pa = pb = (char*)a + es;
+	pc = pd = (char*)a + (n - 1) * es;
+
 	for (;;) {
 		while (pb <= pc && (r = cmp(pb, a)) <= 0) {
 			if (r == 0) {
@@ -156,29 +159,30 @@ loop:	SWAPINIT(a, es);
 		pb += es;
 		pc -= es;
 	}
-	if (swap_cnt == 0) {  /* Switch to insertion sort */
-		for (pm = (char *)a + es; pm < (char *)a + n * es; pm += es)
-			for (pl = pm; pl > (char *)a && cmp(pl - es, pl) > 0;
-			     pl -= es)
+
+	if (swap_cnt == 0) {
+		for (pm = (char*)a + es; pm < (char*)a + n * es; pm += es)
+			for (pl = pm; pl > (char*)a && cmp(pl - es, pl) > 0;
+				pl -= es)
 				swap(pl, pl - es);
 		return;
 	}
 
-	pn = (char *)a + n * es;
-	r = min(pa - (char *)a, pb - pa);
-	vecswap(a, pb - r, r);
+	pn = (char*)a + n * es;
+	r = min(pa - (char*)a, pb - pa);
+	vecswap((char*)a, pb - r, r);
 	r = min(pd - pc, pn - pd - es);
 	vecswap(pb, pn - r, r);
-	if ((r = pb - pa) > es)
-		qsort(a, r / es, es, cmp);
-	if ((r = pd - pc) > es) {
-		/* Iterate rather than recurse to save stack space */
-		a = pn - r;
+
+	if ((r = pb - pa) > (int)es)
+		qsort((void*)a, r / es, es, cmp); // cast back to void*
+	if ((r = pd - pc) > (int)es) {
+		a = (void*)(pn - r);              // cast char* ? void*
 		n = r / es;
 		goto loop;
 	}
-/*		qsort(pn - r, r / es, es, cmp);*/
 }
+
 
 //==================================================================================
 
@@ -284,16 +288,20 @@ int toupper( int c ) {
 #endif
 //#ifndef _MSC_VER
 
-void *memmove( void *dest, const void *src, size_t count ) {
-	int		i;
+void* memmove(void* dest, const void* src, size_t count) {
+	int i;
 
-	if ( dest > src ) {
-		for ( i = count-1 ; i >= 0 ; i-- ) {
-			((char *)dest)[i] = ((char *)src)[i];
+	if (dest == NULL || src == NULL)
+		return dest;
+
+	if (dest > src) {
+		for (i = (int)count - 1; i >= 0; i--) {
+			((char*)dest)[i] = ((char*)src)[i];
 		}
-	} else {
-		for ( i = 0 ; i < count ; i++ ) {
-			((char *)dest)[i] = ((char *)src)[i];
+	}
+	else {
+		for (i = 0; i < (int)count; i++) {
+			((char*)dest)[i] = ((char*)src)[i];
 		}
 	}
 	return dest;

@@ -181,21 +181,21 @@ void AI_SortGroupByPathCostToEnemy( AIGroupInfo_t *group )
 		{
 			for ( j = 0; j < group->numGroup; j++ )
 			{
-				if ( bestMembers[j].number != ENTITYNUM_NONE )
+				if (bestMembers[j].number != ENTITYNUM_NONE)
 				{//slot occupied
-					if ( group->member[i].pathCostToEnemy < bestMembers[j].pathCostToEnemy )
-					{//this guy has a shorter path than the one currenly in this spot, bump him and put myself in here
-						for ( k = group->numGroup; k > j; k++ )
+					if (group->member[i].pathCostToEnemy < bestMembers[j].pathCostToEnemy)
+					{//this guy has a shorter path than the one currently in this spot, bump him and put myself in here
+						for (k = group->numGroup; k > j; k--)
 						{
-							memcpy( &bestMembers[k], &bestMembers[k-1], sizeof( bestMembers[k] ) );
+							memcpy(&bestMembers[k], &bestMembers[k - 1], sizeof(bestMembers[k]));
 						}
-						memcpy( &bestMembers[j], &group->member[i], sizeof( bestMembers[j] ) );
+						memcpy(&bestMembers[j], &group->member[i], sizeof(bestMembers[j]));
 						break;
 					}
 				}
 				else
 				{//slot unoccupied, reached end of list, throw self in here
-					memcpy( &bestMembers[j], &group->member[i], sizeof( bestMembers[j] ) );
+					memcpy(&bestMembers[j], &group->member[i], sizeof(bestMembers[j]));
 					break;
 				}
 			}

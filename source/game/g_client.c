@@ -778,46 +778,66 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 		}
 	}
 
-	if ( !numSpots )
-	{//couldn't find any of the above
-		while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
-			if ( SpotWouldTelefrag( spot ) ) {
+	if (!numSpots)
+	{// Couldn't find any of the above
+		while ((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL) {
+			if (SpotWouldTelefrag(spot)) {
 				continue;
 			}
-			VectorSubtract( spot->s.origin, avoidPoint, delta );
-			dist = VectorLength( delta );
+
+			// Check if 'spot' is NULL before accessing it
+			if (spot == NULL) {
+				continue; // Skip if spot is NULL (although G_Find should ensure this is not possible)
+			}
+
+			VectorSubtract(spot->s.origin, avoidPoint, delta);
+			dist = VectorLength(delta);
+
 			for (i = 0; i < numSpots; i++) {
-				if ( dist > list_dist[i] ) {
-					if ( numSpots >= 64 )
-						numSpots = 64-1;
+				if (dist > list_dist[i]) {
+					if (numSpots >= 64)
+						numSpots = 64 - 1;
+
 					for (j = numSpots; j > i; j--) {
-						list_dist[j] = list_dist[j-1];
-						list_spot[j] = list_spot[j-1];
+						list_dist[j] = list_dist[j - 1];
+						list_spot[j] = list_spot[j - 1];
 					}
 					list_dist[i] = dist;
 					list_spot[i] = spot;
 					numSpots++;
+
 					if (numSpots > 64)
 						numSpots = 64;
+
 					break;
 				}
 			}
+
+			// If we haven't inserted the spot, add it to the list
 			if (i >= numSpots && numSpots < 64) {
 				list_dist[numSpots] = dist;
 				list_spot[numSpots] = spot;
 				numSpots++;
 			}
 		}
+
 		if (!numSpots) {
-			spot = G_Find( NULL, FOFS(classname), "info_player_deathmatch");
-			if (!spot)
-				G_Error( "Couldn't find a spawn point" );
-			VectorCopy (spot->s.origin, origin);
+			spot = G_Find(NULL, FOFS(classname), "info_player_deathmatch");
+
+			// Additional NULL check for the final spot
+			if (!spot) {
+				G_Error("Couldn't find a spawn point");
+				return NULL;  // Avoid continuing if no spawn point found
+			}
+
+			// If spot is not NULL, copy data to origin and angles
+			VectorCopy(spot->s.origin, origin);
 			origin[2] += 9;
-			VectorCopy (spot->s.angles, angles);
+			VectorCopy(spot->s.angles, angles);
 			return spot;
 		}
 	}
+
 
 	// select a random spot from the spawn points furthest away
 	rnd = random() * (numSpots / 2);
@@ -829,92 +849,94 @@ gentity_t *SelectRandomFurthestSpawnPoint ( vec3_t avoidPoint, vec3_t origin, ve
 	return list_spot[rnd];
 }
 
-gentity_t *SelectDuelSpawnPoint( int team, vec3_t avoidPoint, vec3_t origin, vec3_t angles )
-{
-	gentity_t	*spot;
-	vec3_t		delta;
-	float		dist;
-	float		list_dist[64];
-	gentity_t	*list_spot[64];
-	int			numSpots, rnd, i, j;
-	char		*spotName;
+gentity_t* SelectDuelSpawnPoint(int team, vec3_t avoidPoint, vec3_t origin, vec3_t angles) {
+	gentity_t* spot = NULL;
+	vec3_t delta;
+	float dist;
+	float list_dist[64];
+	gentity_t* list_spot[64];
+	int numSpots = 0;
+	int rnd, i, j;
+	char* spotName;
 
-	if (team == DUELTEAM_LONE)
-	{
+	// Determine the appropriate spawn point name based on the team
+	if (team == DUELTEAM_LONE) {
 		spotName = "info_player_duel1";
 	}
-	else if (team == DUELTEAM_DOUBLE)
-	{
+	else if (team == DUELTEAM_DOUBLE) {
 		spotName = "info_player_duel2";
 	}
-	else if (team == DUELTEAM_SINGLE)
-	{
+	else if (team == DUELTEAM_SINGLE) {
 		spotName = "info_player_duel";
 	}
-	else
-	{
+	else {
 		spotName = "info_player_deathmatch";
 	}
-tryAgain:
 
-	numSpots = 0;
-	spot = NULL;
-
-	while ((spot = G_Find (spot, FOFS(classname), spotName)) != NULL) {
-		if ( SpotWouldTelefrag( spot ) ) {
-			continue;
+	// Search for spawn points
+	while ((spot = G_Find(spot, FOFS(classname), spotName)) != NULL) {
+		if (SpotWouldTelefrag(spot)) {
+			continue; // Avoid telefragging spots
 		}
-		VectorSubtract( spot->s.origin, avoidPoint, delta );
-		dist = VectorLength( delta );
+
+		VectorSubtract(spot->s.origin, avoidPoint, delta);
+		dist = VectorLength(delta);
+
+		// Insert the spot into the list sorted by distance
 		for (i = 0; i < numSpots; i++) {
-			if ( dist > list_dist[i] ) {
-				if ( numSpots >= 64 )
-					numSpots = 64-1;
+			if (dist > list_dist[i]) {
+				if (numSpots >= 64) {
+					numSpots = 64 - 1; // Prevent overflow
+				}
 				for (j = numSpots; j > i; j--) {
-					list_dist[j] = list_dist[j-1];
-					list_spot[j] = list_spot[j-1];
+					list_dist[j] = list_dist[j - 1];
+					list_spot[j] = list_spot[j - 1];
 				}
 				list_dist[i] = dist;
 				list_spot[i] = spot;
 				numSpots++;
-				if (numSpots > 64)
-					numSpots = 64;
 				break;
 			}
 		}
+
+		// Add to the list if there's space
 		if (i >= numSpots && numSpots < 64) {
 			list_dist[numSpots] = dist;
 			list_spot[numSpots] = spot;
 			numSpots++;
 		}
 	}
-	if (!numSpots)
-	{
-		if (Q_stricmp(spotName, "info_player_deathmatch"))
-		{ //try the loop again with info_player_deathmatch as the target if we couldn't find a duel spot
+
+	// If no spots found, try a default "info_player_deathmatch" spawn point
+	if (numSpots == 0) {
+		// Try a fallback with "info_player_deathmatch" spawn point if no duel spots found
+		if (Q_stricmp(spotName, "info_player_deathmatch")) {
 			spotName = "info_player_deathmatch";
-			goto tryAgain;
+			return SelectDuelSpawnPoint(team, avoidPoint, origin, angles); // Recursively try again
 		}
 
-		//If we got here we found no free duel or DM spots, just try the first DM spot
-		spot = G_Find( NULL, FOFS(classname), "info_player_deathmatch");
-		if (!spot)
-			G_Error( "Couldn't find a spawn point" );
-		VectorCopy (spot->s.origin, origin);
-		origin[2] += 9;
-		VectorCopy (spot->s.angles, angles);
+		// No valid spots, fallback to the first available DM spot
+		spot = G_Find(NULL, FOFS(classname), "info_player_deathmatch");
+		if (spot == NULL) {
+			G_Error("Couldn't find a spawn point");
+			return NULL; // This should not happen unless the world is seriously broken
+		}
+
+		VectorCopy(spot->s.origin, origin);
+		origin[2] += 9; // Adjust for standing height
+		VectorCopy(spot->s.angles, angles);
 		return spot;
 	}
 
-	// select a random spot from the spawn points furthest away
+	// Select a random spawn point from the list
 	rnd = random() * (numSpots / 2);
-
-	VectorCopy (list_spot[rnd]->s.origin, origin);
-	origin[2] += 9;
-	VectorCopy (list_spot[rnd]->s.angles, angles);
+	VectorCopy(list_spot[rnd]->s.origin, origin);
+	origin[2] += 9; // Adjust for standing height
+	VectorCopy(list_spot[rnd]->s.angles, angles);
 
 	return list_spot[rnd];
 }
+
 
 /*
 ===========
@@ -1135,9 +1157,10 @@ static qboolean CopyToBodyQue( gentity_t *ent ) {
 	{
 		body->s.eFlags |= EF_DISINTEGRATION;
 	}
-
+	if(ent->client)
+	{ 
 	VectorCopy(ent->client->ps.lastHitLoc, body->s.origin2);
-
+	}
 	body->s.powerups = 0;	// clear powerups
 	body->s.loopSound = 0;	// clear lava burning
 	body->s.loopIsSoundset = qfalse;
@@ -1145,7 +1168,7 @@ static qboolean CopyToBodyQue( gentity_t *ent ) {
 	body->timestamp = level.time;
 	body->physicsObject = qtrue;
 	body->physicsBounce = 0;		// don't bounce
-	if ( body->s.groundEntityNum == ENTITYNUM_NONE ) {
+	if (ent->client && body->s.groundEntityNum == ENTITYNUM_NONE ) {
 		body->s.pos.trType = TR_GRAVITY;
 		body->s.pos.trTime = level.time;
 		VectorCopy( ent->client->ps.velocity, body->s.pos.trDelta );
@@ -1157,7 +1180,7 @@ static qboolean CopyToBodyQue( gentity_t *ent ) {
 
 	body->s.weapon = ent->s.bolt2;
 
-	if (body->s.weapon == WP_SABER && ent->client->ps.saberInFlight)
+	if (ent->client && body->s.weapon == WP_SABER && ent->client->ps.saberInFlight)
 	{
 		//[NOBODYQUE]
 		//actually we shouldn't use have any weapon at all if we died like this.
@@ -1180,18 +1203,19 @@ static qboolean CopyToBodyQue( gentity_t *ent ) {
 	VectorCopy (ent->r.maxs, body->r.maxs);
 	VectorCopy (ent->r.absmin, body->r.absmin);
 	VectorCopy (ent->r.absmax, body->r.absmax);
-
+	if(ent->client)
+	{ 
 	body->s.torsoAnim = body->s.legsAnim = ent->client->ps.legsAnim;
 
 	body->s.customRGBA[0] = ent->client->ps.customRGBA[0];
 	body->s.customRGBA[1] = ent->client->ps.customRGBA[1];
 	body->s.customRGBA[2] = ent->client->ps.customRGBA[2];
 	body->s.customRGBA[3] = ent->client->ps.customRGBA[3];
-
+	}
 	body->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	body->r.contents = CONTENTS_CORPSE;
 	body->r.ownerNum = ent->s.number;
-
+	
 	//[NOBODYQUE]
 	if(g_corpseRemovalTime.integer)
 	{
@@ -2574,7 +2598,6 @@ void ClientUserinfoChanged( int clientNum ) {
 		G_LogPrintf( "ClientUserinfoChanged: %i %s\n", clientNum, s );
 	}
 }
-
 
 /*
 ===========
@@ -5464,7 +5487,7 @@ void ClientSpawn(gentity_t *ent) {
 	//set initial saberholstered mode
 	if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0]
 			&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
-			&& ent->client->ps.fd.saberAnimLevel != SS_STAFF)
+			&& ent->client->ps.fd.saberAnimLevel != SS_STAFF )
 	{//using dual sabers, but not the dual style, turn off blade
 		ent->client->ps.saberHolstered = 1;
 	}

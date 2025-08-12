@@ -36,7 +36,8 @@ extern void TAB_BotBehave_VisualScan(bot_state_t *bs);
 extern void TAB_BotBeStill(bot_state_t *bs);
 extern void TAB_BotSearchAndDestroy(bot_state_t *bs);
 extern siegeClass_t *BG_GetClassOnBaseClass(const int team, const short classIndex, const short cntIndex);
-extern int FavoriteWeapon(bot_state_t *bs, gentity_t *target);
+extern int FavoriteWeapon(bot_state_t* bs, gentity_t* target, qboolean haveCheck,
+	qboolean ammoCheck, int ignoreWeaps);
 extern void ResetWPTimers(bot_state_t *bs);
 extern void TAB_AdjustforStrafe(bot_state_t *bs, vec3_t moveDir);
 extern void TAB_BotObjective(bot_state_t *bs);
@@ -46,7 +47,7 @@ extern gentity_t *GetObjectThatTargets(gentity_t *ent);
 extern void TAB_BotBehave_Attack(bot_state_t *bs);
 extern void TAB_BotBehave_AttackBasic(bot_state_t *bs, gentity_t* target);
 extern float TargetDistance(bot_state_t *bs, gentity_t* target, vec3_t targetorigin);
-extern int TAB_GetNearestVisibleWP(vec3_t org, int ignore, int badwp);
+extern int TAB_GetNearestVisibleWP(bot_state_t* bs, vec3_t org, int ignore, int badwp);
 extern qboolean AttackLocalBreakable(bot_state_t *bs, vec3_t origin);
 extern void TAB_BotBehave_DefendBasic(bot_state_t *bs, vec3_t defpoint);
 extern void ShouldSwitchSiegeClasses(bot_state_t *bs, qboolean saber);

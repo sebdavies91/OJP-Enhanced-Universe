@@ -416,77 +416,87 @@ static qboolean G_InitRoff( char *file, unsigned char *data )
 //	ID to the cached file.
 //-------------------------------------------------------
 
-int G_LoadRoff( const char *fileName )
+int G_LoadRoff(const char* fileName)
 {
-	char	file[MAX_QPATH];
-	char	data[ROFF_INFO_SIZE];
-	fileHandle_t	f;
-	roff_hdr2_t *header;
-	int		len, i, roff_id = 0;
+    char file[MAX_QPATH];
+    fileHandle_t f;
+    roff_hdr2_t* header;
+    int len, i, roff_id = 0;
 
-	// Before even bothering with all of this, make sure we have a place to store it.
-	if ( num_roffs >= MAX_ROFFS )
-	{
-		Com_Printf( S_COLOR_RED"MAX_ROFFS count exceeded.  Skipping load of .ROF '%s'\n", fileName );
-		return roff_id;
-	}
+    // Allocate large buffer on heap instead of stack
+    char* data = (char*)BG_Alloc(ROFF_INFO_SIZE); // BG_Alloc instead of malloc
+    if (!data)
+    {
+        Com_Printf(S_COLOR_RED "Failed to allocate memory for ROFF data\n");
+        return 0;
+    }
 
-	// The actual path
-	sprintf( file, "%s/%s.rof", Q3_SCRIPT_DIR, fileName );
+    // Before even bothering with all of this, make sure we have a place to store it.
+    if (num_roffs >= MAX_ROFFS)
+    {
+        Com_Printf(S_COLOR_RED "MAX_ROFFS count exceeded.  Skipping load of .ROF '%s'\n", fileName);
+        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        return roff_id;
+    }
 
-	// See if I'm already precached
-	for ( i = 0; i < num_roffs; i++ )
-	{
-		if ( Q_stricmp( file, roffs[i].fileName ) == 0 )
-		{
-			// Good, just return me...avoid zero index
-			return i + 1;
-		}
-	}
+    // The actual path
+    sprintf(file, "%s/%s.rof", Q3_SCRIPT_DIR, fileName);
 
-#ifdef _DEBUG
-//	Com_Printf( S_COLOR_GREEN"Caching ROF: '%s'\n", file );
-#endif
+    // See if I'm already precached
+    for (i = 0; i < num_roffs; i++)
+    {
+        if (Q_stricmp(file, roffs[i].fileName) == 0)
+        {
+            memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+            return i + 1;
+        }
+    }
 
-	// Read the file in one fell swoop
-	len = trap_FS_FOpenFile(file, &f, FS_READ);
+    // Read the file in one fell swoop
+    len = trap_FS_FOpenFile(file, &f, FS_READ);
 
-	if ( len <= 0 )
-	{
-		Com_Printf( S_COLOR_RED"Could not open .ROF file '%s'\n", fileName );
-		return roff_id;
-	}
+    if (len <= 0)
+    {
+        Com_Printf(S_COLOR_RED "Could not open .ROF file '%s'\n", fileName);
+        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        return roff_id;
+    }
 
-	if ( len >= ROFF_INFO_SIZE )
-	{
-		Com_Printf( S_COLOR_RED".ROF file '%s': Too large for file buffer.\n", fileName );
-		return roff_id;
-	}
+    if (len >= ROFF_INFO_SIZE)
+    {
+        Com_Printf(S_COLOR_RED ".ROF file '%s': Too large for file buffer.\n", fileName);
+        trap_FS_FCloseFile(f);
+        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        return roff_id;
+    }
 
-	trap_FS_Read(data, len, f);	//read data in buffer
+    trap_FS_Read(data, len, f);  // read data in buffer
+    trap_FS_FCloseFile(f);       // close file
 
-	trap_FS_FCloseFile(f);	//close file
+    // Now let's check the header info...
+    header = (roff_hdr2_t*)data;
 
-	// Now let's check the header info...
-	header = (roff_hdr2_t *)data;
+    // ..and make sure it's reasonably valid
+    if (!G_ValidRoff(header))
+    {
+        Com_Printf(S_COLOR_RED "Invalid roff format '%s'\n", fileName);
+        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+    }
+    else
+    {
+        G_InitRoff(file, (unsigned char*)data);
 
-	// ..and make sure it's reasonably valid
-	if ( !G_ValidRoff( header ))
-	{
-		Com_Printf( S_COLOR_RED"Invalid roff format '%s'\n", fileName );
-	}
-	else
-	{
-		G_InitRoff( file, (unsigned char *)data );
+        // Done loading this roff, so save off an id to it..increment first to avoid zero index
+        roff_id = ++num_roffs;
 
-		// Done loading this roff, so save off an id to it..increment first to avoid zero index
-		roff_id = ++num_roffs;
-	}
+        // Note: If G_InitRoff stores/uses 'data' after return, don't clear here.
+        // Otherwise, clear it:
+        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+    }
 
-	//trap_FS_FCloseFile( data );
-
-	return roff_id;
+    return roff_id;
 }
+
 
 
 /*

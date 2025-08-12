@@ -386,127 +386,136 @@ void UI_FreeSabers(void){
 }
 //[/DynamicMemory_Sabers]
 
-void UI_SaberLoadParms( void ) 
+void UI_SaberLoadParms(void)
 {
-	int			len, totallen, saberExtFNLen, fileCnt, i;
-	char		*holdChar, *marker;
-	char		saberExtensionListBuf[2048];			//	The list of file names read in
-	fileHandle_t f;
-	char buffer[MAX_MENUFILE];
-	
-	//[DynamicMemory_Sabers]
+    int len, totallen, saberExtFNLen, fileCnt, i;
+    char* holdChar, * marker;
+    fileHandle_t f;
+
+    // Move large buffers to heap to reduce stack usage
+    char* saberExtensionListBuf = NULL;
+    UI_AllocMem((void**)&saberExtensionListBuf, 2048);
+    if (!saberExtensionListBuf) {
+        Com_Error(ERR_FATAL, "UI_SaberLoadParms: Out of memory allocating saberExtensionListBuf");
+        return;
+    }
+
+    char* buffer = NULL;
+    UI_AllocMem((void**)&buffer, MAX_MENUFILE);
+    if (!buffer) {
+        UI_FreeMem(saberExtensionListBuf);
+        Com_Error(ERR_FATAL, "UI_SaberLoadParms: Out of memory allocating buffer");
+        return;
+    }
+
+    memset(saberExtensionListBuf, 0, 2048);
+    memset(buffer, 0, MAX_MENUFILE);
+
+    ui_saber_parms_parsed = qtrue;
+    UI_CacheSaberGlowGraphics();
+
+    saberExtFNLen = 0;
+
+    fileCnt = trap_FS_GetFileList("ext_data/sabers", ".sab", saberExtensionListBuf, 2048);
+    holdChar = saberExtensionListBuf;
+
 #ifdef DYNAMICMEMORY_SABERS
-	int maxLen;
+    int maxLen = 0;
+    saberExtFNLen = -1;
+    for (i = 0; i < fileCnt; i++, holdChar += saberExtFNLen + 1) {
+        saberExtFNLen = strlen(holdChar);
+        len = trap_FS_FOpenFile(va("ext_data/sabers/%s", holdChar), &f, FS_READ);
+        if (!f)
+            continue;
+        trap_FS_FCloseFile(f);
+        maxLen += len;
+    }
+    maxLen++; // for trailing null
+    UI_AllocMem((void**)&SaberParms, maxLen);
+    if (!SaberParms) {
+        UI_FreeMem(saberExtensionListBuf);
+        UI_FreeMem(buffer);
+        Com_Error(ERR_FATAL, "Saber parsing: Out of memory!");
+        return;
+    }
+    holdChar = saberExtensionListBuf;
 #endif
-	//[/DynamicMemory_Sabers]
 
-	//ui.Printf( "UI Parsing *.sab saber definitions\n" );
-	
-	ui_saber_parms_parsed = qtrue;
-	UI_CacheSaberGlowGraphics();
+    totallen = 0;
+    marker = SaberParms;
 
-//[DynamicMemory_Sabers] moved down lower
-	/*
-	//set where to store the first one
-	totallen = 0;
-	marker = SaberParms;
-	marker[0] = '\0';
-	*/
+    // Check SaberParms pointer before usage
+    if (!marker) {
+        UI_FreeMem(saberExtensionListBuf);
+        UI_FreeMem(buffer);
+        Com_Error(ERR_FATAL, "UI_SaberLoadParms: SaberParms is NULL");
+        return;
+    }
 
-	//we werent initilizing saberExtFNLen, which is Bad
-	//this is just a general bug fix, not for the purpose of [DynamicMemory_Sabers]
-	saberExtFNLen = 0;
-///[DynamicMemory_Sabers]
+    marker[0] = '\0';
+    saberExtFNLen = -1;
 
+    for (i = 0; i < fileCnt; i++, holdChar += saberExtFNLen + 1) {
+        saberExtFNLen = strlen(holdChar);
+        len = trap_FS_FOpenFile(va("ext_data/sabers/%s", holdChar), &f, FS_READ);
 
-	//now load in the extra .npc extensions
-	fileCnt = trap_FS_GetFileList("ext_data/sabers", ".sab", saberExtensionListBuf, sizeof(saberExtensionListBuf) );
+        if (!f)
+            continue;
 
-	holdChar = saberExtensionListBuf;
+        if (len == -1) {
+            Com_Printf("UI_SaberLoadParms: error reading %s\n", holdChar);
+            trap_FS_FCloseFile(f);
+            continue;
+        }
 
-//[DynamicMemory_Sabers]
-#ifdef DYNAMICMEMORY_SABERS
-	maxLen = 0;
-	saberExtFNLen = -1;
-	for ( i = 0; i < fileCnt; i++, holdChar += saberExtFNLen + 1 ) {
-		saberExtFNLen = strlen( holdChar );
-		len = trap_FS_FOpenFile( va( "ext_data/sabers/%s", holdChar), &f, FS_READ );
-		if(!f)
-			continue;
-		trap_FS_FCloseFile(f);
-		maxLen += len;
-	}
-	//what do we do if totallen is zero?  will never happen, but COULD happen in theory...
-	//trap_TrueMalloc(&SaberParms, totallen+1); //+1 for null char, needed?
-	maxLen++; //for ending null char
-	UI_AllocMem((void **)&SaberParms, maxLen);
-	if(!SaberParms)
-		//ERR_FATAL or any level isnt used with Com_Error
-		Com_Error(ERR_FATAL, "Saber parsing: Out of memory!");
-	holdChar = saberExtensionListBuf;
-#endif
-//[/DynamicMemory_Sabers]
+        // Check length before reading into buffer to avoid overflow
+        if (len >= MAX_MENUFILE) {
+            Com_Error(ERR_FATAL, "UI_SaberLoadParms: file %s too large to read (max=%d)", holdChar, MAX_MENUFILE);
+            trap_FS_FCloseFile(f);
+            UI_FreeMem(saberExtensionListBuf);
+            UI_FreeMem(buffer);
+            return;
+        }
 
-//[DynamicMemory_Sabers] moved to here
-	//set where to store the first one
-	totallen = 0;
-	marker = SaberParms;
-	marker[0] = '\0';
+        trap_FS_Read(buffer, len, f);
+        trap_FS_FCloseFile(f);
+        buffer[len] = 0;
 
-	saberExtFNLen = -1;
-///[DynamicMemory_Sabers]
+        if (totallen && *(marker - 1) == '}') {
+            strcat(marker, " ");
+            totallen++;
+            marker++;
+        }
 
-	for ( i = 0; i < fileCnt; i++, holdChar += saberExtFNLen + 1 ) 
-	{
-		saberExtFNLen = strlen( holdChar );
+        len = COM_Compress(buffer);
 
-		len = trap_FS_FOpenFile( va( "ext_data/sabers/%s", holdChar), &f, FS_READ );
-
-		if (!f)
-		{
-			continue;
-		}
-
-		if ( len == -1 ) 
-		{
-			Com_Printf( "UI_SaberLoadParms: error reading %s\n", holdChar );
-		}
-		else
-		{
-			if (len > sizeof(buffer) )
-			{
-				Com_Error( ERR_FATAL, "UI_SaberLoadParms: file %s too large to read (max=%d)", holdChar, sizeof(buffer) );
-			}
-			trap_FS_Read( buffer, len, f );
-			trap_FS_FCloseFile( f );
-			buffer[len] = 0;
-
-			if ( totallen && *(marker-1) == '}' )
-			{//don't let it end on a } because that should be a stand-alone token
-				strcat( marker, " " );
-				totallen++;
-				marker++; 
-			}
-			len = COM_Compress( buffer );
-
-//[DynamicMemory_Sabers]
 #ifndef DYNAMICMEMORY_SABERS
-			if ( totallen + len >= MAX_SABER_DATA_SIZE ) {
-				Com_Error( ERR_FATAL, "UI_SaberLoadParms: ran out of space before reading %s\n(you must make the .sab files smaller)", holdChar );
-			}
+        if (totallen + len >= MAX_SABER_DATA_SIZE) {
+            Com_Error(ERR_FATAL, "UI_SaberLoadParms: ran out of space before reading %s\n(you must make the .sab files smaller)", holdChar);
+            UI_FreeMem(saberExtensionListBuf);
+            UI_FreeMem(buffer);
+            return;
+        }
 #else
-			if ( totallen + len >= maxLen ) {
-				Com_Error( ERR_FATAL, "UI_SaberLoadParms: ran out of space before reading %s\n(This should never happen)", holdChar );
-			}
+        if (totallen + len >= maxLen) {
+            Com_Error(ERR_FATAL, "UI_SaberLoadParms: ran out of space before reading %s\n(This should never happen)", holdChar);
+            UI_FreeMem(saberExtensionListBuf);
+            UI_FreeMem(buffer);
+            return;
+        }
 #endif
-//[/DynamicMemory_Sabers]
-			strcat( marker, buffer );
 
-			totallen += len;
-			marker += len;
-		}
-	}
+        strcat(marker, buffer);
+
+        totallen += len;
+        marker += len;
+    }
+
+    UI_FreeMem(saberExtensionListBuf);
+    UI_FreeMem(buffer);
 }
+
+
 
 //[RGBSabers]
 void RGB_LerpColor(vec3_t from, vec3_t to, float frac, vec3_t out)

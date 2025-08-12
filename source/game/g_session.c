@@ -109,22 +109,21 @@ G_ReadSessionData
 Called on a reconnect
 ================
 */
-void G_ReadSessionData( gclient_t *client ) {
-	char	s[MAX_STRING_CHARS];
-	const char	*var;
-	int			i = 0;
+void G_ReadSessionData(gclient_t* client) {
+	char s[MAX_STRING_CHARS];
+	const char* var;
+	int i = 0;
 
 	// bk001205 - format
 	int teamLeader;
 	int spectatorState;
 	int sessionTeam;
 
-	var = va( "session%i", client - level.clients );
-	trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
-	//[ExpSys]
-	sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %f",
-	//sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s",
-	//[ExpSys]
+	var = va("session%i", client - level.clients);
+	trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
+
+	// Check the return value of sscanf
+	if (sscanf(s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %f",
 		&sessionTeam,                 // bk010221 - format
 		&client->sess.spectatorTime,
 		&spectatorState,              // bk010221 - format
@@ -139,43 +138,34 @@ void G_ReadSessionData( gclient_t *client ) {
 		&client->sess.siegeDesiredTeam,
 		&client->sess.siegeClass[0],
 		&client->sess.saberType[0],
-		//[ExpSys]
 		&client->sess.saber2Type[0],
 		&client->sess.skillPoints
-		//&client->sess.saber2Type
-		//[ExpSys]
-		);
+	) != 16) {  // Check if all 16 values were parsed
+		//G_Printf("Error: Failed to read session data for client %d.\n", client - level.clients);
+		//return;
+	}
 
-	while (client->sess.siegeClass[i])
-	{ //convert back to spaces from unused chars, as session data is written that way.
-		if (client->sess.siegeClass[i] == 1)
-		{
+	while (client->sess.siegeClass[i]) { // Convert back to spaces from unused chars
+		if (client->sess.siegeClass[i] == 1) {
 			client->sess.siegeClass[i] = ' ';
 		}
-
 		i++;
 	}
 
 	i = 0;
-	//And do the same for the saber type
-	while (client->sess.saberType[i])
-	{
-		if (client->sess.saberType[i] == 1)
-		{
+	// And do the same for the saber type
+	while (client->sess.saberType[i]) {
+		if (client->sess.saberType[i] == 1) {
 			client->sess.saberType[i] = ' ';
 		}
-
 		i++;
 	}
 
 	i = 0;
-	while (client->sess.saber2Type[i])
-	{
-		if (client->sess.saber2Type[i] == 1)
-		{
+	while (client->sess.saber2Type[i]) {
+		if (client->sess.saber2Type[i] == 1) {
 			client->sess.saber2Type[i] = ' ';
 		}
-
 		i++;
 	}
 
@@ -190,6 +180,7 @@ void G_ReadSessionData( gclient_t *client ) {
 }
 
 
+
 /*
 ================
 G_InitSessionData
@@ -199,107 +190,81 @@ Called on a first-time connect
 */
 //[ExpSys]
 //added firsttime input so we'll know if we need to reset our skill point totals or not.
-void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot, qboolean firstTime) {
-//void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot ) {
-//[/ExpSys]
-	clientSession_t	*sess;
-	const char		*value;
+void G_InitSessionData(gclient_t* client, char* userinfo, qboolean isBot, qboolean firstTime) {
+	clientSession_t* sess;
+	const char* value;
 
 	sess = &client->sess;
 
 	client->sess.siegeDesiredTeam = TEAM_FREE;
 
 	// initial team determination
-	//[CoOp]
-	//CoOp counts as a multi-team game.
-	if ( g_gametype.integer >= GT_SINGLE_PLAYER) {
-	//if ( g_gametype.integer >= GT_TEAM ) {
-	//[/CoOp]
-		if ( g_teamAutoJoin.integer ) 
-		{
-			//[AdminSys]
-			sess->sessionTeam = PickTeam( -1, isBot );
-			//sess->sessionTeam = PickTeam( -1 );
-			//[/AdminSys]
-			BroadcastTeamChange( client, -1 );
-		} 
-		else 
-		{
-			// always spawn as spectator in team games
-			if (!isBot)
-			{
-				sess->sessionTeam = TEAM_SPECTATOR;	
+	if (g_gametype.integer >= GT_SINGLE_PLAYER) {
+		if (g_teamAutoJoin.integer) {
+			sess->sessionTeam = PickTeam(-1, isBot);
+			BroadcastTeamChange(client, -1);
+		}
+		else {
+			if (!isBot) {
+				sess->sessionTeam = TEAM_SPECTATOR;
 			}
-			else
-			{ //Bots choose their team on creation
-				value = Info_ValueForKey( userinfo, "team" );
-				if (value[0] == 'r' || value[0] == 'R')
-				{
+			else {
+				value = Info_ValueForKey(userinfo, "team");
+				if (value[0] == 'r' || value[0] == 'R') {
 					sess->sessionTeam = TEAM_RED;
 				}
-				else if (value[0] == 'b' || value[0] == 'B')
-				{
+				else if (value[0] == 'b' || value[0] == 'B') {
 					sess->sessionTeam = TEAM_BLUE;
 				}
-				else
-				{
-					//[AdminSys]
-					sess->sessionTeam = PickTeam( -1, isBot );
-					//sess->sessionTeam = PickTeam( -1 );
-					//[/AdminSys]
+				else {
+					sess->sessionTeam = PickTeam(-1, isBot);
 				}
-				BroadcastTeamChange( client, -1 );
+				BroadcastTeamChange(client, -1);
 			}
 		}
-	} else {
-		value = Info_ValueForKey( userinfo, "team" );
-		if ( value[0] == 's' ) {
-			// a willing spectator, not a waiting-in-line
+	}
+	else {
+		value = Info_ValueForKey(userinfo, "team");
+		if (value[0] == 's') {
 			sess->sessionTeam = TEAM_SPECTATOR;
-		} else {
-			switch ( g_gametype.integer ) {
+		}
+		else {
+			switch (g_gametype.integer) {
 			default:
 			case GT_FFA:
 			case GT_HOLOCRON:
 			case GT_JEDIMASTER:
-			//[CoOp]
-			//CoOp counts as a multi-team game.
-			//case GT_SINGLE_PLAYER:
-			//[/CoOp]
-				if ( g_maxGameClients.integer > 0 && 
-					level.numNonSpectatorClients >= g_maxGameClients.integer ) {
+				if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
 					sess->sessionTeam = TEAM_SPECTATOR;
-				} else {
+				}
+				else {
 					sess->sessionTeam = TEAM_FREE;
 				}
 				break;
-			case GT_DUEL:	  
-				// if the game is full, go into a waiting mode
-				if ( level.numNonSpectatorClients >= 2 ) {
+			case GT_DUEL:
+				if (level.numNonSpectatorClients >= 2) {
 					sess->sessionTeam = TEAM_SPECTATOR;
-				} else {
+				}
+				else {
 					sess->sessionTeam = TEAM_FREE;
 				}
 				break;
 			case GT_POWERDUEL:
-				//sess->duelTeam = DUELTEAM_LONE; //default
-				{
-					int loners = 0;
-					int doubles = 0;
+			{
+				int loners = 0;
+				int doubles = 0;
 
-					G_PowerDuelCount(&loners, &doubles, qtrue);
+				G_PowerDuelCount(&loners, &doubles, qtrue);
 
-					if (!doubles || loners > (doubles/2))
-					{
-						sess->duelTeam = DUELTEAM_DOUBLE;
-					}
-					else
-					{
-						sess->duelTeam = DUELTEAM_LONE;
-					}
+				if (!doubles || loners > (doubles / 2)) {
+					sess->duelTeam = DUELTEAM_DOUBLE;
 				}
-				sess->sessionTeam = TEAM_SPECTATOR;
-				break;
+				else {
+					sess->duelTeam = DUELTEAM_LONE;
+				}
+			}
+			sess->sessionTeam = TEAM_SPECTATOR;
+			break;
 			}
 		}
 	}
@@ -311,45 +276,31 @@ void G_InitSessionData( gclient_t *client, char *userinfo, qboolean isBot, qbool
 	sess->saberType[0] = 0;
 	sess->saber2Type[0] = 0;
 
-	//[ExpSys]
-	if(firstTime)
-	{//only reset skillpoints for new players.
+	// Reset skill points for new players
+	if (firstTime) {
 		sess->skillPoints = g_minForceRank.value;
 	}
-	else
-	{//remember the data from the last time.
-		char	s[MAX_STRING_CHARS];
-		const char	*var;
+	else {
+		// Remember the data from the last time
+		char s[MAX_STRING_CHARS];
+		const char* var;
 		int tempInt;
 		char tempChar[64];
 
-		var = va( "session%i", client - level.clients );
-		trap_Cvar_VariableStringBuffer( var, s, sizeof(s) );
-		//[ExpSys]
-		sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %f",
-		//sscanf( s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s",
-		//[ExpSys]
-			&tempInt,                 // bk010221 - format
-			&tempInt,
-			&tempInt,              // bk010221 - format
-			&tempInt,
-			&tempInt,
-			&tempInt,
-			&tempInt,                   // bk010221 - format
-			&tempInt,
-			&tempInt,
-			&tempInt,
-			&tempInt,
-			&tempInt,
-			&tempChar[0],
-			&tempChar[0],
-			&tempChar[0],
-			&client->sess.skillPoints
-			);
-	}
-	//[/ExpSys]
+		var = va("session%i", client - level.clients);
+		trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
 
-	G_WriteClientSessionData( client );
+
+		// Optional check for correctness: ensure 16 items were read
+		if (sscanf(s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %f",
+			&tempInt, &tempInt, &tempInt, &tempInt, &tempInt,
+			&tempInt, &tempInt, &tempInt, &tempInt, &tempInt,
+			&tempInt, &tempInt, &tempChar[0], &tempChar[0],
+			&tempChar[0], &client->sess.skillPoints) != 16) {
+		}
+	}
+
+	G_WriteClientSessionData(client);
 }
 
 

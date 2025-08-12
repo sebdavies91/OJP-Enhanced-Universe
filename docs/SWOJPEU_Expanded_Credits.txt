@@ -246,6 +246,7 @@ Aurra Sing	/	aurrasing	/	Mars Marshall
 Aviar	/	aviar	/	Spanki, HapSlash
 Bail Organa	/	BailOrgana	/	Kualan
 Barriss Offee	/	barriss_offee	/	Kualan
+Bastila Shan	/	bastila		/	Circa
 Battle C3PO	/	battle3po	/	oddjob
 Battle Droid	/	battledroid	/	Master_Ibonek
 Baze Malbus	/	baze	/	Claim
@@ -253,9 +254,11 @@ Bib Fortuna	/	bibfortuna	/	Langerd
 Bith	/	bith	/	Mat Gaunt.
 Black Sun Mercenary	/	BlackSunMerc	/	Kualan
 Bo Katan	/	bokatan	/	Jeff
+Boc Aseca	/	boc	/	LucasArts	
 Bodhi Rook	/	bodhi	/	Claim
 Bossk	/	Bossk	/	Kualan
 Bothan	/	bothan	/	Langerd
+Bounty Hunter	/ bounty_hunter	/ Noodle
 Boushh	/	boushh	/	oddjob
 Brianna	/	Brianna	/	DarthStiv
 Brick	/	Brick	/	
@@ -344,10 +347,13 @@ Crix Madine	/	crixmadine	/	Infinity Blade
 D 0T	/	d0t	/	Daedra
 Darman Omega	/	darman	/	 Mhoker
 Darth Bane	/	darth_bane	/	Spanki, HapSlash
-Darth Krayt	/	darth_krayt	/	Spanki, HapSlash
+Darth Krayt	/	darthkrayt2	/	Noob, GP, Unguided, HapSlash
+Darth Krayt II	/	darth_krayt	/	Spanki, HapSlash
 Darth Kruhl	/	darth_kruhl	/	Spanki, HapSlash
 Darth Larith	/	Lord_Larith	/	
+Darth Maladi	/	darthmaladi	/	Noob, GP, Unguided, HapSlash
 Darth Malak	/	malak	/	DarthViper107
+Darth Malgus	/	PSDarthMalgus	/	Psyk0Sith
 Darth Marr	/	darth_marr	/	
 Darth Maul	/	maulvm	/	Mars Marshall
 Darth Maul Cybernetic	/	cybernetic_maul	/	Hoodz
@@ -355,6 +361,8 @@ Darth Maul II	/	maulvms	/	Mars Marshall
 Darth Maul III	/	darthmaul	/	Broken-Hope
 Darth Maul Robed	/	maulvmr	/	Mars Marshall
 Darth Nihilus	/	nihilus	/	DarthStiv
+Darth Plagueis	/	darthplagueis	/	Mat Gaunt & Unguided
+Darth Plagueis II	/	plagueis	/	Hirmanator
 Darth Revan	/	swtorrevan	/	
 Darth Revan II	/	revan	/	Almighty Gir
 Darth Sidious 	/	lord_sidious	/	Scrounger
@@ -368,10 +376,14 @@ Darth Starkiller Clone	/	Starkiller_Clone	/	dark_apprentice
 Darth Starkiller Dark	/	Starkiller_Dark	/	dark_apprentice
 Darth Starkiller II	/	sith_stalker	/	GustavoPredador
 Darth Starkiller Tie	/	Starkiller_TIE	/	dark_apprentice
+Darth Talon	/	darth_talon	/	Ruxith
 Darth Traya	/	darthtraya	/	DarthStiv
+Darth Tenebrous	/	darthtenebrous	/	Mat Gaunt, GP Channel, Unguided, Bob Billy
 Darth Vader	/	vadervmm	/	Mars Marshall
 Darth Vader II	/	am_vader	/	GustavoPredador
 Darth Vitiate	/	Valkorion	/	Jeff
+Darth Wyyrlok	/	darthwyyrlok	/	Noob, GP, Unguided, HapSlash
+Dash Rendar	/	dash_rendar	/	ZaidenSoraX & Pandora
 Death Trooper	/	Death_Trooper	/	Scerendo
 Dengar	/	Dengar	/	Kualan
 Depa Billaba	/	depabillaba	/	Kualan
@@ -381,6 +393,7 @@ Din Djarin	/	dindjarin	/	GustavoPredador
 Director Krennic	/	Krennic	/	Kualan
 Dorak	/	Dorak	/	The Unguided
 Durge	/	durge	/	Sinsta
+EG-5 Hunter Droid	/	PskJHD	/	Psyk0Sith
 Eeth Koth	/	eeth_koth	/	Tompa9
 Eighth Brother	/	8thbrother	/	Jeff
 El-Les	/	El-Lesk	/	
@@ -408,6 +421,7 @@ General Grievous II	/	griev	/	Mars Marshall
 General Hux	/	Hux	/	Scerendo
 General Veers	/	veers	/	EPV
 Geonosian	/	Geonosian	/	Sebastian Barz (Sebcrea)
+Ghost Trooper	/	ghosttrooper	/	Imperial Officer
 Gotab Delta	/	Gotab	/	 Mhoker
 GOTO	/	GOTO	/	
 Gungan	/	gungan	/	Gamemaster
@@ -416,7 +430,6 @@ Han Solo	/	han_anh	/	Major Clod
 Han Solo II	/	han_esb	/	Major Clod
 Han Solo III	/	han_roj	/	Major Clod
 Heavy Mandalorian	/	mandalorian_heavy	/	Zander_Nao
-Hego Damask	/	plagueis	/	Hirmanator
 Hera Syndulla	/	hera	/	 Jeff
 HK-47	/	Hk47	/	DarthStiv
 HK-50	/	hk50	/	DarthStiv
@@ -431,6 +444,7 @@ Imperial Assasin	/	impassassin	/	GoodJawa
 Imperial Commando	/	imperialcommando	/	
 Imperial Gunner	/	impgunner	/	Barricade24
 Imperial Sniper	/	imperial_sniper	/	
+Imperial Trooper	/	sn7_imperialtrooper	/	Sentra
 Imperial Worker	/	imperial_worker	/	Barricade24
 Inferno Trooper	/	inferno	/	Encritary
 Inquisitor	/	TheInquisitor	/	Kualan
@@ -444,7 +458,8 @@ Jaing Null	/	jaing	/	Mhoker
 Jango Fett	/	jango_fett	/	GustavoPredador
 Jar Jar Binks	/	jarjar	/	Major Clod
 Jawa II	/	jawa2	/	TiM
-Jek Tono Porkins	/	porkins	/	
+Jek Tono Porkins	/	porkins	/
+Jerec	/	Jerec	/	LucasArts	
 Jocasta Nu	/	Jocasta_Nu	/	
 Jolee Bindo	/	Jolee_bindo	/	Jeff
 Juno Eclipse	/	juno_eclipse	/	NumberWan
@@ -489,13 +504,16 @@ Mace Windu	/	mace_windu	/	Kualan
 Magnaguard	/	magnaguard	/	Mars Marshall
 Malak	/	Malek	/	DarthStiv
 Mandalore The Preserver	/	mandalore	/	
+Mandalore The Ultimate	/	MTU	/	zeal
 Mandalorian	/	ini	/	Mhoker
+Mandalorian Crusader	/	mandocrusader	/	Mars Marshall and NeoMarz1
 Mara Jade	/	mara	/	Lilandra
 Mara Jade II	/	MaraJade	/	DT
 Mara Jade Jump	/	mara_jumpsuit	/	DT
 Mark 3 Droid	/	mark3	/	
 Marka Ragnos	/	Lord_Ragnos	/	Xioth
-Mas Amedda	/	MasAmedda	/	
+Mas Amedda	/	MasAmedda	/
+Maw	/	Maw	/	LucasArts		
 Meetra Surik	/	Meetra_surik	/	
 Mereel Null	/	mereel	/	Mhoker
 Mira	/	mira	/	
@@ -515,6 +533,8 @@ Nahdar Vebb	/	Nahdar	/	JAWSFreelao
 Neocrusader Marine	/	mandalorian	/	AshuraDX
 Neocrusader Scout	/	manda_et	/	AshuraDX
 New Republic Vanguard	/	NewRepGuard	/	Jeff
+Nightbrother	/	nightbrother	/	Noodle
+Nightsister	/	nightsister	/	Noodle
 Niner Omega	/	niner	/	 Mhoker
 Noghri II	/	noghri2	/	RO Agent Smith
 Nomi Sunrider	/	Nomi_sunrider	/	Spanki, HapSlash
@@ -578,6 +598,7 @@ Saesse Tiin	/	saesee_tiin	/	Tompa9
 Sand Trooper	/	sandtrooper	/	HapSlash
 Saul Karath	/	saul_karath	/	Galactic Legacy
 Savage Opress	/	Savage_Opress	/	Tempust85
+Sariss	/	Sariss	/	LucasArts	
 Scourge	/	scourge	/	
 Scout Trooper	/	biker_scout	/	Monsoontide
 Sebulba	/	sebulba	/	Duncan_10158
@@ -661,6 +682,7 @@ Wullf Yularen	/	Wullf_Yularen	/
 Yarael Poof	/	yarael	/	Mars Marshall & PsykOSith & Nomad
 Yoda	/	yodavm	/	neomarz
 Yoda II	/	T_Yoda_MP	/	Toshi
+Yun	/	Yun	/	LucasArts	
 Yuthura	/	yuthura	/	
 Zaalbar	/	Zaalbar	/	Corel
 Zam Wesell	/	zam	/	neomarz1

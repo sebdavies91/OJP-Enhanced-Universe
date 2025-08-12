@@ -97,7 +97,7 @@ extern vec3_t gPainPoint;
 #define DEBUG_SABER_BOX
 #endif
 
-#define	MAX_G_SHARED_BUFFER_SIZE		16384
+#define	MAX_G_SHARED_BUFFER_SIZE		131072000
 extern char gSharedBuffer[MAX_G_SHARED_BUFFER_SIZE];
 
 // movers are things like doors, plats, buttons, etc
@@ -1025,6 +1025,10 @@ struct gclient_s {
 	int			deathsightbubbledamageTime;
 	int			deathfieldbubbledamageTime;
 	int			semiTime;	
+
+	int saberStyleBiasTime;
+	int saberStyleBias;
+
 };
 
 //Interest points
@@ -1287,15 +1291,17 @@ void G_CheckTeamItems( void );
 void G_RunItem( gentity_t *ent );
 void RespawnItem( gentity_t *ent );
 
+void Use_Item(gentity_t* ent, gentity_t* other, gentity_t* activator);
 void UseHoldableItem( gentity_t *ent );
-void PrecacheItem (gitem_t *it);
+void PrecacheItem (gitem_t *it);								
 gentity_t *Drop_Item( gentity_t *ent, gitem_t *item, float angle );
 gentity_t *LaunchItem( gitem_t *item, vec3_t origin, vec3_t velocity );
-void SetRespawn (gentity_t *ent, float delay);
+void SetRespawn (gentity_t *ent, float delay);											  
 void G_SpawnItem (gentity_t *ent, gitem_t *item);
 void FinishSpawningItem( gentity_t *ent );
+void WeaponThink (qboolean inCombat);
 void Think_Weapon (gentity_t *ent);
-int ArmorIndex (gentity_t *ent);
+int ArmorIndex (gentity_t *ent);								
 void	Add_Ammo (gentity_t *ent, int weapon, int count);
 void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace);
 
@@ -1473,7 +1479,7 @@ qboolean G_RadiusDamage (vec3_t origin, gentity_t *attacker, float damage, float
 void body_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
 void TossClientWeapon(gentity_t *self, vec3_t direction, float speed);
 void TossClientItems( gentity_t *self );
-void TossClientCubes( gentity_t *self );
+void TossClientCubes( gentity_t *self );										
 void ExplodeDeath( gentity_t *self );
 void G_CheckForDismemberment(gentity_t *ent, gentity_t *enemy, vec3_t point, int damage, int deathAnim, qboolean postDeath);
 extern int gGAvoidDismember;
@@ -1583,7 +1589,7 @@ void WP_FireGenericBlasterMissile( gentity_t *ent, vec3_t start, vec3_t dir, qbo
 qboolean LogAccuracyHit( gentity_t *target, gentity_t *attacker );
 void CalcMuzzlePoint ( gentity_t *ent, vec3_t forward, vec3_t right, vec3_t up, vec3_t muzzlePoint );
 void SnapVectorTowards( vec3_t v, vec3_t to );
-qboolean CheckGauntletAttack( gentity_t *ent );
+qboolean CheckGauntletAttack( gentity_t *ent );											   
 void Weapon_HookThink (gentity_t *ent);
 void Weapon_HookFree (gentity_t *ent);								  
 
@@ -1647,7 +1653,7 @@ void BlowDetpacks(gentity_t *ent);
 // p_hud.c
 //
 void MoveClientToIntermission (gentity_t *client);
-void G_SetStats (gentity_t *ent);
+void G_SetStats (gentity_t *ent);								 
 void DeathmatchScoreboardMessage (gentity_t *client);
 
 //
@@ -1765,7 +1771,7 @@ void G_RemoveQueuedBotBegin( int clientNum );
 qboolean G_BotConnect( int clientNum, qboolean restart );
 void Svcmd_AddBot_f( void );
 void Svcmd_BotList_f( void );
-void BotInterbreedEndMatch( void );
+void BotInterbreedEndMatch( void );								   
 qboolean G_DoesMapSupportGametype(const char *mapname, int gametype);
 const char *G_RefreshNextMap(int gametype, qboolean forced);
 
@@ -1798,6 +1804,7 @@ void ForceCorrupt( gentity_t *self );
 void ForceExplode( gentity_t *self, qboolean pull );
 void ForceRegeneration( gentity_t *self );
 //void ForceTeamHeal( gentity_t *self );
+int			ManualDodgeDebounce;
 //[ManualDodge]
 void ManualButtonDodge(gentity_t *ent);
 //[/ManualDodge]

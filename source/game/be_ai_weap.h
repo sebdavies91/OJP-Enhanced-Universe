@@ -63,6 +63,7 @@ typedef struct weaponinfo_s
 	projectileinfo_t proj;						//pointer to the used projectile
 } weaponinfo_t;
 
+
 //setup the weapon AI
 int BotSetupWeaponAI(void);
 //shut down the weapon AI
@@ -79,3 +80,4 @@ int BotAllocWeaponState(void);
 void BotFreeWeaponState(int weaponstate);
 //resets the whole weapon state
 void BotResetWeaponState(int weaponstate);
+

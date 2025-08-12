@@ -330,55 +330,68 @@ void G_SaveBanIP( void )
 	trap_FS_FCloseFile(fh);
 }
 
-void G_LoadIPBans( void )
-{//load in all the banned IPs
-	int		i, len;
-	char	*p, *token;
-	fileHandle_t fh;
-	char	banIPBuffer[MAX_IPFILTERS*32];			//	The list of file names read in
-	char	banIPFile[MAX_QPATH];
+void G_LoadIPBans(void)
+{
+    int i, len;
+    char* p, * token;
+    fileHandle_t fh;
+    char banIPFile[MAX_QPATH];
+    char* banIPBuffer = NULL;
 
-	len = trap_FS_FOpenFile("banip.txt", &fh, FS_READ);
-	if ( !fh )
-	{
-		G_Printf ( "G_LoadBanIP - ERROR: can't open banip.txt\n" );
-		return;
-	}
-	
-	trap_FS_Read(banIPBuffer, len, fh);
-	banIPBuffer[len] = 0;
-	trap_FS_FCloseFile(fh);
-	p = banIPBuffer;
-	COM_BeginParseSession(banIPFile);
+    len = trap_FS_FOpenFile("banip.txt", &fh, FS_READ);
+    if (!fh)
+    {
+        G_Printf("G_LoadBanIP - ERROR: can't open banip.txt\n");
+        return;
+    }
 
-	//had to change this to compile linux
-	token = COM_ParseExt( (const char **) &p, qtrue );
-	if ( token )
-	{
-		numIPFilters = atoi(token);
+    // Allocate on heap using BG_Alloc instead of malloc
+    banIPBuffer = (char*)BG_Alloc(len + 1);
+    if (!banIPBuffer)
+    {
+        G_Printf("G_LoadBanIP - ERROR: BG_Alloc failed\n");
+        trap_FS_FCloseFile(fh);
+        return;
+    }
 
-		for ( i = 0 ; i < numIPFilters ; i++ ) 
-		{
-			//had to change this to compile linux
-			token = COM_ParseExt( (const char **) &p, qtrue );
-			if ( token )
-			{//have an ip
-				if ( !Q_stricmp("unused",token) )
-				{
-					ipFilters[i].compare = 0xffffffffu;
-				}
-				else
-				{
-					StringToFilter(token,&ipFilters[i]);
-				}
-			}
-			else
-			{
-				break;
-			}
-		}
-	}
+    trap_FS_Read(banIPBuffer, len, fh);
+    banIPBuffer[len] = 0;
+    trap_FS_FCloseFile(fh);
+
+    p = banIPBuffer;
+    COM_BeginParseSession(banIPFile);
+
+    token = COM_ParseExt((const char**)&p, qtrue);
+    if (token)
+    {
+        numIPFilters = atoi(token);
+
+        for (i = 0; i < numIPFilters; i++)
+        {
+            token = COM_ParseExt((const char**)&p, qtrue);
+            if (token)
+            {
+                if (!Q_stricmp("unused", token))
+                {
+                    ipFilters[i].compare = 0xffffffffu;
+                }
+                else
+                {
+                    StringToFilter(token, &ipFilters[i]);
+                }
+            }
+            else
+            {
+                break;
+            }
+        }
+    }
+
+    // Use memset to clear the buffer instead of free
+    memset(banIPBuffer, 0, len + 1);
 }
+
+
 //[/AdminCommands]
 
 

@@ -2763,7 +2763,7 @@ Ghoul2 Insert Start
 	}
 
 //	CG_LoadingString( "Creating terrain" );
-	for(i = 1; i < MAX_TERRAINS; i++)
+	for(i = 0; i < MAX_TERRAINS; i++)
 	{
 		terrainInfo = CG_ConfigString( CS_TERRAINS + i );
 		if ( !terrainInfo[0] )
@@ -2980,8 +2980,10 @@ CG_ConfigString
 =================
 */
 const char *CG_ConfigString( int index ) {
+																			   
 	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
 		CG_Error( "CG_ConfigString: bad index: %i", index );
+
 	}
 	return cgs.gameState.stringData + cgs.gameState.stringOffsets[ index ];
 }
@@ -3745,7 +3747,7 @@ void CG_TransitionPermanent(void)
 
 //this is a 32k custom pool for parsing ents, it can get reset between ent parsing
 //so we don't need a whole lot of memory -rww
-#define MAX_CGSTRPOOL_SIZE		32768
+#define MAX_CGSTRPOOL_SIZE		131072
 static int cg_strPoolSize = 0;
 static byte cg_strPool[MAX_CGSTRPOOL_SIZE];
 

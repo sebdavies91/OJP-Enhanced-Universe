@@ -8,6 +8,7 @@ namespace ragl
 {
 	class graph_vs;
 
+
 	template <class Node, int nodeNum, class Edge, int edgeNum, int edgesPerNode, int regionNum, int regionNum2>
 	class graph_region
 	{

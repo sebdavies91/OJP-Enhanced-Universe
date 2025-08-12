@@ -2060,7 +2060,7 @@ extern int forcePowerDarkLight[NUM_FORCE_POWERS];
 #define	MAX_ARENAS_TEXT		24576
 
 #define MAX_BOTS			2048
-#define MAX_BOTS_TEXT		81920
+#define MAX_BOTS_TEXT		262144
 
 #define	HYPERSPACE_TIME				4000 //For hyperspace triggers
 #define	HYPERSPACE_TELEPORT_FRAC	0.75f

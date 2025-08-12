@@ -45,7 +45,7 @@ void GCam_Move( vec3_t dest, float duration );
 #define MAX_CAMERA_GROUP_SUBJECTS	16
 void GCam_Follow( int cameraGroup[MAX_CAMERA_GROUP_SUBJECTS], float speed, float initLerp );
 
-extern void LogExit( const char *string );
+extern void G_LogExit( const char *string );
 
 int GetStringDeclaredVariable( const char *name, char **value );
 int GetFloatDeclaredVariable( const char *name, float *value );
@@ -362,66 +362,56 @@ void Q3_TaskIDClear( int *taskID )
 	*taskID = -1;
 }
 
-void G_DebugPrint( int level, const char *format, ... )
+void G_DebugPrint(int level, const char* format, ...)
 {
 	va_list		argptr;
 	char		text[1024];
 
-	//Don't print messages they don't want to see
-	//if ( g_ICARUSDebug->integer < level )
-//[CoOp]
-//[SuperDindon]
-//while in debug compile, show all the error messages
 #ifndef _DEBUG
 	if (g_developer.integer != 2)
 		return;
 #endif
-//[/CoOp]
-//[/SuperDindon]
 
-	va_start (argptr, format);
-	//[OverflowProtection]
+	va_start(argptr, format);
 	Q_vsnprintf(text, sizeof(text), format, argptr);
-	//vsprintf( text, format, argptr );
-	//[/OverflowProtection]
-	va_end (argptr);
+	va_end(argptr);
 
-	//Add the color formatting
-	switch ( level )
+	switch (level)
 	{
-		case WL_ERROR:
-			G_Printf ( S_COLOR_RED"ERROR: %s", text );
-			break;
-		
-		case WL_WARNING:
-			G_Printf ( S_COLOR_YELLOW"WARNING: %s", text );
-			break;
-		
-		case WL_DEBUG:
-			{
-				int		entNum;
-				char	*buffer;
+	case WL_ERROR:
+		G_Printf(S_COLOR_RED "ERROR: %s", text);
+		break;
 
-				sscanf( text, "%d", &entNum );
+	case WL_WARNING:
+		G_Printf(S_COLOR_YELLOW "WARNING: %s", text);
+		break;
 
-				//if ( ( ICARUS_entFilter >= 0 ) && ( ICARUS_entFilter != entNum ) )
-				//	return;
+	case WL_DEBUG:
+	{
+		int		entNum = 0;
+		char* buffer;
 
-				buffer = (char *) text;
-				buffer += 5;
 
-				if ( ( entNum < 0 ) || ( entNum > MAX_GENTITIES ) )
-					entNum = 0;
+		if (sscanf(text, "%d", &entNum) != 1) {
+			entNum = 0;
+		}
 
-				G_Printf ( S_COLOR_BLUE"DEBUG: %s(%d): %s\n", g_entities[entNum].script_targetname, entNum, buffer );
-				break;
-			}
-		default:
-		case WL_VERBOSE:
-			G_Printf ( S_COLOR_GREEN"INFO: %s", text );
-			break;
+		buffer = (char*)text + 5;
+
+		if (entNum < 0 || entNum > MAX_GENTITIES)
+			entNum = 0;
+
+		G_Printf(S_COLOR_BLUE "DEBUG: %s(%d): %s\n", g_entities[entNum].script_targetname, entNum, buffer);
+		break;
+	}
+
+	default:
+	case WL_VERBOSE:
+		G_Printf(S_COLOR_GREEN "INFO: %s", text);
+		break;
 	}
 }
+
 
 /*
 -------------------------
@@ -1879,7 +1869,10 @@ int Q3_GetVector( int entID, int type, const char *name, vec3_t value )
 	case SET_PARM14:
 	case SET_PARM15:
 	case SET_PARM16:
-		sscanf( ent->parms->parm[toGet - SET_PARM1], "%f %f %f", &value[0], &value[1], &value[2] );
+		if (sscanf(ent->parms->parm[toGet - SET_PARM1], "%f %f %f", &value[0], &value[1], &value[2]) != 3) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 3 float values for %s\n", name);
+			return 0;
+		}
 		break;
 
 	case SET_ORIGIN:
@@ -6752,7 +6745,7 @@ static void Q3_SetSaberActive( int entID, qboolean active )
 
 	//[CoOp] SP Code
 	//try to switch to the saber if we're not using it.
-	if ( ent->client->ps.weapon != WP_SABER )
+	if (ent->client && ent->client->ps.weapon != WP_SABER )
 	{
 		if ( (ent->client->ps.stats[STAT_WEAPONS]&(1<<WP_SABER)) )
 		{//change to it right now
@@ -6784,7 +6777,7 @@ static void Q3_SetSaberActive( int entID, qboolean active )
 	
 	//[CoOp]
 	//was reversed
-	if (!ent->client->ps.saberHolstered && !active)
+	if (ent->client && !ent->client->ps.saberHolstered && !active)
 	//if (!ent->client->ps.saberHolstered && active)
 	//[/CoOp]
 	{
@@ -6792,7 +6785,7 @@ static void Q3_SetSaberActive( int entID, qboolean active )
 	}
 	//[CoOp]
 	//was reversed
-	else if (BG_SabersOff( &ent->client->ps ) && active)
+	else if (ent->client && BG_SabersOff( &ent->client->ps ) && active)
 	//else if (BG_SabersOff( &ent->client->ps ) && !active)
 	//[/CoOp]
 	{
@@ -6957,37 +6950,41 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 	{
 	//[SPPortComplete]
 	case SET_ORIGIN:
-		sscanf( data, "%f %f %f", &vector_data[0], &vector_data[1], &vector_data[2] );
-		G_SetOrigin( ent, vector_data );
-		if ( Q_strncmp( "NPC_", ent->classname, 4 ) == 0 )
-		{//hack for moving spawners
-			VectorCopy( vector_data, ent->s.origin);
+		if (sscanf(data, "%f %f %f", &vector_data[0], &vector_data[1], &vector_data[2]) != 3) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 3 float values for origin\n");
+			return 0;  // Or handle the error appropriately
 		}
-		
+		G_SetOrigin(ent, vector_data);
+		if (Q_strncmp("NPC_", ent->classname, 4) == 0) { // hack for moving spawners
+			VectorCopy(vector_data, ent->s.origin);
+		}
+
 		//[CoOp]
-		if(in_camera && ent->s.number < MAX_CLIENTS)
-		{//the players are currently in a cutscene.  This means that we need to change the player's stored origin.
+		if (in_camera && ent->s.number < MAX_CLIENTS) { // the players are currently in a cutscene
 			UpdatePlayerCameraOrigin(ent, vector_data);
 		}
 
-		//SP Code
-		if ( ent->client )
-		{//clear jump start positions so we don't take damage when we land...
-			//COOPFIXME RAFIXME - Impliment jumpZStart?
+		// SP Code
+		if (ent->client) { // clear jump start positions so we don't take damage when we land...
+			// COOPFIXME RAFIXME - Implement jumpZStart?
 			ent->client->ps.fd.forceJumpZStart = vector_data[2];
-			//ent->client->ps.jumpZStart = ent->client->ps.forceJumpZStart = vector_data[2];
+			// ent->client->ps.jumpZStart = ent->client->ps.forceJumpZStart = vector_data[2];
 		}
-		trap_LinkEntity( ent );
+		trap_LinkEntity(ent);
 		//[/CoOp]
 		break;
+
 	//[/SPPortComplete]
 
 	case SET_TELEPORT_DEST:
-		sscanf( data, "%f %f %f", &vector_data[0], &vector_data[1], &vector_data[2] );
-		if ( !Q3_SetTeleportDest( entID, vector_data ) )
+		if (sscanf(data, "%f %f %f", &vector_data[0], &vector_data[1], &vector_data[2]) != 3) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 3 float values for teleport destination\n");
+			return 0;
+		}
+		if (!Q3_SetTeleportDest(entID, vector_data))
 		{
-			trap_ICARUS_TaskIDSet( ent, TID_MOVE_NAV, taskID );
-			return qfalse;
+			trap_ICARUS_TaskIDSet(ent, TID_MOVE_NAV, taskID);
+			return 0;
 		}
 		break;
 
@@ -6996,9 +6993,11 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		break;
 
 	case SET_ANGLES:
-		//Q3_SetAngles( entID, *(vec3_t *) data);
-		sscanf( data, "%f %f %f", &vector_data[0], &vector_data[1], &vector_data[2] );
-		Q3_SetAngles( entID, vector_data);
+		if (sscanf(data, "%f %f %f", &vector_data[0], &vector_data[1], &vector_data[2]) != 3) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 3 float values for angles\n");
+			return 0; // or handle the error in another way
+		}
+		Q3_SetAngles(entID, vector_data);
 		break;
 
 	case SET_XVELOCITY:
@@ -8046,7 +8045,7 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		//[CoOp]
 		trap_SP_GetStringTextString( va("SP_INGAME_%s", data), char_data, sizeof(char_data));
 		trap_SendServerCommand(-1, va("cp \""S_COLOR_RED"Mission Failed\n%s\"", char_data));
-		LogExit("Co-Op Mission Failed.");
+		G_LogExit("Co-Op Mission Failed.");
 		//we want the intermission to activate a little slower than normal.
 		level.intermissionQueued = level.time + 5000;
 		//G_DebugPrint( WL_WARNING, "SET_MISSIONFAILED: NOT SUPPORTED IN MP\n");
@@ -8170,30 +8169,42 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		ICam_Enable();
 		break;
 
-	case MOVE:		//camera move
+	case MOVE: // camera move
 		ParseTags(entID, data);
-		sscanf(data, "%*s %f %f %f %*s %f", &vector_data[0], &vector_data[1], &vector_data[2], &float_data);
+		if (sscanf(data, "%*s %f %f %f %*s %f", &vector_data[0], &vector_data[1], &vector_data[2], &float_data) != 4) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 4 values for camera move\n");
+			return 0; // or handle the error as needed
+		}
 		ICam_Move(vector_data, float_data);
 		break;
 
 	case PAN:
 		ParseTags(entID, data);
-		//0.000 0.000 0.000, < 0.000 0.000 0.000 >, 0
-		sscanf(data, "%*s %f %f %f %*s %*s %f %f %f %*s %f", &vector_data[0], &vector_data[1], 
-			&vector_data[2], &vector2_data[0], &vector2_data[1], &vector2_data[2], &float_data);
+		if (sscanf(data, "%*s %f %f %f %*s %*s %f %f %f %*s %f",
+			&vector_data[0], &vector_data[1], &vector_data[2],
+			&vector2_data[0], &vector2_data[1], &vector2_data[2],
+			&float_data) != 7) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 7 values for pan\n");
+			return 0; // or handle the error as needed
+		}
 		ICam_Pan(vector_data, vector2_data, float_data);
 		break;
 
 	case FADE:
-		//< 0.000 0.000 0.000 >, 1.000, < 0.000 0.000 0.000 >, 1.000, 0
-		sscanf(data, "%*s %f %f %f %*s %f %*s %*s %f %f %f %*s %f %*s %f", &color[0], 
-			&color[1], &color[2], &color[3], &color2[0], &color2[1], &color2[2], &color2[3],
-			&float_data);
+		if (sscanf(data, "%*s %f %f %f %*s %f %*s %*s %f %f %f %*s %f %*s %f",
+			&color[0], &color[1], &color[2], &color[3],
+			&color2[0], &color2[1], &color2[2], &color2[3],
+			&float_data) != 9) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 9 values for fade\n");
+			return 0; // Or handle the error appropriately
+		}
 		ICam_Fade(color, color2, float_data);
 		break;
 	case ZOOM:
-		//65.000, 5500
-		sscanf(data, "%f %*s %f", &float_data, &float2_data);
+		if (sscanf(data, "%f %*s %f", &float_data, &float2_data) != 2) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 2 float values for zoom\n");
+			return 0; // Or handle the error appropriately
+		}
 		ICam_Zoom(float_data, float2_data);
 		break;
 
@@ -8202,15 +8213,23 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		break;
 
 	case SHAKE:
-		sscanf(data, "%f %*s %i", &float_data, &int_data);
+		if (sscanf(data, "%f %*s %i", &float_data, &int_data) != 2) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 2 values for shake\n");
+			return 0; // Or handle the error appropriately
+		}
 		ICam_Shake(float_data, int_data);
 		break;
 
+
 	case FOLLOW:
-		sscanf(data, "%s %f %*s %f", &char_data[0], &float_data, &float2_data);
+		if (sscanf(data, "%s %f %*s %f", &char_data[0], &float_data, &float2_data) != 3) {
+			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 3 values for follow\n");
+			return 0; // Or handle the error appropriately
+		}
 		RemoveComma(char_data);
 		ICam_Follow(char_data, float_data, float2_data);
 		break;
+
 	//[/CoOp]
 	
 	default:
@@ -8603,11 +8622,11 @@ void Q3_SetForcePower( int entID, int forcePower, qboolean powerOn )
 }
 
 
-void ToggleNPCWinterGear(gentity_t *ent)
+void ToggleNPCWinterGear(gentity_t* ent)
 {//toggles the winter gear for an NPC
 	char model[MAX_QPATH];
-	
-	if(!ent->s.modelindex)
+
+	if (!ent->s.modelindex)
 	{//no model?!
 		return;
 	}
@@ -8617,20 +8636,22 @@ void ToggleNPCWinterGear(gentity_t *ent)
 
 	if (WinterGear)
 	{//use winter gear
-		char *skinname = strstr ( model, "|" );
-		if(skinname)
+		char* skinname = strstr(model, "|");
+		if (skinname)
 		{//we're using a species player model, try to use their hoth clothes.
-			skinname++;
-			strstr(skinname, "|"); // Ensi: fixme return value
-			if(skinname)
-			{//this should always be true for good specie skins I think
-				strcpy( skinname, "torso_g1|lower_e1\0" );
+			skinname++;  // move past the first '|'
+			char* nextPipe = strstr(skinname, "|"); // find the next '|'
+
+			if (nextPipe)
+			{//this should always be true for good species skins I think
+				strcpy(nextPipe + 1, "torso_g1|lower_e1\0");
 			}
 
 			ent->s.modelindex = G_ModelIndex(model);
 		}
 	}
 }
+
 
 
 /*

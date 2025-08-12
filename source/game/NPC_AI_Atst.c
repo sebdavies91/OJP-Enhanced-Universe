@@ -11,7 +11,7 @@
 #define LEFT_ARM_HEALTH 40
 #define RIGHT_ARM_HEALTH 40
 
-extern void G_SoundOnEnt( gentity_t *ent, soundChannel_t channel, const char *soundPath );
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
 /*
 -------------------------
 NPC_ATST_Precache

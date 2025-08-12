@@ -1,70 +1,118 @@
 ﻿  ai_aotc.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(936,44): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(936,101): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(943,44): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(943,101): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(3563,44): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(3563,101): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(3570,44): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_aotc.c(3570,101): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
   ai_hybrid.c
   ai_main.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(2650,8): warning C4189: 'closestDist': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(2649,7): warning C4189: 'closestEnemyNum': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(2642,12): warning C4101: 'EnemyOrigin': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7107,9): warning C4101: 'fwd': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(2659,8): warning C4189: 'closestDist': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(2658,7): warning C4189: 'closestEnemyNum': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(4604,73): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(4604,130): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(4627,71): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(4627,127): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7405,44): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7405,101): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7413,44): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_main.c(7413,101): warning C5287: operands are different enum types 'clientConnected_t' and 'connstate_t'; use an explicit cast to silence this warning
   ai_tab.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_tab.c(2106,14): warning C4456: declaration of 'ang' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_tab.c(2052,9): message : see declaration of 'ang'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_tab.c(4067,9): warning C4101: 'fwd': unreferenced local variable
   ai_util.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(957,19): warning C4456: declaration of 'skillLevel' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6): message : see declaration of 'skillLevel'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1112,19): warning C4456: declaration of 'skillLevel' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6): message : see declaration of 'skillLevel'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1245,19): warning C4456: declaration of 'skillLevel' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6): message : see declaration of 'skillLevel'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1431,19): warning C4456: declaration of 'skillLevel' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6): message : see declaration of 'skillLevel'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1578,19): warning C4456: declaration of 'skillLevel' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6): message : see declaration of 'skillLevel'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(958,8): warning C4456: declaration of 'skillLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6):
+      see declaration of 'skillLevel'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1113,8): warning C4456: declaration of 'skillLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6):
+      see declaration of 'skillLevel'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1246,8): warning C4456: declaration of 'skillLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6):
+      see declaration of 'skillLevel'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1432,8): warning C4456: declaration of 'skillLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6):
+      see declaration of 'skillLevel'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(1580,8): warning C4456: declaration of 'skillLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\ai_util.c(801,6):
+      see declaration of 'skillLevel'
+  
   ai_wpnav.c
   AnimalNPC.c
   aotctc_holocron.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\aotctc_holocron.c(235,32): warning C4456: declaration of 'lineout' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\aotctc_holocron.c(206,9): message : see declaration of 'lineout'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\aotctc_holocron.c(250,8): warning C4456: declaration of 'lineout' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\aotctc_holocron.c(221,9):
+      see declaration of 'lineout'
+  
   bg_g2_utils.c
   bg_misc.c
   bg_panimate.c
   bg_pmove.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2806,23): warning C4456: declaration of 'allowFlips' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2417,11): message : see declaration of 'allowFlips'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9296,12): warning C4456: declaration of 'weap' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9253,6): message : see declaration of 'weap'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(11846,38): warning C4459: declaration of 'pm' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(30,11): message : see declaration of 'pm'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13656,14): warning C4456: declaration of 'dif' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13374,16): message : see declaration of 'dif'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13851,13): warning C4456: declaration of 'aLen' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13813,7): message : see declaration of 'aLen'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2822,12): warning C4456: declaration of 'allowFlips' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2433,11):
+      see declaration of 'allowFlips'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9641,7): warning C4456: declaration of 'weap' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9598,6):
+      see declaration of 'weap'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(12375,38): warning C4459: declaration of 'pm' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(30,11):
+      see declaration of 'pm'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(14186,10): warning C4456: declaration of 'dif' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13904,16):
+      see declaration of 'dif'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(14381,8): warning C4456: declaration of 'aLen' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(14343,7):
+      see declaration of 'aLen'
+  
   bg_saber.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1400,16): warning C4457: declaration of 'strength' hides function parameter
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1292,70): message : see declaration of 'strength'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1400,7): warning C4457: declaration of 'strength' hides function parameter
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1292,70):
+      see declaration of 'strength'
+  
   bg_saberLoad.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(471,15): warning C4456: declaration of 'styleNum' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(384,23): message : see declaration of 'styleNum'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(471,7): warning C4456: declaration of 'styleNum' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(384,23):
+      see declaration of 'styleNum'
+  
   bg_saga.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1293,21): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1028,6): message : see declaration of 'i'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1293,20): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1028,6):
+      see declaration of 'i'
+  
   bg_slidemove.c
   bg_vehicleLoad.c
   bg_weapons.c
   FighterNPC.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\FighterNPC.c(1032,21): warning C4457: declaration of 'parent' hides function parameter
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\FighterNPC.c(937,64): message : see declaration of 'parent'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\FighterNPC.c(1032,14): warning C4457: declaration of 'parent' hides function parameter
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\FighterNPC.c(937,64):
+      see declaration of 'parent'
+  
   g_active.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(510,51): warning C4459: declaration of 'pm' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_public.h(657,18): message : see declaration of 'pm'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(711,12): warning C4459: declaration of 'pm' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_public.h(657,18): message : see declaration of 'pm'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(2582,13): warning C4459: declaration of 'pm' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_public.h(657,18): message : see declaration of 'pm'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(3457,25): warning C4456: declaration of 'playerDuelShield' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(3309,8): message : see declaration of 'playerDuelShield'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(510,46): warning C4459: declaration of 'pm' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_public.h(665,18):
+      see declaration of 'pm'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(711,10): warning C4459: declaration of 'pm' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_public.h(665,18):
+      see declaration of 'pm'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(2577,11): warning C4459: declaration of 'pm' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_public.h(665,18):
+      see declaration of 'pm'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(3469,9): warning C4456: declaration of 'playerDuelShield' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_active.c(3321,8):
+      see declaration of 'playerDuelShield'
+  
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9318): warning C4706: assignment within conditional expression
   Compiling...
   g_arenas.c
   g_autosave.c
@@ -72,66 +120,104 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_breakable.c
   g_camera.c
   g_client.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(4211,11): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(3502,10): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(4529,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(3502,10): message : see declaration of 'i'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(4235,10): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(3526,10):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(4553,8): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_client.c(3526,10):
+      see declaration of 'i'
+  
   g_cmds.c
   g_combat.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2703,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2609,8): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3483,20): warning C4459: declaration of 'client' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19): message : see declaration of 'client'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3553,15): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2609,8): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3700,10): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2609,8): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3741,19): warning C4459: declaration of 'client' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19): message : see declaration of 'client'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5665,19): warning C4459: declaration of 'client' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19): message : see declaration of 'client'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5670,8): warning C4101: 'max': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2735,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2626,8):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3530,14): warning C4459: declaration of 'client' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19):
+      see declaration of 'client'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3608,14): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2626,8):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3756,8): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(2626,8):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(3797,13): warning C4459: declaration of 'client' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19):
+      see declaration of 'client'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5726,13): warning C4459: declaration of 'client' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19):
+      see declaration of 'client'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5733,9): warning C4189: 'hamt': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5732,9): warning C4189: 'famt': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_combat.c(5731,8): warning C4189: 'subamt': local variable is initialized but not referenced
   g_crash.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_crash.c(281,59): warning C4113: 'BOOL (__stdcall *)(LPSTR,DWORD,PVOID)' differs in parameter lists from 'PSYM_ENUMMODULES_CALLBACK'
   g_dynmusic.c
   g_exphysics.c
   g_ICARUScb.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_ICARUScb.c(365,24): warning C4459: declaration of 'level' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_local.h(1880,23): message : see declaration of 'level'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_ICARUScb.c(8733,28): warning C4456: declaration of 'var' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_ICARUScb.c(8723,22): message : see declaration of 'var'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_ICARUScb.c(365,23): warning C4459: declaration of 'level' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_local.h(1893,23):
+      see declaration of 'level'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_ICARUScb.c(8754,24): warning C4456: declaration of 'var' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_ICARUScb.c(8744,22):
+      see declaration of 'var'
+  
   g_items.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(1615,11): warning C4189: 'saberBlocked': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4150,6): warning C4101: 'shots': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4148,10): warning C4101: 'angs': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(4149,6): warning C4101: 'i': unreferenced local variable
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_items.c(1634,11): warning C4189: 'saberBlocked': local variable is initialized but not referenced
   g_log.c
   g_main.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1489,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1258,10): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1518,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1258,10): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1551,8): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1258,10): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1678,60): warning C4459: declaration of 'level' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(21,16): message : see declaration of 'level'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(3224,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(3206,9): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4375,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4348,8): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4400,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4348,8): message : see declaration of 'i'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1489,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1258,10):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1518,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1258,10):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1551,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1258,10):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(1678,28): warning C4459: declaration of 'level' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(21,16):
+      see declaration of 'level'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(3224,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(3206,9):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4375,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4348,8):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4400,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_main.c(4348,8):
+      see declaration of 'i'
+  
   g_mem.c
   g_misc.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4940,20): warning C4456: declaration of 'player' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4858,13): message : see declaration of 'player'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4941,9): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4857,6): message : see declaration of 'i'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4940,14): warning C4456: declaration of 'player' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4858,13):
+      see declaration of 'player'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4941,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_misc.c(4857,6):
+      see declaration of 'i'
+  
   g_missile.c
   g_mover.c
   g_nav.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_nav.c(1148,17): warning C4456: declaration of 'origin' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_nav.c(1116,9): message : see declaration of 'origin'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_nav.c(1151,11): warning C4456: declaration of 'origin' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_nav.c(1119,9):
+      see declaration of 'origin'
+  
   Generating Code...
   Compiling...
   g_navnew.c
@@ -139,8 +225,10 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_roff.c
   g_saberbeh.c
   g_saga.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_saga.c(1517,22): warning C4456: declaration of 'carrier' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_saga.c(1474,13): message : see declaration of 'carrier'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_saga.c(1496,14): warning C4456: declaration of 'carrier' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_saga.c(1453,13):
+      see declaration of 'carrier'
+  
   g_session.c
   g_spawn.c
   g_strap.c
@@ -154,50 +242,89 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   g_turret_G2.c
   g_utils.c
   g_vehicles.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(1708,8): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(1648,6): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(3114,17): warning C4457: declaration of 'deathPoint' hides function parameter
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(3106,69): message : see declaration of 'deathPoint'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(1711,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(1651,6):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(3149,7): warning C4457: declaration of 'deathPoint' hides function parameter
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_vehicles.c(3141,69):
+      see declaration of 'deathPoint'
+  
   g_vehicleTurret.c
   g_weapon.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(1621,17): warning C4459: declaration of 'muzzle2' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17): message : see declaration of 'muzzle2'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(2197,17): warning C4459: declaration of 'muzzle2' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17): message : see declaration of 'muzzle2'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(2673,17): warning C4459: declaration of 'muzzle2' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17): message : see declaration of 'muzzle2'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(4590,17): warning C4459: declaration of 'forward' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15): message : see declaration of 'forward'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5265,6): warning C4459: declaration of 'up' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32): message : see declaration of 'up'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5843,6): warning C4189: 'dif': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(5844,8): warning C4101: 'rTime': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(9260,17): warning C4459: declaration of 'muzzle2' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17): message : see declaration of 'muzzle2'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10540,8): warning C4189: 'boxSize': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10536,6): warning C4101: 'count': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11008,17): warning C4459: declaration of 'forward' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15): message : see declaration of 'forward'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11008,28): warning C4459: declaration of 'up' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32): message : see declaration of 'up'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11127,47): warning C4459: declaration of 'forward' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15): message : see declaration of 'forward'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11127,77): warning C4459: declaration of 'up' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32): message : see declaration of 'up'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11151,48): warning C4459: declaration of 'forward' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15): message : see declaration of 'forward'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11151,78): warning C4459: declaration of 'up' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32): message : see declaration of 'up'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11182,123): warning C4459: declaration of 'forward' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15): message : see declaration of 'forward'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(11182,123): warning C4459: declaration of 'up' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32): message : see declaration of 'up'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(2085,10): warning C4459: declaration of 'muzzle2' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17):
+      see declaration of 'muzzle2'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(2562,10): warning C4459: declaration of 'muzzle2' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17):
+      see declaration of 'muzzle2'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(3038,10): warning C4459: declaration of 'muzzle2' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17):
+      see declaration of 'muzzle2'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(3514,10): warning C4459: declaration of 'muzzle2' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17):
+      see declaration of 'muzzle2'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(4095,10): warning C4459: declaration of 'muzzle2' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17):
+      see declaration of 'muzzle2'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(6698,10): warning C4459: declaration of 'forward' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15):
+      see declaration of 'forward'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(7707,4): warning C4459: declaration of 'up' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32):
+      see declaration of 'up'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(8101,6): warning C4189: 'dif': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13323,10): warning C4459: declaration of 'muzzle2' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15,17):
+      see declaration of 'muzzle2'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15173,8): warning C4189: 'boxSize': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15644,10): warning C4459: declaration of 'forward' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15):
+      see declaration of 'forward'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15644,26): warning C4459: declaration of 'up' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32):
+      see declaration of 'up'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15763,47): warning C4459: declaration of 'forward' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15):
+      see declaration of 'forward'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15763,77): warning C4459: declaration of 'up' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32):
+      see declaration of 'up'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15787,48): warning C4459: declaration of 'forward' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15):
+      see declaration of 'forward'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15787,78): warning C4459: declaration of 'up' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32):
+      see declaration of 'up'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15818,68): warning C4459: declaration of 'forward' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,15):
+      see declaration of 'forward'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15818,98): warning C4459: declaration of 'up' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(13,32):
+      see declaration of 'up'
+  
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(400): warning C4703: potentially uninitialized local pointer variable 'missile2' used
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(576): warning C4703: potentially uninitialized local pointer variable 'missile2' used
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10096): warning C4703: potentially uninitialized local pointer variable 'missile2' used
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10273): warning C4703: potentially uninitialized local pointer variable 'missile2' used
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(10560): warning C4703: potentially uninitialized local pointer variable 'missile2' used
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(400,1): warning C4703: potentially uninitialized local pointer variable 'missile2' used
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(576,1): warning C4703: potentially uninitialized local pointer variable 'missile2' used
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(1177,1): warning C4703: potentially uninitialized local pointer variable 'missile2' used
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(14447,1): warning C4703: potentially uninitialized local pointer variable 'missile2' used
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(14624,1): warning C4703: potentially uninitialized local pointer variable 'missile2' used
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\g_weapon.c(15193,1): warning C4703: potentially uninitialized local pointer variable 'missile2' used
   Compiling...
   NPC.c
   NPC_AI_AssassinDroid.c
@@ -205,22 +332,32 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   NPC_AI_Civilian.c
   NPC_AI_Default.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Default.c(87,45): warning C4459: declaration of 'NPC' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(63,19): message : see declaration of 'NPC'
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(63,19):
+      see declaration of 'NPC'
+  
   NPC_AI_Droid.c
   NPC_AI_GalakMech.c
   NPC_AI_Grenadier.c
   NPC_AI_Howler.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Howler.c(475,14): warning C4456: declaration of 'fwd' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Howler.c(457,9): message : see declaration of 'fwd'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Howler.c(475,11): warning C4456: declaration of 'fwd' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Howler.c(457,9):
+      see declaration of 'fwd'
+  
   NPC_AI_ImperialProbe.c
   NPC_AI_Interrogator.c
   NPC_AI_Jedi.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3403,20): warning C4456: declaration of 'fwdAngles' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3323,43): message : see declaration of 'fwdAngles'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3459,18): warning C4456: declaration of 'parts' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3325,7): message : see declaration of 'parts'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3547,16): warning C4456: declaration of 'parts' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3325,7): message : see declaration of 'parts'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3459,11): warning C4456: declaration of 'fwdAngles' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3379,43):
+      see declaration of 'fwdAngles'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3515,13): warning C4456: declaration of 'parts' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3381,7):
+      see declaration of 'parts'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3603,11): warning C4456: declaration of 'parts' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Jedi.c(3381,7):
+      see declaration of 'parts'
+  
   NPC_AI_Mark1.c
   NPC_AI_Mark2.c
   NPC_AI_MineMonster.c
@@ -235,12 +372,19 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   NPC_AI_Sentry.c
   NPC_AI_Sniper.c
   NPC_AI_Stormtrooper.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Stormtrooper.c(2389,11): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Stormtrooper.c(2124,8): message : see declaration of 'i'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Stormtrooper.c(2392,10): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_AI_Stormtrooper.c(2127,8):
+      see declaration of 'i'
+  
   NPC_AI_Utils.c
   NPC_AI_Wampa.c
   NPC_behavior.c
   NPC_combat.c
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_combat.c(84,49): warning C5287: operands are different enum types 'npcteam_t' and 'team_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_combat.c(1976,33): warning C5287: operands are different enum types 'npcteam_t' and 'team_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_combat.c(1982,31): warning C5287: operands are different enum types 'npcteam_t' and 'team_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_combat.c(1985,33): warning C5287: operands are different enum types 'npcteam_t' and 'team_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_combat.c(2751,31): warning C5287: operands are different enum types 'npcteam_t' and 'team_t'; use an explicit cast to silence this warning
   NPC_goal.c
   NPC_misc.c
   NPC_move.c
@@ -249,55 +393,117 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   NPC_sounds.c
   NPC_spawn.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(97,34): warning C4459: declaration of 'client' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19): message : see declaration of 'client'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(1249,19): warning C4459: declaration of 'client' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19): message : see declaration of 'client'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(1250,16): warning C4459: declaration of 'ucmd' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18): message : see declaration of 'ucmd'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(5081,18): warning C4457: declaration of 'ent' hides function parameter
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(5051,28): message : see declaration of 'ent'
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19):
+      see declaration of 'client'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(1664,13): warning C4459: declaration of 'client' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19):
+      see declaration of 'client'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(1665,12): warning C4459: declaration of 'ucmd' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18):
+      see declaration of 'ucmd'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(5422,37): warning C5287: operands are different enum types 'npcteam_t' and 'team_t'; use an explicit cast to silence this warning
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(5496,14): warning C4457: declaration of 'ent' hides function parameter
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_spawn.c(5466,28):
+      see declaration of 'ent'
+  
   NPC_stats.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_stats.c(1029,58): warning C4459: declaration of 'NPC' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(63,19): message : see declaration of 'NPC'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_stats.c(1049,58): warning C4459: declaration of 'NPC' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(63,19):
+      see declaration of 'NPC'
+  
   NPC_utils.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_utils.c(195,3): warning C4033: 'NPC_UpdateAngles' must return a value
   NPC_Vehicle.c
   q_math.c
   q_shared.c
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\NPC_utils.c(524): warning C4715: 'NPC_UpdateAngles': not all control paths return a value
   Compiling...
   SpeederNPC.c
   tri_coll_test.c
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\tri_coll_test.c(287,3): warning C4456: declaration of 'c' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\tri_coll_test.c(211,11): message : see declaration of 'c'
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\tri_coll_test.c(211,11):
+      see declaration of 'c'
+  
 E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\tri_coll_test.c(288,3): warning C4456: declaration of 'c' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\tri_coll_test.c(211,11): message : see declaration of 'c'
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\tri_coll_test.c(211,11):
+      see declaration of 'c'
+  
   w_force.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4666,51): warning C4459: declaration of 'ucmd' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18): message : see declaration of 'ucmd'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4726,77): warning C4459: declaration of 'ucmd' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18): message : see declaration of 'ucmd'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4811,45): warning C4459: declaration of 'ucmd' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18): message : see declaration of 'ucmd'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5027,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5325,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5535,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5532,6): warning C4189: 'modPowerLevel': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5750,10): warning C4101: 'tr': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5747,6): warning C4189: 'modPowerLevel': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6281,13): warning C4101: 'aimingAt': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(7376,13): warning C4101: 'aimingAt': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(9282,47): warning C4459: declaration of 'client' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19): message : see declaration of 'client'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(9326,51): warning C4459: declaration of 'client' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19): message : see declaration of 'client'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(9855,53): warning C4459: declaration of 'ucmd' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18): message : see declaration of 'ucmd'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10661,56): warning C4459: declaration of 'ucmd' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18): message : see declaration of 'ucmd'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4150,6): warning C4456: declaration of 'dmg' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4122,6):
+      see declaration of 'dmg'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4154,6): warning C4456: declaration of 'modPowerLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4121,6):
+      see declaration of 'modPowerLevel'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4120,6): warning C4189: 'poweradd': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4123,13): warning C4189: 'te': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4122,6): warning C4189: 'dmg': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(4121,6): warning C4189: 'modPowerLevel': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5161,51): warning C4459: declaration of 'ucmd' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18):
+      see declaration of 'ucmd'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5221,77): warning C4459: declaration of 'ucmd' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18):
+      see declaration of 'ucmd'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5306,45): warning C4459: declaration of 'ucmd' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18):
+      see declaration of 'ucmd'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(5930,6): warning C4189: 'modPowerLevel': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(6142,6): warning C4189: 'modPowerLevel': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(9575,47): warning C4459: declaration of 'client' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19):
+      see declaration of 'client'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(9621,51): warning C4459: declaration of 'client' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(65,19):
+      see declaration of 'client'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10189,53): warning C4459: declaration of 'ucmd' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18):
+      see declaration of 'ucmd'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10522,6): warning C4456: declaration of 'dmg' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10507,6):
+      see declaration of 'dmg'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10526,6): warning C4456: declaration of 'modPowerLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10509,6):
+      see declaration of 'modPowerLevel'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10508,6): warning C4189: 'poweradd': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10510,13): warning C4189: 'te': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10507,6): warning C4189: 'dmg': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10509,6): warning C4189: 'modPowerLevel': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10714,6): warning C4456: declaration of 'dmg' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10699,6):
+      see declaration of 'dmg'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10718,6): warning C4456: declaration of 'modPowerLevel' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10701,6):
+      see declaration of 'modPowerLevel'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10700,6): warning C4189: 'poweradd': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10702,13): warning C4189: 'te': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10699,6): warning C4189: 'dmg': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(10701,6): warning C4189: 'modPowerLevel': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(11417,56): warning C4459: declaration of 'ucmd' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\b_local.h(66,18):
+      see declaration of 'ucmd'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12281,7): warning C4210: nonstandard extension used: function given file scope
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12282,11): warning C4210: nonstandard extension used: function given file scope
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12389,7): warning C4210: nonstandard extension used: function given file scope
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12390,13): warning C4210: nonstandard extension used: function given file scope
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_force.c(12391,13): warning C4210: nonstandard extension used: function given file scope
   w_saber.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_saber.c(11182,107): warning C4210: nonstandard extension used: function given file scope
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\w_saber.c(2699,6): warning C4189: 'peakDif': local variable is initialized but not referenced
   WalkerNPC.c
   Generating Code...
      Creating library .\../Final/jampgamex86.lib and object .\../Final/jampgamex86.exp

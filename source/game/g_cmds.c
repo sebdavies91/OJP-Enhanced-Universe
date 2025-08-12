@@ -928,7 +928,7 @@ SetTeam
 =================
 */
 //[AdminSys]
-int G_CountHumanPlayers( int team );
+int G_CountHumanPlayers(int ignoreClientNum, int team);
 int G_CountBotPlayers( int team );
 extern int OJP_PointSpread(void);
 //[/AdminSys]
@@ -1087,7 +1087,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 			if(g_teamForceBalance.integer == 4)
 			{//check for human/bot 
 				int BotCount[TEAM_NUM_TEAMS];
-				int HumanCount = G_CountHumanPlayers( -1 );
+				int HumanCount = G_CountHumanPlayers( -1,-1 );
 
 				BotCount[TEAM_BLUE] = G_CountBotPlayers( TEAM_BLUE );
 				BotCount[TEAM_RED] = G_CountBotPlayers( TEAM_RED );
@@ -2263,7 +2263,10 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		}
 		else
 		{//we can chat, bump the debouncer
+			if(ent->client)
+			{ 
 			ent->client->chatDebounceTime = level.time + ojp_chatProtectTime.integer;
+			}
 		}
 	}
 	//[/AdminSys][/ChatSpamProtection]
@@ -2276,36 +2279,45 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 	switch ( mode ) {
 	default:
 	case SAY_ALL:
+		if(ent->client)
+		{ 
 		G_LogPrintf( "say: %s: %s\n", ent->client->pers.netname, chatText );
 		Com_sprintf (name, sizeof(name), "%s%c%c"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
+		}
 		color = COLOR_GREEN;
 		break;
 	case SAY_TEAM:
-		G_LogPrintf( "sayteam: %s: %s\n", ent->client->pers.netname, chatText );
-		if (Team_GetLocationMsg(ent, location, sizeof(location)))
+		if (ent->client)
 		{
-			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ", 
-				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
-			locMsg = location;
-		}
-		else
-		{
-			Com_sprintf (name, sizeof(name), EC"(%s%c%c"EC")"EC": ", 
-				ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
+			G_LogPrintf("sayteam: %s: %s\n", ent->client->pers.netname, chatText);
+			if (Team_GetLocationMsg(ent, location, sizeof(location)))
+			{
+				Com_sprintf(name, sizeof(name), EC"(%s%c%c"EC")"EC": ",
+					ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+				locMsg = location;
+			}
+			else
+			{
+				Com_sprintf(name, sizeof(name), EC"(%s%c%c"EC")"EC": ",
+					ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+			}
 		}
 		color = COLOR_CYAN;
 		break;
 	case SAY_TELL:
-		if (target && g_gametype.integer >= GT_TEAM &&
-			target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
-			Team_GetLocationMsg(ent, location, sizeof(location)))
+		if (ent->client)
 		{
-			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
-			locMsg = location;
-		}
-		else
-		{
-			Com_sprintf (name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE );
+			if (target && g_gametype.integer >= GT_TEAM &&
+				target->client->sess.sessionTeam == ent->client->sess.sessionTeam &&
+				Team_GetLocationMsg(ent, location, sizeof(location)))
+			{
+				Com_sprintf(name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+				locMsg = location;
+			}
+			else
+			{
+				Com_sprintf(name, sizeof(name), EC"[%s%c%c"EC"]"EC": ", ent->client->pers.netname, Q_COLOR_ESCAPE, COLOR_WHITE);
+			}
 		}
 		color = COLOR_MAGENTA;
 		break;
@@ -3789,16 +3801,17 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 			//no dice, keep looking
 			selectLevel++;
 		}
+		
 
 		//handle saber activation/deactivation based on the style transition
 		if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0])
 		{//using dual sabers
-			if(selectLevel != SS_DUAL && selectLevel != SS_STAFF && ent->client->ps.saberHolstered == 0 && !ent->client->ps.saberInFlight)
+			if(selectLevel != SS_DUAL && selectLevel != SS_STAFF && ent->client->ps.saberHolstered == 0 )
 			{//not using dual style, turn off the other blade
 				G_Sound(ent, CHAN_AUTO, ent->client->saber[1].soundOff);
 				ent->client->ps.saberHolstered = 1;
 			}
-			else if((selectLevel == SS_DUAL || selectLevel == SS_STAFF)&& ent->client->ps.saberHolstered == 1 && !ent->client->ps.saberInFlight)
+			else if((selectLevel == SS_DUAL || selectLevel == SS_STAFF)&& ent->client->ps.saberHolstered == 1 )
 			{
 				G_Sound(ent, CHAN_AUTO, ent->client->saber[1].soundOn);
 				ent->client->ps.saberHolstered = 0;
@@ -3807,17 +3820,19 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 		else if (ent->client->saber[0].numBlades > 1 
 			&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] ) )
 		{ //use staff stance then.
-			if(selectLevel != SS_STAFF && selectLevel != SS_DUAL && ent->client->ps.saberHolstered == 0 && !ent->client->ps.saberInFlight)
+			if(selectLevel != SS_STAFF && selectLevel != SS_DUAL && ent->client->ps.saberHolstered == 0 )
 			{
 				G_Sound(ent, CHAN_AUTO, ent->client->saber[0].soundOff);
 				ent->client->ps.saberHolstered = 1;
 			}
-			else if((selectLevel == SS_STAFF || selectLevel == SS_DUAL) && ent->client->ps.saberHolstered == 1 && !ent->client->ps.saberInFlight)
+			else if((selectLevel == SS_STAFF || selectLevel == SS_DUAL) && ent->client->ps.saberHolstered == 1 )
 			{
 					G_Sound(ent, CHAN_AUTO, ent->client->saber[0].soundOn);
 					ent->client->ps.saberHolstered = 0;
 			}
 		}
+		
+
 		/*
 		//[HiddenStances]
 		if ( selectLevel > ent->client->ps.fd.forcePowerLevel[FP_SABER_OFFENSE] 

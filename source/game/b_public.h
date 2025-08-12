@@ -309,7 +309,7 @@ typedef struct
 void G_SquadPathsInit(void);
 void NPC_InitGame( void );
 void G_LoadBoltOns( void );
-void Svcmd_NPC_f( void );
+void Svcmd_Nav_f( void );
 void NAV_DebugShowWaypoints (void);
 void NAV_DebugShowBoxes (void);
 void NAV_DebugShowSquadPaths (void);

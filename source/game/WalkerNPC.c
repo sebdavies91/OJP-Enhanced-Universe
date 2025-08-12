@@ -75,7 +75,7 @@ extern vmCvar_t	cg_thirdPersonAlpha;
 extern vec3_t playerMins;
 extern vec3_t playerMaxs;
 extern cvar_t	*g_speederControlScheme;
-extern void PM_SetAnim(pmove_t	*pm,int setAnimParts,int anim,int setAnimFlags, int blendTime);
+extern void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
 extern int PM_AnimLength( int index, animNumber_t anim );
 extern void Vehicle_SetAnim(gentity_t *ent,int setAnimParts,int anim,int setAnimFlags, int iBlend);
 extern void G_Knockdown( gentity_t *self, gentity_t *attacker, const vec3_t pushDir, float strength, qboolean breakSaberLock );
@@ -223,22 +223,22 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 	}
 
 	fWalkSpeedMax = speedMax * 0.275f;
-	if ( pVeh->m_ucmd.buttons & BUTTON_WALKING && parentPS->speed > fWalkSpeedMax )
+	if (parentPS && pVeh->m_ucmd.buttons & BUTTON_WALKING && parentPS->speed > fWalkSpeedMax )
 	{
 		parentPS->speed = fWalkSpeedMax;
 	}
-	else if ( parentPS->speed > speedMax )
+	else if (parentPS && parentPS->speed > speedMax )
 	{
 		parentPS->speed = speedMax;
 	}
-	else if ( parentPS->speed < speedMin )
+	else if (parentPS && parentPS->speed < speedMin )
 	{
 		parentPS->speed = speedMin;
 	}
 
 	//ROP VEHICLE_IMP START
 	//if(pVeh->nTransAnimTime > pm->cmd.serverTime)
-	if(pVeh->bTransAnimFlag && parentPS->legsTimer > 0)
+	if(parentPS && pVeh->bTransAnimFlag && parentPS->legsTimer > 0)
 	{
 		//Can't move while in a transition anim
 		parentPS->speed = 0;
@@ -254,14 +254,17 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 			//Some transition anims need a speed boost afterwards
 			if(pVeh->nTransAnim == BOTH_RUN1START)
 			{
-				parentPS->speed = fWalkSpeedMax + 1;
+				if (parentPS)
+				{
+					parentPS->speed = fWalkSpeedMax + 1;
+				}
 			}
 		}
 	}
 	//ROP VEHICLE_IMP END
 
 
-	if (parentPS->stats[STAT_HEALTH] <= 0)
+	if (parentPS && parentPS->stats[STAT_HEALTH] <= 0)
 	{ //don't keep moving while you're dying!
 		parentPS->speed = 0;
 	}

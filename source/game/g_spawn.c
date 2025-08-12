@@ -40,12 +40,20 @@ qboolean	G_SpawnInt( const char *key, const char *defaultString, int *out ) {
 	return present;
 }
 
-qboolean	G_SpawnVector( const char *key, const char *defaultString, float *out ) {
-	char		*s;
-	qboolean	present;
+qboolean G_SpawnVector(const char* key, const char* defaultString, float* out) {
+	char* s;
+	qboolean present;
 
-	present = G_SpawnString( key, defaultString, &s );
-	sscanf( s, "%f %f %f", &out[0], &out[1], &out[2] );
+	present = G_SpawnString(key, defaultString, &s);
+
+	// Use 'if' to handle the return value of sscanf
+
+	// Optionally, you can check if 'result' is what you expect (e.g., 3 for 3 floats)
+	if (sscanf(s, "%f %f %f", &out[0], &out[1], &out[2]) != 3) {
+		// Handle error or log if necessary
+		// e.g., Com_Printf("Failed to parse vector!\n");
+	}
+
 	return present;
 }
 
@@ -168,10 +176,10 @@ void SP_info_player_intermission_blue (gentity_t *ent);
 void SP_info_jedimaster_start (gentity_t *ent);
 void SP_info_player_start_red (gentity_t *ent);
 void SP_info_player_start_blue (gentity_t *ent);
-void SP_info_firstplace(gentity_t *ent);
-void SP_info_secondplace(gentity_t *ent);
-void SP_info_thirdplace(gentity_t *ent);
-void SP_info_podium(gentity_t *ent);
+//void SP_info_firstplace(gentity_t *ent);
+//void SP_info_secondplace(gentity_t *ent);
+//void SP_info_thirdplace(gentity_t *ent);
+//void SP_info_podium(gentity_t *ent);
 
 void SP_info_siege_objective (gentity_t *ent);
 void SP_info_siege_radaricon (gentity_t *ent);
@@ -216,7 +224,7 @@ void SP_target_delay (gentity_t *ent);
 void SP_target_speaker (gentity_t *ent);
 void SP_target_print (gentity_t *ent);
 void SP_target_laser (gentity_t *self);
-void SP_target_character (gentity_t *ent);
+//void SP_target_character (gentity_t *ent);
 void SP_target_score( gentity_t *ent );
 void SP_target_teleporter( gentity_t *ent );
 void SP_target_relay (gentity_t *ent);
@@ -1001,15 +1009,19 @@ void AddSpawnField(char *field, char *value)
 
 static void HandleEntityAdjustment(void)
 {
-	char		*value;
-	vec3_t		origin, newOrigin, angles;
-	char		temp[MAX_QPATH];
-	float		rotation;
+	char* value;
+	vec3_t origin, newOrigin, angles;
+	char temp[MAX_QPATH];
+	float rotation;
 
 	G_SpawnString("origin", NOVALUE, &value);
 	if (Q_stricmp(value, NOVALUE) != 0)
 	{
-		sscanf( value, "%f %f %f", &origin[0], &origin[1], &origin[2] );
+		if (sscanf(value, "%f %f %f", &origin[0], &origin[1], &origin[2]) != 3)
+		{
+			// Handle the error case if needed
+			//origin[0] = origin[1] = origin[2] = 0.0;
+		}
 	}
 	else
 	{
@@ -1017,21 +1029,25 @@ static void HandleEntityAdjustment(void)
 	}
 
 	rotation = DEG2RAD(level.mRotationAdjust);
-	newOrigin[0] = origin[0]*cos(rotation) - origin[1]*sin(rotation);
-	newOrigin[1] = origin[0]*sin(rotation) + origin[1]*cos(rotation);
+	newOrigin[0] = origin[0] * cos(rotation) - origin[1] * sin(rotation);
+	newOrigin[1] = origin[0] * sin(rotation) + origin[1] * cos(rotation);
 	newOrigin[2] = origin[2];
 	VectorAdd(newOrigin, level.mOriginAdjust, newOrigin);
-	// damn VMs don't handle outputing a float that is compatible with sscanf in all cases
+	// damn VMs don't handle outputting a float that is compatible with sscanf in all cases
 	Com_sprintf(temp, MAX_QPATH, "%0.0f %0.0f %0.0f", newOrigin[0], newOrigin[1], newOrigin[2]);
 	AddSpawnField("origin", temp);
 
 	G_SpawnString("angles", NOVALUE, &value);
 	if (Q_stricmp(value, NOVALUE) != 0)
 	{
-		sscanf( value, "%f %f %f", &angles[0], &angles[1], &angles[2] );
+		if (sscanf(value, "%f %f %f", &angles[0], &angles[1], &angles[2]) != 3)
+		{
+			// Handle the error case if needed
+			//angles[0] = angles[1] = angles[2] = 0.0;
+		}
 
 		angles[1] = fmod(angles[1] + level.mRotationAdjust, 360.0f);
-		// damn VMs don't handle outputing a float that is compatible with sscanf in all cases
+		// damn VMs don't handle outputting a float that is compatible with sscanf in all cases
 		Com_sprintf(temp, MAX_QPATH, "%0.0f %0.0f %0.0f", angles[0], angles[1], angles[2]);
 		AddSpawnField("angles", temp);
 	}
@@ -1040,7 +1056,11 @@ static void HandleEntityAdjustment(void)
 		G_SpawnString("angle", NOVALUE, &value);
 		if (Q_stricmp(value, NOVALUE) != 0)
 		{
-			sscanf( value, "%f", &angles[1] );
+			if (sscanf(value, "%f", &angles[1]) != 1)
+			{
+				// Handle the error case if needed
+				//angles[1] = 0.0;
+			}
 		}
 		else
 		{
@@ -1056,7 +1076,11 @@ static void HandleEntityAdjustment(void)
 	G_SpawnString("direction", NOVALUE, &value);
 	if (Q_stricmp(value, NOVALUE) != 0)
 	{
-		sscanf( value, "%f %f %f", &angles[0], &angles[1], &angles[2] );
+		if (sscanf(value, "%f %f %f", &angles[0], &angles[1], &angles[2]) != 3)
+		{
+			// Handle the error case if needed
+			//angles[0] = angles[1] = angles[2] = 0.0;
+		}
 	}
 	else
 	{
@@ -1065,7 +1089,6 @@ static void HandleEntityAdjustment(void)
 	angles[1] = fmod(angles[1] + level.mRotationAdjust, 360.0f);
 	Com_sprintf(temp, MAX_QPATH, "%0.0f %0.0f %0.0f", angles[0], angles[1], angles[2]);
 	AddSpawnField("direction", temp);
-
 
 	AddSpawnField("BSPInstanceID", level.mTargetAdjust);
 
@@ -1118,6 +1141,7 @@ static void HandleEntityAdjustment(void)
 		AddSpawnField("ICARUSname", temp);
 	}
 }
+
 
 /*
 ====================

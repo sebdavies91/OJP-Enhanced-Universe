@@ -82,8 +82,8 @@ extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 
 #ifndef DYNAMICMEMORY_VEHICLES
 //[MOREVEHICLES]
-#define MAX_VEH_WEAPON_DATA_SIZE 0x10000
-#define MAX_VEHICLE_DATA_SIZE 0x50000
+#define MAX_VEH_WEAPON_DATA_SIZE 0x20000
+#define MAX_VEHICLE_DATA_SIZE 0x200000
 
 //#define MAX_VEH_WEAPON_DATA_SIZE 0x4000
 //#define MAX_VEHICLE_DATA_SIZE 0x10000
@@ -97,13 +97,13 @@ extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 	extern void trap_TrueFree(void **ptr);
 
 	//char *VehWeaponParms; //will do this later
-#define MAX_VEH_WEAPON_DATA_SIZE 0x10000
+#define MAX_VEH_WEAPON_DATA_SIZE 0x20000
 	char	VehWeaponParms[MAX_VEH_WEAPON_DATA_SIZE];
 
 	char *VehicleParms;
 
 	//this is still used for a few temp buffers
-#define MAX_VEHICLE_DATA_SIZE 0x50000
+#define MAX_VEHICLE_DATA_SIZE 0x200000
 #endif
 
 //[/DynamicMemory_Vehicles]
@@ -203,7 +203,6 @@ static qboolean BG_ParseVehWeaponParm( vehWeaponInfo_t *vehWeapon, char *parmNam
 	int		i;
 	vec3_t	vec;
 	byte	*b = (byte *)vehWeapon;
-	int		_iFieldsRead = 0;
 	vehicleType_t vehType;
 	char	value[1024];
 
@@ -236,9 +235,8 @@ static qboolean BG_ParseVehWeaponParm( vehWeaponInfo_t *vehWeapon, char *parmNam
 				
 				break;
 			case VF_VECTOR:
-				_iFieldsRead = sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
-				assert(_iFieldsRead==3 );
-				if (_iFieldsRead!=3)
+				assert(sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])==3 );
+				if (sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])!=3)
 				{
 					Com_Printf (S_COLOR_YELLOW"BG_ParseVehWeaponParm: VEC3 sscanf() failed to read 3 floats ('angle' key bug?)\n");
 				}
@@ -924,7 +922,6 @@ static qboolean BG_ParseVehicleParm( vehicleInfo_t *vehicle, char *parmName, cha
 	int		i;
 	vec3_t	vec;
 	byte	*b = (byte *)vehicle;
-	int		_iFieldsRead = 0;
 	vehicleType_t vehType;
 	char value[1024];
 
@@ -959,9 +956,8 @@ static qboolean BG_ParseVehicleParm( vehicleInfo_t *vehicle, char *parmName, cha
 				
 				break;
 			case VF_VECTOR:
-				_iFieldsRead = sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
-				assert(_iFieldsRead==3 );
-				if (_iFieldsRead!=3)
+				assert(sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])==3 );
+				if (sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])!=3)
 				{
 					Com_Printf (S_COLOR_YELLOW"BG_ParseVehicleParm: VEC3 sscanf() failed to read 3 floats ('angle' key bug?)\n");
 				}
@@ -1753,41 +1749,63 @@ int BG_VehicleGetIndex( const char *vehicleName )
 //with a $ in front of it.
 //we are expected to then get the model for the
 //vehicle and stomp over modelname with it.
-void BG_GetVehicleModelName(char *modelname)
+void BG_GetVehicleModelName(char* modelname)
 {
-	char *vehName = &modelname[1];
+	char* vehName = &modelname[1];
 	int vIndex = BG_VehicleGetIndex(vehName);
+
 	assert(modelname[0] == '$');
-	
-	if (vIndex == VEHICLE_NONE)
+
+	// Check if vIndex is within valid bounds for g_vehicleInfo
+	if (vIndex < 0 || vIndex >= MAX_VEHICLES)  // Ensure vIndex is within the valid range of g_vehicleInfo
 	{
-		Com_Error(ERR_DROP, "BG_GetVehicleModelName:  couldn't find vehicle %s", vehName);
+		Com_Error(ERR_DROP, "BG_GetVehicleModelName: Invalid vehicle index %d", vIndex);
+		return;  // Exit the function if vIndex is invalid
 	}
 
-    strcpy(modelname, g_vehicleInfo[vIndex].model);	
+	if (vIndex == VEHICLE_NONE)
+	{
+		Com_Error(ERR_DROP, "BG_GetVehicleModelName: Couldn't find vehicle %s", vehName);
+		return;  // Exit if no vehicle is found
+	}
+
+	// Safe to access g_vehicleInfo[vIndex] now
+	strcpy(modelname, g_vehicleInfo[vIndex].model);
 }
 
-void BG_GetVehicleSkinName(char *skinname)
+
+
+void BG_GetVehicleSkinName(char* skinname)
 {
-	char *vehName = &skinname[1];
+	char* vehName = &skinname[1];
 	int vIndex = BG_VehicleGetIndex(vehName);
+
 	assert(skinname[0] == '$');
-	
-	if (vIndex == VEHICLE_NONE)
+
+	// Ensure vIndex is within valid bounds for g_vehicleInfo
+	if (vIndex < 0 || vIndex >= MAX_VEHICLES)  // Check bounds
 	{
-		Com_Error(ERR_DROP, "BG_GetVehicleSkinName:  couldn't find vehicle %s", vehName);
+		Com_Error(ERR_DROP, "BG_GetVehicleSkinName: Invalid vehicle index %d", vIndex);
+		return;  // Exit if index is invalid
 	}
 
-    if ( !g_vehicleInfo[vIndex].skin 
-		|| !g_vehicleInfo[vIndex].skin[0] )
+	if (vIndex == VEHICLE_NONE)
 	{
-		skinname[0] = 0;
+		Com_Error(ERR_DROP, "BG_GetVehicleSkinName: Couldn't find vehicle %s", vehName);
+		return;  // Exit if no vehicle is found
+	}
+
+	// Ensure there's a valid skin name for the vehicle
+	if (!g_vehicleInfo[vIndex].skin || !g_vehicleInfo[vIndex].skin[0])
+	{
+		skinname[0] = 0;  // Empty the skinname if no valid skin is found
 	}
 	else
 	{
-		strcpy(skinname, g_vehicleInfo[vIndex].skin);	
+		strcpy(skinname, g_vehicleInfo[vIndex].skin);  // Copy the skin name into the output
 	}
 }
+
 
 #ifdef _JK2MP
 #ifndef WE_ARE_IN_THE_UI

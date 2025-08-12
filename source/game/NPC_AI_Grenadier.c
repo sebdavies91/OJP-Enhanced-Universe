@@ -5,9 +5,9 @@
 
 extern qboolean BG_SabersOff( playerState_t *ps );
 
-extern void CG_DrawAlert( vec3_t origin, float rating );
+//extern void CG_DrawAlert( vec3_t origin, float rating );
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
-extern void G_SoundOnEnt( gentity_t *ent, soundChannel_t channel, const char *soundPath );
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
 extern void NPC_TempLookTarget( gentity_t *self, int lookEntNum, int minLookTime, int maxLookTime );
 extern qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs, int ignore, int clipmask );
 extern void NPC_AimAdjust( int change );
@@ -452,19 +452,22 @@ static void Grenadier_CheckFireState( void )
 	*/
 }
 
-qboolean Grenadier_EvaluateShot( int hit )
+qboolean Grenadier_EvaluateShot(int hit)
 {
-	if ( !NPC->enemy )
+	if (!NPC->enemy)
 	{
 		return qfalse;
 	}
 
-	if ( hit == NPC->enemy->s.number || (&g_entities[hit] != NULL && (g_entities[hit].r.svFlags&SVF_GLASS_BRUSH)) )
-	{//can hit enemy or will hit glass, so shoot anyway
+	if (hit == NPC->enemy->s.number || (g_entities[hit].r.svFlags & SVF_GLASS_BRUSH))
+	{
+		// can hit enemy or will hit glass, so shoot anyway
 		return qtrue;
 	}
+
 	return qfalse;
 }
+
 
 /*
 -------------------------

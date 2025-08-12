@@ -933,14 +933,16 @@ void FastBotAI(bot_state_t *bs, float thinktime)
 	}
 
 	if (bs->revengeEnemy && bs->revengeEnemy->client &&
-		bs->revengeEnemy->client->pers.connected != CA_ACTIVE && bs->revengeEnemy->client->pers.connected != CA_AUTHORIZING)
+		(clientConnected_t)bs->revengeEnemy->client->pers.connected != (clientConnected_t)CA_ACTIVE &&
+		(clientConnected_t)bs->revengeEnemy->client->pers.connected != (clientConnected_t)CA_AUTHORIZING)
 	{
 		bs->revengeEnemy = NULL;
 		bs->revengeHateLevel = 0;
 	}
 
 	if (bs->currentEnemy && bs->currentEnemy->client &&
-		bs->currentEnemy->client->pers.connected != CA_ACTIVE && bs->currentEnemy->client->pers.connected != CA_AUTHORIZING)
+		(clientConnected_t)bs->currentEnemy->client->pers.connected != (clientConnected_t)CA_ACTIVE &&
+		(clientConnected_t)bs->currentEnemy->client->pers.connected != (clientConnected_t)CA_AUTHORIZING)
 	{
 		bs->currentEnemy = NULL;
 	}
@@ -3560,14 +3562,16 @@ void AOTC_StandardBotAI(bot_state_t *bs, float thinktime)
 	}
 
 	if (bs->revengeEnemy && bs->revengeEnemy->client &&
-		bs->revengeEnemy->client->pers.connected != CA_ACTIVE && bs->revengeEnemy->client->pers.connected != CA_AUTHORIZING)
+		(clientConnected_t)bs->revengeEnemy->client->pers.connected != (clientConnected_t)CA_ACTIVE &&
+		(clientConnected_t)bs->revengeEnemy->client->pers.connected != (clientConnected_t)CA_AUTHORIZING)
 	{
 		bs->revengeEnemy = NULL;
 		bs->revengeHateLevel = 0;
 	}
 
 	if (bs->currentEnemy && bs->currentEnemy->client &&
-		bs->currentEnemy->client->pers.connected != CA_ACTIVE && bs->currentEnemy->client->pers.connected != CA_AUTHORIZING)
+		(clientConnected_t)bs->currentEnemy->client->pers.connected != (clientConnected_t)CA_ACTIVE &&
+		(clientConnected_t)bs->currentEnemy->client->pers.connected != (clientConnected_t)CA_AUTHORIZING)
 	{
 		bs->currentEnemy = NULL;
 	}

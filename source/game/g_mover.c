@@ -1155,7 +1155,7 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	if ( ent->parent->spawnflags & MOVER_LOCKED )
+	if (ent->parent && ent->parent->spawnflags & MOVER_LOCKED )
 	{//don't even try to use the door if it's locked 
 		if ( !ent->parent->alliedTeam //we don't have a "teamallow" team
 			|| !other->client //we do have a "teamallow" team, but this isn't a client
@@ -1180,7 +1180,7 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 		}
 	}
 
-	if ( ent->parent->moverState != MOVER_1TO2 ) 
+	if (ent->parent && ent->parent->moverState != MOVER_1TO2 )
 	{//Door is not already opening
 		//if ( ent->parent->moverState == MOVER_POS1 || ent->parent->moverState == MOVER_2TO1 )
 		//{//only check these if closed or closing
@@ -1212,7 +1212,7 @@ a trigger that encloses all of them
 void Think_SpawnNewDoorTrigger( gentity_t *ent ) 
 {
 	gentity_t		*other;
-	vec3_t		mins, maxs;
+	vec3_t		mins = { 0.0f, 0.0f, 0.0f }, maxs = { 0.0f, 0.0f, 0.0f };
 	int			i, best;
 
 	// set all of the slaves as shootable
@@ -1225,14 +1225,16 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 	}
 
 	// find the bounds of everything on the team
+	if(ent)
+	{ 
 	VectorCopy (ent->r.absmin, mins);
 	VectorCopy (ent->r.absmax, maxs);
-
+	
 	for (other = ent->teamchain ; other ; other=other->teamchain) {
 		AddPointToBounds (other->r.absmin, mins, maxs);
 		AddPointToBounds (other->r.absmax, mins, maxs);
 	}
-
+	}
 	// find the thinnest axis, which will be the one we expand
 	best = 0;
 	for ( i = 1 ; i < 3 ; i++ ) {
@@ -1254,8 +1256,10 @@ void Think_SpawnNewDoorTrigger( gentity_t *ent )
 	other->classname = "trigger_door";
 	// remember the thinnest axis
 	other->count = best;
-
+	if(ent)
+	{ 
 	MatchTeam( ent, ent->moverState, level.time );
+	}
 }
 
 void Think_MatchTeam( gentity_t *ent ) 

@@ -17,15 +17,15 @@ extern void Jedi_Cloak( gentity_t *self );
 //extern void FX_BorgTeleport( vec3_t org );
 
 extern void Q3_SetParm (int entID, int parmNum, const char *parmValue);
-extern team_t TranslateTeamName( const char *name );
+//extern team_t TranslateTeamName( const char *name );
 extern char	*TeamNames[TEAM_NUM_TEAMS];
 
 //extern void CG_ShimmeryThing_Spawner( vec3_t start, vec3_t end, float radius, qboolean taper, int duration );
 
 //extern void NPC_StasisSpawnEffect( gentity_t *ent );
 
-extern void PM_SetTorsoAnimTimer( gentity_t *ent, int *torsoAnimTimer, int time );
-extern void PM_SetLegsAnimTimer( gentity_t *ent, int *legsAnimTimer, int time );
+extern void PM_SetTorsoAnimTimer( int time );
+extern void PM_SetLegsAnimTimer( int time );
 
 extern void ST_ClearTimers( gentity_t *ent );
 extern void Jedi_ClearTimers( gentity_t *ent );
@@ -65,7 +65,7 @@ extern void Wampa_SetBolts( gentity_t *self );
 extern void funcBBrushPain				(gentity_t *self, gentity_t *attacker, int damage);
 extern void misc_model_breakable_pain	(gentity_t *self, gentity_t *attacker, int damage);
 extern void NPC_Pain					(gentity_t *self, gentity_t *attacker, int damage);
-extern void station_pain				(gentity_t *self, gentity_t *attacker, int damage);
+//extern void station_pain				(gentity_t *self, gentity_t *attacker, int damage);
 extern void func_usable_pain			(gentity_t *self, gentity_t *attacker, int damage);
 extern void NPC_ATST_Pain				(gentity_t *self, gentity_t *attacker, int damage);
 extern void NPC_ST_Pain					(gentity_t *self, gentity_t *attacker, int damage);
@@ -81,9 +81,9 @@ extern void NPC_Mark1_Pain				(gentity_t *self, gentity_t *attacker, int damage)
 extern void NPC_GM_Pain				(gentity_t *self, gentity_t *attacker, int damage);
 extern void NPC_Sentry_Pain				(gentity_t *self, gentity_t *attacker, int damage);
 extern void NPC_Mark2_Pain				(gentity_t *self, gentity_t *attacker, int damage);
-extern void PlayerPain					(gentity_t *self, gentity_t *attacker, int damage);
+//extern void PlayerPain					(gentity_t *self, gentity_t *attacker, int damage);
 extern void GasBurst					(gentity_t *self, gentity_t *attacker, int damage);
-extern void CrystalCratePain			(gentity_t *self, gentity_t *attacker, int damage);
+//extern void CrystalCratePain			(gentity_t *self, gentity_t *attacker, int damage);
 extern void TurretPain					(gentity_t *self, gentity_t *attacker, int damage);
 extern void NPC_Wampa_Pain				(gentity_t *self, gentity_t *attacker, int damage);
 extern void NPC_Rancor_Pain				(gentity_t *self, gentity_t *attacker, int damage);
@@ -302,7 +302,7 @@ void G_ClassSetDontFlee( gentity_t *self )
 	}
 }
 //[/CoOp]
-extern void G_CreateG2AttachedWeaponModel( gentity_t *ent, const char *weaponModel, int boltNum, int weaponNum );
+//extern void G_CreateG2AttachedWeaponModel( gentity_t *ent, const char *weaponModel, int boltNum, int weaponNum );
 extern void Boba_FlyStart( gentity_t *ent );
 //[NPCSandCreature]
 extern void SandCreature_ClearTimers( gentity_t *ent );
@@ -1953,41 +1953,55 @@ void NPC_Begin (gentity_t *ent)
 
 	//[StanceSelection]
 	//set saberAnimLevelBase
-	if(ent->client->saber[0].model[0] && ent->client->saber[1].model[0] )
+if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0])
+{
+	ent->client->ps.fd.saberAnimLevelBase = ent->client->ps.fd.saberAnimLevel = SS_DUAL;
+}
+else if (ent->client->saber[0].numBlades > 1 &&
+		 WP_SaberCanTurnOffSomeBlades(&ent->client->saber[0]))
+{
+	ent->client->ps.fd.saberAnimLevelBase = ent->client->ps.fd.saberAnimLevel = SS_STAFF;
+}
+else
+{
+	// Setup saber style bias cooldown logic
+	if (ent->client->saberStyleBiasTime < level.time)
 	{
-		ent->client->ps.fd.saberAnimLevelBase = ent->client->ps.fd.saberAnimLevel = SS_DUAL;
+		ent->client->saberStyleBias = Q_irand(1, 5); // 1=FAST, ..., 5=DESANN
+		ent->client->saberStyleBiasTime = level.time + Q_irand(30000, 60000);
 	}
-	else if (ent->client->saber[0].numBlades > 1
-		&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] ))
-	{
-		ent->client->ps.fd.saberAnimLevelBase = ent->client->ps.fd.saberAnimLevel = SS_STAFF;
-	}
-	else
-	{
-		int newLevel = Q_irand( SS_FAST, SS_STAFF );
-		ent->client->ps.fd.saberAnimLevelBase = SS_MEDIUM;
-		
-		//new validation technique.
-		if ( !G_ValidSaberStyle(ent, newLevel) )
-		{//had an illegal style, revert to a valid one
-			int count;
-			for(count = SS_FAST; count < SS_STAFF; count++)
-			{
-				newLevel++;
-				if(newLevel > SS_STAFF)
-				{
-					newLevel = SS_FAST;
-				}
 
-				if(G_ValidSaberStyle(ent, newLevel))
-				{
-					break;
-				}
+	int newLevel;
+	switch (ent->client->saberStyleBias)
+	{
+		case 5: newLevel = SS_DESANN; break;
+		case 4: newLevel = SS_TAVION; break;
+		case 3: newLevel = SS_STRONG; break;
+		case 2: newLevel = SS_MEDIUM; break;
+		default: newLevel = SS_FAST; break;
+	}
+
+	// Validate and correct if needed
+	if (!G_ValidSaberStyle(ent, newLevel))
+	{
+		for (int count = SS_FAST; count <= SS_TAVION; count++)
+		{
+			newLevel++;
+			if (newLevel > SS_TAVION)
+			{
+				newLevel = SS_FAST;
+			}
+
+			if (G_ValidSaberStyle(ent, newLevel))
+			{
+				break;
 			}
 		}
-
-		ent->client->ps.fd.saberAnimLevel = newLevel;
 	}
+
+	ent->client->ps.fd.saberAnimLevelBase = SS_MEDIUM; // default base
+	ent->client->ps.fd.saberAnimLevel = newLevel;
+}
 	//[/StanceSelection]
 
 	if ( !(ent->spawnflags & SFB_STARTINSOLID) )
@@ -5368,7 +5382,8 @@ void NPC_Kill_f( void )
 		}
 		else
 		{
-			killTeam = (team_t)GetIDForString( TeamTable, name );
+			npcteam_t npcTeam = (npcteam_t)GetIDForString(TeamTable, name);
+			team_t killTeam = (team_t)npcTeam; // Explicit casting from npcteam_t to team_t
 
 			if ( killTeam == TEAM_FREE )
 			{
@@ -5419,9 +5434,9 @@ void NPC_Kill_f( void )
 		{
 			if ( killTeam != TEAM_FREE )
 			{
-				if ( player->client->playerTeam == killTeam )
+				if ((team_t)player->client->playerTeam == (team_t)killTeam)
 				{
-					Com_Printf( S_COLOR_GREEN"Killing NPC %s named %s\n", player->NPC_type, player->targetname );
+					Com_Printf(S_COLOR_GREEN"Killing NPC %s named %s\n", player->NPC_type, player->targetname);
 					player->health = 0;
 					if (player->die)
 					{

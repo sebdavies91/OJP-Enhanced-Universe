@@ -4962,25 +4962,40 @@ RespawnItem
 */
 void RespawnItem( gentity_t *ent ) {
 	// randomly select from teamed entities
-	if (ent->team) {
-		gentity_t	*master;
-		int	count;
+	if (ent && ent->team) {  // Check if ent is not NULL and has a team
+		gentity_t* master;
+		int count;
 		int choice;
 
-		if ( !ent->teammaster ) {
-			G_Error( "RespawnItem: bad teammaster");
+		if (!ent->teammaster) {
+			G_Error("RespawnItem: bad teammaster");
 		}
 		master = ent->teammaster;
 
-		for (count = 0, ent = master; ent; ent = ent->teamchain, count++)
+		// Count how many entities are in the team chain
+		for (count = 0; ent; ent = ent->teamchain, count++)
 			;
 
+		// Ensure the team chain was properly traversed
+		if (count == 0) {
+			G_Error("RespawnItem: teamchain is empty or invalid");
+		}
+
+		// Choose a random entity from the team chain
 		choice = rand() % count;
 
-		for (count = 0, ent = master; count < choice; ent = ent->teamchain, count++)
+		// Traverse to the chosen entity in the team chain
+		for (count = 0, ent = master; count < choice && ent; ent = ent->teamchain, count++)
 			;
+
+		// If ent is still NULL at this point, handle the error
+		if (!ent) {
+			G_Error("RespawnItem: failed to find team member for respawn");
+		}
 	}
 
+	if(ent)
+	{ 
 	ent->r.contents = CONTENTS_TRIGGER;
 	//ent->s.eFlags &= ~EF_NODRAW;
 	ent->s.eFlags &= ~(EF_NODRAW | EF_ITEMPLACEHOLDER);
@@ -5001,11 +5016,13 @@ void RespawnItem( gentity_t *ent ) {
 		te->s.eventParm = G_SoundIndex( "sound/items/respawn1" );
 		te->r.svFlags |= SVF_BROADCAST;
 	}
+	
 
 	// play the normal respawn sound only to nearby clients
 	G_AddEvent( ent, EV_ITEM_RESPAWN, 0 );
 
 	ent->nextthink = 0;
+	}
 }
 
 qboolean CheckItemCanBePickedUpByNPC( gentity_t *item, gentity_t *pickerupper )
@@ -5236,7 +5253,7 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 
 	// play the normal pickup sound
 	if (predict) {
-		if (other->client)
+		if (other && other->client)
 		{
 			BG_AddPredictableEventToPlayerstate( EV_ITEM_PICKUP, ent->s.number, &other->client->ps);
 		}

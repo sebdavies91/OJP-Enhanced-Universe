@@ -1275,23 +1275,25 @@ qboolean SPSpawnpointCheck( vec3_t spawnloc )
 //special spawnpoint selection code for CoOp mode.  We need this because SP
 //requires you to select the CLOSEST valid spawnpoint and because SP doesn't have enough
 //read spawnpoints to start with
-gentity_t *SelectSPSpawnPoint( vec3_t origin, vec3_t angles )
+gentity_t* SelectSPSpawnPoint(vec3_t origin, vec3_t angles)
 {
-	gentity_t *spot = NULL;
-	gentity_t *bestspot = NULL;
+	gentity_t* spot = NULL;
+	gentity_t* bestspot = NULL;
 	vec3_t spawnloc, bestspawnloc;
 	int bestSeq = 99;
 
-	while ((spot = G_Find (spot, FOFS(classname), "info_player_deathmatch")) != NULL) 
+	// Iterate over all "info_player_deathmatch" spawn points
+	while ((spot = G_Find(spot, FOFS(classname), "info_player_deathmatch")) != NULL)
 	{
 		VectorCopy(spot->s.origin, spawnloc);
 
-		if ( !SPSpawnpointCheck( spawnloc ) ) 
+		if (!SPSpawnpointCheck(spawnloc))
 		{
-			continue;
+			continue;  // Skip if spawn point isn't valid
 		}
 
-		if ( spot->genericValue1 < bestSeq )
+		// Update best spawn point based on genericValue1
+		if (spot->genericValue1 < bestSeq)
 		{
 			bestspot = spot;
 			bestSeq = spot->genericValue1;
@@ -1299,22 +1301,35 @@ gentity_t *SelectSPSpawnPoint( vec3_t origin, vec3_t angles )
 		}
 	}
 
-	if(!bestspot)
-	{//couldn't find a spot that wouldn't telefrag, just grab and gib then.
-		bestspot = G_Find( NULL, FOFS(classname), "info_player_deathmatch");
-		VectorCopy(bestspot->s.origin, bestspawnloc);
+	// If no valid spot found, fallback to the first spawn point
+	if (!bestspot)
+	{
+		bestspot = G_Find(NULL, FOFS(classname), "info_player_deathmatch");
+
+		if (bestspot) {
+			VectorCopy(bestspot->s.origin, bestspawnloc);
+		}
+		else {
+			// If still NULL, trigger error and exit function
+			G_Error("SelectSPSpawnPoint couldn't find any spawn points.\n");
+			return NULL;
+		}
 	}
 
-	if(!bestspot)
-	{//this is bad
-		G_Error("SelectSPSpawnPoint couldn't find any spawnpoints.\n");
+	// Copy best spawn location and angles to the return values
+	VectorCopy(bestspawnloc, origin);
+	origin[2] += 9;  // Adjust height slightly
+	if (bestspot) {
+		VectorCopy(bestspot->s.angles, angles);
+	}
+	else {
+		// If bestspot is NULL, set default angles
+		angles[0] = angles[1] = angles[2] = 0.0f;
 	}
 
-	VectorCopy (bestspawnloc, origin);
-	origin[2] += 9;
-	VectorCopy (bestspot->s.angles, angles);
-	return bestspot;
+	return bestspot;  // Return the selected spawn point
 }
+
 //[/CoOp]
 
 
@@ -1492,11 +1507,11 @@ void CheckTeamStatus(void) {
 				return;
 			}
 
-			if ( ent->client->pers.connected != CON_CONNECTED ) {
+			if (ent->client && ent->client->pers.connected != CON_CONNECTED ) {
 				continue;
 			}
 
-			if (ent->inuse && (ent->client->sess.sessionTeam == TEAM_RED ||	ent->client->sess.sessionTeam == TEAM_BLUE)) {
+			if (ent->inuse && ent->client && (ent->client->sess.sessionTeam == TEAM_RED ||	ent->client->sess.sessionTeam == TEAM_BLUE)) {
 				TeamplayInfoMessage( ent );
 			}
 		}

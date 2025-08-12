@@ -2011,29 +2011,36 @@ and anim number. Obviously does not take things like the length of the
 anim while force speeding (as an example) and whatnot into account.
 =============
 */
-int BG_AnimLength( int index, animNumber_t anim )
+int BG_AnimLength(int index, animNumber_t anim)
 {
-	if (anim >= MAX_ANIMATIONS)
+	// Check if the anim value is within a valid range
+	if (anim < 0 || anim >= MAX_ANIMATIONS)
 	{
-		return -1;
+		return -1;  // Return an error value if anim is out of bounds
 	}
-	
+
 	return bgAllAnims[index].anims[anim].numFrames * fabs((float)(bgAllAnims[index].anims[anim].frameLerp));
 }
 
 //just use whatever pm->animations is
-int PM_AnimLength( int index, animNumber_t anim )
+int PM_AnimLength(int index, animNumber_t anim)
 {
-	if (anim >= MAX_ANIMATIONS || !pm->animations)
+	// Ensure anim is valid and within bounds
+	if (anim < 0 || anim >= MAX_ANIMATIONS)
 	{
+		Com_Error(ERR_DROP, "ERROR: anim %d is out of bounds\n", anim);
 		return -1;
 	}
-	if ( anim < 0 )
+
+	// Ensure pm->animations is not NULL
+	if (!pm->animations)
 	{
-		Com_Error(ERR_DROP,"ERROR: anim %d < 0\n", anim );
+		return -1;  // Or handle the error as needed
 	}
+
 	return pm->animations[anim].numFrames * fabs((float)(pm->animations[anim].frameLerp));
 }
+
 
 void PM_DebugLegsAnim(int anim)
 {
@@ -2780,293 +2787,241 @@ models/players/visor/animation.cfg, etc
 
 ======================
 */
-int BG_ParseAnimationFile(const char *filename, animation_t *animset, qboolean isHumanoid) 
+int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean isHumanoid)
 {
-	char		*text_p;
-	int			len;
-	int			i;
-	char		*token;
-	float		fps;
-	int			skip;
-	int			usedIndex = -1;
-	int			nextIndex = bgNumAllAnims;
-	qboolean	dynAlloc = qfalse;
-	qboolean	wasLoaded = qfalse;
-#ifndef Q3_VM
-	char		BGPAFtext[60000];
-#endif
+    char* text_p;
+    int len;
+    int i;
+    char* token;
+    float fps;
+    int skip;
+    int usedIndex = -1;
+    int nextIndex = bgNumAllAnims;
+    qboolean dynAlloc = qfalse;
+    qboolean wasLoaded = qfalse;
+    // replaced large stack buffer with pointer
+    char* BGPAFtext = NULL;
 
-	//[NewGLA]
-	//int			glaindex = 0;
-	//[/NewGLA]
-	fileHandle_t	f;
-	int				animNum;
+    fileHandle_t f;
+    int animNum;
 
-	if (!isHumanoid)
-	{
-		i = 0;
-		while (i < bgNumAllAnims)
-		{ //see if it's been loaded already
-			if (!Q_stricmp(bgAllAnims[i].filename, filename))
-			{
-				animset = bgAllAnims[i].anims;
-				return i; //alright, we already have it.
-			}
-			i++;
-		}
+    if (!isHumanoid)
+    {
+        i = 0;
+        while (i < bgNumAllAnims)
+        { // see if it's been loaded already
+            if (!Q_stricmp(bgAllAnims[i].filename, filename))
+            {
+                animset = bgAllAnims[i].anims;
+                return i; // alright, we already have it.
+            }
+            i++;
+        }
 
-		//Looks like it has not yet been loaded. Allocate space for the anim set if we need to, and continue along.
-		if (!animset)
-		{
-			if (strstr(filename, "players/_humanoid/"))
-			{ //then use the static humanoid set.
-				animset = bgHumanoidAnimations;
-				nextIndex = 0;
-			}
-			else if (strstr(filename, "players/rockettrooper/"))
-			{ //rockettrooper always index 1
-				nextIndex = 1;
-				animset = BG_AnimsetAlloc();
-				dynAlloc = qtrue; //so we know to free this memory in case we have to return early. Don't want any leaks.
+        // Looks like it has not yet been loaded. Allocate space for the anim set if we need to, and continue along.
+        if (!animset)
+        {
+            if (strstr(filename, "players/_humanoid/"))
+            { // then use the static humanoid set.
+                animset = bgHumanoidAnimations;
+                nextIndex = 0;
+            }
+            else if (strstr(filename, "players/rockettrooper/"))
+            { // rockettrooper always index 1
+                nextIndex = 1;
+                animset = BG_AnimsetAlloc();
+                dynAlloc = qtrue; // so we know to free this memory in case we have to return early. Don't want any leaks.
 
-				if (!animset)
-				{
-					assert(!"Anim set alloc failed!");
-					return -1;
-				}
-			}
-			else
-			{
-				animset = BG_AnimsetAlloc();
-				dynAlloc = qtrue; //so we know to free this memory in case we have to return early. Don't want any leaks.
+                if (!animset)
+                {
+                    assert(!"Anim set alloc failed!");
+                    return -1;
+                }
+            }
+            else
+            {
+                animset = BG_AnimsetAlloc();
+                dynAlloc = qtrue; // so we know to free this memory in case we have to return early. Don't want any leaks.
 
-				if (!animset)
-				{
-					assert(!"Anim set alloc failed!");
-					return -1;
-				}
-			}
-		}
-	}
-	//[newGLA]
-	//the this isn't the primary gla cfg for the player, use the second index
-	/*
-	else if(BGPAFtextLoaded)
-	{
-		glaindex = 1;
-	}
-	*/
-	//[/NewGLA]
+                if (!animset)
+                {
+                    assert(!"Anim set alloc failed!");
+                    return -1;
+                }
+            }
+        }
+    }
 #ifdef _DEBUG
-	else
-	{
-		assert(animset);
-	}
+    else
+    {
+        assert(animset);
+    }
 #endif
 
+    // Allocate heap buffer instead of large stack array
+    BGPAFtext = (char*)BG_Alloc(60000);  // Replaced malloc with BG_Alloc
+    if (!BGPAFtext)
+    {
+        Com_Error(ERR_DROP, "Failed to allocate memory for animation file buffer");
+        if (dynAlloc)
+        {
+            BG_AnimsetFree(animset);
+        }
+        return -1;
+    }
 
-	// load the file
-	//[NewGLA]
-	//you're now allowed to load multiple GLAs for the humanoid set.
-	//if (1)
-	//[/NewGLA]
-	if (!BGPAFtextLoaded || !isHumanoid)
-	{ //rww - We are always using the same animation config now. So only load it once.
-		len = trap_FS_FOpenFile( filename, &f, FS_READ );
-		if ( (len <= 0) || (len >= sizeof( BGPAFtext ) - 1) ) 
-		{
-			if (dynAlloc)
-			{
-				BG_AnimsetFree(animset);
-			}
-			if (len > 0)
-			{
-				Com_Error(ERR_DROP, "%s exceeds the allowed game-side animation buffer!", filename);
-			}
-			return -1;
-		}
+    // load the file
+    if (!BGPAFtextLoaded || !isHumanoid)
+    { // rww - We are always using the same animation config now. So only load it once.
+        len = trap_FS_FOpenFile(filename, &f, FS_READ);
+        if ((len <= 0) || (len >= 60000 - 1))
+        {
+            memset(BGPAFtext, 0, 60000);  // Replaced free with memset to zero out the buffer
+            if (dynAlloc)
+            {
+                BG_AnimsetFree(animset);
+            }
+            if (len > 0)
+            {
+                Com_Error(ERR_DROP, "%s exceeds the allowed game-side animation buffer!", filename);
+            }
+            return -1;
+        }
 
-		trap_FS_Read( BGPAFtext, len, f );
-		BGPAFtext[len] = 0;
-		trap_FS_FCloseFile( f );
-	}
-	else
-	{
-		if (dynAlloc)
-		{
-			assert(!"Should not have allocated dynamically for humanoid");
-			BG_AnimsetFree(animset);
-		}
-		return 0; //humanoid index
-	}
+        trap_FS_Read(BGPAFtext, len, f);
+        BGPAFtext[len] = 0;
+        trap_FS_FCloseFile(f);
+    }
+    else
+    {
+        memset(BGPAFtext, 0, 60000);  // Zero out the buffer instead of freeing
+        if (dynAlloc)
+        {
+            assert(!"Should not have allocated dynamically for humanoid");
+            BG_AnimsetFree(animset);
+        }
+        return 0; // humanoid index
+    }
 
-	// parse the text
-	text_p = BGPAFtext;
-	skip = 0;	// quiet the compiler warning
+    // parse the text
+    text_p = BGPAFtext;
+    skip = 0;    // quiet the compiler warning
 
-	//FIXME: have some way of playing anims backwards... negative numFrames?
+    // initialize anim array so that from 0 to MAX_ANIMATIONS, set default values of 0 1 0 100
+    {
+        for (i = 0; i < MAX_ANIMATIONS; i++)
+        {
+            animset[i].firstFrame = 0;
+            animset[i].numFrames = 0;
+            animset[i].loopFrames = -1;
+            animset[i].frameLerp = 100;
+        }
+    }
 
-	//initialize anim array so that from 0 to MAX_ANIMATIONS, set default values of 0 1 0 100
-//[NewGLA]
-//don't reinit the player's animations after you add the main file
-//RAFIXME - this is a total hack
-//if(!isHumanoid || !BGPAFtextLoaded)
-{
-	for(i = 0; i < MAX_ANIMATIONS; i++)
-	{
-		animset[i].firstFrame = 0;
-		animset[i].numFrames = 0;
-		animset[i].loopFrames = -1;
-		animset[i].frameLerp = 100;
-		//[NewGLA]
-		//animset[i].glaIndex = 0;
-		//[/NewGLA]
-	}
+    // read information for each frame
+    while (1)
+    {
+        token = COM_Parse((const char**)(&text_p));
+
+        if (!token || !token[0])
+        {
+            break;
+        }
+
+        animNum = GetIDForString(animTable, token);
+        if (animNum == -1)
+        {
+#ifdef _DEBUG
+            if (Q_stricmp("ROOT", token) != 0)
+            {
+                Com_Printf(S_COLOR_RED "WARNING: Unknown token %s in %s\n", token, filename);
+            }
+            while (token[0])
+            {
+                token = COM_ParseExt((const char**)&text_p, qfalse);
+            }
+#endif
+            continue;
+        }
+
+        token = COM_Parse((const char**)(&text_p));
+        if (!token[0])
+        {
+            break;
+        }
+        animset[animNum].firstFrame = atoi(token);
+
+        token = COM_Parse((const char**)(&text_p));
+        if (!token[0])
+        {
+            break;
+        }
+        animset[animNum].numFrames = atoi(token);
+
+        token = COM_Parse((const char**)(&text_p));
+        if (!token[0])
+        {
+            break;
+        }
+        animset[animNum].loopFrames = atoi(token);
+
+        token = COM_Parse((const char**)(&text_p));
+        if (!token[0])
+        {
+            break;
+        }
+        fps = atof(token);
+        if (fps == 0)
+        {
+            fps = 1;
+        }
+        if (fps < 0)
+        {
+            animset[animNum].frameLerp = floor(1000.0f / fps);
+        }
+        else
+        {
+            animset[animNum].frameLerp = ceil(1000.0f / fps);
+        }
+    }
+
+    // Free the allocated buffer before returning
+    memset(BGPAFtext, 0, 60000);  // Zero out the buffer instead of freeing
+
+    wasLoaded = BGPAFtextLoaded;
+
+    if (isHumanoid)
+    {
+        bgAllAnims[0].anims = animset;
+        {
+            strcpy(bgAllAnims[0].filename, filename);
+        }
+
+        BGPAFtextLoaded = qtrue;
+
+        usedIndex = 0;
+    }
+    else
+    {
+        bgAllAnims[nextIndex].anims = animset;
+        strcpy(bgAllAnims[nextIndex].filename, filename);
+
+        usedIndex = bgNumAllAnims;
+
+        if (nextIndex > 1)
+        {
+            bgNumAllAnims++;
+        }
+        else
+        {
+            BGPAFtextLoaded = qtrue;
+            usedIndex = nextIndex;
+        }
+    }
+
+    return usedIndex;
 }
-//[/NewGLA]
 
-	// read information for each frame
-	while(1) 
-	{
-		token = COM_Parse( (const char **)(&text_p) );
-
-		if ( !token || !token[0]) 
-		{
-			break;
-		}
-
-		animNum = GetIDForString(animTable, token);
-		if(animNum == -1)
-		{
-//#ifndef FINAL_BUILD
-#ifdef _DEBUG
-			//[MiscCodeTweaks]
-			if(Q_stricmp( "ROOT", token ) != 0)
-			{
-				Com_Printf(S_COLOR_RED"WARNING: Unknown token %s in %s\n", token, filename);
-			}
-			//[/MiscCodeTweaks]
-			while (token[0])
-			{
-				token = COM_ParseExt( (const char **) &text_p, qfalse );	//returns empty string when next token is EOL
-			}
-#endif
-			continue;
-		}
-
-		token = COM_Parse( (const char **)(&text_p) );
-		if ( !token[0] )//[TicketFix143] 
-		{
-			break;
-		}
-		animset[animNum].firstFrame = atoi( token );
-
-		token = COM_Parse( (const char **)(&text_p) );
-		if ( !token[0] ) //[TicketFix143] 
-		{
-			break;
-		}
-		animset[animNum].numFrames = atoi( token );
-
-		token = COM_Parse( (const char **)(&text_p) );
-		if ( !token[0] ) //[TicketFix143] 
-		{
-			break;
-		}
-		animset[animNum].loopFrames = atoi( token );
-
-		token = COM_Parse( (const char **)(&text_p) );
-		if ( !token[0] ) //[TicketFix143] 
-		{
-			break;
-		}
-		fps = atof( token );
-		if ( fps == 0 ) 
-		{
-			fps = 1;//Don't allow divide by zero error
-		}
-		if ( fps < 0 )
-		{//backwards
-			animset[animNum].frameLerp = floor(1000.0f / fps);
-		}
-		else
-		{
-			animset[animNum].frameLerp = ceil(1000.0f / fps);
-		}
-	}
-/*
-#ifdef _DEBUG
-	//Check the array, and print the ones that have nothing in them.
-	for(i = 0; i < MAX_ANIMATIONS; i++)
-	{	
-		if (animTable[i].name != NULL)		// This animation reference exists.
-		{
-			if (animset[i].firstFrame <= 0 && animset[i].numFrames <=0)
-			{	// This is an empty animation reference.
-				Com_Printf("***ANIMTABLE reference #%d (%s) is empty!\n", i, animTable[i].name);
-			}
-		}
-	}
-#endif // _DEBUG
-*/
-
-	//[NewGLA]
-	//set the glaindex
-	//animset[animNum].glaIndex = glaindex;
-	//[/NewGLA]
-
-#ifdef CONVENIENT_ANIMATION_FILE_DEBUG_THING
-	SpewDebugStuffToFile();
-#endif
-
-	wasLoaded = BGPAFtextLoaded;
-
-	if (isHumanoid)
-	{
-		bgAllAnims[0].anims = animset;
-		//[NewGLA]
-		//only copy name on main gla
-		//if(!BGPAFtextLoaded)
-		//[/NewGLA]
-		{
-			strcpy(bgAllAnims[0].filename, filename);
-		}
-
-		BGPAFtextLoaded = qtrue;
-
-		usedIndex = 0;
-	}
-	else
-	{
-		bgAllAnims[nextIndex].anims = animset;
-		strcpy(bgAllAnims[nextIndex].filename, filename);
-
-		usedIndex = bgNumAllAnims;
-
-		if (nextIndex > 1)
-		{ //don't bother increasing the number if this ended up as a humanoid/rockettrooper load.
-			bgNumAllAnims++;
-		}
-		else
-		{
-			BGPAFtextLoaded = qtrue;
-			usedIndex = nextIndex;
-		}
-	}
-
-	/*
-	if (!wasLoaded && BGPAFtextLoaded)
-	{ //just loaded humanoid skel - we always want the rockettrooper to be after it, in slot 1
-#ifdef _DEBUG
-		assert(BG_ParseAnimationFile("models/players/rockettrooper/animation.cfg", NULL, qfalse) == 1);
-#else
-		BG_ParseAnimationFile("models/players/rockettrooper/animation.cfg", NULL, qfalse);
-#endif
-	}
-	*/
-
-	return usedIndex;
-}
 
 /*
 ===================
@@ -3693,9 +3648,9 @@ setAnimLegs:
 					if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_3)
 						ps->legsTimer /= 5.0;
 					else if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_2)
-						ps->legsTimer /= 2.5;
+						ps->legsTimer /= 3.0;
 					else if(ps->fd.forcePowerLevel[FP_SPEED] == FORCE_LEVEL_1)
-						ps->legsTimer /= 1.25;
+						ps->legsTimer /= 1.75;
 					else
 						ps->legsTimer /= 1.0;
 				}

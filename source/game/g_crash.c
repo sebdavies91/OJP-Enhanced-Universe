@@ -330,7 +330,8 @@
 			} else {
 			//wsprintf(modname, "Unknown");
 			}
-
+			if(pSym)
+			{ 
 			pSym->SizeOfStruct = sizeof(IMAGEHLP_SYMBOL);
 			pSym->MaxNameLength = MAX_PATH;
 
@@ -338,7 +339,7 @@
 				G_LogPrintf("(%d) %s(%s+%#0x) [0x%08x]\n", cnt, modname, pSym->Name, Disp, sf.AddrPC.Offset);
 			else 
 				G_LogPrintf("(%d) %s [0x%08x]\n", cnt, modname, sf.AddrPC.Offset);
-
+			}
 			cnt++;
 		}
 

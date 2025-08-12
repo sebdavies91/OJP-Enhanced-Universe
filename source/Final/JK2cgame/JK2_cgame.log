@@ -3,105 +3,139 @@
   bg_misc.c
   bg_panimate.c
   bg_pmove.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2806,23): warning C4456: declaration of 'allowFlips' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2417,11): message : see declaration of 'allowFlips'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9296,12): warning C4456: declaration of 'weap' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9253,6): message : see declaration of 'weap'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(11846,38): warning C4459: declaration of 'pm' hides global declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(30,11): message : see declaration of 'pm'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13656,14): warning C4456: declaration of 'dif' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13374,16): message : see declaration of 'dif'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13851,13): warning C4456: declaration of 'aLen' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13813,7): message : see declaration of 'aLen'
   bg_saber.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1400,16): warning C4457: declaration of 'strength' hides function parameter
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1292,70): message : see declaration of 'strength'
   bg_saberLoad.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(471,15): warning C4456: declaration of 'styleNum' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(384,23): message : see declaration of 'styleNum'
   bg_saga.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1293,21): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1028,6): message : see declaration of 'i'
   bg_slidemove.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(197,24): warning C4456: declaration of 'hitEnt' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(188,16): message : see declaration of 'hitEnt'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(225,25): warning C4456: declaration of 'hitEnt' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(197,17): message : see declaration of 'hitEnt'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2822,12): warning C4456: declaration of 'allowFlips' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(2433,11):
+      see declaration of 'allowFlips'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9641,7): warning C4456: declaration of 'weap' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9598,6):
+      see declaration of 'weap'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(12375,38): warning C4459: declaration of 'pm' hides global declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(30,11):
+      see declaration of 'pm'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(14186,10): warning C4456: declaration of 'dif' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(13904,16):
+      see declaration of 'dif'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(14381,8): warning C4456: declaration of 'aLen' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(14343,7):
+      see declaration of 'aLen'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1400,7): warning C4457: declaration of 'strength' hides function parameter
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saber.c(1292,70):
+      see declaration of 'strength'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(471,7): warning C4456: declaration of 'styleNum' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saberLoad.c(384,23):
+      see declaration of 'styleNum'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1293,20): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_saga.c(1028,6):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(197,17): warning C4456: declaration of 'hitEnt' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(188,16):
+      see declaration of 'hitEnt'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(225,18): warning C4456: declaration of 'hitEnt' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_slidemove.c(197,17):
+      see declaration of 'hitEnt'
+  
   bg_vehicleLoad.c
   bg_weapons.c
   cg_camera.c
   cg_consolecmds.c
   cg_draw.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2078,23): warning C4456: declaration of 'focusItem' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(1995,13): message : see declaration of 'focusItem'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2555,7): warning C4101: 'itemNdex': unreferenced local variable
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2706,24): warning C4456: declaration of 'targetVeh' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2672,13): message : see declaration of 'targetVeh'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4136,21): warning C4456: declaration of 'color' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4042,11): message : see declaration of 'color'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4518,17): warning C4456: declaration of 'color' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4042,11): message : see declaration of 'color'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2142,14): warning C4456: declaration of 'focusItem' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2059,13):
+      see declaration of 'focusItem'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2855,14): warning C4456: declaration of 'targetVeh' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(2821,13):
+      see declaration of 'targetVeh'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4285,16): warning C4456: declaration of 'color' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4191,11):
+      see declaration of 'color'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4667,12): warning C4456: declaration of 'color' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_draw.c(4191,11):
+      see declaration of 'color'
+  
   cg_drawtools.c
   cg_effects.c
   cg_ents.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(905,156): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(905,123): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 5
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(906,73): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(906,39): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 6
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(906,134): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(906,100): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 9
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(912,58): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(912,54): warning C4024: 'BG_EvaluateTrajectory': different types for formal and actual parameter 3
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(914,34): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(914,25): warning C4024: 'CG_TestLine': different types for formal and actual parameter 1
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(914,40): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(914,36): warning C4024: 'CG_TestLine': different types for formal and actual parameter 2
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2662,156): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2662,123): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 5
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2663,73): warning C4047: 'function': 'const vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2663,39): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 6
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2663,134): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2663,100): warning C4024: 'trap_G2API_GetBoltMatrix': different types for formal and actual parameter 9
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2669,58): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2669,54): warning C4024: 'BG_EvaluateTrajectory': different types for formal and actual parameter 3
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2671,34): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2671,25): warning C4024: 'CG_TestLine': different types for formal and actual parameter 1
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2671,40): warning C4047: 'function': 'vec_t *' differs in levels of indirection from 'vec3_t (*)'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_ents.c(2671,36): warning C4024: 'CG_TestLine': different types for formal and actual parameter 2
   cg_event.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(2955,21): warning C4456: declaration of 'ci' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(1648,16): message : see declaration of 'ci'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(3944,21): warning C4456: declaration of 'ci' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(1648,16): message : see declaration of 'ci'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(2994,18): warning C4456: declaration of 'ci' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(1673,16):
+      see declaration of 'ci'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(4058,18): warning C4456: declaration of 'ci' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(1673,16):
+      see declaration of 'ci'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_event.c(2831,14): warning C4189: 'cullPass': local variable is initialized but not referenced
   cg_holster.c
   cg_info.c
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\game\bg_pmove.c(9318): warning C4706: assignment within conditional expression
   Compiling...
   cg_light.c
   cg_localents.c
   cg_main.c
   cg_marks.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(806,14): warning C4457: declaration of 'alpha' hides function parameter
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(436,63): message : see declaration of 'alpha'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(865,14): warning C4456: declaration of 'width' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(441,9): message : see declaration of 'width'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(865,22): warning C4456: declaration of 'height' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(442,9): message : see declaration of 'height'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(827,9): warning C4457: declaration of 'alpha' hides function parameter
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(457,63):
+      see declaration of 'alpha'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(886,9): warning C4456: declaration of 'width' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(462,9):
+      see declaration of 'width'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(886,16): warning C4456: declaration of 'height' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_marks.c(463,9):
+      see declaration of 'height'
+  
   cg_newDraw.c
   cg_players.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(7173,13): warning C4456: declaration of 'rgb' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(7109,9): message : see declaration of 'rgb'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(10541,10): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(10480,9): message : see declaration of 'i'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(14396,16): warning C4456: declaration of 'up' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(14260,20): message : see declaration of 'up'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18728,8): warning C4189: 'brightness': local variable is initialized but not referenced
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18759,8): warning C4189: 'brightness': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(7166,10): warning C4456: declaration of 'rgb' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(7102,9):
+      see declaration of 'rgb'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(10534,8): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(10473,9):
+      see declaration of 'i'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(14509,13): warning C4456: declaration of 'up' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(14373,20):
+      see declaration of 'up'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18896,11): warning C4456: declaration of 'tAng' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18769,10):
+      see declaration of 'tAng'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18978,11): warning C4456: declaration of 'tAng' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(18769,10):
+      see declaration of 'tAng'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(16144,12): warning C4189: 'dead': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(19192,8): warning C4189: 'brightness': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(19226,8): warning C4189: 'brightness': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(19257,8): warning C4189: 'brightness': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(21256,8): warning C4189: 'brightness': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(21298,8): warning C4189: 'brightness': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(21339,8): warning C4189: 'brightness': local variable is initialized but not referenced
   cg_playerstate.c
   cg_predict.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_predict.c(91,8): warning C4456: declaration of 'i' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_predict.c(47,9): message : see declaration of 'i'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_predict.c(91,7): warning C4456: declaration of 'i' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_predict.c(47,9):
+      see declaration of 'i'
+  
   cg_saga.c
   cg_scoreboard.c
   cg_servercmds.c
@@ -112,12 +146,27 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   cg_view.c
   cg_weaponinit.c
   cg_weapons.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(1494,20): warning C4456: declaration of 'flash' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(506,14): message : see declaration of 'flash'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(1974,15): warning C4456: declaration of 'flash' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(555,14):
+      see declaration of 'flash'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(2752,11): warning C4189: 'drewConc': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(3893,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4001,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4101,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4202,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4302,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4402,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4506,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4619,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4732,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4844,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(4958,9): warning C4189: 'up': local variable is initialized but not referenced
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_weapons.c(5072,9): warning C4189: 'up': local variable is initialized but not referenced
   FighterNPC.c
   fx_blaster.c
   Generating Code...
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(11904): warning C4703: potentially uninitialized local pointer variable 'saberTrail' used
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\cgame\cg_players.c(11900,1): warning C4703: potentially uninitialized local pointer variable 'saberTrail' used
   Compiling...
   fx_bowcaster.c
   fx_bryarpistol.c
@@ -131,10 +180,14 @@ E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameDa
   q_shared.c
   SpeederNPC.c
   ui_shared.c
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6108,21): warning C4456: declaration of 'parent' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6099,14): message : see declaration of 'parent'
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6664,14): warning C4456: declaration of 'color' hides previous local declaration
-E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6166,10): message : see declaration of 'color'
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6121,14): warning C4456: declaration of 'parent' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6112,14):
+      see declaration of 'parent'
+  
+E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6677,9): warning C4456: declaration of 'color' hides previous local declaration
+      E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\source\ui\ui_shared.c(6179,10):
+      see declaration of 'color'
+  
   WalkerNPC.c
   Generating Code...
      Creating library .\../Final/cgamex86.lib and object .\../Final/cgamex86.exp

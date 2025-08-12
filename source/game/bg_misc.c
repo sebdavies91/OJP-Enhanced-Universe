@@ -1201,11 +1201,14 @@ void BG_ParseField( BG_field_t *l_fields, const char *key, const char *value, by
 #endif
 				break;
 			case F_VECTOR:
-				sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2]);
-				((float *)(b+f->ofs))[0] = vec[0];
-				((float *)(b+f->ofs))[1] = vec[1];
-				((float *)(b+f->ofs))[2] = vec[2];
+			{
+				if (sscanf(value, "%f %f %f", &vec[0], &vec[1], &vec[2]) == 3) {
+					((float*)(b + f->ofs))[0] = vec[0];
+					((float*)(b + f->ofs))[1] = vec[1];
+					((float*)(b + f->ofs))[2] = vec[2];
+				}
 				break;
+			}
 			case F_INT:
 				*(int *)(b+f->ofs) = atoi(value);
 				break;
@@ -4424,11 +4427,11 @@ int BG_ModelCache(const char *modelName, const char *skinName)
 }
 
 #ifdef QAGAME
-#define MAX_POOL_SIZE	16384000 //1024000
+#define MAX_POOL_SIZE	131072000 //1024000
 #elif defined CGAME //don't need as much for cgame stuff. 2mb will be fine.
-#define MAX_POOL_SIZE	16384000
+#define MAX_POOL_SIZE	131072000
 #else //And for the ui the only thing we'll be using this for anyway is allocating anim data for g2 menu models
-#define MAX_POOL_SIZE	16384000
+#define MAX_POOL_SIZE	131072000
 #endif
 
 //I am using this for all the stuff like NPC client structures on server/client and
@@ -4454,7 +4457,9 @@ void *BG_Alloc ( int size )
 
 	return &bg_pool[bg_poolSize-size];
 }
-
+void BG_ResetAlloc(void) {
+	bg_poolSize = 0;
+}
 void *BG_AllocUnaligned ( int size )
 {
 	if (bg_poolSize + size > bg_poolTail)

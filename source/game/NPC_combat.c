@@ -9,8 +9,8 @@ extern void NPC_ClearLookTarget( gentity_t *self );
 extern void NPC_Jedi_RateNewEnemy( gentity_t *self, gentity_t *enemy );
 extern int NAV_FindClosestWaypointForPoint2( vec3_t point );
 extern int NAV_GetNearestNode( gentity_t *self, int lastNode );
-extern void G_CreateG2AttachedWeaponModel( gentity_t *ent, const char *weaponModel, int boltNum, int weaponNum );
-extern qboolean PM_DroidMelee( int npc_class );
+//extern void G_CreateG2AttachedWeaponModel( gentity_t *ent, const char *weaponModel, int boltNum, int weaponNum );
+//extern qboolean PM_DroidMelee( int npc_class );
 
 //[CoOp]
 //Prototypes
@@ -62,7 +62,11 @@ void G_AngerAlert( gentity_t *self )
 		return;
 	}
 	//FIXME: hmm.... with all the other new alerts now, is this still neccesary or even a good idea...?
-	G_AlertTeam( self, self->enemy, ANGER_ALERT_RADIUS, ANGER_ALERT_SOUND_RADIUS );	
+	if (self)
+	{
+		G_AlertTeam(self, self->enemy, ANGER_ALERT_RADIUS, ANGER_ALERT_SOUND_RADIUS);
+	}
+
 }
 
 /*
@@ -77,7 +81,7 @@ qboolean G_TeamEnemy( gentity_t *self )
 	int	i;
 	gentity_t	*ent;
 
-	if ( !self->client || self->client->playerTeam == TEAM_FREE )
+	if ( !self->client || self->client->playerTeam == NPCTEAM_FREE )
 	{
 		return qfalse;
 	}
@@ -105,14 +109,14 @@ qboolean G_TeamEnemy( gentity_t *self )
 			continue;
 		}
 
-		if ( ent->client->playerTeam != self->client->playerTeam )
+		if (ent && self && ent->client && self->client && ent->client->playerTeam != self->client->playerTeam )
 		{//ent is not on my team
 			continue;
 		}
 
 		if ( ent->enemy )
 		{//they have an enemy
-			if ( !ent->enemy->client || ent->enemy->client->playerTeam != self->client->playerTeam )
+			if (ent && self && ent->client && self->client &&( !ent->enemy->client || ent->enemy->client->playerTeam != self->client->playerTeam ))
 			{//the ent's enemy is either a normal ent or is a player/NPC that is not on my team
 				return qtrue;
 			}
@@ -522,7 +526,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 		}
 
 		//Special case- if player is being hunted by his own people, set their enemy team correctly
-		if ( self->client->playerTeam == NPCTEAM_PLAYER 
+		if (self->client && self->client->playerTeam == NPCTEAM_PLAYER 
 			&& enemy->s.number >= 0
 			&& enemy->s.number < MAX_CLIENTS
 			&& enemy->client
@@ -628,7 +632,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 		{//Hmm, how about sniper and bowcaster?
 			//When first get mad, aim is bad
 			//Hmm, base on game difficulty, too?  Rank?
-			if ( self->client->playerTeam == NPCTEAM_PLAYER )
+			if (self->client && self->client->playerTeam == NPCTEAM_PLAYER )
 			{
 				G_AimSet( self, Q_irand( self->NPC->stats.aim - (5*(g_spskill.integer)), self->NPC->stats.aim - g_spskill.integer ) );
 			}
@@ -636,12 +640,12 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 			{
 				int minErr = 3;
 				int maxErr = 12;
-				if ( self->client->NPC_class == CLASS_IMPWORKER )
+				if (self->client && self->client->NPC_class == CLASS_IMPWORKER )
 				{
 					minErr = 15;
 					maxErr = 30;
 				}
-				else if ( self->client->NPC_class == CLASS_STORMTROOPER && self->NPC && self->NPC->rank <= RANK_CREWMAN )
+				else if (self->client && self->client->NPC_class == CLASS_STORMTROOPER && self->NPC && self->NPC->rank <= RANK_CREWMAN )
 				{
 					minErr = 5;
 					maxErr = 15;
@@ -654,7 +658,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 		//Alert anyone else in the area
 		if ( Q_stricmp( "desperado", self->NPC_type ) != 0 && Q_stricmp( "paladin", self->NPC_type ) != 0 )
 		{//special holodeck enemies exception
-			if ( self->client->ps.fd.forceGripBeingGripped < level.time )
+			if (self->client && self->client->ps.fd.forceGripBeingGripped < level.time )
 			{//gripped people can't call for help
 				G_AngerAlert( self );
 			}
@@ -671,7 +675,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 		//G_AttackDelay( self, enemy );
 
 		//FIXME: this is a disgusting hack that is supposed to make the Imperials start with their weapon holstered- need a better way
-		if ( self->client->ps.weapon == WP_NONE && !Q_strncmp( self->NPC_type, "imp", 3 ) && !(self->NPC->scriptFlags & SCF_FORCED_MARCH)  )
+		if (self->client && self->client->ps.weapon == WP_NONE && !Q_strncmp( self->NPC_type, "imp", 3 ) && !(self->NPC->scriptFlags & SCF_FORCED_MARCH)  )
 		{
 			if ( self->client->ps.stats[STAT_WEAPONS] & ( 1 << WP_BLASTER ) )
 			{
@@ -1908,7 +1912,7 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 		//	if ( ent->svFlags&SVF_NONNPC_ENEMY )
 		if (enemy->s.eType != ET_NPC)
 		{//still potentially valid
-			if ( enemy->alliedTeam == self->client->playerTeam )
+			if (self->client && enemy->alliedTeam == self->client->playerTeam )
 			{
 				return qfalse;
 			}
@@ -1948,38 +1952,38 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 					}
 
 				}
-				if (entTeam == self->client->playerTeam)
+				if (self->client && entTeam == self->client->playerTeam)
 				{
 					if ( entTeam != self->client->enemyTeam )
 					{
 						return qfalse;
 					}
 				}
-				if( entTeam == NPCTEAM_FREE 
-					|| self->client->enemyTeam == NPCTEAM_FREE 
-					|| entTeam == self->client->enemyTeam )
+				if( entTeam == NPCTEAM_FREE
+					|| (self->client && self->client->enemyTeam == NPCTEAM_FREE)
+					|| (self->client && entTeam == self->client->enemyTeam ))
 				{
-					if ( entTeam != self->client->playerTeam )
+					if (self->client && entTeam != self->client->playerTeam )
 					{
 						return qtrue;
 					}
 				}
 	//Can't be on the same team
-	if ( enemy->client->playerTeam == self->client->playerTeam)
+	if (self->client && enemy->client->playerTeam == self->client->playerTeam)
 			{
 			return qfalse;
 			}
-	if ( enemy->client->playerTeam == TEAM_FREE && enemy->s.number < MAX_CLIENTS )
+	if ( enemy->client->playerTeam == NPCTEAM_FREE && enemy->s.number < MAX_CLIENTS )
 	{//An evil player, everyone attacks him
 		return qtrue;
 	}
 
-	if ( enemy->client->playerTeam == self->client->enemyTeam //simplest case: they're on my enemy team
-		|| (self->client->enemyTeam == TEAM_FREE && enemy->client->NPC_class != self->client->NPC_class )//I get mad at anyone and this guy isn't the same class as me
+	if (self->client &&( enemy->client->playerTeam == self->client->enemyTeam //simplest case: they're on my enemy team
+		|| (self->client->enemyTeam == NPCTEAM_FREE && enemy->client->NPC_class != self->client->NPC_class )//I get mad at anyone and this guy isn't the same class as me
 		|| (enemy->client->NPC_class == CLASS_WAMPA && enemy->enemy )//a rampaging wampa
 		|| (enemy->client->NPC_class == CLASS_RANCOR && enemy->enemy )//a rampaging rancor
-		|| (enemy->client->playerTeam == TEAM_FREE && enemy->client->enemyTeam == NPCTEAM_FREE && enemy->enemy && enemy->enemy->client && (enemy->enemy->client->playerTeam == self->client->playerTeam||(enemy->enemy->client->playerTeam != NPCTEAM_ENEMY&&self->client->playerTeam==NPCTEAM_PLAYER))) //enemy is a rampaging non-aligned creature who is attacking someone on our team or a non-enemy (this last condition is used only if we're a good guy - in effect, we protect the innocent)
-		)
+		|| (enemy->client->playerTeam == NPCTEAM_FREE && enemy->client->enemyTeam == NPCTEAM_FREE && enemy->enemy && enemy->enemy->client && (enemy->enemy->client->playerTeam == self->client->playerTeam||(enemy->enemy->client->playerTeam != NPCTEAM_ENEMY&&self->client->playerTeam==NPCTEAM_PLAYER))) //enemy is a rampaging non-aligned creature who is attacking someone on our team or a non-enemy (this last condition is used only if we're a good guy - in effect, we protect the innocent)
+		))
 	{
 		return qtrue;
 	}		
@@ -2035,7 +2039,7 @@ qboolean ValidEnemy(gentity_t *ent)
 			}
 			else
 			{
-				int entTeam = TEAM_FREE;
+				int entTeam = NPCTEAM_FREE;
 				if ( ent->NPC && ent->client )
 				{
 					entTeam = ent->client->playerTeam;
@@ -2446,7 +2450,7 @@ gentity_t *NPC_PickAlly ( qboolean facingEachOther, float range, qboolean ignore
 		{
 			if ( ally->health > 0 )
 			{
-				if ( ally->client && ( ally->client->playerTeam == NPC->client->playerTeam ||
+				if ( ally->client && NPC->client && ( ally->client->playerTeam == NPC->client->playerTeam ||
 					 NPC->client->playerTeam == NPCTEAM_ENEMY ) )// && ally->client->playerTeam == TEAM_DISGUISE ) ) )
 				{//if on same team or if player is disguised as your team
 					if ( ignoreGroup )
@@ -2744,7 +2748,7 @@ gentity_t *NPC_CheckEnemy( qboolean findNew, qboolean tooFarOk, qboolean setEnem
 //			assert( NPC->client->playerTeam != NPC->enemy->client->playerTeam);
 			//[CoOp]
 			if( NPC->client->playerTeam != NPC->enemy->client->playerTeam 
-				&& NPC->client->enemyTeam != TEAM_FREE 
+				&& NPC->client->enemyTeam != NPCTEAM_FREE 
 				&& NPC->client->enemyTeam != NPC->enemy->client->playerTeam )
 			//if( NPC->client->playerTeam != NPC->enemy->client->playerTeam )
 			//[/CoOp]
@@ -2864,19 +2868,24 @@ int NPC_ShotEntity( gentity_t *ent, vec3_t impactPos )
 	return tr.entityNum;
 }
 
-qboolean NPC_EvaluateShot( int hit, qboolean glassOK )
-{//racc - does firing at this entityNum result us in hitting our enemy or glass?
-	if ( !NPC->enemy )
+qboolean NPC_EvaluateShot(int hit, qboolean glassOK)
+{
+	// Ensure we have a valid enemy and hit within the bounds of g_entities
+	if (!NPC->enemy || hit < 0 || hit >= MAX_GENTITIES)
 	{
 		return qfalse;
 	}
 
-	if ( hit == NPC->enemy->s.number || (&g_entities[hit] != NULL && (g_entities[hit].r.svFlags&SVF_GLASS_BRUSH)) )
-	{//can hit enemy or will hit glass, so shoot anyway
+	// Check if the entity is the enemy or if it's a glass brush
+	if (hit == NPC->enemy->s.number || (g_entities[hit].r.svFlags & SVF_GLASS_BRUSH))
+	{
+		// Can hit enemy or will hit glass, so shoot anyway
 		return qtrue;
 	}
+
 	return qfalse;
 }
+
 
 /*
 NPC_CheckAttack

@@ -2,7 +2,7 @@
 #include "g_nav.h"
 
 gitem_t	*BG_FindItemForAmmo( ammo_t ammo );
-extern void G_SoundOnEnt( gentity_t *ent, soundChannel_t channel, const char *soundPath );
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
 
 //Local state enums
 enum
