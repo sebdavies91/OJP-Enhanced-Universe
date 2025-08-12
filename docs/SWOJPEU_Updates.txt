@@ -1245,6 +1245,8 @@ Update 61 12/08/2025
 
 15) Equipped all jedi and sith bots with their corresponding saber hilt in both the standard and expanded versions.
 
+16) Fixed the executables now executing the mod from any drive.
+
 
 PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
 
