@@ -140,12 +140,12 @@ void CG_PrecacheSiegeObjectiveAssetsForTeam(int myTeam)
         return;
     }
 
-    // Replacing malloc with BG_Alloc and initializing memory
-    objstr = (char*)BG_Alloc(256);  // Replaced malloc
-    foundobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);  // Replaced malloc
+    // Replacing malloc with BG_TempAlloc and initializing memory
+    objstr = (char*)BG_TempAlloc(256);  // Replaced BG_Alloc
+    foundobjective = (char*)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);  // Replaced BG_Alloc
     if (!objstr || !foundobjective) {
-        if (objstr) memset(objstr, 0, 256);  // Replaced free with memset
-        if (foundobjective) memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);  // Replaced free with memset
+        if (objstr) BG_TempFree(256);  // Replaced memset with BG_TempFree
+        if (foundobjective) BG_TempFree(MAX_SIEGE_INFO_SIZE);  // Replaced memset with BG_TempFree
         CG_Error("Memory allocation failed in CG_PrecacheSiegeObjectiveAssetsForTeam\n");
         return;
     }
@@ -203,10 +203,11 @@ void CG_PrecacheSiegeObjectiveAssetsForTeam(int myTeam)
         }
     }
 
-    // Replacing free with memset
-    if (objstr) memset(objstr, 0, 256);  // Replaced free with memset
-    if (foundobjective) memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);  // Replaced free with memset
+    // Replacing BG_TempFree for cleanup
+    if (objstr) BG_TempFree(256);  // Replaced free with BG_TempFree
+    if (foundobjective) BG_TempFree(MAX_SIEGE_INFO_SIZE);  // Replaced free with BG_TempFree
 }
+
 
 
 
@@ -258,9 +259,9 @@ void CG_InitSiegeMode(void)
 	char levelname[MAX_QPATH];
 
 	// Move large buffers to heap instead of stack
-	char* btime = (char*)BG_Alloc(1024);
-	char* teams = (char*)BG_Alloc(2048);
-	char* teamInfo = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
+	char* btime = (char*)BG_TempAlloc(1024);
+	char* teams = (char*)BG_TempAlloc(2048);
+	char* teamInfo = (char*)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);
 	char teamIcon[128];
 
 	int len = 0;
@@ -545,19 +546,21 @@ void CG_InitSiegeMode(void)
 	CG_PrecacheSiegeObjectiveAssetsForTeam(SIEGETEAM_TEAM1);
 	CG_PrecacheSiegeObjectiveAssetsForTeam(SIEGETEAM_TEAM2);
 
-	// Replacing free with memset to clear out memory after use
-	memset(btime, 0, 1024);
-	memset(teams, 0, 2048);
-	memset(teamInfo, 0, MAX_SIEGE_INFO_SIZE);
+	// Free memory after use
+	BG_TempFree(1024);  // Pass the size of the allocated memory
+	BG_TempFree(2048);
+	BG_TempFree(MAX_SIEGE_INFO_SIZE);
 
 	return;
 
 failure:
 	siege_valid = 0;
-	if (btime) memset(btime, 0, 1024);
-	if (teams) memset(teams, 0, 2048);
-	if (teamInfo) memset(teamInfo, 0, MAX_SIEGE_INFO_SIZE);
+	if (btime) BG_TempFree(1024);
+	if (teams) BG_TempFree(2048);
+	if (teamInfo) BG_TempFree(MAX_SIEGE_INFO_SIZE);
 }
+
+
 
 
 
@@ -1073,109 +1076,110 @@ void CG_SiegeBriefingDisplay(int team, int dontshow)
 
 void CG_SiegeObjectiveCompleted(centity_t* ent, int won, int objectivenum)
 {
-	int				myTeam;
-	char			teamstr[64];
-	char			objstr[256];
-	char* foundobjective = NULL;  // moved to heap
-	char			appstring[1024];
-	char			soundstr[1024];
-	int				success = 0;
-	playerState_t* ps = NULL;
+    int             myTeam;
+    char            teamstr[64];
+    char            objstr[256];
+    char* foundobjective = NULL;  // moved to heap
+    char            appstring[1024];
+    char            soundstr[1024];
+    int             success = 0;
+    playerState_t* ps = NULL;
 
-	if (!siege_valid)
-	{
-		CG_Error("Siege data does not exist on client!\n");
-		return;
-	}
+    if (!siege_valid)
+    {
+        CG_Error("Siege data does not exist on client!\n");
+        return;
+    }
 
-	if (cg.snap)
-	{
-		ps = &cg.snap->ps;
-	}
-	else
-	{
-		ps = &cg.predictedPlayerState;
-	}
+    if (cg.snap)
+    {
+        ps = &cg.snap->ps;
+    }
+    else
+    {
+        ps = &cg.predictedPlayerState;
+    }
 
-	if (!ps)
-	{
-		assert(0);
-		return;
-	}
+    if (!ps)
+    {
+        assert(0);
+        return;
+    }
 
-	// Allocate the large buffer on heap using BG_Alloc
-	foundobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
-	if (!foundobjective)
-	{
-		CG_Error("Failed to allocate memory for foundobjective\n");
-		return;
-	}
+    // Allocate the large buffer on heap using BG_TempAlloc
+    foundobjective = (char*)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);
+    if (!foundobjective)
+    {
+        CG_Error("Failed to allocate memory for foundobjective\n");
+        return;
+    }
 
-	myTeam = ps->persistant[PERS_TEAM];
+    myTeam = ps->persistant[PERS_TEAM];
 
-	if (myTeam == TEAM_SPECTATOR)
-	{
-		// Reset memory using memset instead of free
-		memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);
-		return;
-	}
+    if (myTeam == TEAM_SPECTATOR)
+    {
+        // Free memory using BG_TempFree instead of memset
+        BG_TempFree(MAX_SIEGE_INFO_SIZE);
+        return;
+    }
 
-	if (won == SIEGETEAM_TEAM1)
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team1);
-	}
-	else
-	{
-		Com_sprintf(teamstr, sizeof(teamstr), team2);
-	}
+    if (won == SIEGETEAM_TEAM1)
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team1);
+    }
+    else
+    {
+        Com_sprintf(teamstr, sizeof(teamstr), team2);
+    }
 
-	if (BG_SiegeGetValueGroup(siege_info, teamstr, cgParseObjectives))
-	{
-		Com_sprintf(objstr, sizeof(objstr), "Objective%i", objectivenum);
+    if (BG_SiegeGetValueGroup(siege_info, teamstr, cgParseObjectives))
+    {
+        Com_sprintf(objstr, sizeof(objstr), "Objective%i", objectivenum);
 
-		if (BG_SiegeGetValueGroup(cgParseObjectives, objstr, foundobjective))
-		{
-			if (myTeam == SIEGETEAM_TEAM1)
-			{
-				success = BG_SiegeGetPairedValue(foundobjective, "message_team1", appstring);
-			}
-			else
-			{
-				success = BG_SiegeGetPairedValue(foundobjective, "message_team2", appstring);
-			}
+        if (BG_SiegeGetValueGroup(cgParseObjectives, objstr, foundobjective))
+        {
+            if (myTeam == SIEGETEAM_TEAM1)
+            {
+                success = BG_SiegeGetPairedValue(foundobjective, "message_team1", appstring);
+            }
+            else
+            {
+                success = BG_SiegeGetPairedValue(foundobjective, "message_team2", appstring);
+            }
 
-			if (success)
-			{
-				CG_DrawSiegeMessageNonMenu(appstring);
-			}
+            if (success)
+            {
+                CG_DrawSiegeMessageNonMenu(appstring);
+            }
 
-			appstring[0] = 0;
-			soundstr[0] = 0;
+            appstring[0] = 0;
+            soundstr[0] = 0;
 
-			if (myTeam == SIEGETEAM_TEAM1)
-			{
-				Com_sprintf(teamstr, sizeof(teamstr), "sound_team1");
-			}
-			else
-			{
-				Com_sprintf(teamstr, sizeof(teamstr), "sound_team2");
-			}
+            if (myTeam == SIEGETEAM_TEAM1)
+            {
+                Com_sprintf(teamstr, sizeof(teamstr), "sound_team1");
+            }
+            else
+            {
+                Com_sprintf(teamstr, sizeof(teamstr), "sound_team2");
+            }
 
-			if (BG_SiegeGetPairedValue(foundobjective, teamstr, appstring))
-			{
-				Com_sprintf(soundstr, sizeof(soundstr), appstring);
-			}
+            if (BG_SiegeGetPairedValue(foundobjective, teamstr, appstring))
+            {
+                Com_sprintf(soundstr, sizeof(soundstr), appstring);
+            }
 
-			if (soundstr[0])
-			{
-				trap_S_StartLocalSound(trap_S_RegisterSound(soundstr), CHAN_ANNOUNCER);
-			}
-		}
-	}
+            if (soundstr[0])
+            {
+                trap_S_StartLocalSound(trap_S_RegisterSound(soundstr), CHAN_ANNOUNCER);
+            }
+        }
+    }
 
-	// Reset memory using memset instead of free
-	memset(foundobjective, 0, MAX_SIEGE_INFO_SIZE);
+    // Free memory using BG_TempFree instead of memset
+    BG_TempFree(MAX_SIEGE_INFO_SIZE);
 }
+
 
 
 

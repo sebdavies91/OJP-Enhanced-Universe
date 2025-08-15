@@ -153,8 +153,8 @@ void CG_LoadHolsterData(clientInfo_t* ci)
 
     InitHolsterData(ci);
 
-    // Allocate buffer for file read using BG_Alloc
-    fileBuffer = (char*)BG_Alloc(MAX_HOLSTER_INFO_SIZE);
+    // Allocate buffer for file read using BG_TempAlloc
+    fileBuffer = (char*)BG_TempAlloc(MAX_HOLSTER_INFO_SIZE);
     if (!fileBuffer) {
         CG_Printf("Error: Could not allocate memory for holster.cfg\n");
         return;
@@ -177,14 +177,14 @@ void CG_LoadHolsterData(clientInfo_t* ci)
     }
 
     if (!f || !fLen) {
-        memset(fileBuffer, 0, MAX_HOLSTER_INFO_SIZE);  // Clear buffer before exit
+        BG_TempFree(MAX_HOLSTER_INFO_SIZE);  // Clear buffer before exit
         return;
     }
 
     if (fLen >= MAX_HOLSTER_INFO_SIZE) {
         CG_Printf("Error: holster.cfg for %s is over the holster.cfg filesize limit.\n", ci->modelName);
         trap_FS_FCloseFile(f);
-        memset(fileBuffer, 0, MAX_HOLSTER_INFO_SIZE);  // Clear buffer before exit
+        BG_TempFree(MAX_HOLSTER_INFO_SIZE);  // Clear buffer before exit
         return;
     }
 
@@ -231,9 +231,10 @@ void CG_LoadHolsterData(clientInfo_t* ci)
     CG_Printf("Holstered Weapon Data Loaded for %s.\n", ci->modelName);
 #endif
 
-    // Clear the allocated buffer using memset
-    memset(fileBuffer, 0, MAX_HOLSTER_INFO_SIZE);
+    // Clear the allocated buffer using BG_TempFree
+    BG_TempFree(MAX_HOLSTER_INFO_SIZE);
 }
+
 
 
 

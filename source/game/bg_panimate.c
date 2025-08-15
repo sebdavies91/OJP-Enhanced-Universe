@@ -2859,7 +2859,7 @@ int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean i
 #endif
 
     // Allocate heap buffer instead of large stack array
-    BGPAFtext = (char*)BG_Alloc(60000);  // Replaced malloc with BG_Alloc
+    BGPAFtext = (char*)BG_TempAlloc(60000);  // Replaced BG_Alloc with BG_TempAlloc
     if (!BGPAFtext)
     {
         Com_Error(ERR_DROP, "Failed to allocate memory for animation file buffer");
@@ -2876,7 +2876,7 @@ int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean i
         len = trap_FS_FOpenFile(filename, &f, FS_READ);
         if ((len <= 0) || (len >= 60000 - 1))
         {
-            memset(BGPAFtext, 0, 60000);  // Replaced free with memset to zero out the buffer
+            BG_TempFree(60000);  // Replaced memset with BG_TempFree to zero out the buffer
             if (dynAlloc)
             {
                 BG_AnimsetFree(animset);
@@ -2894,7 +2894,7 @@ int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean i
     }
     else
     {
-        memset(BGPAFtext, 0, 60000);  // Zero out the buffer instead of freeing
+        BG_TempFree(60000);  // Zero out the buffer instead of freeing it
         if (dynAlloc)
         {
             assert(!"Should not have allocated dynamically for humanoid");
@@ -2986,7 +2986,7 @@ int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean i
     }
 
     // Free the allocated buffer before returning
-    memset(BGPAFtext, 0, 60000);  // Zero out the buffer instead of freeing
+    BG_TempFree(60000);  // Zero out the buffer instead of freeing it
 
     wasLoaded = BGPAFtextLoaded;
 
@@ -3021,6 +3021,7 @@ int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean i
 
     return usedIndex;
 }
+
 
 
 /*

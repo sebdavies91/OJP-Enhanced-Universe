@@ -345,11 +345,11 @@ void G_LoadIPBans(void)
         return;
     }
 
-    // Allocate on heap using BG_Alloc instead of malloc
-    banIPBuffer = (char*)BG_Alloc(len + 1);
+    // Allocate on heap using BG_TempAlloc instead of BG_Alloc
+    banIPBuffer = (char*)BG_TempAlloc(len + 1);
     if (!banIPBuffer)
     {
-        G_Printf("G_LoadBanIP - ERROR: BG_Alloc failed\n");
+        G_Printf("G_LoadBanIP - ERROR: BG_TempAlloc failed\n");
         trap_FS_FCloseFile(fh);
         return;
     }
@@ -387,9 +387,10 @@ void G_LoadIPBans(void)
         }
     }
 
-    // Use memset to clear the buffer instead of free
-    memset(banIPBuffer, 0, len + 1);
+    // Use BG_TempFree instead of memset to clear the buffer
+    BG_TempFree(len + 1);
 }
+
 
 
 //[/AdminCommands]

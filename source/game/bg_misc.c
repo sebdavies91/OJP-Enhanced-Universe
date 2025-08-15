@@ -4427,11 +4427,11 @@ int BG_ModelCache(const char *modelName, const char *skinName)
 }
 
 #ifdef QAGAME
-#define MAX_POOL_SIZE	65536000 //1024000
-#elif defined CGAME //don't need as much for cgame stuff. 2mb will be fine.
-#define MAX_POOL_SIZE	65536000
-#else //And for the ui the only thing we'll be using this for anyway is allocating anim data for g2 menu models
-#define MAX_POOL_SIZE	65536000
+#define MAX_POOL_SIZE 134217728  // 128 MB for server-side (increase if needed)
+#elif defined CGAME
+#define MAX_POOL_SIZE 67108864   // 64 MB for client-side (increase if needed)
+#else
+#define MAX_POOL_SIZE 16777216  // 16 MB for UI
 #endif
 
 //I am using this for all the stuff like NPC client structures on server/client and

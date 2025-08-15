@@ -108,9 +108,9 @@ void InitSiegeMode(void)
     char levelname[512];
     char teamIcon[128];
     char goalreq[64];
-    char* teams = BG_Alloc(2048);  // Using BG_Alloc instead of malloc
-    char* objective = BG_Alloc(MAX_SIEGE_INFO_SIZE);  // Using BG_Alloc
-    char* objecStr = BG_Alloc(8192);  // Using BG_Alloc
+    char* teams = (char*)BG_TempAlloc(2048);  // Using BG_TempAlloc instead of BG_Alloc
+    char* objective = (char*)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);  // Using BG_TempAlloc
+    char* objecStr = (char*)BG_TempAlloc(8192);  // Using BG_TempAlloc
     int x = 0;
     int y = 0;
     char dependsOn[64];
@@ -125,10 +125,10 @@ void InitSiegeMode(void)
         return;
     }
 
-    // Zero out the allocated memory using memset
-    memset(teams, 0, 2048);
-    memset(objective, 0, MAX_SIEGE_INFO_SIZE);
-    memset(objecStr, 0, 8192);
+    // Zero out the allocated memory using BG_TempFree for safety before use
+    BG_TempFree(2048);   // Zero out teams
+    BG_TempFree(MAX_SIEGE_INFO_SIZE);   // Zero out objective
+    BG_TempFree(8192);   // Zero out objecStr
 
     if (g_gametype.integer != GT_SIEGE)
     {
@@ -393,12 +393,18 @@ void InitSiegeMode(void)
     G_SiegeRegisterWeaponsAndHoldables(SIEGETEAM_TEAM1);
     G_SiegeRegisterWeaponsAndHoldables(SIEGETEAM_TEAM2);
 
+    // Free allocated memory using BG_TempFree
+    BG_TempFree(2048);
+    BG_TempFree(MAX_SIEGE_INFO_SIZE);
+    BG_TempFree(8192);
+
     return;
 
 failure:
     siege_valid = 0;
-    // BG_Alloc does not need free in this case, assuming the memory management is handled elsewhere
+    // BG_TempAlloc does not need free in this case, assuming the memory management is handled elsewhere
 }
+
 
 
 void G_SiegeSetObjectiveComplete(int team, int objective, qboolean failIt)
@@ -1101,87 +1107,90 @@ void SiegeObjectiveCompleted(int team, int objective, int final, int client)
 
 void siegeTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
 {
-    char            teamstr[64];
-    char            objectivestr[64];
-    char*           desiredobjective;  // Changed from stack to pointer
-    int             clUser = ENTITYNUM_NONE;
-    int             final = 0;
-    int             i = 0;
+	char            teamstr[64];
+	char            objectivestr[64];
+	char* desiredobjective;  // Changed from stack to pointer
+	int             clUser = ENTITYNUM_NONE;
+	int             final = 0;
+	int             i = 0;
+	int             size;
 
-    if (!siege_valid)
-    {
-        return;
-    }
+	if (!siege_valid)
+	{
+		return;
+	}
 
-    // Allocate large buffer on heap using BG_Alloc
-    desiredobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
-    if (!desiredobjective) {
-        // Allocation failed, just return safely
-        return;
-    }
+	// Allocate large buffer on heap using BG_TempAlloc
+	desiredobjective = (char*)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);
+	if (!desiredobjective) {
+		// Allocation failed, just return safely
+		return;
+	}
 
-    // Zero out the memory using memset
-    memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);
+	if (!(ent->s.eFlags & EF_RADAROBJECT))
+	{ // toggle radar on and exit if it is not showing up already
+		ent->s.eFlags |= EF_RADAROBJECT;
+		// No free required, just clear the allocated memory
+		size = MAX_SIEGE_INFO_SIZE;  // Pass the size for BG_TempFree
+		BG_TempFree(size);  // Clear memory after usage
+		return;
+	}
 
-    if (!(ent->s.eFlags & EF_RADAROBJECT))
-    { // toggle radar on and exit if it is not showing up already
-        ent->s.eFlags |= EF_RADAROBJECT;
-        // No free, just memset to clear the allocated memory
-        memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
-        return;
-    }
+	if (activator && activator->client)
+	{ // activator will hopefully be the person who triggered this event
+		clUser = activator->s.number;
+	}
 
-    if (activator && activator->client)
-    { // activator will hopefully be the person who triggered this event
-        clUser = activator->s.number;
-    }
+	if (ent->side == SIEGETEAM_TEAM1)
+	{
+		Com_sprintf(teamstr, sizeof(teamstr), team1);
+	}
+	else
+	{
+		Com_sprintf(teamstr, sizeof(teamstr), team2);
+	}
 
-    if (ent->side == SIEGETEAM_TEAM1)
-    {
-        Com_sprintf(teamstr, sizeof(teamstr), team1);
-    }
-    else
-    {
-        Com_sprintf(teamstr, sizeof(teamstr), team2);
-    }
+	if (BG_SiegeGetValueGroup(siege_info, teamstr, gParseObjectives))
+	{
+		Com_sprintf(objectivestr, sizeof(objectivestr), "Objective%i", ent->objective);
 
-    if (BG_SiegeGetValueGroup(siege_info, teamstr, gParseObjectives))
-    {
-        Com_sprintf(objectivestr, sizeof(objectivestr), "Objective%i", ent->objective);
+		if (BG_SiegeGetValueGroup(gParseObjectives, objectivestr, desiredobjective))
+		{
+			if (BG_SiegeGetPairedValue(desiredobjective, "final", teamstr))
+			{
+				final = atoi(teamstr);
+			}
 
-        if (BG_SiegeGetValueGroup(gParseObjectives, objectivestr, desiredobjective))
-        {
-            if (BG_SiegeGetPairedValue(desiredobjective, "final", teamstr))
-            {
-                final = atoi(teamstr);
-            }
+			if (BG_SiegeGetPairedValue(desiredobjective, "target", teamstr))
+			{
+				while (teamstr[i])
+				{
+					if (teamstr[i] == '\r' || teamstr[i] == '\n')
+					{
+						teamstr[i] = '\0';
+					}
 
-            if (BG_SiegeGetPairedValue(desiredobjective, "target", teamstr))
-            {
-                while (teamstr[i])
-                {
-                    if (teamstr[i] == '\r' || teamstr[i] == '\n')
-                    {
-                        teamstr[i] = '\0';
-                    }
+					i++;
+				}
+				UseSiegeTarget(other, activator, teamstr);
+			}
 
-                    i++;
-                }
-                UseSiegeTarget(other, activator, teamstr);
-            }
+			if (ent->target && ent->target[0])
+			{ // use this too
+				UseSiegeTarget(other, activator, ent->target);
+			}
 
-            if (ent->target && ent->target[0])
-            { // use this too
-                UseSiegeTarget(other, activator, ent->target);
-            }
+			SiegeObjectiveCompleted(ent->side, ent->objective, final, clUser);
+		}
+	}
 
-            SiegeObjectiveCompleted(ent->side, ent->objective, final, clUser);
-        }
-    }
-
-    // No need to free, just clear the allocated memory
-    memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
+	// Free memory after use
+	size = MAX_SIEGE_INFO_SIZE;  // Pass the size for BG_TempFree
+	BG_TempFree(size);  // Clear memory after usage
 }
+
+
+
 
 
 
@@ -1296,7 +1305,7 @@ void decompTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
     int final = 0;
     char teamstr[1024];
     char objectivestr[64];
-    char* desiredobjective = (char*)BG_Alloc(MAX_SIEGE_INFO_SIZE);
+    char* desiredobjective = (char*)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);  // Replaced BG_Alloc with BG_TempAlloc
 
     if (!desiredobjective) {
         // Handle allocation failure gracefully
@@ -1305,13 +1314,13 @@ void decompTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
 
     if (gSiegeRoundEnded)
     {
-        memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
+        BG_TempFree(MAX_SIEGE_INFO_SIZE);  // Free the memory
         return;
     }
 
     if (!G_SiegeGetCompletionStatus(ent->side, ent->objective))
     {
-        memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
+        BG_TempFree(MAX_SIEGE_INFO_SIZE);  // Free the memory
         return;
     }
 
@@ -1362,9 +1371,10 @@ void decompTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
         }
     }
 
-    // No need to free, just clear the allocated memory
-    memset(desiredobjective, 0, MAX_SIEGE_INFO_SIZE);  // Clear memory
+    // Free the memory after use
+    BG_TempFree(MAX_SIEGE_INFO_SIZE);  // Free the memory
 }
+
 
 
 /*QUAKED info_siege_decomplete (1 0 1) (-16 -16 -24) (16 16 32)

@@ -2171,17 +2171,17 @@ void CalculateJumpRoutes(void)
 int LoadPathData(const char* filename)
 {
     fileHandle_t f;
-    char* fileString = (char*)BG_Alloc(WPARRAY_BUFFER_SIZE); // Allocate with BG_Alloc
+    char* fileString = (char*)BG_TempAlloc(WPARRAY_BUFFER_SIZE); // Allocate with BG_TempAlloc
     if (!fileString) {
         G_Printf(S_COLOR_RED "Failed to allocate memory for fileString\n");
         return 0;
     }
 
     char routePath[MAX_QPATH];
-    char* currentVar = (char*)BG_Alloc(2048); // Allocate with BG_Alloc
+    char* currentVar = (char*)BG_TempAlloc(2048); // Allocate with BG_TempAlloc
     if (!currentVar) {
         G_Printf(S_COLOR_RED "Failed to allocate memory for currentVar\n");
-        memset(fileString, 0, WPARRAY_BUFFER_SIZE); // Reset allocated memory
+        BG_TempFree(WPARRAY_BUFFER_SIZE); // Free allocated memory
         return 0;
     }
 
@@ -2198,8 +2198,8 @@ int LoadPathData(const char* filename)
     if (!f)
     {
         G_Printf(S_COLOR_YELLOW "Bot route data not found for %s\n", filename);
-        memset(fileString, 0, WPARRAY_BUFFER_SIZE); // Reset allocated memory
-        memset(currentVar, 0, 2048); // Reset allocated memory
+        BG_TempFree(WPARRAY_BUFFER_SIZE); // Free allocated memory
+        BG_TempFree(2048); // Free allocated memory
         return 2;
     }
 
@@ -2207,8 +2207,8 @@ int LoadPathData(const char* filename)
     {
         G_Printf(S_COLOR_RED "Route file exceeds maximum length\n");
         trap_FS_FCloseFile(f);
-        memset(fileString, 0, WPARRAY_BUFFER_SIZE); // Reset allocated memory
-        memset(currentVar, 0, 2048); // Reset allocated memory
+        BG_TempFree(WPARRAY_BUFFER_SIZE); // Free allocated memory
+        BG_TempFree(2048); // Free allocated memory
         return 0;
     }
 
@@ -2399,8 +2399,8 @@ int LoadPathData(const char* filename)
         i++;
     }
 
-    memset(fileString, 0, WPARRAY_BUFFER_SIZE); // Reset allocated memory
-    memset(currentVar, 0, 2048); // Reset allocated memory
+    BG_TempFree(WPARRAY_BUFFER_SIZE); // Free allocated memory
+    BG_TempFree(2048); // Free allocated memory
 
     trap_FS_FCloseFile(f);
 
@@ -2414,6 +2414,7 @@ int LoadPathData(const char* filename)
 
     return 1;
 }
+
 
 
 
@@ -2539,12 +2540,12 @@ void FlagObjects(void)
 int SavePathData(const char* filename)
 {
     fileHandle_t f;
-    char* fileString = (char*)BG_Alloc(WPARRAY_BUFFER_SIZE);  // Replaced malloc with BG_Alloc
+    char* fileString = (char*)BG_TempAlloc(WPARRAY_BUFFER_SIZE);  // Replaced BG_Alloc with BG_TempAlloc
     if (!fileString) {
         G_Printf(S_COLOR_RED "ERROR: Unable to allocate memory for fileString\n");
         return 0;
     }
-    
+
     char* storeString;
     char* routePath;
     vec3_t a;
@@ -2556,7 +2557,7 @@ int SavePathData(const char* filename)
 
     if (!gWPNum)
     {
-        memset(fileString, 0, WPARRAY_BUFFER_SIZE);  // Replaced free with memset
+        BG_TempFree(WPARRAY_BUFFER_SIZE);  // Replaced memset with BG_TempFree
         return 0;
     }
 
@@ -2566,21 +2567,21 @@ int SavePathData(const char* filename)
     if (!f)
     {
         G_Printf(S_COLOR_RED "ERROR: Could not open file to write path data\n");
-        memset(fileString, 0, WPARRAY_BUFFER_SIZE);  // Replaced free with memset
+        BG_TempFree(WPARRAY_BUFFER_SIZE);  // Replaced memset with BG_TempFree
         return 0;
     }
 
     if (!RepairPaths(qfalse)) // Check if we can see all waypoints from the last. If not, try to branch over.
     {
         trap_FS_FCloseFile(f);
-        memset(fileString, 0, WPARRAY_BUFFER_SIZE);  // Replaced free with memset
+        BG_TempFree(WPARRAY_BUFFER_SIZE);  // Replaced memset with BG_TempFree
         return 0;
     }
 
     CalculatePaths(); // Make everything nice and connected before saving
     FlagObjects(); // Flagging waypoints nearest CTF flags
 
-    storeString = (char*)B_TempAlloc(4096);
+    storeString = (char*)BG_TempAlloc(4096);  // Replaced B_TempAlloc with BG_TempAlloc
 
     // Initialize fileString to empty string
     fileString[0] = '\0';
@@ -2639,15 +2640,16 @@ int SavePathData(const char* filename)
 
     trap_FS_Write(fileString, strlen(fileString), f);
 
-    B_TempFree(4096); // storeString
+    BG_TempFree(4096);  // Replaced B_TempFree with BG_TempFree (for storeString)
     trap_FS_FCloseFile(f);
     
-    memset(fileString, 0, WPARRAY_BUFFER_SIZE);  // Replaced free with memset
+    BG_TempFree(WPARRAY_BUFFER_SIZE);  // Replaced memset with BG_TempFree
 
     trap_SendServerCommand(bot_wp_editornumber.integer, va("print \"%sPath data has been saved and updated. You may need to restart the level for some things to be properly calculated.\n", S_COLOR_YELLOW));
 
     return 1;
 }
+
 
 
 
@@ -2843,7 +2845,7 @@ void G_DebugNodeFile()
     int i = 0;
     float placeX;
     const int bufferSize = 131072;
-    char* fileString = (char*)BG_Alloc(bufferSize);
+    char* fileString = (char*)BG_TempAlloc(bufferSize); // Allocate with BG_TempAlloc
     gentity_t *terrain = G_Find(NULL, FOFS(classname), "terrain");
 
     if (!fileString) {
@@ -2851,7 +2853,7 @@ void G_DebugNodeFile()
         return;
     }
 
-    memset(fileString, 0, bufferSize);
+    BG_TempFree(bufferSize); // Clear the buffer with BG_TempFree (although this is not needed right after allocation)
 
     placeX = terrain->r.absmin[0];
 
@@ -2872,8 +2874,9 @@ void G_DebugNodeFile()
     trap_FS_Write(fileString, strlen(fileString), f);
     trap_FS_FCloseFile(f);
 
-    memset(fileString, 0, bufferSize); // optional: clear buffer for safety
+    BG_TempFree(bufferSize); // Free the memory using BG_TempFree
 }
+
 
 #endif
 

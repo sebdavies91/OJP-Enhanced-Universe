@@ -16,8 +16,8 @@ void LoadDynamicMusic(void)
     char* buffer;  // use pointer now
     vmCvar_t mapname;
 
-    // Allocate memory using BG_Alloc instead of malloc
-    buffer = (char*)BG_Alloc(DMS_INFO_SIZE);
+    // Allocate memory using BG_TempAlloc instead of BG_Alloc
+    buffer = (char*)BG_TempAlloc(DMS_INFO_SIZE);
     if (!buffer) {
         G_Printf("LoadDynamicMusic() Error: Memory allocation failed.\n");
         return;
@@ -29,7 +29,7 @@ void LoadDynamicMusic(void)
     if (!f) {
         // File open error
         G_Printf("LoadDynamicMusic() Error: Couldn't open ext_data/dms.dat\n");
-        memset(buffer, 0, DMS_INFO_SIZE);  // Use memset to "free" memory
+        BG_TempFree(DMS_INFO_SIZE);  // Replaced memset with BG_TempFree to clear memory
         return;
     }
 
@@ -37,20 +37,21 @@ void LoadDynamicMusic(void)
         // File too large for buffer
         G_Printf("LoadDynamicMusic() Error: dms.dat too big.\n");
         trap_FS_FCloseFile(f);
-        memset(buffer, 0, DMS_INFO_SIZE);  // Use memset to "free" memory
+        BG_TempFree(DMS_INFO_SIZE);  // Replaced memset with BG_TempFree to clear memory
         return;
     }
 
-    trap_FS_Read(buffer, len, f);  // Read data in buffer
+    trap_FS_Read(buffer, len, f);  // Read data into buffer
     trap_FS_FCloseFile(f);         // Close file
 
     trap_Cvar_Register(&mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM);
 
     LoadDynamicMusicGroup(mapname.string, buffer);
 
-    // Use memset instead of free to "clear" memory
-    memset(buffer, 0, DMS_INFO_SIZE);
+    // Use BG_TempFree instead of memset to "clear" memory
+    BG_TempFree(DMS_INFO_SIZE);
 }
+
 
 
 
@@ -60,8 +61,8 @@ extern int BG_SiegeGetPairedValue(char *buf, char *key, char *outbuf);
 extern int BG_SiegeGetValueGroup(char *buf, char *group, char *outbuf);
 void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char* mapname)
 {
-    char* SongGroup = (char*)BG_Alloc(DMS_INFO_SIZE);  // Replacing malloc with BG_Alloc
-    char* transitionGroup = (char*)BG_Alloc(DMS_INFO_SIZE);  // Replacing malloc with BG_Alloc
+    char* SongGroup = (char*)BG_TempAlloc(DMS_INFO_SIZE);  // Replacing BG_Alloc with BG_TempAlloc
+    char* transitionGroup = (char*)BG_TempAlloc(DMS_INFO_SIZE);  // Replacing BG_Alloc with BG_TempAlloc
     char* transition;  // pointer used to advance the checks for transitions
     char Value[MAX_QPATH];
     int numTransitions = 0;
@@ -69,8 +70,8 @@ void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char
 
     if (!SongGroup || !transitionGroup) {
         G_Printf("LoadDMSSongData Error: Memory allocation failed.\n");
-        if (SongGroup) memset(SongGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
-        if (transitionGroup) memset(transitionGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+        if (SongGroup) BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree
+        if (transitionGroup) BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree
         return;
     }
 
@@ -79,8 +80,8 @@ void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char
     // find our specific song
     if (!BG_SiegeGetValueGroup(SongGroup, song, SongGroup)) {
         G_Printf("LoadDMSSongData Error: Couldn't find song data for DMS song %s.\n", song);
-        memset(SongGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
-        memset(transitionGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+        BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree
+        BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree
         return;
     }
 
@@ -129,9 +130,10 @@ void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char
         transition = strstr(transition, "exit");
     }
 
-    memset(SongGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
-    memset(transitionGroup, 0, DMS_INFO_SIZE);  // Replacing free with memset
+    BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree
+    BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree
 }
+
 
 
 
@@ -193,11 +195,11 @@ void LoadDMSSongLengths(void)
         return;
     }
 
-    // Replace malloc with BG_Alloc
-    buffer = (char*)BG_Alloc(DMS_INFO_SIZE);  // BG_Alloc should allocate memory
+    // Replacing BG_Alloc with BG_TempAlloc
+    buffer = (char*)BG_TempAlloc(DMS_INFO_SIZE);  // BG_TempAlloc should allocate memory
     if (!buffer)
     {
-        G_Printf("LoadDMSSongLengths() Error: BG_Alloc failed.\n");
+        G_Printf("LoadDMSSongLengths() Error: BG_TempAlloc failed.\n");
         return;
     }
 
@@ -206,8 +208,7 @@ void LoadDMSSongLengths(void)
     if (!f)
     {
         G_Printf("LoadDynamicMusic() Error: Couldn't open %s\n", DMS_MUSICLENGTH_FILENAME);
-        // Instead of free, use memset to zero out the memory
-        memset(buffer, 0, DMS_INFO_SIZE);  // Zero out the buffer (not actually freeing it)
+        BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "free" memory
         return;
     }
 
@@ -215,7 +216,7 @@ void LoadDMSSongLengths(void)
     {
         G_Printf("LoadDynamicMusic() Error: %s too big.\n", DMS_MUSICLENGTH_FILENAME);
         trap_FS_FCloseFile(f);
-        memset(buffer, 0, DMS_INFO_SIZE);  // Zero out the buffer before returning
+        BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "free" memory
         return;
     }
 
@@ -241,9 +242,10 @@ void LoadDMSSongLengths(void)
         LoadLengthforSong(buffer, &DMSData.bossMusic);
     }
 
-    // Replace free with memset to clear the buffer
-    memset(buffer, 0, DMS_INFO_SIZE);  // Zero out the buffer instead of freeing
+    // Replacing memset with BG_TempFree to "free" memory
+    BG_TempFree(DMS_INFO_SIZE);  // Clear and free the buffer
 }
+
 
 
 
@@ -252,7 +254,7 @@ void LoadDMSSongLengths(void)
 void LoadDynamicMusicGroup(char* mapname, char* buffer)
 {
     char text[MAX_QPATH];
-    char* MapMusicGroup = (char*)BG_Alloc(DMS_INFO_SIZE);  // Replaced malloc with BG_Alloc
+    char* MapMusicGroup = (char*)BG_TempAlloc(DMS_INFO_SIZE);  // Replaced BG_Alloc with BG_TempAlloc
     if (!MapMusicGroup) {
         G_Printf("LoadDynamicMusicGroup Error: Failed to allocate memory.\n");
         return;
@@ -268,13 +270,13 @@ void LoadDynamicMusicGroup(char* mapname, char* buffer)
 
     if (!BG_SiegeGetValueGroup(MapMusicGroup, mapname, MapMusicGroup)) {
         G_Printf("LoadDynamicMusicGroup Error: Couldn't find DMS entry for this map.\n");
-        memset(MapMusicGroup, 0, DMS_INFO_SIZE);  // Replace free with memset to zero out the buffer
+        BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "clear" memory
         return;
     }
 
     if (BG_SiegeGetPairedValue(MapMusicGroup, "uses", text)) {
         LoadDynamicMusicGroup(text, buffer);  // recursion is safe, this one uses its own buffer
-        memset(MapMusicGroup, 0, DMS_INFO_SIZE);  // Zero out the memory
+        BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "clear" memory
         return;
     }
 
@@ -302,8 +304,9 @@ void LoadDynamicMusicGroup(char* mapname, char* buffer)
 
     LoadDMSSongLengths();
 
-    memset(MapMusicGroup, 0, DMS_INFO_SIZE);  // Zero out the memory before returning
+    BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "clear" memory before returning
 }
+
 
 
 

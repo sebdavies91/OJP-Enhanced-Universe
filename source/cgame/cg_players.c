@@ -972,7 +972,7 @@ trybaseskel:
     }
 
     // Allocate buffer for file read (160000 bytes)
-    text = (char*)BG_Alloc(160000);  // Replace malloc with BG_Alloc
+    text = (char*)BG_TempAlloc(160000);  // Replace malloc with BG_TempAlloc
     if (!text)
     {
         Com_Printf("Error: Could not allocate memory for animevents.cfg text buffer\n");
@@ -1063,10 +1063,10 @@ trybaseskel:
     usedIndex = forcedIndex;
 
 fin:
-    // Replace free with memset
+    // Replace free with BG_TempFree to clear the buffer
     if (text)
     {
-        memset(text, 0, 160000);  // "free" replacement with memset to clear the buffer
+        BG_TempFree(160000);  // "free" replacement with BG_TempFree to clear the buffer
         text = NULL;
     }
 
@@ -1083,6 +1083,7 @@ fin:
 
     return usedIndex;
 }
+
 
 
 //[/ANIMEVENTS]  End moving of animevent bg functions
@@ -1253,114 +1254,119 @@ CLIENT INFO
 #define MAX_SURF_LIST_SIZE	1024
 qboolean CG_ParseSurfsFile(const char* modelName, const char* skinName, char* surfOff, char* surfOn)
 {
-	const char* text_p;
-	int			len;
-	const char* token;
-	const char* value;
-	char		sfilename[MAX_QPATH];
-	fileHandle_t	f;
-	int			i = 0;
-	char* text = NULL;  // moved from stack to heap
+    const char* text_p;
+    int         len;
+    const char* token;
+    const char* value;
+    char        sfilename[MAX_QPATH];
+    fileHandle_t f;
+    int         i = 0;
+    char* text = NULL;  // moved from stack to heap
 
-	while (skinName && skinName[i])
-	{
-		if (skinName[i] == '|')
-		{ // this is a multi-part skin, said skins do not support .surf files
-			return qfalse;
-		}
-		i++;
-	}
+    while (skinName && skinName[i])
+    {
+        if (skinName[i] == '|')
+        { // this is a multi-part skin, said skins do not support .surf files
+            return qfalse;
+        }
+        i++;
+    }
 
-	// Load and parse .surf file
-	Com_sprintf(sfilename, sizeof(sfilename), "models/players/%s/model_%s.surf", modelName, skinName);
+    // Load and parse .surf file
+    Com_sprintf(sfilename, sizeof(sfilename), "models/players/%s/model_%s.surf", modelName, skinName);
 
-	// load the file
-	len = trap_FS_FOpenFile(sfilename, &f, FS_READ);
-	if (len <= 0)
-	{ // no file
-		return qfalse;
-	}
-	if (len >= 40000 - 1)
-	{
-		Com_Printf("File %s too long\n", sfilename);
-		trap_FS_FCloseFile(f);
-		return qfalse;
-	}
+    // load the file
+    len = trap_FS_FOpenFile(sfilename, &f, FS_READ);
+    if (len <= 0)
+    { // no file
+        return qfalse;
+    }
+    if (len >= 40000 - 1)
+    {
+        Com_Printf("File %s too long\n", sfilename);
+        trap_FS_FCloseFile(f);
+        return qfalse;
+    }
 
-	// Replacing malloc with BG_Alloc
-	text = (char*)BG_Alloc(len + 1);
-	if (!text) {
-		trap_FS_FCloseFile(f);
-		Com_Printf("Memory allocation failed in CG_ParseSurfsFile\n");
-		return qfalse;
-	}
+    // Replacing BG_Alloc with BG_TempAlloc
+    text = (char*)BG_TempAlloc(len + 1);
+    if (!text) {
+        trap_FS_FCloseFile(f);
+        Com_Printf("Memory allocation failed in CG_ParseSurfsFile\n");
+        return qfalse;
+    }
 
-	trap_FS_Read(text, len, f);
-	text[len] = 0;
-	trap_FS_FCloseFile(f);
+    trap_FS_Read(text, len, f);
+    text[len] = 0;
+    trap_FS_FCloseFile(f);
 
-	// parse the text
-	text_p = text;
+    // parse the text
+    text_p = text;
 
-	// Replace free with memset
-	memset((char*)surfOff, 0, MAX_SURF_LIST_SIZE);
-	memset((char*)surfOn, 0, MAX_SURF_LIST_SIZE);
+    // Replace memset with BG_TempFree
+    if (surfOff)
+    {
+        BG_TempFree(MAX_SURF_LIST_SIZE);
+    }
+    if (surfOn)
+    {
+        BG_TempFree(MAX_SURF_LIST_SIZE);
+    }
 
-	// read information for surfOff and surfOn
-	while (1)
-	{
-		token = COM_ParseExt(&text_p, qtrue);
-		if (!token || !token[0])
-		{
-			break;
-		}
+    // read information for surfOff and surfOn
+    while (1)
+    {
+        token = COM_ParseExt(&text_p, qtrue);
+        if (!token || !token[0])
+        {
+            break;
+        }
 
-		// surfOff
-		if (!Q_stricmp(token, "surfOff"))
-		{
-			if (COM_ParseString(&text_p, &value))
-			{
-				continue;
-			}
-			if (surfOff && surfOff[0])
-			{
-				Q_strcat(surfOff, MAX_SURF_LIST_SIZE, ",");
-				Q_strcat(surfOff, MAX_SURF_LIST_SIZE, value);
-			}
-			else
-			{
-				Q_strncpyz(surfOff, value, MAX_SURF_LIST_SIZE);
-			}
-			continue;
-		}
+        // surfOff
+        if (!Q_stricmp(token, "surfOff"))
+        {
+            if (COM_ParseString(&text_p, &value))
+            {
+                continue;
+            }
+            if (surfOff && surfOff[0])
+            {
+                Q_strcat(surfOff, MAX_SURF_LIST_SIZE, ",");
+                Q_strcat(surfOff, MAX_SURF_LIST_SIZE, value);
+            }
+            else
+            {
+                Q_strncpyz(surfOff, value, MAX_SURF_LIST_SIZE);
+            }
+            continue;
+        }
 
-		// surfOn
-		if (!Q_stricmp(token, "surfOn"))
-		{
-			if (COM_ParseString(&text_p, &value))
-			{
-				continue;
-			}
-			if (surfOn && surfOn[0])
-			{
-				Q_strcat(surfOn, MAX_SURF_LIST_SIZE, ",");
-				Q_strcat(surfOn, MAX_SURF_LIST_SIZE, value);
-			}
-			else
-			{
-				Q_strncpyz(surfOn, value, MAX_SURF_LIST_SIZE);
-			}
-			continue;
-		}
-	}
+        // surfOn
+        if (!Q_stricmp(token, "surfOn"))
+        {
+            if (COM_ParseString(&text_p, &value))
+            {
+                continue;
+            }
+            if (surfOn && surfOn[0])
+            {
+                Q_strcat(surfOn, MAX_SURF_LIST_SIZE, ",");
+                Q_strcat(surfOn, MAX_SURF_LIST_SIZE, value);
+            }
+            else
+            {
+                Q_strncpyz(surfOn, value, MAX_SURF_LIST_SIZE);
+            }
+            continue;
+        }
+    }
 
-	// Replace free with BG_Alloc cleanup (no need to free text)
-	// BG_Alloc does not require explicit cleanup, but you may want to use memset for clearing memory in some cases.
-	memset(text, 0, len + 1);  // Optionally clear the allocated memory
-	// BG_Free(text); if BG_Free was available
+    // Free memory using BG_TempFree
+    BG_TempFree(len + 1);
 
-	return qtrue;
+    return qtrue;
 }
+
 
 
 

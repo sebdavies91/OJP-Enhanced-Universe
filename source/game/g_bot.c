@@ -104,7 +104,7 @@ G_LoadArenasFromFile
 static void G_LoadArenasFromFile(char* filename) {
     int len;
     fileHandle_t f;
-    char* buf = (char*)BG_Alloc(MAX_ARENAS_TEXT);  // Replaced malloc with BG_Alloc
+    char* buf = (char*)BG_TempAlloc(MAX_ARENAS_TEXT);  // Replaced BG_Alloc with BG_TempAlloc
 
     if (!buf) {
         trap_Printf(va(S_COLOR_RED "memory allocation failed for arena buffer\n"));
@@ -114,14 +114,14 @@ static void G_LoadArenasFromFile(char* filename) {
     len = trap_FS_FOpenFile(filename, &f, FS_READ);
     if (!f) {
         trap_Printf(va(S_COLOR_RED "file not found: %s\n", filename));
-        memset(buf, 0, MAX_ARENAS_TEXT);  // Replaced free with memset to zero out the buffer
+        BG_TempFree(MAX_ARENAS_TEXT);  // Replaced memset with BG_TempFree to clear the buffer
         return;
     }
 
     if (len >= MAX_ARENAS_TEXT) {
         trap_Printf(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i\n", filename, len, MAX_ARENAS_TEXT));
         trap_FS_FCloseFile(f);
-        memset(buf, 0, MAX_ARENAS_TEXT);  // Zero out the buffer instead of freeing
+        BG_TempFree(MAX_ARENAS_TEXT);  // Zero out the buffer instead of freeing
         return;
     }
 
@@ -131,8 +131,9 @@ static void G_LoadArenasFromFile(char* filename) {
 
     g_numArenas += G_ParseInfos(buf, MAX_ARENAS - g_numArenas, &g_arenaInfos[g_numArenas]);
 
-    memset(buf, 0, MAX_ARENAS_TEXT);  // Zero out the buffer instead of freeing
+    BG_TempFree(MAX_ARENAS_TEXT);  // Zero out the buffer instead of freeing
 }
+
 
 
 
@@ -1965,24 +1966,24 @@ G_LoadBotsFromFile
 static void G_LoadBotsFromFile(char* filename) {
     int len;
     fileHandle_t f;
-    char* buf = (char*)BG_Alloc(MAX_BOTS_TEXT);  // Replaced malloc with BG_Alloc
+    char* buf = (char*)BG_TempAlloc(MAX_BOTS_TEXT);  // Replaced BG_Alloc with BG_TempAlloc
 
     if (!buf) {
-        trap_Printf(S_COLOR_RED "ERROR: BG_Alloc failed in G_LoadBotsFromFile\n");
+        trap_Printf(S_COLOR_RED "ERROR: BG_TempAlloc failed in G_LoadBotsFromFile\n");
         return;
     }
 
     len = trap_FS_FOpenFile(filename, &f, FS_READ);
     if (!f) {
         trap_Printf(va(S_COLOR_RED "file not found: %s\n", filename));
-        memset(buf, 0, MAX_BOTS_TEXT);  // Replaced free with memset to zero out the buffer
+        BG_TempFree(MAX_BOTS_TEXT);  // Replaced memset with BG_TempFree to zero out the buffer
         return;
     }
 
     if (len >= MAX_BOTS_TEXT) {
         trap_Printf(va(S_COLOR_RED "file too large: %s is %i, max allowed is %i", filename, len, MAX_BOTS_TEXT));
         trap_FS_FCloseFile(f);
-        memset(buf, 0, MAX_BOTS_TEXT);  // Zero out the buffer instead of freeing
+        BG_TempFree(MAX_BOTS_TEXT);  // Zero out the buffer instead of freeing
         return;
     }
 
@@ -1992,8 +1993,9 @@ static void G_LoadBotsFromFile(char* filename) {
 
     g_numBots += G_ParseInfos(buf, MAX_BOTS - g_numBots, &g_botInfos[g_numBots]);
 
-    memset(buf, 0, MAX_BOTS_TEXT);  // Zero out the buffer instead of freeing
+    BG_TempFree(MAX_BOTS_TEXT);  // Zero out the buffer instead of freeing
 }
+
 
 
 

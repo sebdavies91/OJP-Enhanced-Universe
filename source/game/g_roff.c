@@ -423,8 +423,8 @@ int G_LoadRoff(const char* fileName)
     roff_hdr2_t* header;
     int len, i, roff_id = 0;
 
-    // Allocate large buffer on heap instead of stack
-    char* data = (char*)BG_Alloc(ROFF_INFO_SIZE); // BG_Alloc instead of malloc
+    // Use BG_TempAlloc instead of BG_Alloc
+    char* data = (char*)BG_TempAlloc(ROFF_INFO_SIZE); // Replaced BG_Alloc with BG_TempAlloc
     if (!data)
     {
         Com_Printf(S_COLOR_RED "Failed to allocate memory for ROFF data\n");
@@ -435,7 +435,7 @@ int G_LoadRoff(const char* fileName)
     if (num_roffs >= MAX_ROFFS)
     {
         Com_Printf(S_COLOR_RED "MAX_ROFFS count exceeded.  Skipping load of .ROF '%s'\n", fileName);
-        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        BG_TempFree(ROFF_INFO_SIZE); // Replaced memset with BG_TempFree
         return roff_id;
     }
 
@@ -447,7 +447,7 @@ int G_LoadRoff(const char* fileName)
     {
         if (Q_stricmp(file, roffs[i].fileName) == 0)
         {
-            memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+            BG_TempFree(ROFF_INFO_SIZE); // Replaced memset with BG_TempFree
             return i + 1;
         }
     }
@@ -458,7 +458,7 @@ int G_LoadRoff(const char* fileName)
     if (len <= 0)
     {
         Com_Printf(S_COLOR_RED "Could not open .ROF file '%s'\n", fileName);
-        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        BG_TempFree(ROFF_INFO_SIZE); // Replaced memset with BG_TempFree
         return roff_id;
     }
 
@@ -466,7 +466,7 @@ int G_LoadRoff(const char* fileName)
     {
         Com_Printf(S_COLOR_RED ".ROF file '%s': Too large for file buffer.\n", fileName);
         trap_FS_FCloseFile(f);
-        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        BG_TempFree(ROFF_INFO_SIZE); // Replaced memset with BG_TempFree
         return roff_id;
     }
 
@@ -480,7 +480,7 @@ int G_LoadRoff(const char* fileName)
     if (!G_ValidRoff(header))
     {
         Com_Printf(S_COLOR_RED "Invalid roff format '%s'\n", fileName);
-        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        BG_TempFree(ROFF_INFO_SIZE); // Replaced memset with BG_TempFree
     }
     else
     {
@@ -491,11 +491,12 @@ int G_LoadRoff(const char* fileName)
 
         // Note: If G_InitRoff stores/uses 'data' after return, don't clear here.
         // Otherwise, clear it:
-        memset(data, 0, ROFF_INFO_SIZE);  // Clear allocated memory instead of free
+        BG_TempFree(ROFF_INFO_SIZE); // Replaced memset with BG_TempFree
     }
 
     return roff_id;
 }
+
 
 
 

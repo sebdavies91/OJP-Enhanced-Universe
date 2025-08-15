@@ -3783,61 +3783,62 @@ char npcParseBuffer[MAX_NPC_DATA_SIZE];
 
 void NPC_LoadParms(void)
 {
-	int len, totallen, npcExtFNLen, mainBlockLen, fileCnt, i;
-	char* holdChar, * marker;
-	char* npcExtensionListBuf;
-	fileHandle_t f;
-	len = 0;
+    int len, totallen, npcExtFNLen, mainBlockLen, fileCnt, i;
+    char* holdChar, * marker;
+    char* npcExtensionListBuf;
+    fileHandle_t f;
+    len = 0;
 
-	// Allocate large buffer using BG_Alloc instead of malloc
-	npcExtensionListBuf = (char*)BG_Alloc(32768);  // Using BG_Alloc for memory allocation
-	if (!npcExtensionListBuf)
-	{
-		G_Error("NPC_LoadParms: Failed to allocate memory for npcExtensionListBuf");
-		return;
-	}
+    // Allocate large buffer using BG_TempAlloc instead of BG_Alloc
+    npcExtensionListBuf = (char*)BG_TempAlloc(32768);  // Using BG_TempAlloc for memory allocation
+    if (!npcExtensionListBuf)
+    {
+        G_Error("NPC_LoadParms: Failed to allocate memory for npcExtensionListBuf");
+        return;
+    }
 
-	totallen = mainBlockLen = len;
-	marker = NPCParms + totallen;
-	*marker = 0;
+    totallen = mainBlockLen = len;
+    marker = NPCParms + totallen;
+    *marker = 0;
 
-	fileCnt = trap_FS_GetFileList("ext_data/NPCs", ".npc", npcExtensionListBuf, 32768);
+    fileCnt = trap_FS_GetFileList("ext_data/NPCs", ".npc", npcExtensionListBuf, 32768);
 
-	holdChar = npcExtensionListBuf;
-	for (i = 0; i < fileCnt; i++, holdChar += npcExtFNLen + 1)
-	{
-		npcExtFNLen = strlen(holdChar);
+    holdChar = npcExtensionListBuf;
+    for (i = 0; i < fileCnt; i++, holdChar += npcExtFNLen + 1)
+    {
+        npcExtFNLen = strlen(holdChar);
 
-		len = trap_FS_FOpenFile(va("ext_data/NPCs/%s", holdChar), &f, FS_READ);
+        len = trap_FS_FOpenFile(va("ext_data/NPCs/%s", holdChar), &f, FS_READ);
 
-		if (len == -1)
-		{
-			Com_Printf("error reading file\n");
-		}
-		else
-		{
-			if (totallen + len >= MAX_NPC_DATA_SIZE)
-			{
-				G_Error("NPC extensions (*.npc) are too large");
-			}
-			trap_FS_Read(npcParseBuffer, len, f);
-			npcParseBuffer[len] = 0;
+        if (len == -1)
+        {
+            Com_Printf("error reading file\n");
+        }
+        else
+        {
+            if (totallen + len >= MAX_NPC_DATA_SIZE)
+            {
+                G_Error("NPC extensions (*.npc) are too large");
+            }
+            trap_FS_Read(npcParseBuffer, len, f);
+            npcParseBuffer[len] = 0;
 
-			len = COM_Compress(npcParseBuffer);
+            len = COM_Compress(npcParseBuffer);
 
-			strcat(marker, npcParseBuffer);
-			strcat(marker, "\n");
-			len++;
-			trap_FS_FCloseFile(f);
+            strcat(marker, npcParseBuffer);
+            strcat(marker, "\n");
+            len++;
+            trap_FS_FCloseFile(f);
 
-			totallen += len;
-			marker = NPCParms + totallen;
-		}
-	}
+            totallen += len;
+            marker = NPCParms + totallen;
+        }
+    }
 
-	// Replace free with memset to clear the buffer instead of freeing it
-	memset(npcExtensionListBuf, 0, 32768);  // Clear memory to ensure no dangling pointer issues
+    // Replace memset with BG_TempFree to clear the buffer instead of freeing it
+    BG_TempFree(32768);  // Clear memory to ensure no dangling pointer issues
 }
+
 
 
 

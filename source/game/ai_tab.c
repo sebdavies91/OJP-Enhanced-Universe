@@ -2125,14 +2125,14 @@ void TAB_BotMove(bot_state_t* bs, vec3_t dest, qboolean wptravel, qboolean straf
                 {
                     // Been waiting for 10 seconds, try looking for alt route if we haven't already
 
-                    // Correctly allocate memory for bot_route_t using BG_Alloc
-                    bot_route_t* routeTest = BG_Alloc(sizeof(*routeTest)); // Allocate memory for bot_route_t correctly
+                    // Correctly allocate memory for bot_route_t using BG_TempAlloc
+                    bot_route_t* routeTest = (bot_route_t*)BG_TempAlloc(sizeof(*routeTest)); // Allocate memory for bot_route_t correctly
                     if (!routeTest)
                     {
                         return; // handle allocation failure safely
                     }
 
-                    memset(routeTest, 0, sizeof(*routeTest)); // Initialize memory with memset
+                    BG_TempFree(sizeof(*routeTest)); // Clear memory with BG_TempFree
 
                     int newwp = TAB_GetNearestVisibleWP(bs, bs->origin, bs->client, bs->wpCurrent->index);
                     bs->AltRouteCheck = qtrue;
@@ -2149,7 +2149,7 @@ void TAB_BotMove(bot_state_t* bs, vec3_t dest, qboolean wptravel, qboolean straf
                         ResetWPTimers(bs);
                     }
 
-                    // No need to free memory here, as BG_Alloc does not require freeing
+                    // No need to free memory here, as BG_TempAlloc does not require freeing
                 }
                 return;
             }
@@ -2164,14 +2164,14 @@ void TAB_BotMove(bot_state_t* bs, vec3_t dest, qboolean wptravel, qboolean straf
                 {
                     // Been waiting for 10 seconds, try looking for alt route if we haven't already
 
-                    // Correctly allocate memory for bot_route_t using BG_Alloc
-                    bot_route_t* routeTest = BG_Alloc(sizeof(*routeTest)); // Allocate memory for bot_route_t correctly
+                    // Correctly allocate memory for bot_route_t using BG_TempAlloc
+                    bot_route_t* routeTest = (bot_route_t*)BG_TempAlloc(sizeof(*routeTest)); // Allocate memory for bot_route_t correctly
                     if (!routeTest)
                     {
                         return; // handle allocation failure safely
                     }
 
-                    memset(routeTest, 0, sizeof(*routeTest)); // Initialize memory with memset
+                    BG_TempFree(sizeof(*routeTest)); // Clear memory with BG_TempFree
 
                     int newwp = TAB_GetNearestVisibleWP(bs, bs->origin, bs->client, bs->wpCurrent->index);
                     bs->AltRouteCheck = qtrue;
@@ -2188,7 +2188,7 @@ void TAB_BotMove(bot_state_t* bs, vec3_t dest, qboolean wptravel, qboolean straf
                         ResetWPTimers(bs);
                     }
 
-                    // No need to free memory here, as BG_Alloc does not require freeing
+                    // No need to free memory here, as BG_TempAlloc does not require freeing
                 }
                 return;
             }
@@ -2249,6 +2249,7 @@ void TAB_BotMove(bot_state_t* bs, vec3_t dest, qboolean wptravel, qboolean straf
         trap_EA_Move(bs->client, moveDir, 5000);
     }
 }
+
 
 
 
