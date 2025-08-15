@@ -3747,7 +3747,7 @@ void CG_TransitionPermanent(void)
 
 //this is a 32k custom pool for parsing ents, it can get reset between ent parsing
 //so we don't need a whole lot of memory -rww
-#define MAX_CGSTRPOOL_SIZE		131072
+#define MAX_CGSTRPOOL_SIZE		65536
 static int cg_strPoolSize = 0;
 static byte cg_strPool[MAX_CGSTRPOOL_SIZE];
 

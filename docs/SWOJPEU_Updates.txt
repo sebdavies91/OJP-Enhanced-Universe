@@ -1213,7 +1213,7 @@ Fixes to Update 60 13/07/2025
 
 
 
-Update 61 12/08/2025
+Update 61 13/08/2025
 
 1) Performed 244 fixes to the SW OJP Enhanced Universe source code fixing many warnings that not necessarily were shown during the compilation. Such fixes should provide an improved gameplay both in the SP and MP maps with more bots and NPCS.  
 
@@ -1246,6 +1246,14 @@ Update 61 12/08/2025
 15) Equipped all jedi and sith bots with their corresponding saber hilt in both the standard and expanded versions.
 
 16) Fixed the executables now executing the mod from any drive.
+
+
+
+Update 62 15/08/2025 (Fixes to the other day update)
+
+1) Removed the crashes between maps that occurred as a result of a very large buffer which has been reduced.
+2) Fixed the executables which had the wrong attributes
+
 
 
 PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
