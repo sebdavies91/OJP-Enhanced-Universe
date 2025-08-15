@@ -1,1 +1,1 @@
-start jamp.exe +set fs_game ojpenhanced +set fs_game "ojpenhanced" +set com_hunkmegs 1024 +set com_zoneMegs 64 +set com_soundMegs 64
+start jamp.exe +set fs_game ojpenhanced 
