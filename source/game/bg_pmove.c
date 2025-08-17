@@ -4740,7 +4740,7 @@ static void PM_CrashLand( void ) {
 	//[CoOp]
 	//falling to death NPCs pavement smear.
 #ifdef QAGAME
-	if ( g_entities[pm->ps->clientNum].NPC && g_entities[pm->ps->clientNum].NPC->aiFlags & NPCAI_DIE_ON_IMPACT )
+	if ( g_entities[pm->ps->clientNum].NPC && g_entities[pm->ps->clientNum].NPC->aiFlags & NPCAI_DIE_ON_IMPACT && !pm->ps->m_iVehicleNum)
 	{//have to do death on impact if we are falling to our death, FIXME: should we avoid any additional damage this func?
 		PM_CrashLandDamage( 1000 );
 	}
@@ -16942,3 +16942,4 @@ qboolean PM_GettingUpFromKnockDown( float standheight, float crouchheight )
 	return qfalse;
 }
 //[/KnockdownSys]
+
