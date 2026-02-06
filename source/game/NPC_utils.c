@@ -886,7 +886,7 @@ qboolean G_ActivateBehavior (gentity_t *self, int bset )
 	{
 		/*
 		char			newname[MAX_FILENAME_LENGTH];		
-		sprintf((char *) &newname, "%s/%s", Q3_SCRIPT_DIR, bs_name );
+		Com_sprintf((char *)&newname, sizeof(newname), "%s/%s", Q3_SCRIPT_DIR, bs_name );
 		*/
 		
 		//FIXME: between here and actually getting into the ICARUS_RunScript function, the stack gets blown!
@@ -1058,7 +1058,7 @@ qboolean NPC_SomeoneLookingAtMe(gentity_t *ent)
 	int i = 0;
 	gentity_t *pEnt;
 
-	while (i < MAX_CLIENTS)
+	while (i < level.maxclients)
 	{
 		pEnt = &g_entities[i];
 
@@ -1356,7 +1356,7 @@ gentity_t *NPC_PickEnemyExt( qboolean checkAlerts )
 				//If it's the player, attack him
 				//[CoOp]
 				//account for all players
-				if ( event->owner->s.number < MAX_CLIENTS )
+				if ( event->owner->s.number < level.maxclients )
 				//if ( event->owner == &g_entities[0] )
 					return event->owner;
 
@@ -1379,7 +1379,40 @@ NPC_FindPlayer
 
 qboolean NPC_FindPlayer( void )
 {
-	return NPC_TargetVisible( &g_entities[0] );
+	int i;
+	gentity_t *player;
+
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		player = &g_entities[i];
+
+		if ( !player->inuse || !player->client )
+		{
+			continue;
+		}
+
+		if ( player->client->pers.connected != CON_CONNECTED )
+		{
+			continue;
+		}
+
+		if ( player->client->sess.sessionTeam == TEAM_SPECTATOR )
+		{
+			continue;
+		}
+
+		if ( player->health < 0 )
+		{
+			continue;
+		}
+
+		if ( NPC_TargetVisible( player ) )
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
 }
 
 /*
@@ -1422,7 +1455,7 @@ static qboolean NPC_CheckPlayerDistance( void )
 		return qfalse;
 
 	//go into the scan loop.
-	for( i = 0; i < MAX_CLIENTS; i++ )
+	for( i = 0; i < level.maxclients; i++ )
 	{
 		player = &g_entities[i];
 

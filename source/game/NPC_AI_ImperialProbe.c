@@ -220,7 +220,7 @@ void ImperialProbe_Hunt( qboolean visible, qboolean advance )
 	float	distance, speed;
 	vec3_t	forward;
 
-	NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+	NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 
 	//If we're not supposed to stand still, pursue the player
 	if ( NPCInfo->standTime < level.time )
@@ -244,9 +244,10 @@ void ImperialProbe_Hunt( qboolean visible, qboolean advance )
 		NPCInfo->goalEntity = NPC->enemy;
 		NPCInfo->goalRadius = 12;
 
-		//Get our direction from the navigator if we can't see our target
-		if ( NPC_GetMoveDirection( forward, &distance ) == qfalse )
-			return;
+		// SP behavior: when we can't see our target, let the navigator move us
+		// rather than using a single-step direction vector (which can snag on corners).
+		NPC_MoveToGoal( qtrue );
+		return;
 	}
 	else
 	{
@@ -349,7 +350,9 @@ void ImperialProbe_Ranged( qboolean visible, qboolean advance )
 			delay_max = 1500;
 		}
 
-		TIMER_Set( NPC, "attackDelay", Q_irand( 500, 3000 ) );
+		// Use the skill-based delay range we just computed.
+		// (Both SP and some MP forks accidentally hardcoded 500..3000 here.)
+		TIMER_Set( NPC, "attackDelay", Q_irand( delay_min, delay_max ) );
 		ImperialProbe_FireBlaster();
 //		ucmd.buttons |= BUTTON_ATTACK;
 	}
@@ -399,7 +402,7 @@ void ImperialProbe_AttackDecision( void )
 		return;
 	}
 
-	NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_NORMAL);
+	NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_NORMAL);
 
 	// Rate our distance to the target, and our visibilty
 	distance	= (int) DistanceHorizontalSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin );	
@@ -466,7 +469,7 @@ void NPC_Probe_Pain(gentity_t *self, gentity_t *attacker, int damage)
 			{
 				vec3_t dir;
 
-				NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
+				NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 
 				VectorSubtract( self->r.currentOrigin, other->r.currentOrigin, dir );
 				VectorNormalize( dir );
@@ -488,7 +491,7 @@ void NPC_Probe_Pain(gentity_t *self, gentity_t *attacker, int damage)
 
 		if ( random() < pain_chance )	// Spin around in pain?
 		{
-			NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE);
+			NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE);
 		}	
 	}
 
@@ -526,7 +529,7 @@ void ImperialProbe_Patrol( void )
 	//If we have somewhere to go, then do that
 	if (!NPC->enemy)
 	{
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_NORMAL );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_NORMAL);
 
 		if ( UpdateGoal() )
 		{
@@ -586,6 +589,19 @@ NPC_BSImperialProbe_Default
 */
 void NPC_BSImperialProbe_Default( void )
 {
+	// Static analysis: protect against unexpected NULL globals.
+	if ( !NPC || !NPCInfo )
+	{
+		return;
+	}
+
+	// MP can end up with an unset/incorrect NPC_class for the probe (depending on .npc "class"
+	// strings/aliases). DeathFX() relies on NPC_class to select the probe explosion, so make sure
+	// we identify as CLASS_PROBE whenever this behavior is active.
+	if ( NPC && NPC->client && NPC->client->NPC_class != CLASS_PROBE )
+	{
+		NPC->client->NPC_class = CLASS_PROBE;
+	}
 
 	if ( NPC->enemy )
 	{

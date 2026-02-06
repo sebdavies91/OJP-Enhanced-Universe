@@ -102,8 +102,8 @@ void DominancE_Flag_Loadpositions( void )
 				
 				if (number_of_flags < 2)
 				{
-					G_Printf(" ^3FAILED!!!\n");
 					G_Printf("^1*** ^3DominancE^1: ^5You need at least 2 flag points!\n");
+					BG_TempFree(len+1);   // FIX
 					return;
 				}
 				else

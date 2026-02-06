@@ -14,16 +14,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ai_aotc.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_hybrid.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="ai_main.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ai_tab.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ai_util.c">
@@ -200,6 +191,9 @@
     <ClCompile Include="NPC.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="NPC_AI_Animal.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="NPC_AI_AssassinDroid.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -230,6 +224,8 @@
     <ClCompile Include="NPC_AI_Interrogator.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="NPC_AI_Jedi.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -249,6 +245,12 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NPC_AI_RocketTrooper.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC_AI_Tusken.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NPC_AI_HazardTrooper.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NPC_AI_SaberDroid.c">

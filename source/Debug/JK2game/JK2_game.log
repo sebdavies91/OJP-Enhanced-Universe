@@ -1,7 +1,4 @@
-﻿  ai_aotc.c
-  ai_hybrid.c
-  ai_main.c
-  ai_tab.c
+﻿  ai_main.c
   ai_util.c
   ai_wpnav.c
   AnimalNPC.c
@@ -18,11 +15,11 @@
   bg_weapons.c
   FighterNPC.c
   g_active.c
-  Generating Code...
-  Compiling...
   g_arenas.c
   g_autosave.c
   g_bot.c
+  Generating Code...
+  Compiling...
   g_breakable.c
   g_camera.c
   g_client.c
@@ -40,11 +37,11 @@
   g_missile.c
   g_mover.c
   g_nav.c
-  Generating Code...
-  Compiling...
   g_navnew.c
   g_object.c
   g_roff.c
+  Generating Code...
+  Compiling...
   g_saberbeh.c
   g_saga.c
   g_session.c
@@ -62,10 +59,11 @@
   g_vehicles.c
   g_vehicleTurret.c
   g_weapon.c
+  NPC.c
+  NPC_AI_Animal.c
+  NPC_AI_AssassinDroid.c
   Generating Code...
   Compiling...
-  NPC.c
-  NPC_AI_AssassinDroid.c
   NPC_AI_Atst.c
   NPC_AI_Civilian.c
   NPC_AI_Default.c
@@ -82,6 +80,8 @@
   NPC_AI_Rancor.c
   NPC_AI_Remote.c
   NPC_AI_RocketTrooper.c
+  NPC_AI_Tusken.c
+  NPC_AI_HazardTrooper.c
   NPC_AI_SaberDroid.c
   NPC_AI_Sand_creature.c
   Generating Code...

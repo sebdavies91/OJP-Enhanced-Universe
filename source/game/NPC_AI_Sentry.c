@@ -64,7 +64,7 @@ void sentry_use( gentity_t *self, gentity_t *other, gentity_t *activator)
 	G_ActivateBehavior(self,BSET_USE);
 
 	self->flags &= ~FL_SHIELDED;
-	NPC_SetAnim( self, SETANIM_BOTH, BOTH_POWERUP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+	NPC_SetAnim(self, SETANIM_BOTH, BOTH_POWERUP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 //	self->NPC->localState = LSTATE_WAKEUP;
 	self->NPC->localState = LSTATE_ACTIVE;
 }
@@ -85,7 +85,7 @@ void NPC_Sentry_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		self->NPC->burstCount = 0;
 		TIMER_Set( self, "attackDelay", Q_irand( 9000, 12000) );
 		self->flags |= FL_SHIELDED;
-		NPC_SetAnim( self, SETANIM_BOTH, BOTH_FLY_SHIELDED, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(self, SETANIM_BOTH, BOTH_FLY_SHIELDED, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		G_Sound( self, CHAN_AUTO, G_SoundIndex("sound/chars/sentry/misc/sentry_pain") );		
 
 		self->NPC->localState = LSTATE_ACTIVE;
@@ -97,7 +97,7 @@ void NPC_Sentry_Pain(gentity_t *self, gentity_t *attacker, int damage)
 //		G_Sound( self, G_SoundIndex("sound/chars/sentry/misc/shieldsopen.wav"));
 //
 //		self->flags &= ~FL_SHIELDED;
-//		NPC_SetAnim( self, SETANIM_BOTH, BOTH_POWERUP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+//		NPC_SetAnim(self, SETANIM_BOTH, BOTH_POWERUP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 //		self->NPC->localState = LSTATE_WAKEUP;
 //	}
 }
@@ -123,7 +123,7 @@ void Sentry_Fire (void)
 		if ( TIMER_Done( NPC, "powerup" ))
 		{
 			NPCInfo->localState = LSTATE_ATTACKING;
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		}
 		else
 		{
@@ -136,7 +136,7 @@ void Sentry_Fire (void)
 		NPCInfo->localState = LSTATE_POWERING_UP;
 
 		G_Sound( NPC, CHAN_AUTO, G_SoundIndex("sound/chars/sentry/misc/sentry_shield_open") );		
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_POWERUP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_POWERUP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		TIMER_Set( NPC, "powerup", 250 );
 		return;
 	}
@@ -325,7 +325,7 @@ void Sentry_Idle( void )
 	}
 	else
 	{
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_SLEEP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_SLEEP1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		NPC->flags |= FL_SHIELDED;
 
 		NPC_BSIdle();
@@ -391,16 +391,15 @@ void Sentry_Hunt( qboolean visible, qboolean advance )
 	if ( !advance && visible )
 		return;
 
-	//Only try and navigate if the player is visible
+	// If we cannot see our target, fall back to nav-driven movement.
+	// SP uses NPC_MoveToGoal() here; it tends to behave better than manual
+	// velocity steering when pathing around corners/doors.
 	if ( visible == qfalse )
 	{
-		// Move towards our goal
 		NPCInfo->goalEntity = NPC->enemy;
 		NPCInfo->goalRadius = 12;
-
-		//Get our direction from the navigator if we can't see our target
-		if ( NPC_GetMoveDirection( forward, &distance ) == qfalse )
-			return;
+		NPC_MoveToGoal( qtrue );
+		return;
 	}
 	else
 	{
@@ -433,7 +432,7 @@ void Sentry_RangedAttack( qboolean visible, qboolean advance )
 				NPC->fly_sound_debounce_time = NPCInfo->burstCount = 0;
 				TIMER_Set( NPC, "attackDelay", Q_irand( 2000, 3500) );
 				NPC->flags |= FL_SHIELDED;
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_FLY_SHIELDED, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_FLY_SHIELDED, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				G_SoundOnEnt( NPC, CHAN_AUTO, "sound/chars/sentry/misc/sentry_shield_close" );
 			}
 		}

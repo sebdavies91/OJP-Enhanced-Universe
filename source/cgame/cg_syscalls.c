@@ -4,6 +4,10 @@
 // cg_syscalls.asm is included instead when building a qvm
 #include "cg_local.h"
 
+// This file is only built for the native cgame DLL (cg_syscalls.asm is used for QVM).
+// Use uintptr_t for a cheap sanity check against obviously invalid pointers.
+#include <stdint.h>
+
 static dllSyscall_t syscall = (dllSyscall_t)-1;
 
 Q_EXPORT void dllEntry( dllSyscall_t syscallptr ) {
@@ -147,11 +151,31 @@ int		trap_CM_TransformedPointContents( const vec3_t p, clipHandle_t model, const
 	return syscall( CG_CM_TRANSFORMEDPOINTCONTENTS, p, model, origin, angles );
 }
 
-void	trap_CM_BoxTrace( trace_t *results, const vec3_t start, const vec3_t end,
-						  const vec3_t mins, const vec3_t maxs,
-						  clipHandle_t model, int brushmask ) {
-	syscall( CG_CM_BOXTRACE, results, start, end, mins, maxs, model, brushmask );
+void trap_CM_BoxTrace(trace_t* results,
+	const vec3_t start, const vec3_t end,
+	const vec3_t mins, const vec3_t maxs,
+	clipHandle_t model, int brushmask)
+{
+	trace_t dummy;
+
+	// Engine writes into *results*. Never pass NULL.
+	if (!results) {
+		static qboolean warned = qfalse;
+		if (!warned) {
+			warned = qtrue;
+			trap_Print("^3WARNING:^7 trap_CM_BoxTrace called with NULL results\n");
+		}
+		results = &dummy;
+	}
+
+	// Many callsites use NULL mins/maxs to mean "point trace".
+	// This avoids engine deref of NULL if it doesn't special-case it.
+	if (!mins) mins = vec3_origin;
+	if (!maxs) maxs = vec3_origin;
+
+	syscall(CG_CM_BOXTRACE, results, start, end, mins, maxs, model, brushmask);
 }
+
 
 void	trap_CM_CapsuleTrace( trace_t *results, const vec3_t start, const vec3_t end,
 						  const vec3_t mins, const vec3_t maxs,
@@ -330,6 +354,36 @@ void trap_R_ClearDecals ( void )
 }
 
 void	trap_R_AddRefEntityToScene( const refEntity_t *re ) {
+	// Guard against NULL and obviously invalid pointers.
+	// A common crash pattern is passing an uninitialized pointer (e.g. 0x50) which will
+	// then be dereferenced by the renderer. Catching these here avoids hard crashes and
+	// produces a single warning to help locate the offender.
+	if ( !re )
+	{
+		static qboolean warnedNull = qfalse;
+		if ( !warnedNull )
+		{
+			warnedNull = qtrue;
+			Com_Printf( S_COLOR_YELLOW
+				"WARNING: trap_R_AddRefEntityToScene called with NULL refEntity\n" );
+		}
+		return;
+	}
+
+	// Low-address pointers are never valid user-space addresses for refEntity_t.
+	// This catches junk pointers like 0x50 or 0xCCCCCCCC early.
+	if ( (uintptr_t)re < 0x10000 )
+	{
+		static qboolean warnedBad = qfalse;
+		if ( !warnedBad )
+		{
+			warnedBad = qtrue;
+			Com_Printf( S_COLOR_YELLOW
+				"WARNING: trap_R_AddRefEntityToScene called with invalid refEntity ptr %p\n", re );
+		}
+		return;
+	}
+
 	syscall( CG_R_ADDREFENTITYTOSCENE, re );
 }
 
@@ -659,17 +713,12 @@ void trap_FX_PlayBoltedEffectID( int id, vec3_t org,
 
 void trap_FX_AddScheduledEffects(qboolean skyPortal)
 {
-	if (syscall == (dllSyscall_t)-1) {
-		trap_Error("trap_FX_AddScheduledEffects: syscall function pointer not initialized");
+	if (!syscall) {
+		trap_Error("trap_FX_AddScheduledEffects: syscall not initialized");
 		return;
 	}
-	if (skyPortal != qtrue && skyPortal != qfalse) {
-		trap_Error("trap_FX_AddScheduledEffects: Invalid value for skyPortal");
-		return;
-	}
-	syscall(CG_FX_ADD_SCHEDULED_EFFECTS, skyPortal);
+	syscall(CG_FX_ADD_SCHEDULED_EFFECTS, (int)skyPortal);
 }
-
 void trap_FX_Draw2DEffects ( float screenXScale, float screenYScale )
 {
 	syscall( CG_FX_DRAW_2D_EFFECTS, PASSFLOAT(screenXScale), PASSFLOAT(screenYScale) );
@@ -826,41 +875,73 @@ qboolean trap_G2API_SetSkin(void *ghoul2, int modelIndex, qhandle_t customSkin, 
 	return syscall(CG_G2_SETSKIN, ghoul2, modelIndex, customSkin, renderSkin);
 }
 
-void trap_G2API_CollisionDetect ( 
-	CollisionRecord_t *collRecMap, 
-	void* ghoul2, 
-	const vec3_t angles, 
+void trap_G2API_CollisionDetect(
+	CollisionRecord_t* collRecMap,
+	void* ghoul2,
+	const vec3_t angles,
 	const vec3_t position,
-	int frameNumber, 
-	int entNum, 
-	const vec3_t rayStart, 
-	const vec3_t rayEnd, 
-	const vec3_t scale, 
-	int traceFlags, 
+	int frameNumber,
+	int entNum,
+	const vec3_t rayStart,
+	const vec3_t rayEnd,
+	const vec3_t scale,
+	int traceFlags,
 	int useLod,
 	float fRadius
-	)
+)
 {
-	syscall ( CG_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum, rayStart, rayEnd, scale, traceFlags, useLod, PASSFLOAT(fRadius) );
+	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
+	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+
+	// Engine writes collision results into collRecMap. Never pass NULL.
+	CollisionRecord_t dummy;
+	if (!collRecMap) {
+		// Optional: one-time warning to help locate bad caller without spamming.
+		static qboolean warned = qfalse;
+		if (!warned) {
+			warned = qtrue;
+			trap_Print("^3WARNING:^7 G2API_CollisionDetect called with NULL collRecMap\n");
+		}
+		collRecMap = &dummy;
+	}
+
+	// These should also never be NULL in a correct call; if they are, skip safely.
+	if (!ghoul2 || !angles || !position || !rayStart || !rayEnd) {
+		static qboolean warned2 = qfalse;
+		if (!warned2) {
+			warned2 = qtrue;
+			trap_Print("^3WARNING:^7 G2API_CollisionDetect called with invalid args (null ptr)\n");
+		}
+		return;
+	}
+
+	syscall(CG_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum,
+		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
 }
 
-void trap_G2API_CollisionDetectCache ( 
-	CollisionRecord_t *collRecMap, 
-	void* ghoul2, 
-	const vec3_t angles, 
+
+void trap_G2API_CollisionDetectCache(
+	CollisionRecord_t* collRecMap,
+	void* ghoul2,
+	const vec3_t angles,
 	const vec3_t position,
-	int frameNumber, 
-	int entNum, 
-	const vec3_t rayStart, 
-	const vec3_t rayEnd, 
-	const vec3_t scale, 
-	int traceFlags, 
+	int frameNumber,
+	int entNum,
+	const vec3_t rayStart,
+	const vec3_t rayEnd,
+	const vec3_t scale,
+	int traceFlags,
 	int useLod,
 	float fRadius
-	)
+)
 {
-	syscall ( CG_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum, rayStart, rayEnd, scale, traceFlags, useLod, PASSFLOAT(fRadius) );
+	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
+	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+
+	syscall(CG_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum,
+		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
 }
+
 
 void trap_G2API_CleanGhoul2Models(void **ghoul2Ptr)
 {
@@ -931,8 +1012,19 @@ int trap_G2API_GetNumGoreMarks(void *ghlInfo, int modelIndex)
 	return syscall(CG_G2_GETNUMGOREMARKS, ghlInfo, modelIndex);
 }
 
-void trap_G2API_AddSkinGore(void *ghlInfo,SSkinGoreData *gore)
+void trap_G2API_AddSkinGore(void* ghlInfo, SSkinGoreData* gore)
 {
+	// Engine will dereference both pointers. Never call with NULL.
+	if (!ghlInfo || !gore) {
+		return;
+	}
+
+	// If the ghoul2 instance is stale/freed, calling into the engine can crash.
+	// This syscall exists in cgame traps and is cheap.
+	if (!trap_G2_HaveWeGhoul2Models(ghlInfo)) {
+		return;
+	}
+
 	syscall(CG_G2_ADDSKINGORE, ghlInfo, gore);
 }
 

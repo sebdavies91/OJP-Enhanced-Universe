@@ -63,6 +63,15 @@ extern sfxHandle_t	trap_S_RegisterSound( const char *sample);		// returns buzz i
 
 extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 
+// In MP game/cgame we have trap_TrueMalloc/trap_TrueFree even when DYNAMICMEMORY_VEHICLES is off.
+// UI module lacks these, so never reference them when WE_ARE_IN_THE_UI is defined.
+#ifdef _JK2MP
+#ifndef WE_ARE_IN_THE_UI
+extern void trap_TrueMalloc(void **ptr, int size);
+extern void trap_TrueFree(void **ptr);
+#endif
+#endif
+
 // These buffers are filled in with the same contents and then just read from in
 // a few places.
 
@@ -77,6 +86,11 @@ extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 	//what does the ui even use this for?  anything?
 	//can I just blindly disable it for the ui?
 	//yep, we can.  
+
+#ifdef WE_ARE_IN_THE_UI
+// UI module doesn't have trap_TrueMalloc/trap_TrueFree in base JKA, so force static-alloc path.
+#undef DYNAMICMEMORY_VEHICLES
+#endif
 
 #ifndef WE_ARE_IN_THE_UI
 
@@ -139,6 +153,18 @@ int		numVehicleWeapons = 1;//first one is null/default
 
 vehicleInfo_t g_vehicleInfo[MAX_VEHICLES];
 int		numVehicles = 0;//first one is null/default
+
+// cgame may call this to ensure veh weapon assets are registered.
+// In this OJP Enhanced code path, assets are registered during parsing (CGAME),
+// so this is a safe no-op that also resolves linker references.
+#ifdef CGAME
+#ifndef QAGAME
+void BG_EnsureVehWeaponAssetsLoaded( int weaponIndex )
+{
+	(void)weaponIndex;
+}
+#endif
+#endif
 
 void BG_VehicleLoadParms( void );
 
@@ -222,28 +248,38 @@ static qboolean BG_ParseVehWeaponParm( vehWeaponInfo_t *vehWeapon, char *parmNam
 			case VF_FLOAT:
 				*(float *)(b+vehWeaponFields[i].ofs) = atof(value);
 				break;
-			case VF_LSTRING:	// string on disk, pointer in memory, TAG_LEVEL
-				if (!*(char **)(b+vehWeaponFields[i].ofs))
-				{ //just use 1024 bytes in case we want to write over the string
+			            case VF_LSTRING:    // string on disk, pointer in memory, TAG_LEVEL
+                {
+                    char **dst = (char **)(b + vehWeaponFields[i].ofs);
 #ifdef _JK2MP
-					*(char **)(b+vehWeaponFields[i].ofs) = (char *)BG_Alloc(1024);//(char *)BG_Alloc(strlen(value));
-					strcpy(*(char **)(b+vehWeaponFields[i].ofs), value);
+                    if ( !*dst )
+                    {   // fixed-size scratch buffer so we can safely overwrite during parsing
+                        *dst = (char *)BG_Alloc(1024);
+                    }
+                    if ( *dst )
+                    {
+                        Q_strncpyz( *dst, value, 1024 );
+                    }
 #else
-					(*(char **)(b+vehWeaponFields[i].ofs)) = G_NewString( value );
+                    // SP: avoid leaking by allocating once.
+                    if ( !*dst )
+                    {
+                        *dst = G_NewString( value );
+                    }
 #endif
-				}
-				
-				break;
-			case VF_VECTOR:
-				assert(sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])==3 );
-				if (sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])!=3)
-				{
-					Com_Printf (S_COLOR_YELLOW"BG_ParseVehWeaponParm: VEC3 sscanf() failed to read 3 floats ('angle' key bug?)\n");
-				}
-				((float *)(b+vehWeaponFields[i].ofs))[0] = vec[0];
-				((float *)(b+vehWeaponFields[i].ofs))[1] = vec[1];
-				((float *)(b+vehWeaponFields[i].ofs))[2] = vec[2];
-				break;
+                }
+                break;
+case VF_VECTOR:
+    assert(sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])==3 );
+    if (sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])!=3)
+    {
+        Com_Printf (S_COLOR_YELLOW"BG_ParseVehicleParm: VEC3 sscanf() failed to read 3 floats ('angle' key bug?)\n");
+    }
+    ((float *)(b+vehWeaponFields[i].ofs))[0] = vec[0];
+    ((float *)(b+vehWeaponFields[i].ofs))[1] = vec[1];
+    ((float *)(b+vehWeaponFields[i].ofs))[2] = vec[2];
+    break;
+
 			case VF_BOOL:
 				*(qboolean *)(b+vehWeaponFields[i].ofs) = (qboolean)(atof(value)!=0);
 				break;
@@ -338,6 +374,80 @@ static qboolean BG_ParseVehWeaponParm( vehWeaponInfo_t *vehWeapon, char *parmNam
 	}
 }
 
+
+// --- OJP Enhanced fix: allow .veh to reference vehicle weapons by internal "name" key ---
+// Some .vwp files use a block label that differs from the in-block "name" value.
+// Vehicles typically reference the in-block "name". If we only search by block label,
+// we can fail to find the weapon (or load the wrong one), causing missing/wrong vehicle projectiles.
+// This helper scans for a block whose "name" key matches wantedName and returns the block label.
+static qboolean BG_FindVehWeaponBlockLabelByInternalName( const char *wantedName, char *outLabel, int outLabelSize )
+{
+    const char *p = VehWeaponParms;
+    const char *token;
+    char labelBuf[128];
+
+#ifdef _JK2MP
+    COM_BeginParseSession("vehWeaponsFindName");
+#else
+    COM_BeginParseSession();
+#endif
+
+    while ( p )
+    {
+        token = COM_ParseExt( &p, qtrue );
+        if ( !token[0] )
+        {
+            break;
+        }
+
+        // top-level block label
+        Q_strncpyz( labelBuf, token, sizeof(labelBuf) );
+
+        token = COM_ParseExt( &p, qtrue );
+        if ( !token[0] )
+        {
+            break;
+        }
+        if ( Q_stricmp( token, "{" ) != 0 )
+        {
+            // malformed; try to continue
+            continue;
+        }
+
+        // scan this block for: name <value>
+        while ( 1 )
+        {
+            const char *key, *val;
+
+            SkipRestOfLine( &p );
+            key = COM_ParseExt( &p, qtrue );
+            if ( !key[0] )
+            {
+                // EOF
+                return qfalse;
+            }
+            if ( !Q_stricmp( key, "}" ) )
+            {
+                break;
+            }
+
+            val = COM_ParseExt( &p, qtrue );
+            if ( !val || !val[0] )
+            {
+                continue;
+            }
+
+            if ( !Q_stricmp( key, "name" ) && !Q_stricmp( val, wantedName ) )
+            {
+                Q_strncpyz( outLabel, labelBuf, outLabelSize );
+                return qtrue;
+            }
+        }
+    }
+
+    return qfalse;
+}
+
 int VEH_LoadVehWeapon( const char *vehWeaponName )
 {//load up specified vehWeapon and save in array: g_vehWeaponInfo
 	const char	*token;
@@ -358,6 +468,31 @@ int VEH_LoadVehWeapon( const char *vehWeaponName )
 #endif
 
 	vehWeapon = &g_vehWeaponInfo[numVehicleWeapons];
+
+	// IMPORTANT:
+	// Some .vwp definitions rely on the block label (vehWeaponName) as the
+	// canonical identifier and may not provide an explicit "name" key inside
+	// the block. If we don't stamp a name here, the lookup in
+	// VEH_VehWeaponIndexForName() can fail later, causing duplicate loads and
+	// (worse) client/server index mismatches (wrong vehicle projectiles).
+	//
+	// Allocate once (shared across map via BG_Alloc) and allow the parsed "name"
+	// key to overwrite it if present.
+#ifdef _JK2MP
+	if ( !vehWeapon->name )
+	{
+		vehWeapon->name = (char *)BG_Alloc(1024);
+	}
+	if ( vehWeapon->name )
+	{
+		Q_strncpyz( vehWeapon->name, vehWeaponName, 1024 );
+	}
+#else
+	if ( !vehWeapon->name )
+	{
+		vehWeapon->name = G_NewString( vehWeaponName );
+	}
+#endif
 	// look for the right vehicle weapon
 	while ( p ) 
 	{
@@ -374,9 +509,32 @@ int VEH_LoadVehWeapon( const char *vehWeaponName )
 
 		SkipBracedSection( &p);
 	}
-	if ( !p ) 
+	if ( !p )
 	{
-		return qfalse;
+		// Fallback: weapon may be referenced by its internal "name" key rather than block label.
+		// Try to locate a block label whose "name" matches vehWeaponName, then re-run the lookup by label.
+		char foundLabel[128];
+		if ( BG_FindVehWeaponBlockLabelByInternalName( vehWeaponName, foundLabel, sizeof(foundLabel) ) )
+		{
+			p = VehWeaponParms;
+			while ( p )
+			{
+				token = COM_ParseExt( &p, qtrue );
+				if ( token[0] == 0 )
+				{
+					return VEH_WEAPON_NONE;
+				}
+				if ( !Q_stricmp( token, foundLabel ) )
+				{
+					break;
+				}
+				SkipBracedSection( &p );
+			}
+		}
+	}
+	if ( !p )
+	{
+		return VEH_WEAPON_NONE;
 	}
 
 	token = COM_ParseExt( &p, qtrue );
@@ -774,7 +932,7 @@ void BG_VehicleSetDefaults( vehicleInfo_t *vehicle )
 	{
 		vehicle->name = (char *)BG_Alloc(1024);
 	}
-	strcpy(vehicle->name, "default");
+	Q_strncpyz( vehicle->name, "default", sizeof( vehicle->name ) );
 #else
 	vehicle->name = G_NewString( "default" );
 #endif
@@ -823,7 +981,7 @@ void BG_VehicleSetDefaults( vehicleInfo_t *vehicle )
 	{
 		vehicle->model = (char *)BG_Alloc(1024);
 	}
-	strcpy(vehicle->model, "models/map_objects/ships/swoop.md3");
+	Q_strncpyz( vehicle->model, "models/map_objects/ships/swoop.md3", sizeof( vehicle->model ) );
 
 	vehicle->modelIndex = 0;							//set internally, not until this vehicle is spawned into the level
 	vehicle->skin = NULL;								//what skin to use - if make it an NPC's primary model, don't need this?
@@ -943,28 +1101,41 @@ static qboolean BG_ParseVehicleParm( vehicleInfo_t *vehicle, char *parmName, cha
 			case VF_FLOAT:
 				*(float *)(b+vehicleFields[i].ofs) = atof(value);
 				break;
-			case VF_LSTRING:	// string on disk, pointer in memory, TAG_LEVEL
-				if (!*(char **)(b+vehicleFields[i].ofs))
-				{ //just use 128 bytes in case we want to write over the string
+			            case VF_LSTRING:    // string on disk, pointer in memory, TAG_LEVEL
+                {
+                    char **dst = (char **)(b + vehicleFields[i].ofs);
 #ifdef _JK2MP
-					*(char **)(b+vehicleFields[i].ofs) = (char *)BG_Alloc(128);//(char *)BG_Alloc(strlen(value));
-					strcpy(*(char **)(b+vehicleFields[i].ofs), value);
+                    if ( !*dst )
+                    {   // fixed-size scratch buffer so we can safely overwrite during parsing
+                        *dst = (char *)BG_Alloc(128);
+                    }
+                    if ( *dst )
+                    {
+                        Q_strncpyz( *dst, value, 128 );
+                    }
 #else
-					(*(char **)(b+vehicleFields[i].ofs)) = G_NewString( value );
+                    // SP: avoid leaking by allocating once.
+                    if ( !*dst )
+                    {
+                        *dst = G_NewString( value );
+                    }
 #endif
-				}
-				
-				break;
-			case VF_VECTOR:
-				assert(sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])==3 );
-				if (sscanf (value, "%f %f %f", &vec[0], &vec[1], &vec[2])!=3)
-				{
-					Com_Printf (S_COLOR_YELLOW"BG_ParseVehicleParm: VEC3 sscanf() failed to read 3 floats ('angle' key bug?)\n");
-				}
-				((float *)(b+vehWeaponFields[i].ofs))[0] = vec[0];
-				((float *)(b+vehWeaponFields[i].ofs))[1] = vec[1];
-				((float *)(b+vehWeaponFields[i].ofs))[2] = vec[2];
-				break;
+                }
+                break;
+case VF_VECTOR:
+{
+    assert(sscanf(value, "%f %f %f", &vec[0], &vec[1], &vec[2]) == 3);
+    if (sscanf(value, "%f %f %f", &vec[0], &vec[1], &vec[2]) != 3)
+    {
+        Com_Printf(S_COLOR_YELLOW "BG_ParseVehicleParm: VEC3 sscanf() failed to read 3 floats ('angle' key bug?)\n");
+        break;
+    }
+
+    ((float *)(b + vehicleFields[i].ofs))[0] = vec[0];
+    ((float *)(b + vehicleFields[i].ofs))[1] = vec[1];
+    ((float *)(b + vehicleFields[i].ofs))[2] = vec[2];
+    break;
+}
 			case VF_BOOL:
 				*(qboolean *)(b+vehicleFields[i].ofs) = (qboolean)(atof(value)!=0);
 				break;
@@ -1478,15 +1649,192 @@ int VEH_VehicleIndexForName( const char *vehicleName )
 	return v;
 }
 
+// Deterministic sorting for FS_GetFileList() output.
+// Without sorting, client/server can concatenate vehicle data in different orders (pak/OS dependent),
+// which causes vehicle weapon/projectile visual mismatches.
+#ifndef BG_MAX_SORTED_FILES
+#define BG_MAX_SORTED_FILES 128
+#endif
+
+static int BG_FileListToSortedArray( const char *listbuf, int fileCnt, char (*sortedFiles)[MAX_QPATH], int sortedCap )
+{
+	int i = 0;
+	const char *s = listbuf;
+
+	if ( !listbuf || fileCnt <= 0 || !sortedFiles || sortedCap <= 0 )
+	{
+		return 0;
+	}
+
+	// Copy filenames out of the packed list buffer
+	for ( i = 0; i < fileCnt && i < sortedCap && s && s[0]; i++ )
+	{
+		Q_strncpyz( sortedFiles[i], s, MAX_QPATH );
+		s += strlen( s ) + 1;
+	}
+
+	if ( fileCnt > sortedCap )
+	{
+		Com_Printf( S_COLOR_YELLOW "WARNING: BG_FileListToSortedArray truncated file list (%d -> %d)\n", fileCnt, sortedCap );
+	}
+
+	// Simple deterministic insertion sort using Q_stricmp
+	{
+		int a;
+		int b;
+		for ( a = 1; a < i; a++ )
+		{
+			char key[MAX_QPATH];
+			b = a - 1;
+		Q_strncpyz( key, sortedFiles[a], sizeof( key ) );
+
+			while ( b >= 0 && Q_stricmp( sortedFiles[b], key ) > 0 )
+			{
+				Q_strncpyz( sortedFiles[b + 1], sortedFiles[b], MAX_QPATH );
+				b--;
+			}
+			Q_strncpyz( sortedFiles[b + 1], key, MAX_QPATH );
+		}
+	}
+
+	return i;
+}
+
+// Preload all vehicle weapons in a deterministic order.
+//
+// Vehicle projectiles are referenced by veh-weapon index across the network.
+// If game and cgame load vehicle weapons lazily (based on first vehicle usage),
+// load order can diverge and clients will interpret the same index as a
+// different weapon, resulting in WRONG vehicle projectiles/FX.
+//
+// We avoid that by parsing the VehWeaponParms buffer once and filling
+// g_vehWeaponInfo[] sequentially. This makes indices stable across server/client
+// as long as VehWeaponParms is built deterministically (we sort .vwp filenames).
+static void BG_PreloadAllVehWeapons( void )
+{
+	const char	*p;
+	const char	*token;
+	char		parmName[128];
+	const char	*value;
+
+	// Reset table (BG_Alloc allocations are level/hunk scoped and will be cleared on map restart).
+	memset( g_vehWeaponInfo, 0, sizeof( g_vehWeaponInfo ) );
+	numVehicleWeapons = 1; // 0 is NONE/BASE
+
+	p = VehWeaponParms;
+#ifdef _JK2MP
+	COM_BeginParseSession( "vehWeaponsPreload" );
+#else
+	COM_BeginParseSession();
+#endif
+
+	while ( p )
+	{
+		token = COM_ParseExt( &p, qtrue );
+		if ( !token[0] )
+		{
+			break;
+		}
+
+		if ( numVehicleWeapons >= MAX_VEH_WEAPONS )
+		{
+			Com_Printf( S_COLOR_RED "ERROR: Too many Vehicle Weapons (max %d), skipping remainder\n", MAX_VEH_WEAPONS );
+			break;
+		}
+
+		// token is the weapon block label.
+		{
+			vehWeaponInfo_t *vehWeapon = &g_vehWeaponInfo[numVehicleWeapons];
+			memset( vehWeapon, 0, sizeof( *vehWeapon ) );
+
+			// Stamp a default name from the block label (see note in VEH_LoadVehWeapon).
+#ifdef _JK2MP
+			vehWeapon->name = (char *)BG_Alloc(1024);
+			if ( vehWeapon->name )
+			{
+				Q_strncpyz( vehWeapon->name, token, 1024 );
+			}
+#else
+			vehWeapon->name = G_NewString( token );
+#endif
+
+			// Next token should be '{'. If not, skip this entry.
+			token = COM_ParseExt( &p, qtrue );
+			if ( !token[0] )
+			{
+				break;
+			}
+			if ( Q_stricmp( token, "{" ) != 0 )
+			{
+				SkipBracedSection( &p );
+				continue;
+			}
+
+			// Parse block body.
+			while ( 1 )
+			{
+				SkipRestOfLine( &p );
+				token = COM_ParseExt( &p, qtrue );
+				if ( !token[0] )
+				{
+					p = NULL;
+					break;
+				}
+				if ( !Q_stricmp( token, "}" ) )
+				{
+					break;
+				}
+				Q_strncpyz( parmName, token, sizeof( parmName ) );
+				value = COM_ParseExt( &p, qtrue );
+				if ( !value || !value[0] )
+				{
+					Com_Printf( S_COLOR_RED "ERROR: Vehicle Weapon token '%s' has no value!\n", parmName );
+					continue;
+				}
+				if ( !BG_ParseVehWeaponParm( vehWeapon, parmName, (char *)value ) )
+				{
+					Com_Printf( S_COLOR_RED "ERROR: Unknown Vehicle Weapon key/value pair '%s','%s'!\n", parmName, value );
+				}
+			}
+
+			// Homing weapons register common sounds on client side.
+			if ( vehWeapon->fHoming )
+			{
+#ifdef QAGAME
+				// server doesn't need to register these
+#elif CGAME
+				trap_S_RegisterSound( "sound/vehicles/weapons/common/tick.wav" );
+				trap_S_RegisterSound( "sound/vehicles/weapons/common/lock.wav" );
+				trap_S_RegisterSound( "sound/vehicles/common/lockalarm1.wav" );
+				trap_S_RegisterSound( "sound/vehicles/common/lockalarm2.wav" );
+				trap_S_RegisterSound( "sound/vehicles/common/lockalarm3.wav" );
+#else
+				trap_S_RegisterSound( "sound/vehicles/weapons/common/tick.wav" );
+				trap_S_RegisterSound( "sound/vehicles/weapons/common/lock.wav" );
+				trap_S_RegisterSound( "sound/vehicles/common/lockalarm1.wav" );
+				trap_S_RegisterSound( "sound/vehicles/common/lockalarm2.wav" );
+				trap_S_RegisterSound( "sound/vehicles/common/lockalarm3.wav" );
+#endif
+			}
+
+			numVehicleWeapons++;
+		}
+	}
+}
+
 void BG_VehWeaponLoadParms( void ) 
 {
-	int			len, totallen, vehExtFNLen = 0, mainBlockLen, fileCnt, i;
-	char		*holdChar, *marker;
+	int			len, totallen, mainBlockLen, fileCnt, i;
+	char		*marker;
 	char		vehWeaponExtensionListBuf[2048];			//	The list of file names read in
 	fileHandle_t	f;
 	char		*tempReadBuffer;
+	int			maxReadLen = 0;
+	char		sortedFiles[BG_MAX_SORTED_FILES][MAX_QPATH];
+	int			sortedFileCnt = 0;
 
 	len = 0;
+
 
 	//remember where to store the next one
 	totallen = mainBlockLen = len;
@@ -1500,73 +1848,117 @@ void BG_VehWeaponLoadParms( void )
 	fileCnt = gi.FS_GetFileList("ext_data/vehicles/weapons", ".vwp", vehWeaponExtensionListBuf, sizeof(vehWeaponExtensionListBuf) );
 #endif
 
-	holdChar = vehWeaponExtensionListBuf;
+	// Sort file list so client/server concatenate identical data.
+	sortedFileCnt = BG_FileListToSortedArray( vehWeaponExtensionListBuf, fileCnt, sortedFiles, BG_MAX_SORTED_FILES );
 
-#ifdef _JK2MP
-	tempReadBuffer = (char *)BG_TempAlloc(MAX_VEH_WEAPON_DATA_SIZE);
-#else
-	tempReadBuffer = (char *)gi.Malloc( MAX_VEH_WEAPON_DATA_SIZE, TAG_G_ALLOC, qtrue );
-#endif
-	
-	// NOTE: Not use TempAlloc anymore...
-	//Make ABSOLUTELY CERTAIN that BG_Alloc/etc. is not used before
-	//the subsequent BG_TempFree or the pool will be screwed. 
-
-	for ( i = 0; i < fileCnt; i++, holdChar += vehExtFNLen + 1 ) 
+	// Compute maximum file length so we can allocate a tight read buffer (avoid BG_TempAlloc pool corruption).
+	for ( i = 0; i < sortedFileCnt; i++ )
 	{
-		vehExtFNLen = strlen( holdChar );
-
-//		Com_Printf( "Parsing %s\n", holdChar );
+#ifdef _JK2MP
+		len = trap_FS_FOpenFile( va( "ext_data/vehicles/weapons/%s", sortedFiles[i] ), &f, FS_READ );
+		if ( f )
+		{
+			trap_FS_FCloseFile( f );
+		}
+#else
+		len = gi.FS_FOpenFile( va( "ext_data/vehicles/weapons/%s", sortedFiles[i] ), &f, FS_READ );
+		if ( f )
+		{
+			gi.FS_FCloseFile( f );
+		}
+#endif
+		if ( len > maxReadLen )
+		{
+			maxReadLen = len;
+		}
+	}
+	if ( maxReadLen < 1 )
+	{
+		maxReadLen = 1;
+	}
 
 #ifdef _JK2MP
-		len = trap_FS_FOpenFile(va( "ext_data/vehicles/weapons/%s", holdChar), &f, FS_READ);
+	#ifdef WE_ARE_IN_THE_UI
+	tempReadBuffer = (char *)BG_TempAlloc( maxReadLen + 1 );
+	#else
+	trap_TrueMalloc( (void **)&tempReadBuffer, maxReadLen + 1 );
+	#endif
 #else
-//		len = gi.FS_ReadFile( va( "ext_data/vehicles/weapons/%s", holdChar), (void **) &buffer );
-		len = gi.FS_FOpenFile(va( "ext_data/vehicles/weapons/%s", holdChar), &f, FS_READ);
+	tempReadBuffer = (char *)gi.Malloc( maxReadLen + 1, TAG_G_ALLOC, qtrue );
 #endif
+	if ( !tempReadBuffer )
+	{
+		Com_Error( ERR_DROP, "BG_VehWeaponLoadParms: Unable to allocate read buffer" );
+		return;
+	}
 
-		if ( len == -1 ) 
+	for ( i = 0; i < sortedFileCnt; i++ )
+	{
+#ifdef _JK2MP
+		len = trap_FS_FOpenFile( va( "ext_data/vehicles/weapons/%s", sortedFiles[i] ), &f, FS_READ );
+#else
+		len = gi.FS_FOpenFile( va( "ext_data/vehicles/weapons/%s", sortedFiles[i] ), &f, FS_READ );
+#endif
+		if ( len == -1 || !f )
 		{
 			Com_Printf( "error reading file\n" );
+			continue;
 		}
-		else
+
+		if ( len > maxReadLen )
 		{
-#ifdef _JK2MP
-			trap_FS_Read(tempReadBuffer, len, f);
-			tempReadBuffer[len] = 0;
-#else
-			gi.FS_Read(tempReadBuffer, len, f);
-			tempReadBuffer[len] = 0;
-#endif
-
-			// Don't let it end on a } because that should be a stand-alone token.
-			if ( totallen && *(marker-1) == '}' )
-			{
-				strcat( marker, " " );
-				totallen++;
-				marker++; 
-			}
-
-			if ( totallen + len >= MAX_VEH_WEAPON_DATA_SIZE ) {
-trap_FS_FCloseFile(f);//[TicketFix143] May be too large but close the file
-				Com_Error(ERR_DROP, "Vehicle Weapon extensions (*.vwp) are too large" );
-			}
-			strcat( marker, tempReadBuffer );
+			// Should never happen (maxReadLen precomputed), but keep it safe.
 #ifdef _JK2MP
 			trap_FS_FCloseFile( f );
 #else
 			gi.FS_FCloseFile( f );
 #endif
-			totallen += len;
-			marker = VehWeaponParms+totallen;
+			Com_Error( ERR_DROP, "Vehicle Weapon extensions: file %s exceeds computed maxReadLen", sortedFiles[i] );
+			return;
 		}
+
+#ifdef _JK2MP
+		trap_FS_Read( tempReadBuffer, len, f );
+		tempReadBuffer[len] = 0;
+		trap_FS_FCloseFile( f );
+#else
+		gi.FS_Read( tempReadBuffer, len, f );
+		tempReadBuffer[len] = 0;
+		gi.FS_FCloseFile( f );
+#endif
+
+		// Don't let it end on a } because that should be a stand-alone token.
+		if ( totallen && *(marker-1) == '}' )
+		{
+			Q_strncpyz( marker, " ", MAX_VEH_WEAPON_DATA_SIZE - totallen );
+			totallen++;
+			marker++; 
+		}
+
+		if ( totallen + len >= MAX_VEH_WEAPON_DATA_SIZE )
+		{
+			Com_Error( ERR_DROP, "Vehicle Weapon extensions (*.vwp) are too large" );
+			return;
+		}
+
+		Q_strncpyz( marker, tempReadBuffer, MAX_VEH_WEAPON_DATA_SIZE - totallen );
+		totallen += len;
+		marker = VehWeaponParms + totallen;
 	}
 
 #ifdef _JK2MP
-	BG_TempFree(MAX_VEH_WEAPON_DATA_SIZE);
+	#ifdef WE_ARE_IN_THE_UI
+	BG_TempFree( maxReadLen + 1 );
+	#else
+	trap_TrueFree( (void **)&tempReadBuffer );
+	#endif
 #else
-	gi.Free(tempReadBuffer);	tempReadBuffer = NULL;
+	gi.Free( tempReadBuffer );
+	tempReadBuffer = NULL;
 #endif
+
+	// Build a stable vehicle-weapon table now so indices match between server and client.
+	BG_PreloadAllVehWeapons();
 }
 
 //[DynamicMemory_Vehicles]
@@ -1578,12 +1970,15 @@ void BG_VehicleUnloadParms( void ){
 
 void BG_VehicleLoadParms( void ) 
 {//HMM... only do this if there's a vehicle on the level?
-	int			len, totallen, vehExtFNLen = 0, mainBlockLen, fileCnt, i;
+	int			len, totallen, vehExtFNLen = 0, mainBlockLen, fileCnt, i, baseLen;
 //	const char	*filename = "ext_data/vehicles.dat";
-	char		*holdChar, *marker;
+	char		*marker;
 	char		vehExtensionListBuf[2048];			//	The list of file names read in
 	fileHandle_t	f;
 	char		*tempReadBuffer;
+	int			maxReadLen = 0;
+	char		sortedFiles[BG_MAX_SORTED_FILES][MAX_QPATH];
+	int			sortedFileCnt = 0;
 //[DynamicMemory_Vehicles]
 #ifdef DYNAMICMEMORY_VEHICLES
 	int maxLen;
@@ -1592,6 +1987,25 @@ void BG_VehicleLoadParms( void )
 
 
 	len = 0;
+	// Determine size of base ext_data/vehicles.dat (vanilla vehicle definitions).
+	baseLen = 0;
+#ifdef _JK2MP
+	baseLen = trap_FS_FOpenFile( "ext_data/vehicles.dat", &f, FS_READ );
+	if ( f )
+	{
+		trap_FS_FCloseFile( f );
+	}
+#else
+	baseLen = gi.FS_FOpenFile( "ext_data/vehicles.dat", &f, FS_READ );
+	if ( f )
+	{
+		gi.FS_FCloseFile( f );
+	}
+#endif
+	if ( baseLen < 0 )
+	{
+		baseLen = 0;
+	}
 
 //[DynamicMemory_Vehicles]
 	//moved to below
@@ -1610,19 +2024,38 @@ void BG_VehicleLoadParms( void )
 	fileCnt = gi.FS_GetFileList("ext_data/vehicles", ".veh", vehExtensionListBuf, sizeof(vehExtensionListBuf) );
 #endif
 
-
-	holdChar = vehExtensionListBuf;
+	// Sort file list so client/server concatenate identical data.
+	sortedFileCnt = BG_FileListToSortedArray( vehExtensionListBuf, fileCnt, sortedFiles, BG_MAX_SORTED_FILES );
 
 //[DynamicMemory_Vehicles]
 #ifdef DYNAMICMEMORY_VEHICLES
 	maxLen = 0;
-	vehExtFNLen = -1; //to counter the +1 we do 
-	for(i = 0;i<fileCnt;i++, holdChar += vehExtFNLen + 1){
-		vehExtFNLen = strlen( holdChar );
-		len = trap_FS_FOpenFile(va( "ext_data/vehicles/%s", holdChar), &f, FS_READ);
-		if(!f)
+
+if ( baseLen > 0 )
+{
+	// Include base vehicles.dat size (plus possible spacer) in dynamic allocation.
+	maxLen += baseLen + 1;
+	if ( baseLen > maxReadLen )
+	{
+		maxReadLen = baseLen;
+	}
+}
+
+	for ( i = 0; i < sortedFileCnt; i++ )
+	{
+		len = trap_FS_FOpenFile( va( "ext_data/vehicles/%s", sortedFiles[i] ), &f, FS_READ );
+		if ( f )
+		{
+			trap_FS_FCloseFile( f );
+		}
+		if ( len > maxReadLen )
+		{
+			maxReadLen = len;
+		}
+		if ( len <= 0 )
+		{
 			continue;
-		trap_FS_FCloseFile(f);
+		}
 		maxLen += len + 1; //we can strcat() a space on if it ends in '}'
 		//maxLen += len;
 	}
@@ -1632,7 +2065,7 @@ void BG_VehicleLoadParms( void )
 		Com_Error(ERR_DROP, "Unable to alloc memory for vehicles.");
 		return;
 	}
-	holdChar = vehExtensionListBuf;
+	// nothing else uses the packed list directly anymore
 #endif
 
 
@@ -1648,52 +2081,181 @@ void BG_VehicleLoadParms( void )
 	marker[0] = '\0';
 //[/DynamicMemory_Vehicles]
 
-#ifdef _JK2MP
-	tempReadBuffer = (char *)BG_TempAlloc(MAX_VEHICLE_DATA_SIZE);
-#else
-	tempReadBuffer = (char *)gi.Malloc( MAX_VEHICLE_DATA_SIZE, TAG_G_ALLOC, qtrue );
-#endif
-	
-	// NOTE: Not use TempAlloc anymore...
-	//Make ABSOLUTELY CERTAIN that BG_Alloc/etc. is not used before
-	//the subsequent BG_TempFree or the pool will be screwed. 
 
-	//[DynamicMemory_Vehicles]
-	vehExtFNLen = -1; //to counter the +1 we do on first loop
-	//[/DynamicMemory_Vehicles]
+// Ensure maxReadLen accounts for base vehicles.dat too.
+if ( baseLen > maxReadLen )
+{
+	maxReadLen = baseLen;
+}
 
-	for ( i = 0; i < fileCnt; i++, holdChar += vehExtFNLen + 1 ) 
+	// tempReadBuffer is allocated below sized to the largest .veh file.
+	// Avoid BG_TempAlloc here (large allocations corrupt the temp pool and can break unrelated FX like normal weapon bolts).
+	// Compute a reasonable read buffer size even if DYNAMICMEMORY_VEHICLES is disabled.
+	if ( maxReadLen < 1 )
 	{
-		vehExtFNLen = strlen( holdChar );
+		for ( i = 0; i < sortedFileCnt; i++ )
+		{
+			#ifdef _JK2MP
+			len = trap_FS_FOpenFile( va( "ext_data/vehicles/%s", sortedFiles[i] ), &f, FS_READ );
+			if ( f )
+			{
+				trap_FS_FCloseFile( f );
+			}
+			#else
+			len = gi.FS_FOpenFile( va( "ext_data/vehicles/%s", sortedFiles[i] ), &f, FS_READ );
+			if ( f )
+			{
+				gi.FS_FCloseFile( f );
+			}
+			#endif
+			if ( len > maxReadLen )
+			{
+				maxReadLen = len;
+			}
+		}
+	}
+	if ( maxReadLen < 1 )
+	{
+		maxReadLen = 1;
+	}
+
+	#ifdef _JK2MP
+		#ifdef WE_ARE_IN_THE_UI
+		tempReadBuffer = (char *)BG_TempAlloc( maxReadLen + 1 );
+		#else
+		trap_TrueMalloc( (void **)&tempReadBuffer, maxReadLen + 1 );
+		#endif
+	#else
+	tempReadBuffer = (char *)gi.Malloc( maxReadLen + 1, TAG_G_ALLOC, qtrue );
+	#endif
+	if ( !tempReadBuffer )
+	{
+		Com_Error( ERR_DROP, "BG_VehicleLoadParms: Unable to allocate read buffer" );
+		return;
+	}
+
+	
+	// Append base vehicles.dat first so vanilla vehicle visual FX fields (exhaustFX/turboFX/trailFX/etc) are present.
+	if ( baseLen > 0 )
+	{
+#ifdef _JK2MP
+		len = trap_FS_FOpenFile( "ext_data/vehicles.dat", &f, FS_READ );
+#else
+		len = gi.FS_FOpenFile( "ext_data/vehicles.dat", &f, FS_READ );
+#endif
+		if ( len > 0 && f )
+		{
+			if ( len > maxReadLen )
+			{
+#ifdef _JK2MP
+				trap_FS_FCloseFile( f );
+#else
+				gi.FS_FCloseFile( f );
+#endif
+				Com_Error( ERR_DROP, "vehicles.dat exceeds computed maxReadLen" );
+				return;
+			}
+#ifdef _JK2MP
+			trap_FS_Read( tempReadBuffer, len, f );
+			tempReadBuffer[len] = 0;
+			trap_FS_FCloseFile( f );
+#else
+			gi.FS_Read( tempReadBuffer, len, f );
+			tempReadBuffer[len] = 0;
+			gi.FS_FCloseFile( f );
+#endif
+
+			// Ensure separation if the previous content ends with a close brace.
+			if ( totallen && *(marker-1) == '}' )
+			{
+				int remain;
+#ifdef DYNAMICMEMORY_VEHICLES
+				remain = maxLen - totallen;
+#else
+				remain = MAX_VEHICLE_DATA_SIZE - totallen;
+#endif
+				Q_strncpyz( marker, " ", remain );
+				totallen++;
+				marker++;
+			}
+
+#ifdef DYNAMICMEMORY_VEHICLES
+			if ( totallen + len >= maxLen )
+			{
+				Com_Error( ERR_DROP, "vehicles.dat exceeded allocated vehicle buffer" );
+				return;
+			}
+#else
+			if ( totallen + len >= MAX_VEHICLE_DATA_SIZE )
+			{
+				Com_Error( ERR_DROP, "vehicles.dat is too large" );
+				return;
+			}
+#endif
+			{
+				int remain;
+#ifdef DYNAMICMEMORY_VEHICLES
+				remain = maxLen - totallen;
+#else
+				remain = MAX_VEHICLE_DATA_SIZE - totallen;
+#endif
+				Q_strncpyz( marker, tempReadBuffer, remain );
+			}
+
+			totallen += len;
+			marker = VehicleParms + totallen;
+		}
+	}
+
+for ( i = 0; i < sortedFileCnt; i++ )
+	{
 
 //		Com_Printf( "Parsing %s\n", holdChar );
 
 #ifdef _JK2MP
-		len = trap_FS_FOpenFile(va( "ext_data/vehicles/%s", holdChar), &f, FS_READ);
+		len = trap_FS_FOpenFile( va( "ext_data/vehicles/%s", sortedFiles[i] ), &f, FS_READ );
 #else
 //		len = gi.FS_ReadFile( va( "ext_data/vehicles/%s", holdChar), (void **) &buffer );
-		len = gi.FS_FOpenFile(va( "ext_data/vehicles/%s", holdChar), &f, FS_READ);
+		len = gi.FS_FOpenFile( va( "ext_data/vehicles/%s", sortedFiles[i] ), &f, FS_READ );
 #endif
 
-		if ( len == -1 ) 
+		if ( len == -1 || !f ) 
 		{
 			Com_Printf( "error reading file\n" );
+			continue;
 		}
 		else
 		{
+			if ( len > maxReadLen )
+			{
+				#ifdef _JK2MP
+				trap_FS_FCloseFile( f );
+				#else
+				gi.FS_FCloseFile( f );
+				#endif
+				Com_Error( ERR_DROP, "Vehicle extensions: file %s exceeds computed maxReadLen", sortedFiles[i] );
+				return;
+			}
 #ifdef _JK2MP
 			trap_FS_Read(tempReadBuffer, len, f);
 			tempReadBuffer[len] = 0;
-			trap_FS_FCloseFile(f);
+			trap_FS_FCloseFile( f );
 #else
 			gi.FS_Read(tempReadBuffer, len, f);
 			tempReadBuffer[len] = 0;
+			gi.FS_FCloseFile( f );
 #endif
 
 			// Don't let it end on a } because that should be a stand-alone token.
 			if ( totallen && *(marker-1) == '}' )
 			{
-				strcat( marker, " " );
+				int remain;
+#ifdef DYNAMICMEMORY_VEHICLES
+				remain = maxLen - totallen;
+#else
+				remain = MAX_VEHICLE_DATA_SIZE - totallen;
+#endif
+				Q_strncpyz( marker, " ", remain );
 				totallen++;
 				marker++; 
 			}
@@ -1708,7 +2270,15 @@ void BG_VehicleLoadParms( void )
 				Com_Error(ERR_DROP, "Vehicle extensions (*.veh) are too large" );
 			}
 #endif
-			strcat( marker, tempReadBuffer );
+			{
+				int remain;
+#ifdef DYNAMICMEMORY_VEHICLES
+				remain = maxLen - totallen;
+#else
+				remain = MAX_VEHICLE_DATA_SIZE - totallen;
+#endif
+				Q_strncpyz( marker, tempReadBuffer, remain );
+			}
 			/*
 #ifdef _JK2MP
 			trap_FS_FCloseFile( f );
@@ -1723,9 +2293,14 @@ void BG_VehicleLoadParms( void )
 	}
 
 #ifdef _JK2MP
-	BG_TempFree(MAX_VEHICLE_DATA_SIZE);
+	#ifdef WE_ARE_IN_THE_UI
+	BG_TempFree( maxReadLen + 1 );
+	#else
+	trap_TrueFree( (void **)&tempReadBuffer );
+	#endif
 #else
-	gi.Free(tempReadBuffer);	tempReadBuffer = NULL;
+	gi.Free( tempReadBuffer );
+	tempReadBuffer = NULL;
 #endif
 	
 	numVehicles = 1;//first one is null/default
@@ -1770,7 +2345,8 @@ void BG_GetVehicleModelName(char* modelname)
 	}
 
 	// Safe to access g_vehicleInfo[vIndex] now
-	strcpy(modelname, g_vehicleInfo[vIndex].model);
+	// modelname is expected to be a MAX_QPATH-sized buffer in JKA code.
+	Q_strncpyz(modelname, g_vehicleInfo[vIndex].model, MAX_QPATH);
 }
 
 
@@ -1802,7 +2378,8 @@ void BG_GetVehicleSkinName(char* skinname)
 	}
 	else
 	{
-		strcpy(skinname, g_vehicleInfo[vIndex].skin);  // Copy the skin name into the output
+		// skinname is expected to be a MAX_QPATH-sized buffer in JKA code.
+		Q_strncpyz(skinname, g_vehicleInfo[vIndex].skin, MAX_QPATH);  // Copy the skin name into the output
 	}
 }
 

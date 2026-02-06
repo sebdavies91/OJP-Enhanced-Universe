@@ -147,9 +147,12 @@ void BubbleShield_Update(void)
 	// Recharge Shields
 	//------------------
  	NPC->client->ps.stats[STAT_ARMOR] += 1;
-	if (NPC->client->ps.stats[STAT_ARMOR]>100)
+	// SP allows the assassin droid's armor to build above 100 so the bubble
+	// shield can actually activate (activation threshold is >100). If we clamp
+	// to 100, the shield never turns on.
+	if (NPC->client->ps.stats[STAT_ARMOR] > 250)
 	{
-		NPC->client->ps.stats[STAT_ARMOR] = 100;
+		NPC->client->ps.stats[STAT_ARMOR] = 250;
 	}
 
 

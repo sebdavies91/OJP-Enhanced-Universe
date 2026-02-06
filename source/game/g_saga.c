@@ -108,9 +108,12 @@ void InitSiegeMode(void)
     char levelname[512];
     char teamIcon[128];
     char goalreq[64];
+
+				   
     char* teams = (char*)BG_TempAlloc(2048);  // Using BG_TempAlloc instead of BG_Alloc
     char* objective = (char*)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);  // Using BG_TempAlloc
     char* objecStr = (char*)BG_TempAlloc(8192);  // Using BG_TempAlloc
+
     int x = 0;
     int y = 0;
     char dependsOn[64];
@@ -120,15 +123,21 @@ void InitSiegeMode(void)
     int objectiveNumTeam2 = 0;
     fileHandle_t f;
 
-    if (!teams || !objective || !objecStr) {
-        G_Error("InitSiegeMode: Memory allocation failed");
-        return;
-    }
+if (!teams || !objective || !objecStr) {
+    // Free anything that did succeed to avoid leaking temp memory
+    if (teams)     BG_TempFree(2048);
+    if (objective) BG_TempFree(MAX_SIEGE_INFO_SIZE);
+    if (objecStr)  BG_TempFree(8192);
 
-    // Zero out the allocated memory using BG_TempFree for safety before use
-    BG_TempFree(2048);   // Zero out teams
-    BG_TempFree(MAX_SIEGE_INFO_SIZE);   // Zero out objective
-    BG_TempFree(8192);   // Zero out objecStr
+    G_Error("InitSiegeMode: Memory allocation failed");
+    return;
+}
+
+// Optional: actually clear the buffers if you want them zeroed
+memset(teams, 0, 2048);
+memset(objective, 0, MAX_SIEGE_INFO_SIZE);
+memset(objecStr, 0, 8192);
+
 
     if (g_gametype.integer != GT_SIEGE)
     {
@@ -179,7 +188,9 @@ void InitSiegeMode(void)
 
     if (!f || len >= MAX_SIEGE_INFO_SIZE)
     {
+				
         trap_FS_FCloseFile(f);
+		 
         goto failure;
     }
 
@@ -202,7 +213,7 @@ void InitSiegeMode(void)
     {
         if (g_siegeTeam1.string[0] && Q_stricmp(g_siegeTeam1.string, "none"))
         {
-            strcpy(team1, g_siegeTeam1.string);
+            Q_strncpyz(team1, g_siegeTeam1.string, sizeof(team1));
         }
         else
         {
@@ -211,7 +222,7 @@ void InitSiegeMode(void)
 
         if (g_siegeTeam2.string[0] && Q_stricmp(g_siegeTeam2.string, "none"))
         {
-            strcpy(team2, g_siegeTeam2.string);
+            Q_strncpyz(team2, g_siegeTeam2.string, sizeof(team2));
         }
         else
         {
@@ -316,28 +327,27 @@ void InitSiegeMode(void)
 
         // Count objectives for this team
         i = 1;
-        strcpy(objecStr, va("Objective%i", i));
+        Com_sprintf( objecStr, sizeof( objecStr ), "Objective%i", i );
         while (BG_SiegeGetValueGroup(gParseObjectives, objecStr, objective))
         {
             // Check for objective dependency
             x = 0;
-            strcpy(dependsOn, "DependsOn1");
-            while (x < MAX_OBJECTIVEDEPENDANCY && imperial_attackers)
+            Q_strncpyz( dependsOn, "DependsOn1", sizeof(dependsOn) );            while (x < MAX_OBJECTIVEDEPENDANCY && imperial_attackers)
             {
                 if (BG_SiegeGetPairedValue(objective, dependsOn, goalreq))
                 {
                     ObjectiveDependancy[i - 1][x] = atoi(goalreq);
                 }
                 x++;
-                strcpy(dependsOn, va("DependsOn%i", x + 1));
-            }
+                Q_strncpyz( dependsOn, va("DependsOn%i", x + 1), sizeof(dependsOn) );            }
 
             objectiveNumTeam1++;
             i++;
-            strcpy(objecStr, va("Objective%i", i));
+            Com_sprintf( objecStr, sizeof( objecStr ), "Objective%i", i );
         }
     }
 
+												 
     if (BG_SiegeGetValueGroup(siege_info, team2, gParseObjectives))
     {
         if (BG_SiegeGetPairedValue(gParseObjectives, "UseTeam", goalreq))
@@ -347,31 +357,28 @@ void InitSiegeMode(void)
 
         // Count objectives for this team
         i = 1;
-        strcpy(objecStr, va("Objective%i", i));
+        Com_sprintf( objecStr, sizeof( objecStr ), "Objective%i", i );
         while (BG_SiegeGetValueGroup(gParseObjectives, objecStr, objective))
         {
             // Check for objective dependency
             x = 0;
-            strcpy(dependsOn, "DependsOn1");
-            while (x < MAX_OBJECTIVEDEPENDANCY && rebel_attackers)
+            Q_strncpyz( dependsOn, "DependsOn1", sizeof(dependsOn) );            while (x < MAX_OBJECTIVEDEPENDANCY && rebel_attackers)
             {
                 if (BG_SiegeGetPairedValue(objective, dependsOn, goalreq))
                 {
                     ObjectiveDependancy[i - 1][x] = atoi(goalreq);
                 }
                 x++;
-                strcpy(dependsOn, va("DependsOn%i", x + 1));
-            }
+                Q_strncpyz( dependsOn, va("DependsOn%i", x + 1), sizeof(dependsOn) );            }
 
             objectiveNumTeam2++;
             i++;
-            strcpy(objecStr, va("Objective%i", i));
+            Com_sprintf( objecStr, sizeof( objecStr ), "Objective%i", i );
         }
     }
 
     // Set configstring to show status of all current objectives
-    strcpy(gObjectiveCfgStr, "t1");
-    while (objectiveNumTeam1 > 0)
+    Q_strncpyz( gObjectiveCfgStr, "t1", sizeof(gObjectiveCfgStr) );    while (objectiveNumTeam1 > 0)
     {
         Q_strcat(gObjectiveCfgStr, 1024, "-0");
         objectiveNumTeam1--;
@@ -403,7 +410,12 @@ void InitSiegeMode(void)
 failure:
     siege_valid = 0;
     // BG_TempAlloc does not need free in this case, assuming the memory management is handled elsewhere
+    if (teams)     BG_TempFree(2048);
+    if (objective) BG_TempFree(MAX_SIEGE_INFO_SIZE);
+    if (objecStr)  BG_TempFree(8192);										  
+										 
 }
+
 
 
 
@@ -813,7 +825,8 @@ void G_ValidateSiegeClassForTeam(gentity_t *ent, int team)
 		if (newClassIndex != -1)
 		{ //ok, let's find it in the global class array
 			ent->client->siegeClass = BG_SiegeFindClassIndexByName(stm->classes[newClassIndex]->name);
-			strcpy(ent->client->sess.siegeClass, stm->classes[newClassIndex]->name);
+			Q_strncpyz( ent->client->sess.siegeClass, stm->classes[newClassIndex]->name,
+					 sizeof( ent->client->sess.siegeClass ) );
 		}
 	}
 }
@@ -1168,7 +1181,11 @@ void siegeTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
 					if (teamstr[i] == '\r' || teamstr[i] == '\n')
 					{
 						teamstr[i] = '\0';
+					 
+						
 					}
+														  
+			 
 
 					i++;
 				}
@@ -1374,6 +1391,7 @@ void decompTriggerUse(gentity_t* ent, gentity_t* other, gentity_t* activator)
     // Free the memory after use
     BG_TempFree(MAX_SIEGE_INFO_SIZE);  // Free the memory
 }
+
 
 
 
@@ -2029,8 +2047,7 @@ void G_SiegeClientExData(gentity_t *msgTarg)
 			}
 			else
 			{ //otherwise create the prepended chunk
-				strcpy(str, "sxd ");
-			}
+				Q_strncpyz( str, "sxd ", sizeof(str) );			}
 
 			//append the stats
 			Com_sprintf(scratch, sizeof(scratch), "%i|%i|%i|%i", ent->s.number, ent->client->ps.stats[STAT_HEALTH],

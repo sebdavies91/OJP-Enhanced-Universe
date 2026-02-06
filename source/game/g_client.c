@@ -1076,7 +1076,13 @@ After sitting around for five seconds, fall into the ground and dissapear
 void BodySink( gentity_t *ent ) {
 	//[NOBODYQUE]
 	//while we're at it, I'm making the corpse removal time be set by a cvar like in SP.
-	if(g_corpseRemovalTime.integer && (level.time - ent->timestamp) > g_corpseRemovalTime.integer*1000 + 2500)
+	{
+			int removalTime = g_corpseRemovalTime.integer;
+			if (removalTime <= 0) {
+				// Avoid leaking corpses forever (entity overflow risk).
+				removalTime = 30;
+			}
+			if ( (level.time - ent->timestamp) > removalTime*1000 + 2500 )
 	{
 	//if ( level.time - ent->timestamp > BODY_SINK_TIME + 2500 ) {
 
@@ -1093,6 +1099,8 @@ void BodySink( gentity_t *ent ) {
 	}
 //	ent->nextthink = level.time + 100;
 //	ent->s.pos.trBase[2] -= 1;
+
+		}
 
 	G_AddEvent(ent, EV_BODYFADE, 0);
 	ent->nextthink = level.time + 18000;
@@ -1214,19 +1222,18 @@ static qboolean CopyToBodyQue( gentity_t *ent ) {
 	}
 	body->clipmask = CONTENTS_SOLID | CONTENTS_PLAYERCLIP;
 	body->r.contents = CONTENTS_CORPSE;
-	body->r.ownerNum = ent->s.number;
-	
-	//[NOBODYQUE]
-	if(g_corpseRemovalTime.integer)
+	body->r.ownerNum = ent->s.number;	//[NOBODYQUE]
 	{
-		body->nextthink = level.time + g_corpseRemovalTime.integer*1000;
-		//body->nextthink = level.time + BODY_SINK_TIME;
-
+		int removalTime = g_corpseRemovalTime.integer;
+		if (removalTime <= 0) {
+			// Avoid leaking corpses forever (entity overflow risk).
+			removalTime = 30;
+		}
+		body->nextthink = level.time + removalTime*1000;
 		body->think = BodySink;
 	}
 	//[/NOBODYQUE]
-
-	body->die = body_die;
+body->die = body_die;
 
 	// don't take more damage if already gibbed
 	if ( ent->health <= GIB_HEALTH ) {
@@ -1765,9 +1772,9 @@ void SetupGameGhoul2Model(gentity_t *ent, char *modelname, char *skinName)
 			// If this is a vehicle, get it's model name.
 			if ( ent->client->NPC_class == CLASS_VEHICLE )
 			{
-				strcpy(vehicleName, modelname);
+				Q_strncpyz(vehicleName, modelname, sizeof(vehicleName));
 				BG_GetVehicleModelName(modelname);
-				strcpy(truncModelName, modelname);
+				Q_strncpyz(truncModelName, modelname, sizeof(truncModelName));
 				skin[0] = 0;
 				if ( ent->m_pVehicle
 					&& ent->m_pVehicle->m_pVehicleInfo
@@ -1785,14 +1792,14 @@ void SetupGameGhoul2Model(gentity_t *ent, char *modelname, char *skinName)
 			{
 				if (skinName && skinName[0])
 				{
-					strcpy(skin, skinName);
-					strcpy(truncModelName, modelname);
+					Q_strncpyz(skin, skinName, sizeof(skin));
+					Q_strncpyz(truncModelName, modelname, sizeof(truncModelName));
 				}
 				else
 				{
-					strcpy(skin, "default");
+					Q_strncpyz(skin, "default", sizeof(skin));
 
-					strcpy(truncModelName, modelname);
+					Q_strncpyz(truncModelName, modelname, sizeof(truncModelName));
 					p = Q_strrchr(truncModelName, '/');
 
 					if (p)
@@ -1812,8 +1819,8 @@ void SetupGameGhoul2Model(gentity_t *ent, char *modelname, char *skinName)
 
 					if (!BG_IsValidCharacterModel(truncModelName, skin))
 					{
-						strcpy(truncModelName, DEFAULT_MODEL);
-						strcpy(skin, "default");
+						Q_strncpyz(truncModelName, DEFAULT_MODEL, sizeof(truncModelName));
+						Q_strncpyz(skin, "default", sizeof(skin));
 					}
 					
 
@@ -1846,7 +1853,7 @@ void SetupGameGhoul2Model(gentity_t *ent, char *modelname, char *skinName)
 							siegeClass_t *scl = &bgSiegeClasses[ent->client->siegeClass];
 							if (scl->forcedSkin[0])
 							{
-								strcpy(skin, scl->forcedSkin);
+								Q_strncpyz(skin, scl->forcedSkin, sizeof(skin));
 							}
 						}
 					}
@@ -1869,7 +1876,7 @@ void SetupGameGhoul2Model(gentity_t *ent, char *modelname, char *skinName)
 				skinHandle = trap_R_RegisterSkin(useSkinName);
 			}
 
-			strcpy(modelFullPath, va("models/players/%s/model.glm", truncModelName));
+			Q_strncpyz(modelFullPath, va("models/players/%s/model.glm", truncModelName), sizeof(modelFullPath));
 			handle = trap_G2API_InitGhoul2Model(&ent->ghoul2, modelFullPath, 0, skinHandle, -20, 0, 0);
 
 			if (handle<0)
@@ -1902,7 +1909,7 @@ void SetupGameGhoul2Model(gentity_t *ent, char *modelname, char *skinName)
 
 					if (skin[0])
 					{ //append it after a *
-						strcat( modelFullPath, va("*%s", skin) );
+						Q_strcat(modelFullPath, sizeof(modelFullPath), va("*%s", skin) );
 					}
 
 					if ( ent->client->NPC_class == CLASS_VEHICLE )
@@ -1957,7 +1964,7 @@ void SetupGameGhoul2Model(gentity_t *ent, char *modelname, char *skinName)
 			char *slash = Q_strrchr( GLAName, '/' );
 			if ( slash )
 			{
-				strcpy(slash, "/animation.cfg");
+				Q_strncpyz(slash, "/animation.cfg", sizeof(GLAName) - (slash - GLAName));
 
 				ent->localAnimIndex = BG_ParseAnimationFile(GLAName, NULL, qfalse);
 			}
@@ -2156,7 +2163,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 	// check for malformed or illegal info strings
 	if ( !Info_Validate(userinfo) ) {
-		strcpy (userinfo, "\\name\\badinfo");
+		Q_strncpyz(userinfo, "\\name\\badinfo", sizeof(userinfo));
 	}
 
 	// check for local client
@@ -2193,7 +2200,7 @@ void ClientUserinfoChanged( int clientNum ) {
 
 				Info_SetValueForKey( userinfo, "name", oldname );
 				trap_SetUserinfo( clientNum, userinfo );			
-				strcpy ( client->pers.netname, oldname );
+				Q_strncpyz(client->pers.netname, oldname, sizeof(client->pers.netname));
 			}
 			else
 			{				
@@ -2213,7 +2220,7 @@ void ClientUserinfoChanged( int clientNum ) {
 		if(skinname)
 		{//we're using a species player model, try to use their hoth clothes.
 			skinname++;
-			strcpy( skinname, "torso_g1|lower_e1\0" );
+			Q_strncpyz(skinname, "torso_g1|lower_e1", sizeof(skinname));
 		}
 	}
 	//[/CoOp]
@@ -2222,7 +2229,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	{
 		if (Q_stricmp(model, client->modelname))
 		{
-			strcpy(client->modelname, model);
+			Q_strncpyz(client->modelname, model, sizeof(client->modelname));
 			modelChanged = qtrue;
 		}
 	}
@@ -2316,7 +2323,7 @@ void ClientUserinfoChanged( int clientNum ) {
 	//Set the siege class
 	if (g_gametype.integer == GT_SIEGE)
 	{
-		strcpy(className, client->sess.siegeClass);
+		Q_strncpyz(className, client->sess.siegeClass, sizeof(className));
 
 		//This function will see if the given class is legal for the given team.
 		//If not className will be filled in with the first legal class for this team.
@@ -2331,13 +2338,13 @@ void ClientUserinfoChanged( int clientNum ) {
 		if (client->siegeClass == -1)
 		{ //ok, get the first valid class for the team you're on then, I guess.
 			BG_SiegeCheckClassLegality(team, className);
-			strcpy(client->sess.siegeClass, className);
+			Q_strncpyz(client->sess.siegeClass, className, sizeof(client->sess.siegeClass));
 			client->siegeClass = BG_SiegeFindClassIndexByName(className);
 		}
 		else
 		{ //otherwise, make sure the class we are using is legal.
 			G_ValidateSiegeClassForTeam(ent, team);
-			strcpy(className, client->sess.siegeClass);
+			Q_strncpyz(className, client->sess.siegeClass, sizeof(className));
 		}
 
 		//Set the sabers if the class dictates
@@ -2367,12 +2374,12 @@ void ClientUserinfoChanged( int clientNum ) {
 
 			if (scl->forcedModel[0])
 			{ //be sure to override the model we actually use
-				strcpy(model, scl->forcedModel);
+				Q_strncpyz(model, scl->forcedModel, sizeof(model));
 				if (d_perPlayerGhoul2.integer)
 				{
 					if (Q_stricmp(model, client->modelname))
 					{
-						strcpy(client->modelname, model);
+						Q_strncpyz(client->modelname, model, sizeof(client->modelname));
 						modelChanged = qtrue;
 					}
 				}
@@ -2383,7 +2390,7 @@ void ClientUserinfoChanged( int clientNum ) {
 			{
 				if (Q_stricmp(model, client->modelname) || ent->localAnimIndex == 0)
 				{
-					strcpy(client->modelname, model);
+					Q_strncpyz(client->modelname, model, sizeof(client->modelname));
 					modelChanged = qtrue;
 				}
 			}
@@ -2391,12 +2398,12 @@ void ClientUserinfoChanged( int clientNum ) {
 	}
 	else
 	{
-		strcpy(className, "none");
+		Q_strncpyz(className, "none", sizeof(className));
 	}
 
 	//Set the saber name
-	strcpy(saberName, client->sess.saberType);
-	strcpy(saber2Name, client->sess.saber2Type);
+	Q_strncpyz(saberName, client->sess.saberType, sizeof(saberName));
+	Q_strncpyz(saber2Name, client->sess.saber2Type, sizeof(saber2Name));
 
 	// set max health
 
@@ -2519,12 +2526,10 @@ void ClientUserinfoChanged( int clientNum ) {
 	teamLeader = client->sess.teamLeader;
 
 	// colors
-	strcpy(c1, Info_ValueForKey( userinfo, "color1" ));
-	strcpy(c2, Info_ValueForKey( userinfo, "color2" ));
+	Q_strncpyz(c1, Info_ValueForKey( userinfo, "color1" ), sizeof(c1));
+	Q_strncpyz(c2, Info_ValueForKey( userinfo, "color2" ), sizeof(c2));
 
-//	strcpy(redTeam, Info_ValueForKey( userinfo, "g_redteam" ));
-//	strcpy(blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ));
-	//Raz: Gender hints
+//	Q_strncpyz( redTeam, Info_ValueForKey( userinfo, "g_redteam" ), sizeof(redTeam) );//	Q_strncpyz( blueTeam, Info_ValueForKey( userinfo, "g_blueteam" ), sizeof(blueTeam) );	//Raz: Gender hints
 	s = Info_ValueForKey( userinfo, "sex" );
 	if ( !Q_stricmp( s, "female" ) ) 
 	{
@@ -2822,49 +2827,47 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 	ent = g_entities + clientNum;
 
-	if ((ent->r.svFlags & SVF_BOT) && g_gametype.integer >= GT_TEAM)
-	{
-		if (allowTeamReset)
-		{
-			const char *team = "Red";
-			int preSess;
+if ((ent->r.svFlags & SVF_BOT) && g_gametype.integer >= GT_TEAM)
+{
+    if (allowTeamReset)
+    {
+        const char *teamStr;
+        int preSess;
+        char userinfo[MAX_INFO_STRING];
 
-			//SetTeam(ent, "");
-			//[AdminSys]
-			ent->client->sess.sessionTeam = PickTeam(-1, qtrue);
-			//ent->client->sess.sessionTeam = PickTeam(-1);
-			//[/AdminSys]
-			trap_GetUserinfo(clientNum, userinfo, MAX_INFO_STRING);
+        // Preserve the bot's existing team across map loads / restarts.
+        // Only choose a team if it doesn't already have a valid one.
+        preSess = ent->client->sess.sessionTeam;
+        if (preSess != TEAM_RED && preSess != TEAM_BLUE)
+        {
+            preSess = PickTeam(-1, qtrue);
+            if (preSess == TEAM_SPECTATOR)
+            {
+                preSess = TEAM_RED;
+            }
+        }
 
-			if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
-			{
-				ent->client->sess.sessionTeam = TEAM_RED;
-			}
+        teamStr = (preSess == TEAM_RED) ? "Red" : "Blue";
 
-			if (ent->client->sess.sessionTeam == TEAM_RED)
-			{
-				team = "Red";
-			}
-			else
-			{
-				team = "Blue";
-			}
+        trap_GetUserinfo(clientNum, userinfo, sizeof(userinfo));
+        Info_SetValueForKey(userinfo, "team", teamStr);
+        trap_SetUserinfo(clientNum, userinfo);
 
-			Info_SetValueForKey( userinfo, "team", team );
+        ent->client->ps.persistant[PERS_TEAM] = preSess;
 
-			trap_SetUserinfo( clientNum, userinfo );
+        // Keep other session fields, but do NOT allow sessionTeam to be changed here.
+        G_ReadSessionData(ent->client);
+        ent->client->sess.sessionTeam = preSess;
 
-			ent->client->ps.persistant[ PERS_TEAM ] = ent->client->sess.sessionTeam;
+        G_WriteClientSessionData(ent->client);
+        ClientUserinfoChanged(clientNum);
 
-			preSess = ent->client->sess.sessionTeam;
-			G_ReadSessionData( ent->client );
-			ent->client->sess.sessionTeam = preSess;
-			G_WriteClientSessionData(ent->client);
-			ClientUserinfoChanged( clientNum );
-			ClientBegin(clientNum, qfalse);
-			return;
-		}
-	}
+        // Re-run ClientBegin without the team-reset path.
+        ClientBegin(clientNum, qfalse);
+        return;
+    }
+}
+
 
 	client = level.clients + clientNum;
 
@@ -2967,18 +2970,18 @@ void ClientBegin( int clientNum, qboolean allowTeamReset ) {
 
 				if (r <= 17)
 				{
-					strcpy(sab1, "Katarn");
-					strcpy(sab2, "none");
+					Q_strncpyz(sab1, "Katarn", sizeof(sab1));
+					Q_strncpyz(sab2, "none", sizeof(sab2));
 				}
 				else if (r <= 34)
 				{
-					strcpy(sab1, "Katarn");
-					strcpy(sab2, "Katarn");
+					Q_strncpyz(sab1, "Katarn", sizeof(sab1));
+					Q_strncpyz(sab2, "Katarn", sizeof(sab2));
 				}
 				else
 				{
-					strcpy(sab1, "dual_1");
-					strcpy(sab2, "none");
+					Q_strncpyz(sab1, "dual_1", sizeof(sab1));
+					Q_strncpyz(sab2, "none", sizeof(sab2));
 				}
 				G_SetSaber(ent, 0, sab1, qfalse);
 				G_SetSaber(ent, 0, sab2, qfalse);
@@ -5474,8 +5477,8 @@ void ClientSpawn(gentity_t *ent) {
 	{
 		ent->client->ps.fd.saberAnimLevelBase = SS_DUAL;
 	}
-	else if (ent->client->saber[0].numBlades > 1
-		&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] ))
+	else if (ent->client->saber[0].model[0] &&
+		((ent->client->saber[0].saberFlags & SFL_TWO_HANDED) || ent->client->saber[0].numBlades > 1))
 	{
 		ent->client->ps.fd.saberAnimLevelBase = SS_STAFF;
 	}

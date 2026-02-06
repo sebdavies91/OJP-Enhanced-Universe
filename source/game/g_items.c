@@ -1299,28 +1299,10 @@ void ItemUse_Seeker(gentity_t *ent)
 			
 			//dont chance enemies unless we were specificly told to
 			remote->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
-			if ( g_gametype.integer == GT_SIEGE )
-			{
-				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
-				{
-					remote->client->playerTeam = NPCTEAM_PLAYER;
-					remote->client->enemyTeam = NPCTEAM_ENEMY;
-				}
-				else if ( ent->client->sess.sessionTeam == TEAM_RED )
-				{
-					remote->client->playerTeam = NPCTEAM_ENEMY;
-					remote->client->enemyTeam = NPCTEAM_PLAYER;
-				}
-				//else
-				//{
-				//	remote->client->playerTeam = NPCTEAM_NEUTRAL;
-				//}
-			}
-			//this stops it moving and it just sits there, I need to check why
-			//else
-			//{
-			//	remote->client->playerTeam = NPCTEAM_NEUTRAL;
-			//}
+
+			// Keep follower team alignment consistent with the owning player across all gametypes.
+			remote->client->playerTeam = ent->client->playerTeam;
+			remote->client->enemyTeam  = ent->client->enemyTeam;
 		}	
 	}
 	else
@@ -1335,7 +1317,7 @@ void ItemUse_Seeker(gentity_t *ent)
 			targ = ViewTarget(ent, range, &targVec, &plane); //racc - find the entity of whatever we're looking at.
 			if(targ)
 			{//racc - found viewed entity.
-				if(targ->client && targ->client->playerTeam != ent->client->playerTeam){
+				if ( targ->client && targ != ent && !OnSameTeam( ent, targ ) ) {
 					//remote->NPC->behaviorState = BS_HUNT_AND_KILL;
 					remote->NPC->goalEntity = remote->enemy = targ;
 					remote->NPC->scriptFlags |= SCF_CHASE_ENEMIES; //we are allowed to hunt down our target
@@ -1778,7 +1760,7 @@ void Flamethrower_Fire( gentity_t *self )
 				//[/ForceSys]
 				{
 					//rww - Shields can now absorb lightning too.
-					G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_UNKNOWN );
+					G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_FLAME );
 
 					//[ForceSys]
 					//lightning also blasts the target back.
@@ -1818,11 +1800,8 @@ void Flamethrower_Fire( gentity_t *self )
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-						gentity_t	*tent;
-						tent = G_TempEntity(traceEnt->r.currentOrigin, EV_BURNED);
-						tent->s.eventParm = DirToByte(dir);
-						tent->s.owner = traceEnt->s.number;
-						traceEnt->client->burnTime = level.time + BURN_TIME;
+						G_AddEvent(traceEnt, EV_BURNED, DirToByte(dir));
+							traceEnt->client->burnTime = level.time + BURN_TIME;
 					}
 
 				}
@@ -2234,10 +2213,7 @@ void Icethrower_Fire( gentity_t *self )
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-					gentity_t	*tent;
-					tent = G_TempEntity(traceEnt->r.currentOrigin, EV_FROZEN);
-					tent->s.eventParm = DirToByte(dir);
-					tent->s.owner = traceEnt->s.number;
+					G_AddEvent(traceEnt, EV_FROZEN, DirToByte(dir));
 					traceEnt->client->freezeTime = level.time + FREEZE_TIME;
 					traceEnt->client->ps.userInt1 |= LOCK_MOVERIGHT;
 					traceEnt->client->ps.userInt1 |= LOCK_MOVELEFT;
@@ -2522,10 +2498,7 @@ void Electroshocker_Fire( gentity_t *self )
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-						gentity_t	*tent;
-						tent = G_TempEntity(traceEnt->r.currentOrigin, EV_SHOCKED);
-						tent->s.eventParm = DirToByte(dir);
-						tent->s.owner = traceEnt->s.number;
+						G_AddEvent(traceEnt, EV_SHOCKED, DirToByte(dir));
 						traceEnt->client->shockTime = level.time + SHOCK_TIME;
 					}	
 					if ( traceEnt->client->ps.powerups[PW_CLOAKED] )
@@ -3249,22 +3222,9 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			//dont chance enemies unless we were specificly told to
 			SquadTeam3->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
 
-			{
-				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
-				{
-					SquadTeam3->client->playerTeam = NPCTEAM_PLAYER;
-					SquadTeam3->client->enemyTeam = NPCTEAM_ENEMY;
-				}
-				else if ( ent->client->sess.sessionTeam == TEAM_RED )
-				{
-					SquadTeam3->client->playerTeam = NPCTEAM_ENEMY;
-					SquadTeam3->client->enemyTeam = NPCTEAM_PLAYER;
-				}
-				//else
-				//{
-				//	SquadTeam3->client->playerTeam = NPCTEAM_NEUTRAL;
-				//}
-			}
+			// Keep follower team alignment consistent with the owning player across all gametypes.
+			SquadTeam3->client->playerTeam = ent->client->playerTeam;
+			SquadTeam3->client->enemyTeam  = ent->client->enemyTeam;
 			//this stops it moving and it just sits there, I need to check why
 			//else
 			//{
@@ -3284,7 +3244,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			targ = ViewTarget(ent, range, &targVec, &plane); //racc - find the entity of whatever we're looking at.
 			if(targ)
 			{//racc - found viewed entity.
-				if(targ->client && targ->client->playerTeam != ent->client->playerTeam){
+				if ( targ->client && targ != ent && !OnSameTeam( ent, targ ) ) {
 					SquadTeam3->NPC->goalEntity = SquadTeam3->enemy = targ;
 					SquadTeam3->NPC->behaviorState = BS_HUNT_AND_KILL;
 					SquadTeam3->NPC->scriptFlags |= SCF_CHASE_ENEMIES; //we are allowed to hunt down our target
@@ -3434,23 +3394,10 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			
 			//dont chance enemies unless we were specificly told to
 			SquadTeam2->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
-	
-			{
-				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
-				{
-					SquadTeam2->client->playerTeam = NPCTEAM_PLAYER;
-					SquadTeam2->client->enemyTeam = NPCTEAM_ENEMY;
-				}
-				else if ( ent->client->sess.sessionTeam == TEAM_RED )
-				{
-					SquadTeam2->client->playerTeam = NPCTEAM_ENEMY;
-					SquadTeam2->client->enemyTeam = NPCTEAM_PLAYER;
-				}
-				//else
-				//{
-				//	SquadTeam2->client->playerTeam = NPCTEAM_NEUTRAL;
-				//}
-			}
+
+			// Keep follower team alignment consistent with the owning player across all gametypes.
+			SquadTeam2->client->playerTeam = ent->client->playerTeam;
+			SquadTeam2->client->enemyTeam  = ent->client->enemyTeam;
 			//this stops it moving and it just sits there, I need to check why
 			//else
 			//{
@@ -3470,7 +3417,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			targ = ViewTarget(ent, range, &targVec, &plane); //racc - find the entity of whatever we're looking at.
 			if(targ)
 			{//racc - found viewed entity.
-				if(targ->client && targ->client->playerTeam != ent->client->playerTeam){
+				if ( targ->client && targ != ent && !OnSameTeam( ent, targ ) ) {
 					SquadTeam2->NPC->goalEntity = SquadTeam2->enemy = targ;
 					SquadTeam2->NPC->behaviorState = BS_HUNT_AND_KILL;
 					SquadTeam2->NPC->scriptFlags |= SCF_CHASE_ENEMIES; //we are allowed to hunt down our target
@@ -3617,22 +3564,10 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			//dont chance enemies unless we were specificly told to
 			SquadTeam->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
 
-			{
-				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
-				{
-					SquadTeam->client->playerTeam = NPCTEAM_PLAYER;
-					SquadTeam->client->enemyTeam = NPCTEAM_ENEMY;
-				}
-				else if ( ent->client->sess.sessionTeam == TEAM_RED )
-				{
-					SquadTeam->client->playerTeam = NPCTEAM_ENEMY;
-					SquadTeam->client->enemyTeam = NPCTEAM_PLAYER;
-				}
-				//else
-				//{
-				//	SquadTeam->client->playerTeam = NPCTEAM_NEUTRAL;
-				//}
-			}
+
+			// Keep follower team alignment consistent with the owning player across all gametypes.
+			SquadTeam->client->playerTeam = ent->client->playerTeam;
+			SquadTeam->client->enemyTeam  = ent->client->enemyTeam;
 			//this stops it moving and it just sits there, I need to check why
 			//else
 			//{
@@ -3652,7 +3587,7 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			targ = ViewTarget(ent, range, &targVec, &plane); //racc - find the entity of whatever we're looking at.
 			if(targ)
 			{//racc - found viewed entity.
-				if(targ->client && targ->client->playerTeam != ent->client->playerTeam){
+				if ( targ->client && targ != ent && !OnSameTeam( ent, targ ) ) {
 					SquadTeam->NPC->goalEntity = SquadTeam->enemy = targ;
 					SquadTeam->NPC->behaviorState = BS_HUNT_AND_KILL;
 					SquadTeam->NPC->scriptFlags |= SCF_CHASE_ENEMIES; //we are allowed to hunt down our target

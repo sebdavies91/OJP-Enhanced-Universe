@@ -138,7 +138,7 @@ qboolean G_CheckSaberAllyAttackDelay( gentity_t *self, gentity_t *enemy )
 	if ( self->NPC 
 		&& self->client->leader
 		&& self->client->leader->client
-		&& self->client->leader->client->ps.clientNum < MAX_CLIENTS
+		&& self->client->leader->client->ps.clientNum < level.maxclients
 		&& self->enemy
 		&& self->enemy->s.weapon != WP_SABER
 		&& self->s.weapon == WP_SABER )
@@ -478,7 +478,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 
 
 #ifdef _DEBUG
-	if ( self->s.number >= MAX_CLIENTS )
+	if ( self->s.number >= level.maxclients )
 	{
 		assert( enemy != self );
 	}
@@ -528,7 +528,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 		//Special case- if player is being hunted by his own people, set their enemy team correctly
 		if (self->client && self->client->playerTeam == NPCTEAM_PLAYER 
 			&& enemy->s.number >= 0
-			&& enemy->s.number < MAX_CLIENTS
+			&& enemy->s.number < level.maxclients
 			&& enemy->client
 			&& enemy->client->playerTeam == NPCTEAM_PLAYER )
 		{//make the player "evil" so that everyone goes after him
@@ -552,7 +552,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 		else if ( self->client 
 			&& self->client->NPC_class == CLASS_KYLE
 			&& self->client->leader
-			&& self->client->leader->client->ps.clientNum < MAX_CLIENTS
+			&& self->client->leader->client->ps.clientNum < level.maxclients
 			&& !TIMER_Done( self, "kyleAngerSoundDebounce" ) )
 		{//Kyle ally NPC doesn't yell if you have an enemy more than once every five seconds
 		}
@@ -568,7 +568,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 				{//team did not have an enemy previously and we're not Boba Fett
 					if ( self->NPC
 						&& self->client->playerTeam == NPCTEAM_PLAYER
-						&& enemy->s.number < MAX_CLIENTS
+						&& enemy->s.number < level.maxclients
 						&& Q_stricmp( "Jedi2", self->NPC_type ) == 0 )
 					{//jedi2 use different sounds
 						switch ( Q_irand( 0, 2 ) )
@@ -617,7 +617,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 				if ( self->client 
 					&& self->client->NPC_class == CLASS_KYLE
 					&& self->client->leader
-					&& self->client->leader->client->ps.clientNum < MAX_CLIENTS )
+					&& self->client->leader->client->ps.clientNum < level.maxclients )
 				{//don't yell that you have an enemy more than once every 4-8 seconds
 					TIMER_Set( self, "kyleAngerSoundDebounce", Q_irand( 4000, 8000 ) );
 				}
@@ -1775,6 +1775,39 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	//In case they're in notarget mode
 	if ( enemy->flags & FL_NOTARGET )
 		return qfalse;
+
+	// Player-owned followers (seeker/squadteam/etc): when we have an owning leader, obey the leader's team rules
+	// for player targets (FFA: anyone except owner, team modes: only the other team).
+	if ( self && self->client && enemy->client && enemy->s.number < level.maxclients )
+	{
+		gentity_t *owner = NULL;
+
+		if ( self->client->leader && self->client->leader->client
+			&& self->r.ownerNum == self->client->leader->s.number )
+		{
+			owner = self->client->leader;
+		}
+		else if ( self->originalactivator && self->originalactivator->client
+			&& self->r.ownerNum == self->originalactivator->s.number )
+		{
+			owner = self->originalactivator;
+		}
+
+		if ( owner )
+		{
+			if ( enemy == owner )
+			{
+				return qfalse;
+			}
+
+			// OnSameTeam() returns false in non-team gametypes, so this becomes "anyone except the owner".
+			if ( !OnSameTeam( owner, enemy ) )
+			{
+				return qtrue;
+			}
+			return qfalse;
+		}
+	}
 	
 	
 	
@@ -1973,7 +2006,7 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 			{
 			return qfalse;
 			}
-	if ( enemy->client->playerTeam == NPCTEAM_FREE && enemy->s.number < MAX_CLIENTS )
+	if ( enemy->client->playerTeam == NPCTEAM_FREE && enemy->s.number < level.maxclients )
 	{//An evil player, everyone attacks him
 		return qtrue;
 	}
@@ -2154,7 +2187,7 @@ gentity_t *NPC_PickEnemy( gentity_t *closestTo, int enemyTeam, qboolean checkVis
 	if( findPlayersFirst )
 	{//try to find a player first
 		//[CoOp]
-		for(i = 0; i < MAX_CLIENTS; i++)
+		for (i = 0; i < level.maxclients; i++)
 		{
 			newenemy = &g_entities[i];
 			//newenemy = &g_entities[0];

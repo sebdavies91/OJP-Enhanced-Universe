@@ -1957,8 +1957,8 @@ if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0])
 {
 	ent->client->ps.fd.saberAnimLevelBase = ent->client->ps.fd.saberAnimLevel = SS_DUAL;
 }
-else if (ent->client->saber[0].numBlades > 1 &&
-		 WP_SaberCanTurnOffSomeBlades(&ent->client->saber[0]))
+else if (ent->client->saber[0].model[0] &&
+	((ent->client->saber[0].saberFlags & SFL_TWO_HANDED) || ent->client->saber[0].numBlades > 1))
 {
 	ent->client->ps.fd.saberAnimLevelBase = ent->client->ps.fd.saberAnimLevel = SS_STAFF;
 }
@@ -2620,6 +2620,13 @@ gentity_t *NPC_Spawn_Do( gentity_t *ent )
 	
 	newent->NPC->combatPoint = -1;
 
+	// Match SP: allow the spawner to pass additional aiFlags through bounceCount.
+	// (Some scripts/mods repurpose spawner fields for this kind of runtime tweak.)
+	if ( ent->bounceCount > 0 )
+	{
+		newent->NPC->aiFlags |= ent->bounceCount;
+	}
+
 	newent->flags |= FL_NOTARGET;//So he's ignored until he's fully spawned
 	newent->s.eFlags |= EF_NODRAW;//So he's ignored until he's fully spawned
 
@@ -2744,16 +2751,42 @@ NPC_ShySpawn
 
 void NPC_ShySpawn( gentity_t *ent )
 {
+	int i;
+
 	ent->nextthink = level.time + SHY_THINK_TIME;
 	ent->think = NPC_ShySpawn;
 
-	//rwwFIXMEFIXME: Care about other clients not just 0?
-	if ( DistanceSquared( g_entities[0].r.currentOrigin, ent->r.currentOrigin ) <= SHY_SPAWN_DISTANCE_SQR )
-		return;
+	// In MP, "shy" spawners should avoid popping an NPC into view of *any* active player.
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		gentity_t *player = &g_entities[i];
+		if ( !player->inuse || !player->client )
+		{
+			continue;
+		}
+		// Skip spectators / non-playing clients.
+		if ( player->client->sess.sessionTeam == TEAM_SPECTATOR || player->client->ps.pm_type == PM_SPECTATOR )
+		{
+			continue;
+		}
+		if ( player->health <= 0 )
+		{
+			continue;
+		}
 
-	if ( (InFOV( ent, &g_entities[0], 80, 64 )) ) // FIXME: hardcoded fov
-		if ( (NPC_ClearLOS2( &g_entities[0], ent->r.currentOrigin )) )
+		if ( DistanceSquared( player->r.currentOrigin, ent->r.currentOrigin ) <= SHY_SPAWN_DISTANCE_SQR )
+		{
 			return;
+		}
+
+		if ( InFOV( ent, player, 80, 64 ) ) // FIXME: hardcoded fov
+		{
+			if ( NPC_ClearLOS2( player, ent->r.currentOrigin ) )
+			{
+				return;
+			}
+		}
+	}
 
 	ent->think = 0;
 	ent->nextthink = 0;
@@ -2770,6 +2803,12 @@ NPC_Spawn
 void NPC_Spawn ( gentity_t *ent, gentity_t *other, gentity_t *activator )
 {
 	//delay before spawning NPC
+	// SP behavior: optionally set an initial enemy based on the activator.
+	// This is useful for scripted/triggered spawns that should immediately engage.
+	if ( other && (other->spawnflags & 32) )
+	{
+		ent->enemy = activator;
+	}
 	if( ent->delay )
 	{
 /*		//Stasis does an extra step
@@ -3079,7 +3118,7 @@ qboolean NPC_VehiclePrecache( gentity_t *spawner )
 				char *slash = Q_strrchr( GLAName, '/' );
 				if ( slash )
 				{
-					strcpy(slash, "/animation.cfg");
+					Q_strncpyz( slash, "/animation.cfg", sizeof( GLAName ) - ( slash - GLAName ) );
 
 					BG_ParseAnimationFile(GLAName, NULL, qfalse);
 				}

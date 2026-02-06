@@ -9,6 +9,9 @@
 void *BAllocList[MAX_BALLOC];
 #endif
 
+#define BOT_PERSONALITY_BUF_SIZE      131072
+#define BOT_PERSONALITY_READBUF_SIZE  2048
+
 char gBotChatBuffer[MAX_CLIENTS][MAX_CHAT_BUFFER_SIZE];
 
 void *B_TempAlloc(int size)
@@ -638,26 +641,26 @@ void BotUtilizePersonality(bot_state_t *bs)
 
 	failed = 0;
 
-	if (!f)
-	{
-		G_Printf(S_COLOR_RED "Error: Specified personality not found\n");
-		B_TempFree(65536); //buf
-		return;
-	}
+if (!f)
+{
+    G_Printf(S_COLOR_RED "Error: Specified personality not found\n");
+    B_TempFree(131072); // buf
+    return;
+}
 
-	if (len >= 65536)
-	{
-		G_Printf(S_COLOR_RED "Personality file exceeds maximum length\n");
-trap_FS_FCloseFile(f);//[TicketFix143]
-		B_TempFree(65536); //buf
-		return;
-	}
+if (len >= 131072)
+{
+    G_Printf(S_COLOR_RED "Personality file exceeds maximum length\n");
+    trap_FS_FCloseFile(f);//[TicketFix143]
+    B_TempFree(131072); // buf
+    return;
+}
 
 	trap_FS_Read(buf, len, f);
 
 	rlen = len;
 
-	while (len < 65536)
+	while (len < 131072)
 	{ //kill all characters after the file length, since sometimes FS_Read doesn't do that entirely (or so it seems)
 		buf[len] = '\0';
 		len++;
@@ -666,7 +669,7 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 	len = rlen;
 
 	readbuf = (char *)B_TempAlloc(2048);
-	group = (char *)B_TempAlloc(65536);
+	group = (char *)B_TempAlloc(131072);
 
 	if (!GetValueGroup(buf, "GeneralBotInfo", group))
 	{
@@ -1638,9 +1641,10 @@ trap_FS_FCloseFile(f);//[TicketFix143]
 		ParseEmotionalAttachments(bs, group);
 	}
 
-	B_TempFree(65536); //buf
+	B_TempFree(131072); //group
+	B_TempFree(131072); //buf
 	B_TempFree(2048); //readbuf
-	B_TempFree(65536); //group
+
 	trap_FS_FCloseFile(f);
 }
 

@@ -1,0 +1,571 @@
+//____________________
+// OPTIMIZE MENU  
+//____________________
+{
+	menuDef  
+	{
+		name					"ingame_optimize"
+		visible					0
+		fullscreen				0
+		outOfBoundsClick							// this closes the window if it gets a click out of the rectangle
+		rect					0 45 640 440
+		focusColor				0 0.4 0.8 1
+		style					1
+		border					1
+            descX						380
+		descY						400
+		descScale					1
+		descColor				1 1 1 1					// Focus color for text and items
+		descAlignment				ITEM_ALIGN_CENTER		
+	// Overall window backdrop
+		itemDef 
+		{
+			name				background_pic
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 440
+			border				1
+			bordercolor			0 0 0 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Optimize"
+			rect				0 0 640 25
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			255
+			textaligny			2 
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 1
+			font				3
+			textscale			0.9
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+
+
+
+      	itemDef 
+		{
+			name				servermaxrate
+			group				optimize
+			type				ITEM_TYPE_SLIDER
+			text				"Server Max Rate:"
+			cvarfloat			"sv_maxrate" 4000 0 25000
+			rect				190 135 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible				1
+			descText			"This represents the highest number of bytes per second that the server will transfer to each player"
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				hide 			button_glow
+				setitemrect		button_glow	260 467 340 20
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+		itemDef 
+		{
+			name				fpsrate
+			group				optimize
+			type				ITEM_TYPE_SLIDER
+			text			      "FPS Rate:"	
+			cvarfloat			"com_maxfps" 85 5 250
+			rect				190 115 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible				1
+			descText			"This sets your maximum Frames per Second"
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+                        
+			}
+
+			mouseenter 
+			{ 
+				hide 			button_glow
+                        setitemrect		button_glow	260 467 340 20
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+ 		itemDef 
+		{
+			name				defa
+			group				optimize
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				305 240 375 14 
+			text				"Default:"
+			descText			"Sets all optimization settings back to the JA defaults"
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			textalignx			60
+			textalign			ITEM_ALIGN_RIGHT
+			visible			1  	  
+			mouseEnter 
+			{ 
+				hide			button_glow
+				setitemrect		button_glow	173 380 340 14
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{ 
+				play			"sound/interface/button1.wav" ; 
+				exec        		"com_maxfps 85"
+				exec   			"sv_maxrate 4000"
+				exec  			"snaps 20"
+				exec  			"cl_maxpackets 30"
+			      exec			      "cl_timenudge 0"
+                        exec                    "cl_packetdup 0"
+                        exec                    "cg_predictitems 0"    
+                          
+			}
+		}
+		
+
+
+
+
+		itemDef 
+		{	
+			name				   packetduplicator
+			group				   optimize
+                  type				   ITEM_TYPE_MULTI
+			text                       "Packet Duplicator:"
+			cvar		               "cl_packetdup"
+			cvarFloatList		
+			{ 
+				Off 0
+                        Low 1  
+				High 2 
+			}
+			rect           200 175 340 14
+	   	      textalign			 ITEM_ALIGN_RIGHT
+			textalignx		 165
+			textaligny     -2
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible		   	 1
+			// appearance_slot		1
+			descText		   "Enables the retransmission of lost data packets"
+			action 
+			{ 
+				play			   "sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				hide		     button_glow
+                       setitemrect		button_glow	-125 340 300 14
+
+			}
+			mouseexit 
+			{ 
+				hide			  button_glow
+			} 
+		}
+
+		itemDef 
+		{	
+			name				   predictitems
+			group				   optimize
+                  type				   ITEM_TYPE_MULTI
+			text                       "Predict Items:"
+			cvar		               "cg_predictitems"
+			cvarFloatList		
+			{ 
+				Off 0
+                        On 1  
+				 
+			}
+			rect           200 195 340 14
+	   	      textalign			 ITEM_ALIGN_RIGHT
+			textalignx		 165
+			textaligny     -2
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible		   	 1
+			// appearance_slot		1
+			descText		   "Allows the server to override client decisions regarding item pickups"
+			action 
+			{ 
+				play			   "sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				hide		     button_glow
+                       setitemrect		button_glow	289 340 340 14
+
+			}
+			mouseexit 
+			{ 
+				hide			  button_glow
+			} 
+		}
+
+
+
+		itemDef 
+		{
+			name				maxpackets
+			group				optimize
+			type				ITEM_TYPE_SLIDER
+			text				"Max Packets:"
+			cvarfloat			"cl_maxpackets" 30 0 200
+			rect				190 75 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible				1
+			descText			"This represent the maximum packets that get sent to the game server by you"
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				hide 			button_glow
+				setitemrect		button_glow	260 467 340 20
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+		itemDef 
+		{
+			name				snaps
+			group				optimize
+			type				ITEM_TYPE_SLIDER
+			text				"Snaps:"
+			cvarfloat			"snaps" 20 0 100
+			rect				190 95 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible				1
+			descText			"Observe top half of lagometer, if you get lots of yellow bars try lowering this"
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				hide 			button_glow
+				setitemrect		button_glow	260 467 340 20
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+		itemDef 
+		{
+			name				timenudge
+			group				optimize
+			type				ITEM_TYPE_SLIDER
+			text				"Time Nudge:"	
+			cvarfloat			"cl_timenudge" 0 -50 20
+			rect				 190 155 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible				1
+			descText			"This setting helps compensate for lag and will make your ping feel lower at expense of choppy enemies"
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				hide 			button_glow
+				setitemrect		button_glow	260 467 340 20
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+
+   
+			}	  	  
+           }
+itemDef 
+		{
+			name				ultrafast
+			group				optimize
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				500 175 125 14 
+			text				ULTRAFAST 
+			descText			"Select if you are playing on a local LAN or superfast connection"   
+			font				4
+			textscale			1
+			textalignx			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0 0 1 1
+			visible			1
+            	  
+			mouseEnter 
+			{ 
+				hide			button_glow
+				setitemrect		button_glow	30 60 125 14 
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{ 
+				play			"sound/interface/button1.wav" ; 
+				exec        		"com_maxfps 85"
+				exec   			"sv_maxrate 25000"
+				exec  			"snaps 30"
+				exec  			"cl_maxpackets 80"
+			      exec			      "cl_timenudge 0"
+                        exec                    "cl_packetdup 0"
+                        exec                    "cg_predictitems 0"    
+                          
+			}
+		}
+itemDef 
+		{
+			name				fast
+			group				optimize
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				500 190 75 14 
+			text				FAST 
+			descText			"Select if you have a fast ping 30-60"
+			font				4
+			textscale			1
+			textalignx			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			.5 .5 1 1
+
+			visible			1
+                    	  
+			mouseEnter 
+			{ 
+				hide			button_glow
+				setitemrect		button_glow	170 60 125 14 
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{ 
+				play			"sound/interface/button1.wav" ; 
+				exec        		"com_maxfps 85"
+				exec   			"sv_maxrate 20000"
+				exec  			"snaps 30"
+				exec  			"cl_maxpackets 80"
+			      exec			      "cl_timenudge 0"
+                        exec                    "cl_packetdup 0"
+                        exec                    "cg_predictitems 0"    
+                          
+			}
+		}
+itemDef 
+		{
+			name				average
+			group				optimize
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				500 205 125 14 
+			text				AVERAGE
+			descText			"Select if your ping is 50-100"
+			font				4
+			textscale			1
+			textalignx			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			.656 0 .656 1
+			visible			1  	
+                 	mouseEnter 
+			{ 
+				hide			button_glow
+				setitemrect		button_glow	280 60 125 14 
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{ 
+				play			"sound/interface/button1.wav" ; 
+				exec        		"com_maxfps 85"
+				exec   			"sv_maxrate 15000"
+				exec  			"snaps 20"
+				exec  			"cl_maxpackets 60"
+			      exec			      "cl_timenudge 0"
+                        exec                    "cl_packetdup 0"
+                        exec                    "cg_predictitems 0"    
+                          
+			}
+		}
+
+itemDef 
+		{
+			name				slow
+			group				optimize
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				500 220 75 14 
+			text				SLOW
+			descText			defa
+			font				4
+			textscale			1
+			textalignx			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			.656 0 0 1
+			visible			1
+                  desctext                "Select if your ping is between 100-150"  	  
+			mouseEnter 
+			{ 
+				hide			button_glow
+				setitemrect		button_glow	400 50 125 16 
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{ 
+				play			"sound/interface/button1.wav" ; 
+				exec        		"com_maxfps 85"
+				exec   			"sv_maxrate 10000"
+				exec  			"snaps 20"
+				exec  			"cl_maxpackets 40"
+			      exec			      "cl_timenudge 0"
+                        exec                    "cl_packetdup 1"
+                        exec                    "cg_predictitems 1"    
+                          
+			}
+		}
+
+itemDef 
+		{
+			name				slower
+			group				optimize
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				500 235 125 14 
+			text				SLOWER
+			descText			"Select if your ping is 150+"
+			font				4
+			textscale			1
+			textalignx			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			1 0 0 1
+			visible			1  	  
+			mouseEnter 
+			{ 
+				hide			button_glow
+				setitemrect		button_glow	530 60 125 14 
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{ 
+				play			"sound/interface/button1.wav" ; 
+				exec        		"com_maxfps 85"
+				exec   			"sv_maxrate 5000"
+				exec  			"snaps 20"
+				exec  			"cl_maxpackets 20"
+			      exec			      "cl_timenudge 0"
+                        exec                    "cl_packetdup 2"
+                        exec                    "cg_predictitems 1"    
+                          
+			}
+		}
+
+	}
+}
+

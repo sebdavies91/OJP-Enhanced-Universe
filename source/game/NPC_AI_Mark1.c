@@ -109,7 +109,7 @@ void Mark1_Idle( void )
 
 	NPC_BSIdle();
 
-	NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_SLEEP1, SETANIM_FLAG_NORMAL );
+	NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_SLEEP1, SETANIM_FLAG_NORMAL);
 }
 
 /*
@@ -125,7 +125,13 @@ void Mark1Dead_FireRocket (void)
 	gentity_t *missile;
 
 	int	damage	= 50;
-	int bolt = trap_G2API_AddBolt(NPC->ghoul2, 0, "*flash5");
+	// Cache the rocket muzzle bolt (SP behavior).
+	int bolt = NPCInfo->genericBolt1;
+	if ( bolt == -1 )
+	{
+		bolt = trap_G2API_AddBolt( NPC->ghoul2, 0, "*flash5" );
+		NPCInfo->genericBolt1 = bolt;
+	}
 
 	trap_G2API_GetBoltMatrix( NPC->ghoul2, 0, 
 				bolt,
@@ -232,11 +238,11 @@ void Mark1_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	// Choose a death anim
 	if (Q_irand( 1, 10) > 5)
 	{
-		NPC_SetAnim( self, SETANIM_BOTH, BOTH_DEATH2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(self, SETANIM_BOTH, BOTH_DEATH2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 	}
 	else
 	{
-		NPC_SetAnim( self, SETANIM_BOTH, BOTH_DEATH1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(self, SETANIM_BOTH, BOTH_DEATH1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 	}
 }
 
@@ -331,7 +337,7 @@ void NPC_Mark1_Pain(gentity_t *self, gentity_t *attacker, int damage)
 	
 		if ((chance == 1) && (damage > 5))
 		{
-			NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		}
 	}
 	// Hit in the left arm?
@@ -378,7 +384,7 @@ void NPC_Mark1_Pain(gentity_t *self, gentity_t *attacker, int damage)
 						NPC_Mark1_Part_Explode(self,newBolt);
 					}
 					NPC_SetSurfaceOnOff( self, va("torso_tube%d",(i+1)), TURN_OFF );
-					NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+					NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 					break;
 				}
 			}
@@ -523,7 +529,7 @@ void Mark1_BlasterAttack(qboolean advance )
 			{
 				TIMER_Set( NPC, "attackDelay2", Q_irand( 50, 50) );
 				Mark1_FireBlaster();
- 				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+ 				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			}
 			return;
 		}
@@ -555,7 +561,13 @@ void Mark1_FireRocket(void)
 	mdxaBone_t	boltMatrix;
 	vec3_t	muzzle1,enemy_org1,delta1,angleToEnemy1;
 	static	vec3_t	forward, vright, up;
-	int bolt = trap_G2API_AddBolt(NPC->ghoul2, 0, "*flash5");
+	// Cache the rocket muzzle bolt (SP behavior).
+	int bolt = NPCInfo->genericBolt1;
+	if ( bolt == -1 )
+	{
+		bolt = trap_G2API_AddBolt( NPC->ghoul2, 0, "*flash5" );
+		NPCInfo->genericBolt1 = bolt;
+	}
 	gentity_t *missile;
 
 	int	damage	= 50;
@@ -606,7 +618,7 @@ void Mark1_RocketAttack( qboolean advance )
 	if ( TIMER_Done( NPC, "attackDelay" ) )	// Attack?
 	{
 		TIMER_Set( NPC, "attackDelay", Q_irand( 1000, 3000) );
- 		NPC_SetAnim( NPC, SETANIM_TORSO, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+ 		NPC_SetAnim(NPC, SETANIM_TORSO, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		Mark1_FireRocket();
 	}
 	else if (advance)

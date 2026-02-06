@@ -422,19 +422,8 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;hpj;bat;for;f90"
 			>
 			<File
-				RelativePath="ai_aotc.c"
-				>
-			</File>
-			<File
-				RelativePath="ai_hybrid.c"
-				>
-			</File>
 			<File
 				RelativePath=".\ai_main.c"
-				>
-			</File>
-			<File
-				RelativePath="ai_tab.c"
 				>
 			</File>
 			<File
@@ -699,6 +688,10 @@
 			</File>
 			<File
 				RelativePath=".\NPC.c"
+				>
+			</File>
+			<File
+				RelativePath="NPC_AI_Animal.c"
 				>
 			</File>
 			<File

@@ -4,6 +4,60 @@
 #include "g_local.h"
 #include "bg_saga.h"
 
+
+// Track if a real client was held by a monster last frame so we can unstick them safely on release.
+static qboolean s_wasHeldByMonster[MAX_CLIENTS];
+
+static void G_FixupAfterMonsterRelease( gentity_t *ent )
+{
+	trace_t tr;
+	vec3_t base, tryPos, end;
+	int i;
+
+	if ( !ent || !ent->client || ent->s.number >= MAX_CLIENTS )
+	{
+		return;
+	}
+
+	VectorCopy( ent->client->ps.origin, base );
+
+	// If we are stuck in solid (common after Wampa release), nudge upward until free.
+	for ( i = 0; i <= 96; i += 4 )
+	{
+		VectorCopy( base, tryPos );
+		tryPos[2] += (float)i;
+		trap_Trace( &tr, tryPos, ent->r.mins, ent->r.maxs, tryPos, ent->s.number, MASK_PLAYERSOLID );
+		if ( !tr.startsolid && !tr.allsolid )
+		{
+			VectorCopy( tryPos, ent->client->ps.origin );
+			G_SetOrigin( ent, tryPos );
+			break;
+		}
+	}
+
+	// Drop to floor gently so the bbox is correctly placed on the ground again.
+	VectorCopy( ent->client->ps.origin, tryPos );
+	VectorCopy( tryPos, end );
+	end[2] -= 256.0f;
+	trap_Trace( &tr, tryPos, ent->r.mins, ent->r.maxs, end, ent->s.number, MASK_PLAYERSOLID );
+	if ( !tr.startsolid && tr.fraction < 1.0f )
+	{
+		VectorCopy( tr.endpos, ent->client->ps.origin );
+		G_SetOrigin( ent, tr.endpos );
+		ent->client->ps.groundEntityNum = tr.entityNum;
+	}
+	else
+	{
+		ent->client->ps.groundEntityNum = ENTITYNUM_NONE;
+	}
+
+	// Clear lingering movement locks and velocity.
+	ent->client->ps.pm_time = 0;
+	ent->client->ps.pm_flags &= ~(PMF_ALL_TIMES|PMF_TIME_KNOCKBACK|PMF_TIME_NOFRICTION|PMF_TIME_WATERJUMP);
+	VectorClear( ent->client->ps.velocity );
+	trap_LinkEntity( ent );
+}
+
 extern void Jedi_Cloak( gentity_t *self );
 extern void Jedi_Decloak( gentity_t *self );
 extern void Sphereshield_On( gentity_t *self );
@@ -713,6 +767,7 @@ void SpectatorThink( gentity_t *ent, usercmd_t *ucmd ) {
 
 	client = ent->client;
 
+
 	if ( client->sess.spectatorState != SPECTATOR_FOLLOW ) {
 		client->ps.pm_type = PM_SPECTATOR;
 		client->ps.speed = 400;	// faster than normal
@@ -861,7 +916,7 @@ void ClientIntermissionThink( gclient_t *client ) {
 	}
 }
 
-extern void NPC_SetAnim(gentity_t	*ent,int setAnimParts,int anim,int setAnimFlags);
+extern void NPC_SetAnim(gentity_t *ent, int setAnimParts, int anim, int setAnimFlags);
 void G_VehicleAttachDroidUnit( gentity_t *vehEnt )
 {
 	if ( vehEnt && vehEnt->m_pVehicle && vehEnt->m_pVehicle->m_pDroidUnit != NULL )
@@ -887,7 +942,7 @@ void G_VehicleAttachDroidUnit( gentity_t *vehEnt )
 		
 		if ( droidEnt->NPC )
 		{
-			NPC_SetAnim( droidEnt, SETANIM_BOTH, BOTH_STAND2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(droidEnt, SETANIM_BOTH, BOTH_STAND2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		}
 	}
 }
@@ -1226,7 +1281,7 @@ void G_ThrownDeathAnimForDeathAnim( gentity_t *hitEnt, vec3_t impactPoint )
 	}
 	if ( anim != -1 )
 	{
-		NPC_SetAnim( hitEnt, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(hitEnt, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 	}
 }
 //[/SPPortComplete][/KnockdownSys]
@@ -1805,50 +1860,105 @@ void G_CheckMovingLoopingSounds( gentity_t *ent, usercmd_t *ucmd )
 
 void G_HeldByMonster( gentity_t *ent, usercmd_t **ucmd )
 {
-	if ( ent 
-		&& ent->client
-		&& ent->client->ps.hasLookTarget )//NOTE: lookTarget is an entity number, so this presumes that client 0 is NOT a Rancor...
+	gentity_t	*monster;
+
+	if ( !ent || !ent->client || !ucmd || !(*ucmd) )
 	{
-		gentity_t *monster = &g_entities[ent->client->ps.lookTarget];
-		if ( monster && monster->client )
+		return;
+	}
+
+	if ( !ent->client->ps.hasLookTarget )
+	{
+		return;
+	}
+
+	monster = &g_entities[ent->client->ps.lookTarget];
+	if ( !monster || !monster->inuse || !monster->client )
+	{
+		return;
+	}
+
+	// keep waypoint in sync (used by some monster grabs)
+	ent->waypoint = monster->waypoint;
+
+	if ( monster->s.NPC_class == CLASS_RANCOR )
+	{
+		BG_AttachToRancor( monster->ghoul2,
+			monster->r.currentAngles[YAW],
+			monster->r.currentOrigin,
+			level.time,
+			NULL,
+			monster->modelScale,
+			(monster->client->ps.eFlags2 & EF2_GENERIC_NPC_FLAG),
+			ent->client->ps.origin,
+			ent->client->ps.viewangles,
+			NULL );
+	}
+	else if ( monster->s.NPC_class == CLASS_WAMPA )
+	{
+		vec3_t outAngles;
+		vec3_t outAxis[3];
+		vec3_t holdAngles;
+
+		// Players: don't let BG_AttachToWampa manipulate our viewangles.
+		if ( ent->s.number < MAX_CLIENTS )
 		{
-			//take the monster's waypoint as your own
-			ent->waypoint = monster->waypoint;
-			if ( monster->s.NPC_class == CLASS_RANCOR )
-			{//only possibility right now, may add Wampa and Sand Creature later
-				BG_AttachToRancor( monster->ghoul2, //ghoul2 info
-					monster->r.currentAngles[YAW],
-					monster->r.currentOrigin,
-					level.time,
-					NULL,
-					monster->modelScale,
-					(monster->client->ps.eFlags2&EF2_GENERIC_NPC_FLAG),
-					ent->client->ps.origin,
-					ent->client->ps.viewangles,
-					NULL );
-			}
-			//[NPCSandCreature]
-			else if(monster->s.NPC_class == CLASS_SAND_CREATURE)
-			{
-				BG_AttachToSandCreature( monster->ghoul2, //ghoul2 info
-					monster->r.currentAngles[YAW],
-					monster->r.currentOrigin,
-					level.time,
-					NULL,
-					monster->modelScale,
-					ent->client->ps.origin,
-					ent->client->ps.viewangles,
-					NULL );
-			}
-			//[/NPCSandCreature]
-			VectorClear( ent->client->ps.velocity );
-			G_SetOrigin( ent, ent->client->ps.origin );
-			SetClientViewAngle( ent, ent->client->ps.viewangles );
-			G_SetAngles( ent, ent->client->ps.viewangles );
-			trap_LinkEntity( ent );//redundant?
+			VectorCopy( ent->client->ps.viewangles, holdAngles );
+			BG_AttachToWampa( monster->ghoul2,
+				monster->r.currentAngles[YAW],
+				monster->r.currentOrigin,
+				level.time,
+				NULL,
+				monster->modelScale,
+				ent->client->ps.origin,
+				outAngles,
+				outAxis );
+			VectorCopy( holdAngles, ent->client->ps.viewangles );
+		}
+		else
+		{
+			BG_AttachToWampa( monster->ghoul2,
+				monster->r.currentAngles[YAW],
+				monster->r.currentOrigin,
+				level.time,
+				NULL,
+				monster->modelScale,
+				ent->client->ps.origin,
+				ent->client->ps.viewangles,
+				outAxis );
 		}
 	}
-	// don't allow movement, weapon switching, and most kinds of button presses
+else if ( monster->s.NPC_class == CLASS_SAND_CREATURE )
+	{
+		BG_AttachToSandCreature( monster->ghoul2,
+			monster->r.currentAngles[YAW],
+			monster->r.currentOrigin,
+			level.time,
+			NULL,
+			monster->modelScale,
+			ent->client->ps.origin,
+			ent->client->ps.viewangles,
+			NULL );
+	}
+
+	VectorClear( ent->client->ps.velocity );
+	G_SetOrigin( ent, ent->client->ps.origin );
+
+	// Wampa special-case for players: avoid SetClientViewAngle (delta angle snapping)
+	if ( !( ent->s.number < MAX_CLIENTS && monster->s.NPC_class == CLASS_WAMPA ) )
+	{
+		SetClientViewAngle( ent, ent->client->ps.viewangles );
+		G_SetAngles( ent, ent->client->ps.viewangles );
+	}
+	else
+	{
+		ent->client->ps.viewangles[ROLL] = 0;
+		G_SetAngles( ent, ent->client->ps.viewangles );
+	}
+
+	trap_LinkEntity( ent );
+
+	// prevent movement while attached
 	(*ucmd)->forwardmove = 0;
 	(*ucmd)->rightmove = 0;
 	(*ucmd)->upmove = 0;
@@ -2584,6 +2694,7 @@ void ClientThink_real( gentity_t *ent ) {
 
 
 
+	int			oldEmplacedIndex = 0;
 	client = ent->client;
 
 	//[ROQFILES]
@@ -2714,23 +2825,65 @@ void ClientThink_real( gentity_t *ent ) {
 				ent->client->saberCycleQueue = ent->client->ps.fd.saberAnimLevel;
 			}
 			
-				//can't switch saber holster settings if saber is out.
-				if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0]
-					&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
-					&& ent->client->ps.fd.saberAnimLevel != SS_STAFF
-					&& ent->client->ps.saberHolstered == 0)
-				{//using dual sabers, but not the dual style, turn off blade
-					ent->client->ps.saberHolstered = 1;
+				{
+					qboolean isAI;
+					isAI = (ent->NPC != NULL) || (ent->r.svFlags & SVF_BOT);
+
+					// For bots/NPCs, keep dual/staff styles locked and avoid accidentally holstering blades
+					// during forced animations (e.g. being zapped by Force Lightning).
+					if (isAI)
+					{
+						if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0])
+						{//dual sabers always use SS_DUAL
+							ent->client->ps.fd.saberAnimLevelBase = SS_DUAL;
+							ent->client->ps.fd.saberAnimLevel = SS_DUAL;
+							ent->client->ps.fd.saberDrawAnimLevel = SS_DUAL;
+							ent->client->saberCycleQueue = 0;
+
+							if (!ent->client->ps.saberInFlight)
+							{
+								ent->client->ps.saberHolstered = 0;
+							}
+						}
+						else if (ent->client->saber[0].numBlades > 1
+							&& (WP_SaberCanTurnOffSomeBlades(&ent->client->saber[0])
+								|| (ent->client->saber[0].saberFlags & SFL_TWO_HANDED)))
+						{//saberstaff / two-handed always use SS_STAFF
+							ent->client->ps.fd.saberAnimLevelBase = SS_STAFF;
+							ent->client->ps.fd.saberAnimLevel = SS_STAFF;
+							ent->client->ps.fd.saberDrawAnimLevel = SS_STAFF;
+							ent->client->saberCycleQueue = 0;
+
+							if (!ent->client->ps.saberInFlight)
+							{
+								ent->client->ps.saberHolstered = 0;
+							}
+						}
+					}
+
+					// Players: keep the existing safety behavior that turns off a saber/blade if they're
+					// holding two sabers (or a staff) but using a non-dual/non-staff style.
+					if (!isAI)
+					{
+						//can't switch saber holster settings if saber is out.
+						if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0]
+							&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
+							&& ent->client->ps.fd.saberAnimLevel != SS_STAFF
+							&& ent->client->ps.saberHolstered == 0)
+						{//using dual sabers, but not the dual style, turn off blade
+							ent->client->ps.saberHolstered = 1;
+						}
+						else if (ent->client->saber[0].numBlades > 1
+							&& WP_SaberCanTurnOffSomeBlades(&ent->client->saber[0])
+							&& ent->client->ps.fd.saberAnimLevel != SS_STAFF
+							&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
+							&& ent->client->ps.saberHolstered == 0)
+						{//using staff saber, but not the staff style, turn off blade
+							ent->client->ps.saberHolstered = 1;
+						}
+					}
 				}
-				else if (ent->client->saber[0].numBlades > 1 
-					&& WP_SaberCanTurnOffSomeBlades( &ent->client->saber[0] )
-					&& ent->client->ps.fd.saberAnimLevel != SS_STAFF
-					&& ent->client->ps.fd.saberAnimLevel != SS_DUAL
-					&& ent->client->ps.saberHolstered == 0)
-				{//using staff saber, but not the staff style, turn off blade
-					ent->client->ps.saberHolstered = 1;
-				}
-			
+		
 
 		}
 	
@@ -2784,6 +2937,21 @@ void ClientThink_real( gentity_t *ent ) {
 
 	// mark the time, so the connection sprite can be removed
 	ucmd = &ent->client->pers.cmd;
+
+	// Preserve whether we started this think on an emplaced gun.
+	// Used later (grapplemod) to prevent firing/drawing a grapple on the dismount frame.
+	oldEmplacedIndex = client->ps.emplacedIndex;
+
+	// If we were held last frame and are now released, ensure we are not stuck in solid or under the floor.
+	if ( client && client->ps.clientNum < MAX_CLIENTS )
+	{
+		qboolean isHeldNow = (qboolean)((client->ps.eFlags2 & EF2_HELD_BY_MONSTER) != 0);
+		if ( s_wasHeldByMonster[client->ps.clientNum] && !isHeldNow )
+		{
+			G_FixupAfterMonsterRelease( ent );
+		}
+		s_wasHeldByMonster[client->ps.clientNum] = isHeldNow;
+	}
 
 	if ( client && (client->ps.eFlags2&EF2_HELD_BY_MONSTER) )
 	{
@@ -4408,6 +4576,47 @@ void ClientThink_real( gentity_t *ent ) {
 
 	Pmove (&pm);
 
+	// --- Boba Fett jetpack FX persistence (visual-only) ---
+	// MP can clear EF_JETPACK_FLAMING/ACTIVE during hovering or weapon switches.
+	// But forcing these flags while grounded can make the AI think it's "flying".
+	// So we only re-assert the visual bits when Boba is actually in flight.
+																			  
+									 
+   
+																			
+										   
+   
+																	   
+																			
+																 
+   
+																		  
+	if ( ent->NPC && ent->client && ent->s.NPC_class == CLASS_BOBAFETT )
+	{
+		const qboolean airborne = ( ent->client->ps.groundEntityNum == ENTITYNUM_NONE );
+		const qboolean flyingMove = ( ent->client->ps.pm_type == PM_JETPACK ) || ( ent->client->ps.eFlags2 & EF2_FLYING );
+		const qboolean showJetFX = flyingMove || ( ent->client->jetPackOn && airborne );
+
+		if ( showJetFX )
+		{
+												   
+			ent->client->ps.eFlags |= (EF_JETPACK|EF_JETPACK_ACTIVE);
+			if ( airborne )
+														   
+			{
+				ent->client->ps.eFlags |= EF_JETPACK_FLAMING;
+			}
+			else
+			{
+				ent->client->ps.eFlags &= ~EF_JETPACK_FLAMING;
+			}
+		}
+		else
+		{
+			// Avoid "walking with jetpack on": never leave ACTIVE/FLAMING set while grounded.
+			ent->client->ps.eFlags &= ~(EF_JETPACK_ACTIVE|EF_JETPACK_FLAMING);
+		}
+	}
 	if (ent->client && ent->client->solidHack)
 	{
 		if (ent->client->solidHack > level.time)
@@ -4845,6 +5054,33 @@ void ClientThink_real( gentity_t *ent ) {
 	if (ent->client && m_enable_grapple.integer == 1 &&
 		ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_GRAPPLE) )
 	{
+		// If we were mounted on an emplaced gun at the start of this frame and pressed USE,
+		// block grappling-hook input so we don't fire a new hook on the dismount frame.
+		if ( oldEmplacedIndex && (ucmd->buttons & BUTTON_USE) )
+		{
+			ucmd->buttons &= ~BUTTON_GRAPPLE;
+			pm.cmd.buttons &= ~BUTTON_GRAPPLE;
+			if ( client && client->hook )
+			{
+				Weapon_HookFree( client->hook );
+			}
+			ent->client->hookhasbeenfired = qfalse;
+			ent->client->fireHeld = qfalse;
+			VectorCopy( ent->client->ps.origin, ent->client->ps.lastHitLoc );
+			ent->client->hookDebounceTime = level.time + 200;
+		}
+		// While currently mounted, ignore grappling-hook input.
+		else if ( ent->client->ps.emplacedIndex )
+		{
+			ucmd->buttons &= ~BUTTON_GRAPPLE;
+			pm.cmd.buttons &= ~BUTTON_GRAPPLE;
+			if ( client && client->hook )
+			{
+				Weapon_HookFree( client->hook );
+			}
+		}
+		else
+		{
 		if ( 
 			(pm.cmd.buttons & BUTTON_GRAPPLE) &&
 			ent->client->ps.pm_type != PM_DEAD &&
@@ -4873,6 +5109,7 @@ void ClientThink_real( gentity_t *ent ) {
 			(ent->client->ps.pm_type == PM_DEAD)) )
 		{
 			Weapon_HookFree(client->hook);
+		}
 		}
 	}
 	else
@@ -4948,14 +5185,14 @@ void ClientThink_real( gentity_t *ent ) {
 		client->latched_buttons |= client->buttons & ~client->oldbuttons;
 	}
 //	G_VehicleAttachDroidUnit( ent );
-
+    
 	// Did we kick someone in our pmove sequence?
 	if ( !(pm.cmd.buttons & BUTTON_GRAPPLE) )
 	{
 		if(client)
 		{ 
 		gentity_t *faceKicked = &g_entities[client->ps.forceKickFlip-1];
-
+        #define MELEE_KICK_DAMAGE			10
 		if (faceKicked && faceKicked->client && (!OnSameTeam(ent, faceKicked) || g_friendlyFire.integer) &&
 			(!faceKicked->client->ps.duelInProgress || faceKicked->client->ps.duelIndex == ent->s.number) &&
 			(!ent->client->ps.duelInProgress || ent->client->ps.duelIndex == faceKicked->s.number))
@@ -4963,9 +5200,21 @@ void ClientThink_real( gentity_t *ent ) {
 			if ( faceKicked && faceKicked->client && faceKicked->health && faceKicked->takedamage )
 			{//push them away and do pain
 				vec3_t oppDir;
-				int strength = (int)VectorNormalize2( client->ps.velocity, oppDir );
+				int strength = MELEE_KICK_DAMAGE;
 
-				strength *= 0.05;
+				// Strength skill should also increase kick damage (this is the pmove kickflip hit).
+				if (ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_3)
+				{
+					strength = 4 * MELEE_KICK_DAMAGE;
+				}
+				if (ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_2)
+				{
+					strength = 3 * MELEE_KICK_DAMAGE;
+				}
+				if (ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_1)
+				{
+					strength = 2 * MELEE_KICK_DAMAGE;
+				}
 
 				VectorScale( oppDir, -1, oppDir );
 

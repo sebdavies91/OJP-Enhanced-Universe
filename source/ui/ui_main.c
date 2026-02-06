@@ -762,7 +762,7 @@ int UI_ParseAnimationFile(const char *filename, animation_t *animset, qboolean i
 	if (isHumanoid)
 	{
 		bgAllAnims[0].anims = animset;
-		strcpy(bgAllAnims[0].filename, filename);
+		Q_strncpyz( bgAllAnims[0].filename, filename, sizeof( bgAllAnims[0].filename ) );
 		UIPAFtextLoaded = qtrue;
 
 		usedIndex = 0;
@@ -770,7 +770,7 @@ int UI_ParseAnimationFile(const char *filename, animation_t *animset, qboolean i
 	else
 	{
 		bgAllAnims[nextIndex].anims = animset;
-		strcpy(bgAllAnims[nextIndex].filename, filename);
+		Q_strncpyz( bgAllAnims[nextIndex].filename, filename, sizeof( bgAllAnims[nextIndex].filename ) );
 
 		usedIndex = nextIndex;
 
@@ -895,8 +895,7 @@ static const char *GetCRDelineatedString( const char *psStripFileRef, const char
 		psList++;
 	}
 
-	strcpy(sTemp,psList);
-	p = strchr(sTemp,'\n');
+	Q_strncpyz( sTemp, psList, sizeof(sTemp) );	p = strchr(sTemp,'\n');
 	if (p) {
 		*p = '\0';
 	}
@@ -1811,8 +1810,7 @@ void UI_Load() {
 	menuDef_t *menu = Menu_GetFocused();
 
 	if (menu && menu->window.name) {
-		strcpy(lastName, menu->window.name);
-	}
+		Q_strncpyz( lastName, menu->window.name, sizeof(lastName) );	}
 	else
 	{
 		lastName[0] = 0;
@@ -2983,9 +2981,7 @@ static void UI_DrawOpponent(rectDef_t *rect) {
   
 	if (updateOpponentModel) {
 		
-		strcpy(model, UI_Cvar_VariableString("ui_opponentModel"));
-	  strcpy(headmodel, UI_Cvar_VariableString("ui_opponentModel"));
-		team[0] = '\0';
+		Q_strncpyz( model, UI_Cvar_VariableString("ui_opponentModel"), sizeof(model) );	  Q_strncpyz( headmodel, UI_Cvar_VariableString("ui_opponentModel"), sizeof(headmodel) );		team[0] = '\0';
 
   	memset( &info2, 0, sizeof(playerInfo_t) );
   	viewangles[YAW]   = 180 - 10;
@@ -5348,6 +5344,27 @@ static void UI_StartSkirmish(qboolean next) {
 static void UI_Update(const char *name) {
 	int	val = trap_Cvar_VariableValue(name);
 
+	// Resolution dropdown index used by the menus.
+	// Keep this in sync with ui_resPresets[] length in UI_GetVideoSetup section.
+	// (Last entry is represented by UI_RES_CUSTOM_INDEX, i.e. "Custom...".)
+#ifndef UI_RES_CUSTOM_INDEX
+#define UI_RES_CUSTOM_INDEX 16
+#endif
+
+	// Forward declarations (defined later in this file).
+	// They are UI-side helpers that translate the dropdown index into r_mode and
+	// r_customwidth/height.
+	static int UI_FindResolutionPresetIndex( int mode, int cw, int ch );
+	static void UI_ApplyResolutionPresetIndex( int idx );
+
+	/*
+	Modern resolution support (UI-side wrapper):
+	- Keep using the engine's r_mode for legacy 4:3 modes.
+	- For modern/widescreen modes, drive r_mode = -1 + r_customwidth/height.
+	This avoids relying on undocumented r_mode indices and is backward-safe:
+	engines that don't support custom modes will simply ignore r_customwidth/height.
+	*/
+
 	if (Q_stricmp(name, "s_khz") == 0) 
 	{
 		trap_Cmd_ExecuteText( EXEC_APPEND, "snd_restart\n" );
@@ -5372,6 +5389,18 @@ static void UI_Update(const char *name) {
 	else if (Q_stricmp(name, "ui_GetName") == 0) 
 	{
 		trap_Cvar_Set( "ui_Name", UI_Cvar_VariableString("name"));
+	}
+	else if (Q_stricmp(name, "ui_r_resolution") == 0)
+	{
+		UI_ApplyResolutionPresetIndex( val );
+	}
+	else if (Q_stricmp(name, "ui_r_customwidth") == 0 || Q_stricmp(name, "ui_r_customheight") == 0)
+	{
+		// If the user edits custom dimensions, ensure we're in custom mode.
+		if ((int)trap_Cvar_VariableValue("ui_r_resolution") == UI_RES_CUSTOM_INDEX)
+		{
+			UI_ApplyResolutionPresetIndex( UI_RES_CUSTOM_INDEX );
+		}
 	}
 	else if (Q_stricmp(name, "ui_r_colorbits") == 0) 
 	{
@@ -5565,7 +5594,11 @@ you to discard your changes if you did something you didnt want
 */
 void UI_UpdateVideoSetup ( void )
 {
+	// Custom (modern) resolutions use r_mode = -1 + r_customwidth/height.
+	// Legacy modes still use the engine's r_mode indices.
 	trap_Cvar_Set ( "r_mode", UI_Cvar_VariableString ( "ui_r_mode" ) );
+	trap_Cvar_Set ( "r_customwidth", UI_Cvar_VariableString ( "ui_r_customwidth" ) );
+	trap_Cvar_Set ( "r_customheight", UI_Cvar_VariableString ( "ui_r_customheight" ) );
 	trap_Cvar_Set ( "r_fullscreen", UI_Cvar_VariableString ( "ui_r_fullscreen" ) );
 	trap_Cvar_Set ( "r_colorbits", UI_Cvar_VariableString ( "ui_r_colorbits" ) );
 	trap_Cvar_Set ( "r_lodbias", UI_Cvar_VariableString ( "ui_r_lodbias" ) );
@@ -5585,6 +5618,107 @@ void UI_UpdateVideoSetup ( void )
 	trap_Cmd_ExecuteText( EXEC_APPEND, "vid_restart;" );
 }
 
+// ---------------------------------------------------------------------------
+// Resolution presets (UI side)
+// ---------------------------------------------------------------------------
+
+typedef struct uiResolutionPreset_s {
+	int	w;
+	int	h;
+	int	mode; // >=0 legacy engine mode, -1 => use r_customwidth/height
+} uiResolutionPreset_t;
+
+// NOTE: Indices here must match the order used in the .menu cvarFloatList.
+static const uiResolutionPreset_t ui_resPresets[] = {
+	{ 0,    0,    3  }, // 640x480
+	{ 0,    0,    4  }, // 800x600
+	{ 0,    0,    6  }, // 1024x768
+	{ 0,    0,    7  }, // 1152x864
+	{ 1280, 720,  -1 },
+	{ 0,    0,    8  }, // 1280x1024
+	{ 1366, 768,  -1 },
+	{ 1600, 900,  -1 },
+	{ 0,    0,    9  }, // 1600x1200
+	{ 1920, 1080, -1 },
+	{ 1920, 1200, -1 },
+	{ 0,    0,    10 }, // 2048x1536
+	{ 0,    0,    12 }, // 2400x600 (legacy/triplehead)
+	{ 2560, 1440, -1 },
+	{ 3440, 1440, -1 },
+	{ 3840, 2160, -1 },
+};
+
+// UI_RES_CUSTOM_INDEX is defined earlier (currently 16). It represents the
+// "Custom..." entry which sits after ui_resPresets[] in the dropdown.
+
+static int UI_FindResolutionPresetIndex( int mode, int cw, int ch )
+{
+	int i;
+
+	if (mode != -1)
+	{
+		for (i = 0; i < (int)(sizeof(ui_resPresets)/sizeof(ui_resPresets[0])); i++)
+		{
+			if (ui_resPresets[i].mode == mode)
+			{
+				return i;
+			}
+		}
+		return UI_RES_CUSTOM_INDEX;
+	}
+
+	// Custom mode: try to match known modern presets.
+	if (cw <= 0 || ch <= 0)
+	{
+		return UI_RES_CUSTOM_INDEX;
+	}
+
+	for (i = 0; i < (int)(sizeof(ui_resPresets)/sizeof(ui_resPresets[0])); i++)
+	{
+		if (ui_resPresets[i].mode == -1 && ui_resPresets[i].w == cw && ui_resPresets[i].h == ch)
+		{
+			return i;
+		}
+	}
+
+	return UI_RES_CUSTOM_INDEX;
+}
+
+static void UI_ApplyResolutionPresetIndex( int idx )
+{
+	int w = (int)trap_Cvar_VariableValue("ui_r_customwidth");
+	int h = (int)trap_Cvar_VariableValue("ui_r_customheight");
+
+	if (idx < 0)
+	{
+		idx = 0;
+	}
+
+	if (idx >= 0 && idx < (int)(sizeof(ui_resPresets)/sizeof(ui_resPresets[0])))
+	{
+		const uiResolutionPreset_t *p = &ui_resPresets[idx];
+		if (p->mode != -1)
+		{
+			trap_Cvar_SetValue("ui_r_mode", p->mode);
+			return;
+		}
+
+		trap_Cvar_SetValue("ui_r_mode", -1);
+		trap_Cvar_SetValue("ui_r_customwidth",  p->w);
+		trap_Cvar_SetValue("ui_r_customheight", p->h);
+		return;
+	}
+
+	// Custom entry: force custom mode and ensure some sane defaults.
+	trap_Cvar_SetValue("ui_r_mode", -1);
+	if (w < 320)  w = 1920;
+	if (h < 240)  h = 1080;
+	if (w > 8192) w = 8192;
+	if (h > 4320) h = 4320;
+	trap_Cvar_SetValue("ui_r_customwidth",  w);
+	trap_Cvar_SetValue("ui_r_customheight", h);
+}
+
 /*
 =================
 UI_GetVideoSetup
@@ -5598,7 +5732,10 @@ void UI_GetVideoSetup ( void )
 	// Make sure the cvars are registered as read only.
 	trap_Cvar_Register ( NULL, "ui_r_glCustom",				"4", CVAR_ROM|CVAR_INTERNAL|CVAR_ARCHIVE );
 
+	trap_Cvar_Register ( NULL, "ui_r_resolution",            "0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register ( NULL, "ui_r_mode",					"0", CVAR_ROM|CVAR_INTERNAL );
+	trap_Cvar_Register ( NULL, "ui_r_customwidth",           "0", CVAR_ROM|CVAR_INTERNAL );
+	trap_Cvar_Register ( NULL, "ui_r_customheight",          "0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register ( NULL, "ui_r_fullscreen",			"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register ( NULL, "ui_r_colorbits",			"0", CVAR_ROM|CVAR_INTERNAL );
 	trap_Cvar_Register ( NULL, "ui_r_lodbias",				"0", CVAR_ROM|CVAR_INTERNAL );
@@ -5617,6 +5754,8 @@ void UI_GetVideoSetup ( void )
 	
 	// Copy over the real video cvars into their temporary counterparts
 	trap_Cvar_Set ( "ui_r_mode",		UI_Cvar_VariableString ( "r_mode" ) );
+	trap_Cvar_Set ( "ui_r_customwidth", UI_Cvar_VariableString ( "r_customwidth" ) );
+	trap_Cvar_Set ( "ui_r_customheight", UI_Cvar_VariableString ( "r_customheight" ) );
 	trap_Cvar_Set ( "ui_r_colorbits",	UI_Cvar_VariableString ( "r_colorbits" ) );
 	trap_Cvar_Set ( "ui_r_fullscreen",	UI_Cvar_VariableString ( "r_fullscreen" ) );
 	trap_Cvar_Set ( "ui_r_lodbias",		UI_Cvar_VariableString ( "r_lodbias" ) );
@@ -5632,6 +5771,15 @@ void UI_GetVideoSetup ( void )
 	trap_Cvar_Set ( "ui_r_allowExtensions", UI_Cvar_VariableString ( "r_allowExtensions" ) );
 	trap_Cvar_Set ( "ui_cg_shadows", UI_Cvar_VariableString ( "cg_shadows" ) );
 	trap_Cvar_Set ( "ui_r_modified", "0" );
+
+	// Resolve the current mode into a resolution list index (drives the dropdown).
+	{
+		const int mode = (int)trap_Cvar_VariableValue("r_mode");
+		const int cw = (int)trap_Cvar_VariableValue("r_customwidth");
+		const int ch = (int)trap_Cvar_VariableValue("r_customheight");
+		const int idx = UI_FindResolutionPresetIndex(mode, cw, ch);
+		trap_Cvar_SetValue("ui_r_resolution", idx);
+	}
 }
 
 // If the game type is siege, hide the addbot button. I would have done a cvar text on that item,
@@ -5726,18 +5874,15 @@ static void UI_GetCharacterCvars ( void )
 		assert(p2);
 		*p2=0;
 		p2++;
-		strcpy (skinhead, skin);
-
+		Q_strncpyz( skinhead, skin, sizeof(skinhead) );
 
 		//advance to third
 		skin = strchr(p2, '|');
 		assert(skin);
 		*skin=0;
 		skin++;
-		strcpy (skintorso,p2);
-
-		strcpy (skinlower,skin);
-
+		Q_strncpyz( skintorso, p2, sizeof(skintorso) );
+		Q_strncpyz( skinlower, skin, sizeof(skinlower) );
 
 
 		trap_Cvar_Set("ui_char_model", model);
@@ -6810,8 +6955,7 @@ static void UI_RunMenuScript(char **args)
 			if (String_Parse(args, &orders)) {
 				int selectedPlayer = trap_Cvar_VariableValue("cg_selectedPlayer");
 				if (selectedPlayer < uiInfo.myTeamCount) {
-					strcpy(buff, orders);
-					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]) );
+					Q_strncpyz( buff, orders, sizeof(buff) );					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]) );
 					trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
 				} else {
 					int i;
@@ -6819,8 +6963,7 @@ static void UI_RunMenuScript(char **args)
 						if (Q_stricmp(UI_Cvar_VariableString("name"), uiInfo.teamNames[i]) == 0) {
 							continue;
 						}
-						strcpy(buff, orders);
-						trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamNames[i]) );
+						Q_strncpyz( buff, orders, sizeof(buff) );						trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamNames[i]) );
 						trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
 					}
 				}
@@ -6850,13 +6993,11 @@ static void UI_RunMenuScript(char **args)
 				if (selectedPlayer == uiInfo.myTeamCount)
 				{
 					selectedPlayer = -1;
-					strcpy(buff, orders);
-					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, selectedPlayer) );
+					Q_strncpyz( buff, orders, sizeof(buff) );					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, selectedPlayer) );
 				}
 				else
 				{
-					strcpy(buff, orders);
-					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]) );
+					Q_strncpyz( buff, orders, sizeof(buff) );					trap_Cmd_ExecuteText( EXEC_APPEND, va(buff, uiInfo.teamClientNums[selectedPlayer]) );
 				}
 				trap_Cmd_ExecuteText( EXEC_APPEND, "\n" );
 
@@ -7753,7 +7894,7 @@ void UI_ClampMaxPlayers(void)
 	// max check for all game types
 	if( trap_Cvar_VariableValue("sv_maxClients") > MAX_CLIENTS )
 	{
-		sprintf(buf,"%d",MAX_CLIENTS);
+		Com_sprintf(buf, sizeof(buf), "%d", MAX_CLIENTS);
 		trap_Cvar_Set("sv_maxClients", buf);
 	}
 
@@ -8003,7 +8144,7 @@ static void UI_BuildServerDisplayList(qboolean force) {
 	trap_Cvar_VariableStringBuffer( "cl_motdString", uiInfo.serverStatus.motd, sizeof(uiInfo.serverStatus.motd) );
 	len = strlen(uiInfo.serverStatus.motd);
 	if (len == 0) {
-		strcpy(uiInfo.serverStatus.motd, "Welcome to Jedi Academy MP!");
+		Q_strncpyz( uiInfo.serverStatus.motd, "Welcome to Jedi Academy MP!", sizeof( uiInfo.serverStatus.motd ) );
 		len = strlen(uiInfo.serverStatus.motd);
 	} 
 	if (len != uiInfo.serverStatus.motdLen) {
@@ -8635,7 +8776,7 @@ void UI_SetSiegeTeams(void)
     if (BG_SiegeGetValueGroup(siege_info, "Teams", teams)) {
         siege_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, 1024);
         if (buf[0] && Q_stricmp(buf, "none")) {
-            strcpy(team1, buf);
+            Q_strncpyz( team1, buf, sizeof( team1 ) );
         }
         else {
             BG_SiegeGetPairedValue(teams, "team1", team1);
@@ -8643,7 +8784,7 @@ void UI_SetSiegeTeams(void)
 
         siege_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, 1024);
         if (buf[0] && Q_stricmp(buf, "none")) {
-            strcpy(team2, buf);
+            Q_strncpyz( team2, buf, sizeof( team2 ) );
         }
         else {
             BG_SiegeGetPairedValue(teams, "team2", team2);
@@ -9219,14 +9360,11 @@ static const char *UI_FeederItemText(float feederID, int index, int column,
 				case SORT_GAME : 
 					game = atoi(Info_ValueForKey(info, "gametype"));
 					if (game >= 0 && game < numTeamArenaGameTypes) {
-						strcpy(needPass,teamArenaGameTypes[game]);
-					} else {
+						Q_strncpyz( needPass, teamArenaGameTypes[game], sizeof(needPass) );					} else {
 						if (ping <= 0)
 						{
-							strcpy(needPass,"Inactive");
-						}
-						strcpy(needPass,"Unknown");
-					}
+							Q_strncpyz( needPass, "Inactive", sizeof(needPass) );						}
+						Q_strncpyz( needPass, "Unknown", sizeof(needPass) );					}
 
 					return needPass;
 				case SORT_PING : 
@@ -9687,8 +9825,7 @@ void UI_SiegeSetCvarsForClass(siegeClass_t *scl)
 				if (scl->saber1[0] &&
 					scl->saber2[0])
 				{
-					strcpy(saberType, "gfx/hud/w_icon_duallightsaber");
-				} //fixme: need saber data access on ui to determine if staff, "gfx/hud/w_icon_saberstaff"
+					Q_strncpyz( saberType, "gfx/hud/w_icon_duallightsaber", sizeof(saberType) );				} //fixme: need saber data access on ui to determine if staff, "gfx/hud/w_icon_saberstaff"
 				else
 				{
 					char buf[1024];
@@ -9696,17 +9833,14 @@ void UI_SiegeSetCvarsForClass(siegeClass_t *scl)
 					{
 						if ( !Q_stricmp( buf, "SABER_STAFF" ) )
 						{
-							strcpy(saberType, "gfx/hud/w_icon_saberstaff");
-						}
+							Q_strncpyz( saberType, "gfx/hud/w_icon_saberstaff", sizeof(saberType) );						}
 						else
 						{
-							strcpy(saberType, "gfx/hud/w_icon_lightsaber");
-						}
+							Q_strncpyz( saberType, "gfx/hud/w_icon_lightsaber", sizeof(saberType) );						}
 					}
 					else
 					{
-						strcpy(saberType, "gfx/hud/w_icon_lightsaber");
-					}
+						Q_strncpyz( saberType, "gfx/hud/w_icon_lightsaber", sizeof(saberType) );					}
 				}
 
 				//[SIEGECVARFIX]
@@ -10561,10 +10695,15 @@ static void UI_BuildQ3Model_List(void)
     UI_AllocMem((void**)&dirlist, 8192);
     UI_AllocMem((void**)&filelist, 8192);
 
-    if (!dirlist || !filelist) {
-        // handle allocation failure if necessary
-        return;
+if (!dirlist || !filelist) {
+    if (dirlist) {
+        UI_FreeMem(dirlist);
     }
+    if (filelist) {
+        UI_FreeMem(filelist);
+    }
+    return;
+}
 
     uiInfo.q3HeadCount = 0;
 
@@ -10917,7 +11056,7 @@ static void UI_BuildPlayerModel_List(qboolean inGameLoad)
 
 
 
-
+extern void BG_ResetAlloc(void);
 /*
 =================
 UI_Init
@@ -10933,7 +11072,7 @@ void _UI_Init( qboolean inGameLoad ) {
 	//register this freakin thing now
 	vmCvar_t siegeTeamSwitch;
 	trap_Cvar_Register(&siegeTeamSwitch, "g_siegeTeamSwitch", "1", CVAR_SERVERINFO|CVAR_ARCHIVE);
-
+	BG_ResetAlloc();   // REQUIRED
 	// Get the list of possible languages
 	uiInfo.languageCount = trap_SP_GetNumLanguages();	// this does a dir scan, so use carefully
 
@@ -11369,18 +11508,12 @@ static void UI_DisplayDownloadInfo( const char *downloadName, float centerPoint,
 	UI_FillRect( 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, colorLtGreyAlpha );
 
 	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 0);	// "Downloading:"
-	strcpy(sDownLoading,s?s:"");
-	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 1);	// "Estimated time left:"
-	strcpy(sEstimatedTimeLeft,s?s:"");
-	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 2);	// "Transfer rate:"
-	strcpy(sTransferRate,s?s:"");
-	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 3);	// "of"
-	strcpy(sOf,s?s:"");
-	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 4);	// "copied"
-	strcpy(sCopied,s?s:"");
-	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 5);	// "sec."
-	strcpy(sSec,s?s:"");
-
+	Q_strncpyz( sDownLoading, s?s:"", sizeof(sDownLoading) );	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 1);	// "Estimated time left:"
+	Q_strncpyz( sEstimatedTimeLeft, s?s:"", sizeof(sEstimatedTimeLeft) );	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 2);	// "Transfer rate:"
+	Q_strncpyz( sTransferRate, s?s:"", sizeof(sTransferRate) );	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 3);	// "of"
+	Q_strncpyz( sOf, s?s:"", sizeof(sOf) );	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 4);	// "copied"
+	Q_strncpyz( sCopied, s?s:"", sizeof(sCopied) );	s = GetCRDelineatedString("MENUS","DOWNLOAD_STUFF", 5);	// "sec."
+	Q_strncpyz( sSec, s?s:"", sizeof(sSec) );
 	downloadSize = trap_Cvar_VariableValue( "cl_downloadSize" );
 	downloadCount = trap_Cvar_VariableValue( "cl_downloadCount" );
 	downloadTime = trap_Cvar_VariableValue( "cl_downloadTime" );
@@ -11490,8 +11623,7 @@ void UI_DrawConnectScreen( qboolean overlay ) {
 		Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite, sStringEdTemp, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
 	} else {
 		trap_SP_GetStringTextString("MENUS_CONNECTING_TO", sStringEdTemp, sizeof(sStringEdTemp));
-		strcpy(text, va(/*"Connecting to %s"*/sStringEdTemp, cstate.servername));
-		Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite,text , ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
+		Q_strncpyz( text, va(/*"Connecting to %s"*/sStringEdTemp, cstate.servername), sizeof(text) );		Text_PaintCenter(centerPoint, yStart + 48, scale, colorWhite,text , ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_MEDIUM);
 	}
 
 	//UI_DrawProportionalString( 320, 96, "Press Esc to abort", UI_CENTER|UI_SMALLFONT|UI_DROPSHADOW, menu_text_color );

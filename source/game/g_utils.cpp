@@ -33,14 +33,14 @@ void AddRemap(const char *oldShader, const char *newShader, float timeOffset) {
 	for (i = 0; i < remapCount; i++) {
 		if (Q_stricmp(oldShader, remappedShaders[i].oldShader) == 0) {
 			// found it, just update this one
-			strcpy(remappedShaders[i].newShader,newShader);
+			Q_strncpyz( remappedShaders[i].newShader, newShader, sizeof( remappedShaders[i].newShader ) );
 			remappedShaders[i].timeOffset = timeOffset;
 			return;
 		}
 	}
 	if (remapCount < MAX_SHADER_REMAPS) {
-		strcpy(remappedShaders[remapCount].newShader,newShader);
-		strcpy(remappedShaders[remapCount].oldShader,oldShader);
+		Q_strncpyz( remappedShaders[remapCount].newShader, newShader, sizeof( remappedShaders[remapCount].newShader ) );
+		Q_strncpyz( remappedShaders[remapCount].oldShader, oldShader, sizeof( remappedShaders[remapCount].oldShader ) );
 		remappedShaders[remapCount].timeOffset = timeOffset;
 		remapCount++;
 	}
@@ -768,11 +768,11 @@ void G_SpewEntList(void)
 
 			if (ent->classname && ent->classname[0])
 			{
-				strcpy(className, ent->classname);
+				Q_strncpyz( className, ent->classname, sizeof( className ) );
 			}
 			else
 			{
-				strcpy(className, "Unknown");
+				Q_strncpyz( className, "Unknown", sizeof( className ) );
 			}
 			str = va("ENT %4i: Classname %s\n", ent->s.number, className);
 			Com_Printf(str);
@@ -1657,6 +1657,11 @@ extern void Touch_Button(gentity_t *ent, gentity_t *other, trace_t *trace );
 extern qboolean gSiegeRoundBegun;
 static vec3_t	playerMins = {-15, -15, DEFAULT_MINS_2};
 static vec3_t	playerMaxs = {15, 15, DEFAULT_MAXS_2};
+
+// Some SP/CoOp BSPs (and some custom MP BSPs) make the simple point trace used by
+// TryUse miss an emplaced gun / usable entity even when the player is right next to it.
+// Fallback to a very conservative nearby search (forward cone + distance + LOS) that
+// only considers SVF_PLAYER_USABLE entities and explicitly ignores missiles.
 void TryUse( gentity_t *ent )
 {
 	gentity_t	*target;
@@ -1734,13 +1739,14 @@ void TryUse( gentity_t *ent )
 
 	//Trace ahead to find a valid target
 	trap_Trace( &trace, src, vec3_origin, vec3_origin, dest, ent->s.number, MASK_OPAQUE|CONTENTS_SOLID|CONTENTS_BODY|CONTENTS_ITEM|CONTENTS_CORPSE );
-	
-	if ( trace.fraction == 1.0f || trace.entityNum < 1 )
+		if ( trace.fraction == 1.0f || trace.entityNum < 1 )
 	{
 		goto tryJetPack;
 	}
-
-	target = &g_entities[trace.entityNum];
+	else
+	{
+		target = &g_entities[trace.entityNum];
+	}
 
 //Enable for corpse dragging
 #if 0
@@ -1809,10 +1815,10 @@ void TryUse( gentity_t *ent )
 		}
 		ent->client->ps.weaponTime = ent->client->ps.torsoTimer;
 		/*
-		NPC_SetAnim( ent, SETANIM_TORSO, BOTH_FORCEPUSH, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(ent, SETANIM_TORSO, BOTH_FORCEPUSH, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		if ( !VectorLengthSquared( ent->client->ps.velocity ) )
 		{
-			NPC_SetAnim( ent, SETANIM_LEGS, BOTH_FORCEPUSH, SETANIM_FLAG_NORMAL|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(ent, SETANIM_LEGS, BOTH_FORCEPUSH, SETANIM_FLAG_NORMAL|SETANIM_FLAG_HOLD);
 		}
 		*/
 		if ( target->touch == Touch_Button )

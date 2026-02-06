@@ -152,6 +152,60 @@ void BG_AttachToSandCreature( void *ghoul2,
 }
 //[/NPCSandCreature]
 
+// Attach a held victim to a Wampa's hand.
+// We match BG_AttachToRancor/SandCreature semantics: all out_* are optional.
+void BG_AttachToWampa( void *ghoul2,
+				   float wampaYaw,
+				   vec3_t wampaOrigin,
+				   int time,
+				   qhandle_t *modelList,
+				   vec3_t modelScale,
+				   vec3_t out_origin,
+				   vec3_t out_angles,
+				   vec3_t out_axis[3] )
+{
+	mdxaBone_t	boltMatrix;
+	int boltIndex;
+	vec3_t wampaAngles;
+	vec3_t temp_angles;
+
+	// Getting the bolt here
+	boltIndex = trap_G2API_AddBolt(ghoul2, 0, "*r_hand");
+
+	VectorSet( wampaAngles, 0, wampaYaw, 0 );
+	trap_G2API_GetBoltMatrix( ghoul2, 0, boltIndex,
+			&boltMatrix, wampaAngles, wampaOrigin, time,
+			modelList, modelScale );
+
+	// Storing ent position, bolt position, and bolt axis
+	if ( out_origin )
+	{
+		BG_GiveMeVectorFromMatrix( &boltMatrix, ORIGIN, out_origin );
+	}
+	if ( out_axis )
+	{
+		BG_GiveMeVectorFromMatrix( &boltMatrix, NEGATIVE_Y, out_axis[0] );
+		BG_GiveMeVectorFromMatrix( &boltMatrix, POSITIVE_X, out_axis[1] );
+		BG_GiveMeVectorFromMatrix( &boltMatrix, POSITIVE_Z, out_axis[2] );
+
+		if ( out_angles )
+		{
+			vectoangles( out_axis[0], out_angles );
+			vectoangles( out_axis[2], temp_angles );
+			out_angles[ROLL] = -temp_angles[PITCH];
+		}
+	}
+	else if ( out_angles )
+	{
+		vec3_t temp_axis[3];
+		BG_GiveMeVectorFromMatrix( &boltMatrix, NEGATIVE_Y, temp_axis[0] );
+		BG_GiveMeVectorFromMatrix( &boltMatrix, POSITIVE_Z, temp_axis[2] );
+		vectoangles( temp_axis[0], out_angles );
+		vectoangles( temp_axis[2], temp_angles );
+		out_angles[ROLL] = -temp_angles[PITCH];
+	}
+}
+
 
 #define	MAX_VARIANTS 8
 qboolean BG_GetRootSurfNameWithVariant( void *ghoul2, const char *rootSurfName, char *returnSurfName, int returnSize )

@@ -55,8 +55,7 @@ void CG_LoadingItem( int itemNum ) {
 		return;
 	}
 
-	strcpy(upperKey, item->classname);
-	CG_LoadingString( CG_GetStringEdString("SP_INGAME",Q_strupr(upperKey)) );
+	Q_strncpyz( upperKey, item->classname, sizeof(upperKey) );	CG_LoadingString( CG_GetStringEdString("SP_INGAME",Q_strupr(upperKey)) );
 }
 
 /*

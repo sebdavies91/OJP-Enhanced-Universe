@@ -262,7 +262,7 @@ void NPC_GM_Pain(gentity_t *self, gentity_t *attacker, int damage)
 			self->client->ps.stats[STAT_ARMOR] = 0;//no more armor
 			self->NPC->investigateDebounceTime = 0;//stop recharging
 
-			NPC_SetAnim( self, SETANIM_BOTH, BOTH_ALERT1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(self, SETANIM_BOTH, BOTH_ALERT1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			TIMER_Set( self, "attackDelay", self->client->ps.torsoTimer );
 			G_AddEvent( self, Q_irand( EV_DEATH1, EV_DEATH3 ), self->health );
 		}
@@ -561,7 +561,7 @@ void NPC_GM_StartLaser( void )
 	{//haven't already started a laser attack
 		//warm up for the beam attack
 #if 0
-		NPC_SetAnim( NPC, SETANIM_TORSO, TORSO_RAISEWEAP2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_RAISEWEAP2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 #endif
 		TIMER_Set( NPC, "beamDelay", NPC->client->ps.torsoTimer );
 		TIMER_Set( NPC, "attackDelay", NPC->client->ps.torsoTimer+3000 );
@@ -581,7 +581,7 @@ void GM_StartGloat( void )
 	NPC_SetSurfaceOnOff( NPC, "torso_collar", TURN_ON );
 	NPC_SetSurfaceOnOff( NPC, "torso_galaktorso", TURN_ON );
 
-	NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_STAND2TO1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+	NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_STAND2TO1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 	NPC->client->ps.legsTimer += 500;
 	NPC->client->ps.torsoTimer += 500;
 }
@@ -610,7 +610,7 @@ void NPC_BSGM_Attack( void )
 			if ( NPC->client->ps.torsoTimer <= 500 )
 			{
 				G_AddVoiceEvent( NPC, Q_irand( EV_VICTORY1, EV_VICTORY3 ), 3000 );
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_TRIUMPHANT1START, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_TRIUMPHANT1START, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				NPC->client->ps.legsTimer += 500;
 				NPC->client->ps.torsoTimer += 500;
 			}
@@ -619,7 +619,7 @@ void NPC_BSGM_Attack( void )
 		{
 			if ( NPC->client->ps.torsoTimer <= 500 )
 			{
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_TRIUMPHANT1STARTGESTURE, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_TRIUMPHANT1STARTGESTURE, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				NPC->client->ps.legsTimer += 500;
 				NPC->client->ps.torsoTimer += 500;
 			}
@@ -628,7 +628,7 @@ void NPC_BSGM_Attack( void )
 		{
 			if ( NPC->client->ps.torsoTimer <= 500 )
 			{
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_TRIUMPHANT1STOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_TRIUMPHANT1STOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				NPC->client->ps.legsTimer += 500;
 				NPC->client->ps.torsoTimer += 500;
 			}
@@ -637,7 +637,7 @@ void NPC_BSGM_Attack( void )
 		{
 			if ( NPC->client->ps.torsoTimer <= 500 )
 			{
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_STAND1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_STAND1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				NPC->client->ps.legsTimer = -1;
 				NPC->client->ps.torsoTimer = -1;
 			}
@@ -708,14 +708,14 @@ void NPC_BSGM_Attack( void )
 					smackDir[2] = 1;
 					VectorNormalize( smackDir );
 					G_Throw( NPC->enemy, smackDir, 50 );
-					NPC_SetAnim( NPC->enemy, SETANIM_BOTH, knockAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC->enemy, SETANIM_BOTH, knockAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				}
 				else
 				{//uppercut
 					//throw them
 					G_Throw( NPC->enemy, smackDir, 100 );
 					//make them backflip
-					NPC_SetAnim( NPC->enemy, SETANIM_BOTH, BOTH_KNOCKDOWN5, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC->enemy, SETANIM_BOTH, BOTH_KNOCKDOWN5, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				}
 				//done with the damage
 				NPCInfo->blockedDebounceTime = 1;
@@ -741,7 +741,7 @@ void NPC_BSGM_Attack( void )
 					laserAnim = BOTH_ATTACK7;
 				}
 				*/
-				NPC_SetAnim( NPC, SETANIM_BOTH, laserAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, laserAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				TIMER_Set( NPC, "attackDelay", NPC->client->ps.torsoTimer + Q_irand( 1000, 3000 ) );
 				//turn on beam effect
 				NPC->lockCount = 2;
@@ -767,7 +767,7 @@ void NPC_BSGM_Attack( void )
 				G_FreeEntity( NPCInfo->coverTarg );
 				NPC->s.loopSound = 0;
 #if 0
-				NPC_SetAnim( NPC, SETANIM_TORSO, TORSO_DROPWEAP2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_DROPWEAP2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 #endif
 				TIMER_Set( NPC, "attackDelay", NPC->client->ps.torsoTimer );
 			}
@@ -847,7 +847,7 @@ void NPC_BSGM_Attack( void )
 				}
 #endif
 				//FIXME: swing sound
-				NPC_SetAnim( NPC, SETANIM_BOTH, swingAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, swingAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 				TIMER_Set( NPC, "attackDelay", NPC->client->ps.torsoTimer + Q_irand( 1000, 3000 ) );
 				//delay the hurt until the proper point in the anim
 				TIMER_Set( NPC, "smackTime", 600 );
@@ -1179,7 +1179,7 @@ void NPC_BSGM_Attack( void )
 
 			//animate me
 #if 0
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK6, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK6, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 #endif
 			TIMER_Set( NPC, "attackDelay", NPC->client->ps.torsoTimer );
 			TIMER_Set( NPC, "standTime", NPC->client->ps.legsTimer );

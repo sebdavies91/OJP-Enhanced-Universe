@@ -23,6 +23,14 @@
 qboolean BG_SabersOff( playerState_t *ps );
 extern stringID_table_t WPTable[];
 extern stringID_table_t BSTable[];
+
+// Tag parsing mutates the command buffer in-place.
+//
+// NOTE: This used to be named ParseTags, but some MSVC configurations can
+// emit C4028 if a stale/alternate prototype for ParseTags is seen during
+// compilation (e.g. via PCH/tooling). Renaming avoids any potential
+// prototype collisions while keeping behavior identical.
+static void ICARUS_ParseTags( int entID, char *data );
 //[CoOp]
 //[SuperDindon]
 extern stringID_table_t TeamTable[];
@@ -8170,7 +8178,7 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		break;
 
 	case MOVE: // camera move
-		ParseTags(entID, data);
+        ICARUS_ParseTags( entID, (char *)data );
 		if (sscanf(data, "%*s %f %f %f %*s %f", &vector_data[0], &vector_data[1], &vector_data[2], &float_data) != 4) {
 			G_DebugPrint(WL_WARNING, "Q3_GetVector: Failed to read 4 values for camera move\n");
 			return 0; // or handle the error as needed
@@ -8179,7 +8187,7 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		break;
 
 	case PAN:
-		ParseTags(entID, data);
+        ICARUS_ParseTags( entID, (char *)data );
 		if (sscanf(data, "%*s %f %f %f %*s %*s %f %f %f %*s %f",
 			&vector_data[0], &vector_data[1], &vector_data[2],
 			&vector2_data[0], &vector2_data[1], &vector2_data[2],
@@ -8383,8 +8391,7 @@ void ProcessTag( int entID, char *startpoint )
 	endpoint = strchr( s, '$');
 	endpoint++;
 
-	strcpy(endtext, endpoint);
-
+	Q_strncpyz( endtext, endpoint, sizeof(endtext) );
 	//bump the string to where the entity name starts
 	s += 4;
 
@@ -8434,17 +8441,20 @@ void ProcessTag( int entID, char *startpoint )
 	}
 	*/
 
-	//replace the tagname with the data
-	//startpoint--;
-	*startpoint = '\0';
-	strcat(startpoint, va("< %f %f %f >", data[0], data[1], data[2]));
-
-	strcat(startpoint, endtext);
+	// Replace the tagname with the data.
+	// startpoint points into a script command string buffer, and the original
+	// code used strcat() which can overflow if the replacement expands.
+	// Keep behavior the same for valid inputs, but cap writes to MAX_QPATH.
+	{
+		char repl[MAX_QPATH];
+		Com_sprintf( repl, sizeof(repl), "< %f %f %f >%s", data[0], data[1], data[2], endtext );
+		Q_strncpyz( startpoint, repl, MAX_QPATH );
+	}
 }
 
 
 //replaces any tags with their related data
-void ParseTags( int entID, const char *data )
+static void ICARUS_ParseTags( int entID, char *data )
 {
 	char *tagstart = NULL;
 	while((tagstart = strchr(data, '$')) != NULL)
@@ -8644,7 +8654,7 @@ void ToggleNPCWinterGear(gentity_t* ent)
 
 			if (nextPipe)
 			{//this should always be true for good species skins I think
-				strcpy(nextPipe + 1, "torso_g1|lower_e1\0");
+				Q_strncpyz(nextPipe + 1, "torso_g1|lower_e1", MAX_QPATH - ((nextPipe + 1) - model));
 			}
 
 			ent->s.modelindex = G_ModelIndex(model);

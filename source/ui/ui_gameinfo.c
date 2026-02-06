@@ -61,7 +61,7 @@ int UI_ParseInfos( char *buf, int max, char *infos[] ) {
 
 			token = COM_ParseExt( (const char **)&buf, qfalse );
 			if ( !token[0] ) {
-				strcpy( token, "<NULL>" );
+				token = "<NULL>";
 			}
 			Info_SetValueForKey( info, key, token );
 		}
@@ -152,8 +152,7 @@ void UI_LoadArenas( void ) {
 	dirptr  = dirlist;
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
-		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strncpyz( filename, "scripts/", sizeof(filename) );		Q_strcat( filename, sizeof(filename), dirptr);
 		UI_LoadArenasFromFile(filename);
 	}
 //	trap_Print( va( "%i arenas parsed\n", ui_numArenas ) );
@@ -319,8 +318,7 @@ void UI_LoadBots( void ) {
 	dirptr  = dirlist;
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
-		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strncpyz( filename, "scripts/", sizeof(filename) );		Q_strcat( filename, sizeof(filename), dirptr);
 		UI_LoadBotsFromFile(filename);
 	}
 //	trap_Print( va( "%i bots parsed\n", ui_numBots ) );

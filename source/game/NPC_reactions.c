@@ -599,12 +599,12 @@ void NPC_Touch(gentity_t *self, gentity_t *other, trace_t *trace)
 	if ( self->message && self->health <= 0 )
 	{//I am dead and carrying a key
 		//if ( other && player && player->health > 0 && other == player )
-		if (other && other->client && other->s.number < MAX_CLIENTS)
+		if (other && other->client && other->s.number < level.maxclients)
 		{//player touched me
 			//[CoOp]
 			char *text;
 			qboolean	keyTaken;
-			int sendnum = -1; // ensiform - added this
+			int sendnum = other->s.number; // send to the player who touched me
 			//give him my key
 			if ( Q_stricmp( "goodie", self->message ) == 0 )
 			{//a goodie key
@@ -1121,7 +1121,7 @@ void NPC_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 			Jedi_Ambush( NPC );
 		}
 		//Run any use instructions
-		if ( activator && activator->s.number == 0 && self->client->NPC_class == CLASS_GONK  )
+		if ( activator && activator->client && activator->s.number < level.maxclients && self->client->NPC_class == CLASS_GONK  )
 		{
 			// must be using the gonk, so attempt to give battery power.
 			// NOTE: this will steal up to MAX_BATTERIES for the activator, leaving the residual on the gonk for potential later use.
@@ -1155,8 +1155,7 @@ void NPC_Use( gentity_t *self, gentity_t *other, gentity_t *activator )
 //		{//Heal me NOW, dammit!
 //			NPC_TakePatient( activator );
 //		}
-		else if (activator && !self->enemy 
-			&& activator->s.number == 0 
+		else if (activator && activator->client && activator->s.number < level.maxclients && !self->enemy 
 			&& /*!gi.VoiceVolume[self->s.number] &&*/ !(self->NPC->scriptFlags&SCF_NO_RESPONSE) )
 			//rwwFIXMEFIXME: voice volume support?
 		{//I don't have an enemy and I'm not talking and I was used by the player

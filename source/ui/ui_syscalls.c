@@ -515,7 +515,11 @@ void trap_G2API_CollisionDetect (
 	float fRadius
 	)
 {
-	syscall ( UI_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum, rayStart, rayEnd, scale, traceFlags, useLod, PASSFLOAT(fRadius) );
+	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
+	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+
+	syscall(UI_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum,
+		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
 }
 
 void trap_G2API_CollisionDetectCache ( 
@@ -533,7 +537,11 @@ void trap_G2API_CollisionDetectCache (
 	float fRadius
 	)
 {
-	syscall ( UI_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum, rayStart, rayEnd, scale, traceFlags, useLod, PASSFLOAT(fRadius) );
+	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
+	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+
+	syscall(UI_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum,
+		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
 }
 
 void trap_G2API_CleanGhoul2Models(void **ghoul2Ptr)

@@ -173,6 +173,9 @@
     <ClCompile Include="..\game\WalkerNPC.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="cg_g2trace.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\game\anims.h">

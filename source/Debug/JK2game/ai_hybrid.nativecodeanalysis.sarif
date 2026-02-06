@@ -1,0 +1,171 @@
+{
+  "version": "2.1.0",
+  "$schema": "https://schemastore.azurewebsites.net/schemas/json/sarif-2.1.0-rtm.5.json",
+  "runs": [
+    {
+      "results": [],
+      "tool": {
+        "driver": {
+          "name": "PREfast",
+          "fullName": "PREfast Code Analysis",
+          "version": "14.42.34444.0",
+          "informationUri": "https://aka.ms/cpp/ca"
+        }
+      },
+      "invocations": [
+        {
+          "executionSuccessful": true
+        }
+      ],
+      "artifacts": [
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/ai_hybrid.c"
+          },
+          "roles": [
+            "analysisTarget"
+          ],
+          "hashes": {
+            "sha-256": "94d05a16306b88758a9180617eb755bca25502e9d235c27e887555d9c2c2e870"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/g_local.h"
+          },
+          "hashes": {
+            "sha-256": "f0ebd8d9fcada93edccafbe5a46412f29c7746e738457ac8fa02355ad1323ff0"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/q_shared.h"
+          },
+          "hashes": {
+            "sha-256": "9df108f337d59bab6b6ec0fa665133477c233939df51683626b561520d3cabab"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/qcommon/disablewarnings.h"
+          },
+          "hashes": {
+            "sha-256": "6cdf558ce178a9519a722b9e532257e5d0758afbb5dd33ec887cfcae35e80225"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/teams.h"
+          },
+          "hashes": {
+            "sha-256": "319624b128b9505c3994a2a756187bb6bcde8679fe17ac6120b797d12d997c8d"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/surfaceflags.h"
+          },
+          "hashes": {
+            "sha-256": "fb033f49459ae70def408274544fda0dd69e23dc92277a3ebd64835bcb410bae"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/qcommon/tags.h"
+          },
+          "hashes": {
+            "sha-256": "f695c444b164b40c60ad7c0e0d90eabb034706ee016447afd173c859c3286cba"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/bg_public.h"
+          },
+          "hashes": {
+            "sha-256": "609d2ff7b10df326d684206001d57c95c87da1161d8847decaec3046a4e06606"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/bg_weapons.h"
+          },
+          "hashes": {
+            "sha-256": "02da2584c226dae1eb3eaf5caef45bc1f3afa1bee1b3f5d1ab61aefed6dfa8c5"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/anims.h"
+          },
+          "hashes": {
+            "sha-256": "f876c690759dc1ea9e3a0abd6552d5cd5fcdcb21ab6f13e44b6a29df7017155f"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/bg_vehicles.h"
+          },
+          "hashes": {
+            "sha-256": "1aebb4fac0820cd511b2523c4d4926c69f81a5e36129453086fa1558a9f90817"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/g_public.h"
+          },
+          "hashes": {
+            "sha-256": "277fee3aeb3e9647813ea8499ef590ecea5fb62b7fb035fa13b18a18bc09d64a"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/b_public.h"
+          },
+          "hashes": {
+            "sha-256": "3b24775675bc1e3c28c7a04731f9e2e60f97f32fdb5b8b8b86acded3643c22ea"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/ai.h"
+          },
+          "hashes": {
+            "sha-256": "ad796e989626eb1e827157d625ae3a2f73b6fec34ebd474878d87b18bc9e826c"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/g_team.h"
+          },
+          "hashes": {
+            "sha-256": "0a649dd76c74a5a6d2a2a37fe8b6ed1cb9230b4c711a4c61cb8eb9755c7065a9"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/ai_main.h"
+          },
+          "hashes": {
+            "sha-256": "8974919a7ef27e27c8cbef52177a35d4f5ef241370229e769a0d7154163937c5"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/bg_saga.h"
+          },
+          "hashes": {
+            "sha-256": "3be101667203f63a19f1c0e8709ded33f62e8543e38bd47f20ffd79b09674aba"
+          }
+        },
+        {
+          "location": {
+            "uri": "file:///e:/program files (x86)/lucasarts/star wars jedi knight jedi academy (iii)/gamedata/source/game/botlib.h"
+          },
+          "hashes": {
+            "sha-256": "d5fd9e07a4a009145b8dc6595422fcfb3aa33a681295efec56a7ca6f8ca3e3d2"
+          }
+        }
+      ]
+    }
+  ]
+}

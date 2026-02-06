@@ -1,9 +1,6 @@
 //[SPPortComplete]
 #include "b_local.h"
 #include "g_nav.h"
-
-extern void Boba_FireDecide( void );
-
 void Seeker_Strafe( void );
 
 #define VELOCITY_DECAY		0.7f
@@ -588,7 +585,9 @@ void Seeker_FindEnemy( void )
 	float closestDist = SEEKER_SEEK_RADIUS * SEEKER_SEEK_RADIUS + 1;
 	//[/SeekerItemNpc]
 	
-	if(NPC->originalactivator && NPC->originalactivator->client->ps.weapon == WP_SABER && !NPC->originalactivator->client->ps.saberHolstered)
+	if ( NPC->originalactivator && NPC->originalactivator->client
+		&& NPC->originalactivator->client->ps.weapon == WP_SABER
+		&& !NPC->originalactivator->client->ps.saberHolstered )
 	{
 		NPC->enemy=NULL;
 		return;
@@ -702,7 +701,10 @@ void Seeker_FollowPlayer( void )
 
 	if(NPC->originalactivator && NPC->originalactivator->client)
 	{
-		if(NPC->originalactivator->client->remote != NPC || NPC->originalactivator->health <= 0){
+		if ( NPC->originalactivator->client->remote != NPC
+			|| NPC->originalactivator->health <= 0
+			|| NPC->originalactivator->client->pers.connected != CON_CONNECTED )
+		{
 			//have us fall down and explode.
 			NPC->NPC->aiFlags |= NPCAI_CUSTOM_GRAVITY;
 			return;
@@ -993,12 +995,17 @@ void NPC_BSSeeker_Default( void )
 	}
 
 	//[SeekerItemNpc]
-	if ( NPC->client->NPC_class != CLASS_BOBAFETT && NPC->originalactivator && NPC->originalactivator->health <= 0){
-
-		G_Damage( NPC, NPC, NPC, NULL, NULL, NPC->health, 0, MOD_COLLISION );
-		return;
+	if ( NPC->client->NPC_class != CLASS_BOBAFETT && NPC->originalactivator )
+	{
+		// If our original activator is dead or disconnected, remove the seeker to avoid dangling control/ownership.
+		if ( NPC->originalactivator->health <= 0
+			|| ( NPC->originalactivator->client && NPC->originalactivator->client->pers.connected != CON_CONNECTED ) )
+		{
+			G_Damage( NPC, NPC, NPC, NULL, NULL, NPC->health, 0, MOD_COLLISION );
+			return;
+		}
 	}
-	//[/SeekerItemNpc]
+//[/SeekerItemNpc]
 
 
 	/*
@@ -1025,25 +1032,50 @@ void NPC_BSSeeker_Default( void )
 
 	if ( NPC->enemy && NPC->enemy->client && NPC->enemy->health && NPC->enemy->inuse )
 	{
-		if ( NPC->client->NPC_class != CLASS_BOBAFETT && NPC->originalactivator
-			//[CoOp]
-			//[SeekerItemNpc] - dont attack our owner or leader, and dont shoot at dead people
-			&& ( NPC->enemy == NPC->originalactivator || NPC->enemy->client->sess.sessionTeam == NPC->originalactivator->client->sess.sessionTeam || (NPC->enemy->originalactivator && NPC->enemy->originalactivator == NPC->originalactivator) || (NPC->enemy->originalactivator && NPC->enemy->originalactivator->client->sess.sessionTeam == NPC->originalactivator->client->sess.sessionTeam)  || !NPC->enemy->inuse || NPC->health <= 0 ||
-			( NPC->enemy->client && NPC->enemy->client->NPC_class == CLASS_SEEKER )) )
-			//&& ( NPC->enemy->s.number < MAX_CLIENTS || ( NPC->enemy->client && NPC->enemy->client->NPC_class == CLASS_SEEKER )) )
-			//[/SeekerItemNpc]
-			//&& ( NPC->enemy->s.number == 0 || ( NPC->enemy->client && NPC->enemy->client->NPC_class == CLASS_SEEKER )) )
-			//[/CoOp]
+		if ( NPC->client->NPC_class != CLASS_BOBAFETT && NPC->originalactivator )
 		{
-			//hacked to never take the player as an enemy, even if the player shoots at it
-			NPC->enemy = NULL;
+			//[CoOp]
+			//[SeekerItemNpc] - don't attack our owner/leader, and don't shoot at dead people.
+			// Guard sessionTeam lookups: originalactivator may not be client-backed.
+			gentity_t *owner = NPC->originalactivator;
+			qboolean avoidEnemy = qfalse;
+
+			if ( NPC->enemy == owner )
+			{
+				avoidEnemy = qtrue;
+			}
+			else if ( owner->client && NPC->enemy->client
+				&& NPC->enemy->client->sess.sessionTeam == owner->client->sess.sessionTeam )
+			{
+				avoidEnemy = qtrue;
+			}
+			else if ( NPC->enemy->originalactivator )
+			{
+				if ( NPC->enemy->originalactivator == owner )
+				{
+					avoidEnemy = qtrue;
+				}
+				else if ( owner->client && NPC->enemy->originalactivator->client
+					&& NPC->enemy->originalactivator->client->sess.sessionTeam == owner->client->sess.sessionTeam )
+				{
+					avoidEnemy = qtrue;
+				}
+			}
+
+			if ( avoidEnemy || NPC->health <= 0
+				|| ( NPC->enemy->client && NPC->enemy->client->NPC_class == CLASS_SEEKER ) )
+			{
+				//hacked to never take the player as an enemy, even if the player shoots at it
+				NPC->enemy = NULL;
+			}
+			//[/SeekerItemNpc]
+			//[/CoOp]
 		}
 		else
 		{
 			Seeker_Attack();
 			if ( NPC->client->NPC_class == CLASS_BOBAFETT )
 			{
-				Boba_FireDecide();
 			}
 			//[SeekerItemNpc]
 			//still follow our target, be it a targeted enemy or our owner, but only if we aren't allowed to hunt down enemies.

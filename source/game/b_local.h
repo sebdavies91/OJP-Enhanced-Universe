@@ -9,6 +9,8 @@
 
 #include "ai.h"
 
+extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
+
 #define	AI_TIMERS 0//turn on to see print-outs of AI/nav timing
 //
 // Navigation susbsystem
@@ -228,7 +230,7 @@ extern qboolean G_CheckInSolid (gentity_t *self, qboolean fix);
 //MCG - End============================================================
 
 // NPC.cpp
-extern void NPC_SetAnim(gentity_t *ent, int type, int anim, int priority);
+extern void NPC_SetAnim(gentity_t *ent, int setAnimParts, int anim, int setAnimFlags);
 extern qboolean NPC_EnemyTooFar(gentity_t *enemy, float dist, qboolean toShoot);
 
 // ==================================================================
@@ -353,4 +355,31 @@ extern void NAV_GetLastMove( navInfo_t *info );
 extern qboolean NAV_AvoidCollision( gentity_t *self, gentity_t *goal, navInfo_t *info );
 
 
+// Hazard Trooper / Trooper squad wrapper (SP-inspired)
+qboolean NPC_IsTrooper( gentity_t *actor );
+void NPC_BehaviorSet_Trooper( int bState );
+
+// Jedi behavior set lives in NPC.c (used by other AI modules)
+void NPC_BehaviorSet_Jedi( int bState );
+
+// Boba Fett (SP-style separate AI module)
+void NPC_BehaviorSet_BobaFett( int bState );
+
+// Boba Fett support (implemented in NPC_AI_Jedi.c in this codebase)
+void Boba_FireDecide( void );
+qboolean Boba_Flying( gentity_t *self );
+void Boba_FlyStart( gentity_t *self );
+void Boba_FlyStop( gentity_t *self );
+
+// RocketTrooper (SP-style separate AI module)
+void NPC_BehaviorSet_RocketTrooper( int bState );
+
+// Tusken Raider (SP-style separate AI module)
+void NPC_BehaviorSet_Tusken( int bState );
+
+// Charmed check lives in NPC_utils.c (used by multiple AI modules)
+void G_CheckCharmed( gentity_t *self );
+
 #endif
+
+qboolean RT_Flying( gentity_t *self );

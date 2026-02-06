@@ -1197,7 +1197,9 @@ void G_RunMissile( gentity_t *ent ) {
 			if (ent->parent && ent->parent->client && ent->parent->client->hook == ent) {
 				ent->parent->client->hook = NULL;
 				ent->parent->client->hookhasbeenfired = qfalse;
-				ent->parent->client->fireHeld = qfalse;	  
+				ent->parent->client->fireHeld = qfalse;
+				ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
+				VectorCopy(ent->parent->client->ps.origin, ent->parent->client->ps.lastHitLoc);
 			}
 
 			//racc - make dropped sabers think when they hit a non-impact surface.

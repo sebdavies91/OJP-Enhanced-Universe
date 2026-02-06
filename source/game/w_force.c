@@ -471,7 +471,7 @@ void WP_InitForcePowers( gentity_t *ent )
 	//racc - actually all the NPC should have dumped out of here earlier than this.
 	if (ent->s.eType == ET_NPC && ent->s.number >= MAX_CLIENTS)
 	{ //rwwFIXMEFIXME: Temp
-		strcpy(userinfo, "forcepowers\\7-1-333003000313003120");
+		Q_strncpyz(userinfo, "forcepowers\\7-1-333003000313003120", sizeof(userinfo));
 	}
 	else
 	{
@@ -1357,7 +1357,9 @@ int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacke
 		return -1;
 	}
 
-	if (!(attacked->client && attacked->client->ps.fd.forcePowersActive & (1 << FP_ABSORB) && !attacked->client->ps.userInt3 & (1 << FLAG_ABSORB2)))
+	if ( !( attacked->client
+			&& (attacked->client->ps.fd.forcePowersActive & (1 << FP_ABSORB))
+			&& !(attacked->client->ps.userInt3 & (1 << FLAG_ABSORB2)) ) )
 	{ //absorb is not active
 		return -1;
 	}
@@ -2886,7 +2888,8 @@ qboolean OJP_BlockEnergy(gentity_t *attacker, gentity_t *defender, int dpBlockCo
 		return qfalse;
 	}
 	
-	if ((defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB) && !defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)))
+		if ( (defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB))
+			&& !(defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)) )
 	{ //absorb is not active
 		return qfalse;
 	}
@@ -3020,7 +3023,8 @@ qboolean OJP_BlockInfluence(gentity_t *attacker, gentity_t *defender, int dpBloc
 		return 0;
 	}
 	*/
-	if ((defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB) && !defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)))
+		if ( (defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB))
+			&& !(defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)) )
 	{ //absorb is not active
 		return qfalse;
 	}
@@ -3143,7 +3147,8 @@ qboolean OJP_BlockStatus(gentity_t *attacker, gentity_t *defender, int dpBlockCo
 		return 0;
 	}
 	*/
-	if ((defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB) && !defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)))
+		if ( (defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB))
+			&& !(defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)) )
 	{ //absorb is not active
 		return qfalse;
 	}
@@ -3253,7 +3258,8 @@ qboolean OJP_BlockFocus(gentity_t *attacker, gentity_t *defender, int dpBlockCos
 	}
 	*/
 	
-	if ((defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB) && !defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)))
+		if ( (defender->client->ps.fd.forcePowersActive & (1 << FP_ABSORB))
+			&& !(defender->client->ps.userInt3 & (1 << FLAG_ABSORB2)) )
 	{ //absorb is not active
 		return qfalse;
 	}
@@ -5482,7 +5488,7 @@ qboolean ForceTelepathyCheckDirectNPCTarget( gentity_t *self, trace_t *tr, qbool
 
 		//make sure this plays and that you cannot press fire for about 1 second after this
 		//FIXME: BOTH_FORCEMINDTRICK or BOTH_FORCEDISTRACT
-		//NPC_SetAnim( self, SETANIM_TORSO, BOTH_MINDTRICK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_RESTART|SETANIM_FLAG_HOLD );
+		//NPC_SetAnim(self, SETANIM_TORSO, BOTH_MINDTRICK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_RESTART|SETANIM_FLAG_HOLD);
 		//FIXME: build-up or delay this until in proper part of anim
 		mindTrickDone = qtrue;
 	}
@@ -5502,7 +5508,7 @@ qboolean ForceTelepathyCheckDirectNPCTarget( gentity_t *self, trace_t *tr, qbool
 			WP_ForcePowerStart( self, FP_TELEPATHY, 0 );
 			*tookPower = qtrue;
 		}
-		//NPC_SetAnim( self, SETANIM_TORSO, BOTH_MINDTRICK2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_RESTART|SETANIM_FLAG_HOLD );
+		//NPC_SetAnim(self, SETANIM_TORSO, BOTH_MINDTRICK2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_RESTART|SETANIM_FLAG_HOLD);
 	}
 	//self->client->ps.saberMove = self->client->ps.saberBounceMove = LS_READY;//don't finish whatever saber anim you may have been in
 	self->client->ps.saberBlocked = BLOCKED_NONE;
@@ -6443,7 +6449,8 @@ qboolean CanCounterThrow(gentity_t *self, gentity_t *thrower, int dpBlockCost, q
 	}
 	*/
 	
-	if ((self->client->ps.fd.forcePowersActive & (1 << FP_ABSORB) && !self->client->ps.userInt3 & (1 << FLAG_ABSORB2)))
+		if ( (self->client->ps.fd.forcePowersActive & (1 << FP_ABSORB))
+			&& !(self->client->ps.userInt3 & (1 << FLAG_ABSORB2)) )
 	{ //absorb is not active
 		return qfalse;
 	}
@@ -9723,6 +9730,12 @@ static int ProtectDebounceTime=0;
 static void WP_ForcePowerRun( gentity_t *self, forcePowers_t forcePower, usercmd_t *cmd )
 {
 	extern usercmd_t	ucmd;
+
+	// Defensive: ensure enums used as array indices stay in range.
+	if ( !self || !self->client || (int)forcePower < 0 || (int)forcePower >= NUM_FORCE_POWERS )
+	{
+		return;
+	}
 
 	switch( (int)forcePower )
 	{

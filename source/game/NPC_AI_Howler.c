@@ -162,7 +162,11 @@ static void Howler_Patrol( void )
 
 	if(ClosestPlayer)
 	{//attack enemy players that are close.
-		if(Distance(ClosestPlayer->r.currentOrigin, NPC->r.currentOrigin) < 256 * 256)
+		/* Distance() returns a non-squared distance.
+		 * The old comparison against (256*256) effectively made this
+		 * always true for normal map scales, causing global aggro.
+		 */
+		if ( DistanceSquared( ClosestPlayer->r.currentOrigin, NPC->r.currentOrigin ) < (256.0f * 256.0f) )
 		{
 			G_SetEnemy( NPC, ClosestPlayer );
 		}
@@ -403,15 +407,15 @@ static void Howler_Howl( void )
 					if ( ent->client->ps.torsoAnim != BOTH_SONICPAIN_START 
 						&& ent->client->ps.torsoAnim != BOTH_SONICPAIN_HOLD )
 					{
-						NPC_SetAnim( ent, SETANIM_LEGS, BOTH_SONICPAIN_START, SETANIM_FLAG_NORMAL );
-						NPC_SetAnim( ent, SETANIM_TORSO, BOTH_SONICPAIN_START, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+						NPC_SetAnim(ent, SETANIM_LEGS, BOTH_SONICPAIN_START, SETANIM_FLAG_NORMAL);
+						NPC_SetAnim(ent, SETANIM_TORSO, BOTH_SONICPAIN_START, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 						ent->client->ps.torsoTimer += 100;
 						ent->client->ps.weaponTime = ent->client->ps.torsoTimer;
 					}
 					else if ( ent->client->ps.torsoTimer <= 100 )
 					{//at the end of the sonic pain start or hold anim
-						NPC_SetAnim( ent, SETANIM_LEGS, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_NORMAL );
-						NPC_SetAnim( ent, SETANIM_TORSO, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+						NPC_SetAnim(ent, SETANIM_LEGS, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_NORMAL);
+						NPC_SetAnim(ent, SETANIM_TORSO, BOTH_SONICPAIN_HOLD, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 						ent->client->ps.torsoTimer += 100; 
 						ent->client->ps.weaponTime = ent->client->ps.torsoTimer;
 					}
@@ -487,7 +491,7 @@ static void Howler_Attack( float enemyDist, qboolean howl )
 			attackAnim = BOTH_ATTACK2;
 		}
 
-		NPC_SetAnim( NPC, SETANIM_BOTH, attackAnim, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD | SETANIM_FLAG_RESTART );
+		NPC_SetAnim(NPC, SETANIM_BOTH, attackAnim, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD | SETANIM_FLAG_RESTART);
 		if ( NPCInfo->localState == LSTATE_BERZERK )
 		{//attack again right away
 			TIMER_Set( NPC, "attacking", NPC->client->ps.legsTimer );
@@ -557,7 +561,7 @@ void Howler_Attack( void )
 	{
 		// Going to do ATTACK1
 		TIMER_Set( NPC, "attacking", 1700 + random() * 200 );
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 
 		TIMER_Set( NPC, "attack_dmg", 200 ); // level two damage
 	}
@@ -724,7 +728,7 @@ void NPC_Howler_Pain( gentity_t *self, gentity_t *inflictor, int damage)
 		}
 		*/
 
-		NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+		NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 		TIMER_Set( self, "takingPain", self->client->ps.legsTimer );//2900 );
 
 		if ( self->health > HOWLER_PANIC_HEALTH )
@@ -769,7 +773,7 @@ void NPC_Howler_Pain( gentity_t *self, gentity_t *attacker, int damage )
 
 		VectorCopy( self->NPC->lastPathAngles, self->s.angles );
 
-		NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+		NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 
 		if ( self->NPC )
 		{

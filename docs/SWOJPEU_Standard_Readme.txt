@@ -8,11 +8,13 @@ File Name and Version: OJPEnhancedStandard.rar
 
 Initial Release Date: 01-08-2020
 
-Current Release Date: 15-08-2025
+Current Release Date: 07-02-2026
 
-Filesize: 3.46 GB
+Filesize: 3.66 GB
 
 Installation Instructions: Copy and Paste all the included folders, libraries and executables inside the Jedi Academy/Gamedata folder.
+
+Before Playing: Make sure you delete any previous jampconfig.cfg file in the Jedi Academy/Gamedata/ojpenhanced folder.
 
 How to run: Either double click on "Play_SW_OJP_Enhanced_Universe_Vanilla" to execute the game via the vanilla executables (recommended) or double click on "Play_SW_OJP_Enhanced_Universe_OpenJK" to execute the game via the Open JK executables.
 

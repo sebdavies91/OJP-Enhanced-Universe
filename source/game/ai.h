@@ -42,6 +42,10 @@ typedef enum //# rank_e
 
 qboolean NPC_CheckPlayerTeamStealth( void );
 
+// NOTE: Implemented in NPC_AI_Jedi.c, but used by several other AI modules.
+// Provide a shared prototype so C compilers don't assume an implicit int return.
+qboolean NPC_MoveDirClear( int forwardmove, int rightmove, qboolean reset );
+
 //AI_GRENADIER
 void NPC_BSGrenadier_Default( void );
 
@@ -85,6 +89,9 @@ void NPC_BSWampa_Default( void );
 //[NPCSandCreature]
 void NPC_BSSandCreature_Default( void );
 //[/NPCSandCreature]
+
+//AI_Animal
+void NPC_BSAnimal_Default( void );
 
 
 //Utilities

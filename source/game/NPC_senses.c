@@ -564,6 +564,11 @@ static int G_CheckSightEvents( gentity_t *self, int hFOV, int vFOV, float maxSee
 		if ( mustHaveOwner && !level.alertEvents[i].owner )
 			continue;
 
+		// If it's not even potentially visible (not in PVS), don't spend time
+		// doing FOV and LOS checks.
+		if ( !trap_InPVS( level.alertEvents[i].position, self->r.currentOrigin ) )
+			continue;
+
 		//Must be within range
 		dist = DistanceSquared( level.alertEvents[i].position, self->r.currentOrigin );
 

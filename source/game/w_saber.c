@@ -7,6 +7,37 @@
 #include "g_saberbeh.h"
 //[/SaberSys]
 #define SABER_BOX_SIZE 16.0f
+
+/*
+Racc - Safety helper:
+	Saber entity numbers can become stale (e.g. during removal/level transitions or
+	modded edge cases). Several call sites dereference g_entities[saberEntityNum]
+	without validating the index or inuse flag.
+	
+	This helper keeps behavior the same when data is valid, but avoids crashes
+	when the index is corrupt.
+*/
+// NOTE: GAME_INLINE often expands to a storage-class (e.g. 'static __inline').
+// Adding another 'static' in front can produce MSVC error C2198/E0081.
+// Keep this as a plain file-local helper.
+static gentity_t *G_GetSaberEntSafe( const gentity_t *owner )
+{
+	int entNum;
+	if ( !owner || !owner->client )
+	{
+		return NULL;
+	}
+	entNum = owner->client->ps.saberEntityNum;
+	if ( entNum <= 0 || entNum >= MAX_GENTITIES )
+	{
+		return NULL;
+	}
+	if ( !g_entities[entNum].inuse )
+	{
+		return NULL;
+	}
+	return &g_entities[entNum];
+}
 extern bot_state_t *botstates[MAX_CLIENTS];
 extern qboolean InFront( vec3_t spot, vec3_t from, vec3_t fromAngles, float threshHold );
 extern void G_TestLine(vec3_t start, vec3_t end, int color, int time);
@@ -118,6 +149,8 @@ qboolean ButterFingers(gentity_t *saberent, gentity_t *saberOwner, gentity_t *ot
 
 //Damage for right punch
 #define MELEE_SWING2_DAMAGE			10
+
+#define MELEE_KICK_DAMAGE			10
 //[/MeleeDefines]
 //[/Melee]
 
@@ -2826,36 +2859,47 @@ float CalcTraceFraction ( vec3_t Start, vec3_t End, vec3_t Endpos )
 }
 //[/SaberSys]
 
-GAME_INLINE qboolean G_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t lastValidEnd, vec3_t traceMins, vec3_t traceMaxs)
+GAME_INLINE qboolean G_G2TraceCollide(trace_t* tr, vec3_t lastValidStart, vec3_t lastValidEnd, vec3_t traceMins, vec3_t traceMaxs)
 { //Hit the ent with the normal trace, try the collision trace.
 	G2Trace_t		G2Trace;
-	gentity_t		*g2Hit;
+	gentity_t* g2Hit;
 	vec3_t			angles;
 	int				tN = 0;
-	float			fRadius = 0;
+	float			fRadius = 0.0f;
+
+	// Defensive argument validation
+	if (!tr) {
+		return qfalse;
+	}
+	if (tr->entityNum < 0 || tr->entityNum >= MAX_GENTITIES) {
+		return qfalse;
+	}
+	if (!lastValidStart || !lastValidEnd) {
+		// caller must supply valid start/end
+		return qfalse;
+	}
 
 	if (!d_saberGhoul2Collision.integer)
 	{
 		return qfalse;
 	}
 
-	if (!g_entities[tr->entityNum].inuse /*||
-		(g_entities[tr->entityNum].s.eFlags & EF_DEAD)*/)
+	if (!g_entities[tr->entityNum].inuse)
 	{ //don't do perpoly on corpses.
 		return qfalse;
 	}
 
-	if (traceMins[0] ||
-		traceMins[1] ||
-		traceMins[2] ||
-		traceMaxs[0] ||
-		traceMaxs[1] ||
-		traceMaxs[2])
+	if (traceMins && traceMaxs &&
+		(traceMins[0] || traceMins[1] || traceMins[2] ||
+			traceMaxs[0] || traceMaxs[1] || traceMaxs[2]))
 	{
-		fRadius=(traceMaxs[0]-traceMins[0])/2.0f;
+		fRadius = (traceMaxs[0] - traceMins[0]) / 2.0f;
+		if (!(fRadius >= 0.0f && fRadius < 1e6f)) {
+			fRadius = 0.0f;
+		}
 	}
 
-	memset (&G2Trace, 0, sizeof(G2Trace));
+	memset(&G2Trace, 0, sizeof(G2Trace));
 
 	while (tN < MAX_G2_COLLISIONS)
 	{
@@ -2881,16 +2925,62 @@ GAME_INLINE qboolean G_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t
 			angles[YAW] = g2Hit->r.currentAngles[YAW];
 		}
 
+		vec3_t tempScale = { 1.0f, 1.0f, 1.0f };
+		const float* scalePtr = g2Hit->modelScale;
+
+		// Inline validation of scalePtr
+		int scaleValid = qtrue;
+		if (!scalePtr) {
+			scaleValid = qfalse;
+		}
+		else {
+			for (int i = 0; i < 3; ++i) {
+				float v = scalePtr[i];
+				if (!(v == v) || fabsf(v) > 1e30f) { // NaN or insane
+					scaleValid = qfalse;
+					break;
+				}
+			}
+		}
+		if (!scaleValid) {
+			scalePtr = tempScale;
+		}
+		else {
+			if (!(scalePtr[0] > 0.0f && scalePtr[0] < 10000.0f &&
+				scalePtr[1] > 0.0f && scalePtr[1] < 10000.0f &&
+				scalePtr[2] > 0.0f && scalePtr[2] < 10000.0f)) {
+				scalePtr = tempScale;
+			}
+		}
+
+		// Validate lastValidStart/lastValidEnd quickly (inline)
+		int startValid = qtrue, endValid = qtrue;
+		for (int i = 0; i < 3; ++i) {
+			float s = lastValidStart[i];
+			float e = lastValidEnd[i];
+			if (!(s == s) || fabsf(s) > 1e30f) { startValid = qfalse; }
+			if (!(e == e) || fabsf(e) > 1e30f) { endValid = qfalse; }
+		}
+		if (!startValid || !endValid) {
+			return qfalse;
+		}
+
+		// copy the start/end/scale to locals
+		vec3_t safeStart, safeEnd, safeScale;
+		safeStart[0] = lastValidStart[0]; safeStart[1] = lastValidStart[1]; safeStart[2] = lastValidStart[2];
+		safeEnd[0] = lastValidEnd[0];   safeEnd[1] = lastValidEnd[1];   safeEnd[2] = lastValidEnd[2];
+		safeScale[0] = scalePtr[0];       safeScale[1] = scalePtr[1];       safeScale[2] = scalePtr[2];
+
 		if (g_optvehtrace.integer &&
 			g2Hit->s.eType == ET_NPC &&
 			g2Hit->s.NPC_class == CLASS_VEHICLE &&
 			g2Hit->m_pVehicle)
 		{
-			trap_G2API_CollisionDetectCache ( G2Trace, g2Hit->ghoul2, angles, g2HitOrigin, level.time, g2Hit->s.number, lastValidStart, lastValidEnd, g2Hit->modelScale, 0, g_g2TraceLod.integer, fRadius );
+			trap_G2API_CollisionDetectCache(G2Trace, g2Hit->ghoul2, angles, g2HitOrigin, level.time, g2Hit->s.number, safeStart, safeEnd, safeScale, 0, g_g2TraceLod.integer, fRadius);
 		}
 		else
 		{
-			trap_G2API_CollisionDetect ( G2Trace, g2Hit->ghoul2, angles, g2HitOrigin, level.time, g2Hit->s.number, lastValidStart, lastValidEnd, g2Hit->modelScale, 0, g_g2TraceLod.integer, fRadius );
+			trap_G2API_CollisionDetect(G2Trace, g2Hit->ghoul2, angles, g2HitOrigin, level.time, g2Hit->s.number, safeStart, safeEnd, safeScale, 0, g_g2TraceLod.integer, fRadius);
 		}
 
 		if (G2Trace[0].mEntityNum != g2Hit->s.number)
@@ -2907,7 +2997,7 @@ GAME_INLINE qboolean G_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t
 			VectorCopy(G2Trace[0].mCollisionNormal, tr->plane.normal);
 			//[SaberSys]
 			//Calculate the fraction point to keep all the code working correctly
-			tr->fraction = CalcTraceFraction( lastValidStart, lastValidEnd, tr->endpos );
+			tr->fraction = CalcTraceFraction(lastValidStart, lastValidEnd, tr->endpos);
 			//[/SaberSys]
 
 			if (g2Hit->client)
@@ -2924,7 +3014,6 @@ GAME_INLINE qboolean G_G2TraceCollide(trace_t *tr, vec3_t lastValidStart, vec3_t
 
 	return qfalse;
 }
-
 GAME_INLINE qboolean G_SaberInBackAttack(int move)
 {
 	switch (move)
@@ -6466,7 +6555,8 @@ qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int h
 		|| mod == MOD_ICE_EXPLOSION_SPLASH 
 		|| mod == MOD_ION_EXPLOSION_SPLASH
 		|| mod == MOD_SONIC_EXPLOSION_SPLASH
-		|| mod != MOD_FLASH_EXPLOSION_SPLASH)
+		//|| mod != MOD_FLASH_EXPLOSION_SPLASH
+		)
 	{//splash damage dodge, dodged by throwing oneself away from the blast into a knockdown
 		vec3_t blowBackDir;//[ExplosivesKnockback]
 		int blowBackPower = savedDmg;
@@ -7207,12 +7297,20 @@ GAME_INLINE qboolean CheckSaberDamage(gentity_t *self, int rSaberNum, int rBlade
 	//attacker animation stuff
 	if(mechSelf.doButterFingers)
 	{
-		ButterFingers(&g_entities[self->client->ps.saberEntityNum], self, otherOwner, &tr);
+		gentity_t *saberEnt = G_GetSaberEntSafe( self );
+		if ( saberEnt )
+		{
+			ButterFingers(saberEnt, self, otherOwner, &tr);
+		}
 	}
 
 	if(self->client->ps.saberInFlight && !OJP_UsingDualSaberAsPrimary(&self->client->ps))
 	{//saber in flight and it has hit something.  deactivate it.
-		saberCheckKnockdown_Smashed(&g_entities[self->client->ps.saberEntityNum], self, otherOwner, dmg);
+		gentity_t *saberEnt = G_GetSaberEntSafe( self );
+		if ( saberEnt )
+		{
+			saberCheckKnockdown_Smashed(saberEnt, self, otherOwner, dmg);
+		}
 	}	
 	else if(mechSelf.doKnockdown)
 	{
@@ -7323,7 +7421,13 @@ GAME_INLINE qboolean CheckSaberDamage(gentity_t *self, int rSaberNum, int rBlade
 	{
 		if(mechOther.doButterFingers)
 		{
-			ButterFingers(&g_entities[otherOwner->client->ps.saberEntityNum], otherOwner, self, &tr);
+			{
+				gentity_t *otherSaberEnt = G_GetSaberEntSafe( otherOwner );
+				if ( otherSaberEnt )
+				{
+					ButterFingers(otherSaberEnt, otherOwner, self, &tr);
+				}
+			}
 		}
 
 		if(mechOther.doKnockdown )
@@ -10760,15 +10864,33 @@ static void G_PunchSomeMofos(gentity_t *ent)
 
 static void G_KickSomeMofos(gentity_t *ent)
 {
+	if ( !ent || !ent->client ) {
+		return;
+	}
+
 	vec3_t	kickDir, kickEnd, fwdAngs;
 	float animLength = BG_AnimLength( ent->localAnimIndex, (animNumber_t)ent->client->ps.legsAnim );
 	float elapsedTime = (float)(animLength-ent->client->ps.legsTimer);
 	float remainingTime = (animLength-elapsedTime);
 	float kickDist = (ent->r.maxs[0]*1.5f)+STAFF_KICK_RANGE+8.0f;//fudge factor of 8
-	int	  kickDamage = Q_irand(10, 15);//Q_irand( 3, 8 ); //since it can only hit a guy once now
+	int	  kickDamage = MELEE_KICK_DAMAGE;
 	int	  kickPush = flrand( 50.0f, 100.0f );
 	qboolean doKick = qfalse;
 	renderInfo_t *ri = &ent->client->renderInfo;
+
+	// Make Strength skill affect kick damage too (same scaling as punches).
+	if (ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_3)
+	{
+		kickDamage = 4 * MELEE_KICK_DAMAGE;
+	}
+	if (ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_2)
+	{
+		kickDamage = 3 * MELEE_KICK_DAMAGE;
+	}
+	if (ent->client && ent->client->skillLevel[SK_STRENGTH] == FORCE_LEVEL_1)
+	{
+		kickDamage = 2 * MELEE_KICK_DAMAGE;
+	}
 
 	VectorSet(kickDir, 0.0f, 0.0f, 0.0f);
 	VectorSet(kickEnd, 0.0f, 0.0f, 0.0f);
@@ -11314,24 +11436,68 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 		G_Printf("Button Flag 15 Pressed.\n");
 	}
 	*/
-	//[SnapThrow]
-	if (ucmd->buttons & BUTTON_THERMALTHROW)
-	{//player wants to snap throw a gernade
-		if(self->client->ps.weaponTime <= 0//not currently using a weapon
-			&& self->client->ps.stats[STAT_WEAPONS] & ( 1 << WP_THERMAL ) && self->client->ps.ammo[AMMO_THERMAL] > 0 )//have a thermal
-		{//throw!
-			self->s.weapon = WP_THERMAL;  //temp switch weapons so we can toss it.
-			self->client->ps.weaponChargeTime = level.time - 450; //throw at medium power
-			FireWeapon( self, qfalse );
-			self->s.weapon = self->client->ps.weapon; //restore weapon
-			self->client->ps.weaponTime = weaponData[WP_THERMAL].fireTime;
-			self->client->ps.ammo[AMMO_THERMAL]--;
-			G_SetAnim(self, NULL, SETANIM_TORSO, BOTH_MELEE1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
-			
-		}
-	}
+//[SnapThrow]
+if (ucmd->buttons & BUTTON_THERMALTHROW)
+{//player wants to snap throw a gernade
+	if(self->client->ps.weaponTime <= 0//not currently using a weapon
+		&& (self->client->ps.stats[STAT_WEAPONS] & ( 1 << WP_THERMAL ))
+		&& self->client->ps.ammo[AMMO_THERMAL] > 0 )//have a thermal
+	{//throw!
+		const int savedEFlags  = self->client->ps.eFlags;
+		const int savedSWeapon = self->s.weapon;
 
-	//[/SnapThrow]
+		self->s.weapon = WP_THERMAL;  //temp switch weapons so we can toss it.
+
+		// Clear current weapon's option state; thermals will apply their own options for this throw.
+		self->client->ps.eFlags &= ~(EF_DUAL_WEAPONS|EF_WP_OPTION_2|EF_WP_OPTION_3|EF_WP_OPTION_4);
+
+		// Apply thermal option flags based on THERMALA + THERMALB (multiple bits may be set simultaneously)
+		
+
+
+			// THERMALA
+			if (self->client->skillLevel[SK_THERMALA] == FORCE_LEVEL_2)
+			{
+				self->client->ps.eFlags |= EF_WP_OPTION_2;
+			}
+			else if (self->client->skillLevel[SK_THERMALA] == FORCE_LEVEL_3)
+			{
+				self->client->ps.eFlags |= EF_WP_OPTION_3;
+			}
+			else if (self->client->skillLevel[SK_THERMALB] == FORCE_LEVEL_1)
+			{
+				self->client->ps.eFlags |= EF_WP_OPTION_4;
+			}
+			else if (self->client->skillLevel[SK_THERMALB] == FORCE_LEVEL_2)
+			{
+				self->client->ps.eFlags |= (EF_WP_OPTION_2|EF_WP_OPTION_3);
+			}
+			else if (self->client->skillLevel[SK_THERMALB] == FORCE_LEVEL_3)
+			{
+				self->client->ps.eFlags |= (EF_WP_OPTION_2|EF_WP_OPTION_4);
+			}
+
+
+		
+
+		self->client->ps.weaponChargeTime = level.time - 750; //throw at medium power
+		FireWeapon( self, qfalse );
+
+		// Restore weapon and original option state:
+		// clear any thermal option bits first, then restore saved flags.
+		self->s.weapon = savedSWeapon;
+		self->client->ps.eFlags &= ~(EF_DUAL_WEAPONS|EF_WP_OPTION_2|EF_WP_OPTION_3|EF_WP_OPTION_4);
+		self->client->ps.eFlags |= (savedEFlags & (EF_DUAL_WEAPONS|EF_WP_OPTION_2|EF_WP_OPTION_3|EF_WP_OPTION_4));
+		// (Alternatively, if you want to restore *all* eFlags exactly, use: self->client->ps.eFlags = savedEFlags;
+		//  but the mask-restore above is safer if other code may have touched unrelated bits during FireWeapon.)
+
+		self->client->ps.weaponTime = weaponData[WP_THERMAL].fireTime;
+		self->client->ps.ammo[AMMO_THERMAL]--;
+		G_SetAnim(self, NULL, SETANIM_TORSO, BOTH_MELEE1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
+	}
+}
+//[/SnapThrow]
+
 
 	
 	if (ucmd->buttons & BUTTON_16)
@@ -12255,7 +12421,7 @@ nextStep:
 					}
 					else
 					{
-						gentity_t *saberEnt = &g_entities[self->client->ps.saberEntityNum];
+					gentity_t *saberEnt = G_GetSaberEntSafe( self );
 						vec3_t saberOrg, saberAngles;
 						if ( !saberEnt 
 							|| !saberEnt->inuse

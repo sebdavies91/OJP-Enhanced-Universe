@@ -195,6 +195,7 @@ static  vec3_t  muzzle2;//[DualPistols]
 //--------------
 #define MELEE_SWING1_DAMAGE			10
 #define MELEE_SWING2_DAMAGE			10
+#define MELEE_KICK_DAMAGE			10
 #define MELEE_RANGE					8
 
 // ATST Main Gun
@@ -2079,6 +2080,11 @@ int DetermineDisruptorCharge(gentity_t *ent)
 void WP_DisruptorAltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
 	int			damage = 0, skip;
 	qboolean	render_impact = qtrue;
 	vec3_t		start, end;
@@ -2556,6 +2562,11 @@ static void WP_Disruptor2MainFire( gentity_t *ent )
 void WP_Disruptor2AltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
 	int			damage = 0, skip;
 	qboolean	render_impact = qtrue;
 	vec3_t		start, end;
@@ -3032,6 +3043,11 @@ static void WP_Disruptor3MainFire( gentity_t *ent )
 void WP_Disruptor3AltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
 	int			damage = 0, skip;
 	qboolean	render_impact = qtrue;
 	vec3_t		start, end;
@@ -3508,6 +3524,11 @@ static void WP_Disruptor4MainFire( gentity_t *ent )
 void WP_Disruptor4AltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
 	int			damage = 0, skip;
 	qboolean	render_impact = qtrue;
 	vec3_t		start, end;
@@ -3813,6 +3834,11 @@ static void WP_Disruptor5MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboo
 void WP_Disruptor5AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
 //---------------------------------------------------------
 {
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
 	int			damage = 0;
 	int velocity	= BLASTER_VELOCITY;
 	gentity_t *missile;
@@ -4089,6 +4115,11 @@ static void WP_Disruptor6MainFire( gentity_t *ent )
 void WP_Disruptor6AltFire( gentity_t *ent )
 //---------------------------------------------------------
 {
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
+
 	int			damage = 0, skip;
 	qboolean	render_impact = qtrue;
 	vec3_t		start, end;
@@ -6330,52 +6361,65 @@ DEMP24
 ======================================================================
 */
 
+#define DEMP24_MAIN_RANGE 512.0f // tune this
+
 static void WP_DEMP24_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
 {
-	int	damage	= DEMP2_DAMAGE/10;
-	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
-	{
-		damage	*= 2.0;
+	int damage = DEMP2_DAMAGE / 10;
+	if (ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3) {
+		damage *= 2.0;
 	}
-	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	float speed = (DEMP2_VELOCITY / 5.0f);
+	int lifeMs = (int)((DEMP24_MAIN_RANGE / speed) * 1000.0f);
+	if (lifeMs < 50) lifeMs = 50;
+	if (lifeMs > 10000) lifeMs = 10000;
+
+	gentity_t* missile = CreateMissile(muzzle, forward, speed, lifeMs, ent, qfalse);
 
 	missile->classname = "demp2_proj";
 	missile->s.weapon = WP_DEMP2;
 	missile->s.eFlags |= EF_WP_OPTION_4;
 
+	VectorSet(missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE);
+	VectorScale(missile->r.maxs, -1, missile->r.mins);
 
-	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_FLAME;
 	missile->clipmask = MASK_SHOT;
 
-	// we don't want it to ever bounce
 	missile->bounceCount = 0;
 }
-
-
 
 
 //---------------------------------------------------------
 static void WP_DEMP24_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
 //---------------------------------------------------------
 {
-	int	damage	= DEMP2_DAMAGE/5;
-	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	int damage = DEMP2_DAMAGE / 5;
+	if (ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
 	{
-		damage	*= 2.0;
+		damage *= 2.0;
 	}
-	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	// Limit range by lifetime (range ? speed * lifetime)
+	float speed = (DEMP2_VELOCITY / 5.0f);
+	int lifeMs = (int)((DEMP24_MAIN_RANGE / speed) * 1000.0f);
+
+	if (lifeMs < 50)    lifeMs = 50;      // avoid ultra-short lifetimes
+	if (lifeMs > 10000) lifeMs = 10000;   // keep original cap if you want
+
+	// Use the provided start/dir instead of globals (muzzle/forward)
+	gentity_t* missile = CreateMissile(start, dir, speed, lifeMs, ent, qfalse);
 
 	missile->classname = "demp2_proj";
 	missile->s.weapon = WP_DEMP2;
 	missile->s.eFlags |= EF_WP_OPTION_4;
 
+	VectorSet(missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE);
+	VectorScale(missile->r.maxs, -1, missile->r.mins);
 
-	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_FLAME;
@@ -6383,8 +6427,8 @@ static void WP_DEMP24_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean
 
 	// we don't want it to ever bounce
 	missile->bounceCount = 0;
-	
 }
+
 
 //---------------------------------------------------------
 static void WP_FireDEMP24( gentity_t *ent, qboolean altFire )
@@ -6406,23 +6450,33 @@ DEMP25
 
 ======================================================================
 */
+#define DEMP25_MAIN_RANGE 512.0f // tune this
 
 static void WP_DEMP25_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
 {
-	int	damage	= DEMP2_DAMAGE/10;
-	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	int damage = DEMP2_DAMAGE / 10;
+	if (ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
 	{
-		damage	*= 2.0;
+		damage *= 2.0;
 	}
-	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	// Limit range by lifetime
+	float speed = (DEMP2_VELOCITY / 5.0f);
+	int lifeMs = (int)((DEMP25_MAIN_RANGE / speed) * 1000.0f);
+
+	if (lifeMs < 50)    lifeMs = 50;
+	if (lifeMs > 10000) lifeMs = 10000;
+
+	gentity_t* missile = CreateMissile(start, dir, speed, lifeMs, ent, qfalse);
 
 	missile->classname = "demp2_proj";
 	missile->s.weapon = WP_DEMP2;
 	missile->s.eFlags |= EF_WP_OPTION_2;
 	missile->s.eFlags |= EF_WP_OPTION_3;
 
-	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	VectorSet(missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE);
+	VectorScale(missile->r.maxs, -1, missile->r.mins);
+
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_DIOXIS;
@@ -6431,26 +6485,36 @@ static void WP_DEMP25_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolea
 	// we don't want it to ever bounce
 	missile->bounceCount = 0;
 }
+
 
 
 //---------------------------------------------------------
 static void WP_DEMP25_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
 //---------------------------------------------------------
 {
-	int	damage	= DEMP2_DAMAGE/5;
-	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	int damage = DEMP2_DAMAGE / 5;
+	if (ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
 	{
-		damage	*= 2.0;
+		damage *= 2.0;
 	}
-	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	// Limit range by lifetime
+	float speed = (DEMP2_VELOCITY / 5.0f);
+	int lifeMs = (int)((DEMP25_MAIN_RANGE / speed) * 1000.0f);
+
+	if (lifeMs < 50)    lifeMs = 50;
+	if (lifeMs > 10000) lifeMs = 10000;
+
+	gentity_t* missile = CreateMissile(start, dir, speed, lifeMs, ent, qfalse);
 
 	missile->classname = "demp2_proj";
 	missile->s.weapon = WP_DEMP2;
 	missile->s.eFlags |= EF_WP_OPTION_2;
 	missile->s.eFlags |= EF_WP_OPTION_3;
 
-	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	VectorSet(missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE);
+	VectorScale(missile->r.maxs, -1, missile->r.mins);
+
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_DIOXIS;
@@ -6459,6 +6523,7 @@ static void WP_DEMP25_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean
 	// we don't want it to ever bounce
 	missile->bounceCount = 0;
 }
+
 
 //---------------------------------------------------------
 static void WP_FireDEMP25( gentity_t *ent, qboolean altFire )
@@ -6484,23 +6549,33 @@ DEMP26
 
 ======================================================================
 */
+#define DEMP26_MAIN_RANGE 512.0f
 
 static void WP_DEMP26_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
 {
-	int	damage	= DEMP2_DAMAGE/10;
-	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	int damage = DEMP2_DAMAGE / 10;
+	if (ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
 	{
-		damage	*= 2.0;
+		damage *= 2.0;
 	}
-	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	// Limit range by lifetime
+	float speed = (DEMP2_VELOCITY / 5.0f);
+	int lifeMs = (int)((DEMP26_MAIN_RANGE / speed) * 1000.0f);
+
+	if (lifeMs < 50)    lifeMs = 50;
+	if (lifeMs > 10000) lifeMs = 10000;
+
+	gentity_t* missile = CreateMissile(start, dir, speed, lifeMs, ent, qfalse);
 
 	missile->classname = "demp2_proj";
 	missile->s.weapon = WP_DEMP2;
 	missile->s.eFlags |= EF_WP_OPTION_2;
 	missile->s.eFlags |= EF_WP_OPTION_4;
 
-	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	VectorSet(missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE);
+	VectorScale(missile->r.maxs, -1, missile->r.mins);
+
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_ICE;
@@ -6509,27 +6584,36 @@ static void WP_DEMP26_MainFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolea
 	// we don't want it to ever bounce
 	missile->bounceCount = 0;
 }
+
 
 
 //---------------------------------------------------------
 static void WP_DEMP26_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean altFire)
 //---------------------------------------------------------
 {
-	int	damage	= DEMP2_DAMAGE/5;
-	if(ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
+	int damage = DEMP2_DAMAGE / 5;
+	if (ent->client->skillLevel[SK_DEMP2] == FORCE_LEVEL_3)
 	{
-		damage	*= 2.0;
+		damage *= 2.0;
 	}
-	gentity_t *missile = CreateMissile( muzzle, forward, DEMP2_VELOCITY/5, 10000, ent, qfalse);
+
+	// Limit range by lifetime
+	float speed = (DEMP2_VELOCITY / 5.0f);
+	int lifeMs = (int)((DEMP26_MAIN_RANGE / speed) * 1000.0f);
+
+	if (lifeMs < 50)    lifeMs = 50;
+	if (lifeMs > 10000) lifeMs = 10000;
+
+	gentity_t* missile = CreateMissile(start, dir, speed, lifeMs, ent, qfalse);
 
 	missile->classname = "demp2_proj";
 	missile->s.weapon = WP_DEMP2;
 	missile->s.eFlags |= EF_WP_OPTION_2;
 	missile->s.eFlags |= EF_WP_OPTION_4;
-	
 
-	VectorSet( missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
+	VectorSet(missile->r.maxs, DEMP2_SIZE, DEMP2_SIZE, DEMP2_SIZE);
+	VectorScale(missile->r.maxs, -1, missile->r.mins);
+
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_ICE;
@@ -6538,6 +6622,7 @@ static void WP_DEMP26_AltFire(gentity_t* ent, vec3_t start, vec3_t dir, qboolean
 	// we don't want it to ever bounce
 	missile->bounceCount = 0;
 }
+
 
 //---------------------------------------------------------
 static void WP_FireDEMP26( gentity_t *ent, qboolean altFire )
@@ -15656,6 +15741,9 @@ void Weapon_HookFree (gentity_t *ent)
 	ent->parent->client->hookhasbeenfired = qfalse;
 	ent->parent->client->hook = NULL;
 	ent->parent->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
+
+	// Also reset beam endpoint to avoid any stale grapple trail on clients
+	VectorCopy( ent->parent->client->ps.origin, ent->parent->client->ps.lastHitLoc );
 	G_FreeEntity( ent );
 }
 
@@ -17867,6 +17955,83 @@ static void WP_FireEmplaced( gentity_t *ent, qboolean altFire )
 */
  
 //----------------------------------------------------------
+
+// ----------------------------------------------------------
+// Defensive cleanup: ensure no stale grapple state/entities can create a "ghost beam"
+// when interacting with emplaced guns (common in CoOp SP maps).
+static void G_ClearGrappleStateForPlayer( gentity_t *player )
+{
+    int i;
+    int playerNum;
+
+    if ( !player || !player->client )
+    {
+        return;
+    }
+
+    playerNum = player->s.number;
+
+    // Free the active hook entity if the client still references it
+    if ( player->client->hook )
+    {
+        if ( player->client->hook->inuse )
+        {
+            Weapon_HookFree( player->client->hook );
+        }
+        player->client->hook = NULL;
+    }
+
+    // Purge any orphaned hook entities still associated with this player.
+    // The grapple beam is matched clientside via ownerNum/otherEntityNum, so parent/classname alone is not enough.
+    for ( i = 0; i < MAX_GENTITIES; i++ )
+    {
+        gentity_t *e = &g_entities[i];
+        qboolean looksLikeHook = qfalse;
+
+        if ( !e->inuse )
+        {
+            continue;
+        }
+
+        // Only consider entities associated with this player
+        if ( e->parent != player && e->r.ownerNum != playerNum && e->s.otherEntityNum != playerNum )
+        {
+            continue;
+        }
+
+        // Identify grapple hook entities robustly
+        if ( e->classname && !Q_stricmp( e->classname, "hook" ) )
+        {
+            looksLikeHook = qtrue;
+        }
+        else if ( e->think == Weapon_HookThink || e->think == Weapon_HookFree )
+        {
+            looksLikeHook = qtrue;
+        }
+
+        if ( !looksLikeHook )
+        {
+            continue;
+        }
+
+        // Weapon_HookFree assumes parent->client is valid; for orphans, free directly.
+        if ( e->parent && e->parent->client )
+        {
+            Weapon_HookFree( e );
+        }
+        else
+        {
+            G_FreeEntity( e );
+        }
+    }
+
+    // Clear client-side beam state and flags
+    player->client->fireHeld = qfalse;
+    player->client->hookhasbeenfired = qfalse;
+    player->client->ps.pm_flags &= ~PMF_GRAPPLE_PULL;
+    VectorCopy( player->client->ps.origin, player->client->ps.lastHitLoc );
+}
+
 extern qboolean TryHeal(gentity_t *ent, gentity_t *target); //g_utils.c
 void emplaced_gun_use( gentity_t *self, gentity_t *other, trace_t *trace )
 {
@@ -17874,7 +18039,7 @@ void emplaced_gun_use( gentity_t *self, gentity_t *other, trace_t *trace )
 	float dot;
 	int oldWeapon;
 	gentity_t *activator = other;
-	float zoffset = 50;
+	float zoffset = 50.0f;
 	vec3_t anglesToOwner;
 	vec3_t vLen;
 	float ownLen;
@@ -17894,7 +18059,11 @@ void emplaced_gun_use( gentity_t *self, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	if (activator->client->ps.emplacedTime > level.time)
+	
+	// Clear any stale grapple state/entities before attempting to mount.
+	G_ClearGrappleStateForPlayer( activator );
+
+if (activator->client->ps.emplacedTime > level.time)
 	{ //last use attempt still too recent
 		return;
 	}
@@ -17904,7 +18073,10 @@ void emplaced_gun_use( gentity_t *self, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	if (activator->client->ps.origin[2] > self->s.origin[2]+zoffset-8)
+	zoffset = self->r.maxs[2];
+	if ( zoffset <= 0.0f ) { zoffset = 50.0f; }
+
+	if (activator->client->ps.origin[2] > self->r.currentOrigin[2]+zoffset-8)
 	{ //can't use it from the top
 		return;
 	}
@@ -17919,8 +18091,9 @@ void emplaced_gun_use( gentity_t *self, gentity_t *other, trace_t *trace )
 		return;
 	}
 
-	VectorSubtract(self->s.origin, activator->client->ps.origin, vLen);
-	ownLen = VectorLength(vLen);
+	VectorSubtract( self->r.currentOrigin, activator->client->ps.origin, vLen );
+	vLen[2] = 0.0f; // horizontal distance only (map origins can be vertically offset)
+	ownLen = VectorLength( vLen );
 
 	if (ownLen > 64.0f)
 	{ //must be within 64 units of the gun to use at all
@@ -18065,7 +18238,8 @@ void emplaced_gun_update(gentity_t *self)
 	if (self->activator && self->activator->client && self->activator->inuse)
 	{ //handle updating current user
 		vec3_t vLen;
-		VectorSubtract(self->s.origin, self->activator->client->ps.origin, vLen);
+		VectorSubtract(self->r.currentOrigin, self->activator->client->ps.origin, vLen);
+		vLen[2] = 0.0f; // horizontal distance only
 		ownLen = VectorLength(vLen);
 
 		if (!(self->activator->client->pers.cmd.buttons & BUTTON_USE) && self->genericValue1)
@@ -18075,6 +18249,10 @@ void emplaced_gun_update(gentity_t *self)
 
 		if ((self->activator->client->pers.cmd.buttons & BUTTON_USE) && !self->genericValue1)
 		{//RACC - trigger start to get off the emplaced turret
+			// Ensure grapple state cannot re-appear as a beam on dismount (HI_GRAPPLE)
+			G_ClearGrappleStateForPlayer( self->activator );
+			self->activator->client->hookDebounceTime = level.time + 200;
+
 			self->activator->client->ps.emplacedIndex = 0;
 			self->activator->client->ps.saberHolstered = 0;
 			self->nextthink = level.time + 50;
@@ -18098,6 +18276,9 @@ void emplaced_gun_update(gentity_t *self)
 		self->activator->client->ps.emplacedTime = level.time + 1000;
 		self->activator->client->ps.emplacedIndex = 0;
 		self->activator->client->ps.saberHolstered = 0;
+			// Ensure grapple state cannot re-appear as a beam after forced detach
+			G_ClearGrappleStateForPlayer( self->activator );
+			self->activator->client->hookDebounceTime = level.time + 200;
 		self->activator = NULL;
 
 		self->s.activeForcePass = 0;

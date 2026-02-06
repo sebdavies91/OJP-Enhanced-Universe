@@ -39,11 +39,13 @@ gNPC_t			*NPCInfo;
 gclient_t		*client;
 usercmd_t		ucmd;
 visibility_t	enemyVisibility;
-
-void NPC_SetAnim(gentity_t	*ent,int type,int anim,int priority);
+	
 //[CoOp]
 static bState_t G_CurrentBState( gNPC_t *gNPC );
 //[/CoOp]
+
+// Forward declarations for functions defined later in this file (C89-friendly).
+static void NPC_CheckInSolidFix( void );
 
 void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope );
 extern void GM_Dying( gentity_t *self );
@@ -1144,7 +1146,7 @@ void NPC_HandleAIFlags (void)
 				if( !Q_irand( 0, 2 ) )
 				{//Play gesture anim (press gesture button?)
 					greeted = qtrue;
-					NPC_SetAnim( NPC, SETANIM_TORSO, Q_irand( BOTH_GESTURE1, BOTH_GESTURE3 ), SETANIM_FLAG_NORMAL|SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC, SETANIM_TORSO, Q_irand( BOTH_GESTURE1, BOTH_GESTURE3 ), SETANIM_FLAG_NORMAL|SETANIM_FLAG_HOLD);
 					//NOTE: play full-body gesture if not moving?
 				}
 
@@ -1498,8 +1500,13 @@ void NPC_BSSentry_Default( void );
 NPC_BehaviorSet_Sentry
 -------------------------
 */
+extern void NPC_NonSaber_GroupEnemyThink( int distributeThreshold );
+
 void NPC_BehaviorSet_Sentry( int bState )
 {
+	// SP-inspired: conservative group enemy sharing for non-saber squad NPCs.
+	NPC_NonSaber_GroupEnemyThink( 0 );
+
 	switch( bState )
 	{
 	case BS_STAND_GUARD:
@@ -1522,6 +1529,9 @@ NPC_BehaviorSet_Grenadier
 */
 void NPC_BehaviorSet_Grenadier( int bState )
 {
+	// SP-inspired: conservative group enemy sharing for non-saber squad NPCs.
+	NPC_NonSaber_GroupEnemyThink( 0 );
+
 	switch( bState )
 	{
 	case BS_STAND_GUARD:
@@ -1573,6 +1583,9 @@ NPC_BehaviorSet_Sniper
 */
 void NPC_BehaviorSet_Sniper( int bState )
 {
+	// SP-inspired: conservative group enemy sharing for non-saber squad NPCs.
+	NPC_NonSaber_GroupEnemyThink( 0 );
+
 	switch( bState )
 	{
 	case BS_STAND_GUARD:
@@ -1594,8 +1607,22 @@ NPC_BehaviorSet_Stormtrooper
 -------------------------
 */
 
+extern void NPC_HazardTrooper_PreThink( int bState );
+
 void NPC_BehaviorSet_Stormtrooper( int bState )
 {
+	// SP-inspired: conservative group enemy sharing for non-saber squad NPCs.
+	NPC_NonSaber_GroupEnemyThink( 0 );
+
+	// SP Hazard Trooper uses a more elaborate troop/formation AI.
+	// In MP we conservatively emulate one low-risk piece (extra squad spacing)
+	// via NPC_HazardTrooper_PreThink, only for CLASS_HAZARD_TROOPER.
+	if ( NPC && NPC->client && NPC->client->NPC_class == CLASS_HAZARD_TROOPER )
+	{
+		NPC_HazardTrooper_PreThink( bState );
+	}
+
+
 	switch( bState )
 	{
 	case BS_STAND_GUARD:
@@ -1653,6 +1680,145 @@ void NPC_BehaviorSet_Jedi( int bState )
 		NPC_BehaviorSet_Default( bState );
 		break;
 	}
+}
+void NPC_BehaviorSet_BobaFett( int bState )
+{
+	// SP intent: Boba has a dedicated flight "mode" and should keep hunting/orbiting while in the air.
+	// MP reality: we must drive that via ucmd after weapon logic so movement isn't stomped.
+
+	if ( !NPC || !NPC->client || !NPCInfo )
+	{
+		return;
+	}
+
+	// Aggressive enemy reacquire (RocketTrooper-style). Avoid "hover idle" when enemy pointer drops.
+	if ( !NPC->enemy )
+	{
+		NPC_CheckEnemyExt( qtrue );
+		if ( !NPC->enemy )
+		{
+			NPC->enemy = FindClosestPlayer( NPC->r.currentOrigin, NPC->client->enemyTeam );
+		}
+	}
+
+	// If we're not flying, use normal humanoid ground behavior.
+	if ( !Boba_Flying( NPC ) )
+	{
+		NPC_BSST_Default();
+
+		if ( NPC->enemy )
+		{
+			vec3_t flat;
+			VectorSubtract( NPC->enemy->r.currentOrigin, NPC->r.currentOrigin, flat );
+			flat[2] = 0.0f;
+			const float distSq2D = VectorLengthSquared( flat );
+
+			// SP-like: take off once engaged unless point-blank. Debounced.
+			// In SP, Boba will also jet to reposition even at relatively short range.
+			if ( TIMER_Done( NPC, "takeoffDebounce" )
+				&& ( distSq2D > ( 32.0f * 32.0f ) || Q_irand( 0, 3 ) == 0 ) )
+			{
+				Boba_FlyStart( NPC );
+				TIMER_Set( NPC, "takeoffDebounce", Q_irand( 2000, 3500 ) );
+			}
+
+			Boba_FireDecide();
+		}
+		G_CheckCharmed( NPC );
+		return;
+	}
+
+	// --- Flying behavior ---
+	if ( NPC->enemy )
+	{
+		Boba_FireDecide();
+	}
+
+	// Apply jetpack steering LAST (RocketTrooper pattern) so we don't hover-stall.
+	{
+		vec3_t toEnemy, flat;
+		float distSq2D = 0.0f;
+		float desiredZ = NPC->r.currentOrigin[2];
+
+		if ( NPC->enemy )
+		{
+			VectorSubtract( NPC->enemy->r.currentOrigin, NPC->r.currentOrigin, toEnemy );
+			VectorCopy( toEnemy, flat );
+			flat[2] = 0.0f;
+			distSq2D = VectorLengthSquared( flat );
+
+			NPC_FaceEnemy( qtrue );
+			NPC_UpdateAngles( qtrue, qtrue );
+
+			// Hover around enemy height (SP-like), with a small per-NPC wobble.
+			desiredZ = NPC->enemy->r.currentOrigin[2] + 96.0f + ( ( (NPC->s.number + (level.time / 1000)) & 1 ) ? 24.0f : -24.0f );
+		}
+		else
+		{
+			// No enemy: land after a short grace period (don't hover frozen).
+			const int t = TIMER_Get( NPC, "bobaNoEnemyLand" );
+			if ( t == -1 )
+			{
+				TIMER_Set( NPC, "bobaNoEnemyLand", 1200 );
+			}
+			else if ( t < level.time )
+			{
+				TIMER_Remove( NPC, "bobaNoEnemyLand" );
+				Boba_FlyStop( NPC );
+			}
+			ucmd.forwardmove = 0;
+			ucmd.rightmove = 0;
+			ucmd.upmove = 0;
+			G_CheckCharmed( NPC );
+			return;
+		}
+
+		// Cap altitude above ground to avoid flying off into the sky.
+		{
+			extern float G_GroundDistance( gentity_t *self );
+			const float groundDist = G_GroundDistance( NPC );
+			if ( groundDist > 520.0f )
+			{
+				ucmd.upmove = -127;
+			}
+			else
+			{
+				const float dz = desiredZ - NPC->r.currentOrigin[2];
+				if ( dz > 24.0f )
+					ucmd.upmove = 127;
+				else if ( dz < -24.0f )
+					ucmd.upmove = -127;
+				else
+					ucmd.upmove = 0;
+			}
+		}
+
+		// Timed strafe orbit.
+		ucmd.rightmove = ( ((level.time / 600) + NPC->s.number) & 1 ) ? 127 : -127;
+
+		// Horizontal pursuit band.
+		if ( distSq2D > ( 700.0f * 700.0f ) )
+			ucmd.forwardmove = 127;
+		else if ( distSq2D < ( 220.0f * 220.0f ) )
+			ucmd.forwardmove = -64;
+		else
+			ucmd.forwardmove = 80;
+
+		// Add mild ranged pressure like SP Boba: if we have bowcaster and target is visible, shoot in bursts.
+		if ( NPC->enemy
+			&& (NPC->client->ps.stats[STAT_WEAPONS] & (1 << WP_BOWCASTER))
+			&& NPC->client->ps.weapon == WP_BOWCASTER
+			&& NPC_ClearLOS4( NPC->enemy )
+			&& !(NPCInfo->aiFlags & NPCAI_FLAMETHROW) )
+		{
+			if ( ((level.time / 250) & 1) == 0 )
+			{
+				ucmd.buttons |= BUTTON_ATTACK;
+			}
+		}
+	}
+
+	G_CheckCharmed( NPC );
 }
 
 
@@ -1891,7 +2057,7 @@ void NPC_BehaviorSet_Animal( int bState )
 	case BS_DEFAULT:
 	case BS_STAND_GUARD:
 	case BS_PATROL:
-		//NPC_BSAnimal_Default(); //RAFIXME - Impliment.
+		NPC_BSAnimal_Default();
 		break;
 	default:
 		NPC_BehaviorSet_Default( bState );
@@ -1935,19 +2101,49 @@ void NPC_RunBehavior( int team, int bState )
 		
 	if(NPC->client->NPC_class == CLASS_SEEKER || NPC->client->NPC_class == CLASS_SQUADTEAM)
 	{
-		if(  NPC->originalactivator->health <= 0){
+		// owner died
+		if( NPC->originalactivator->health <= 0 )
+		{
 			//have us fall down and explode.
 			G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
 			return;
 		}
-		else if(  NPC->originalactivator->client->sess.sessionTeam == TEAM_SPECTATOR){
+		// owner spectating
+		else if( NPC->originalactivator->client->sess.sessionTeam == TEAM_SPECTATOR )
+		{
 			//have us fall down and explode.
 			G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
 			return;
+		}
+		// round ended / intermission coming or active
+		else if( level.intermissionQueued || level.intermissiontime )
+		{
+			// During active intermission, damage->die can early-out; just remove the pet safely.
+			if ( level.intermissiontime )
+			{
+				G_FreeEntity( NPC );
+			}
+			else
+			{
+				G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
+			}
+			return;
+		}
+		// owner changed teams (only reliable for squadteam; seeker doesn't always set playerTeam)
+		else if ( NPC->client->NPC_class == CLASS_SQUADTEAM )
+		{
+
+			if ( (NPC->originalactivator->client->sess.sessionTeam == TEAM_BLUE && NPC->client->playerTeam != NPCTEAM_PLAYER) ||
+				 (NPC->originalactivator->client->sess.sessionTeam == TEAM_RED  && NPC->client->playerTeam != NPCTEAM_ENEMY) )
+			{
+				G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
+				return;
+			}
 		}
 	}	
 
 	}
+
 	
 	
 	if ( bState == BS_CINEMATIC )
@@ -2008,44 +2204,15 @@ void NPC_RunBehavior( int team, int bState )
 		NPC_BehaviorSet_Jedi( bState );
 		dontSetAim = qtrue;
 	}
-	/* RAFIXME - impliment Boba Fett
 	else if ( NPC->client->NPC_class == CLASS_BOBAFETT )
 	{
-		Boba_Update();
-		if (NPCInfo->surrenderTime)
-		{
-			Boba_Flee();
-		}
-		else
-		{
-			if (!Boba_Tactics())
-			{
-				if ( Boba_Flying( NPC ) )
-				{
-					NPC_BehaviorSet_Seeker(bState);
-				}
-				else
-				{
-					NPC_BehaviorSet_Jedi( bState );
-				}
-			}
-		}
+		NPC_BehaviorSet_BobaFett( bState );
 		dontSetAim = qtrue;
 	}
-	*/
 	// RAFIXME - impliment 
 	else if ( NPC->client->NPC_class == CLASS_ROCKETTROOPER )
-	{//bounty hunter
-		//RACC - actually, isn't this a rocket trooper?!
-		if ( RT_Flying( NPC ) || NPC->enemy != NULL )
-		{
-			//NPC_BSRT_Default();
-		}
-		else
-		{
-			NPC_BehaviorSet_Stormtrooper( bState );
-		}
-		G_CheckCharmed( NPC );
+	{
+		NPC_BehaviorSet_RocketTrooper( bState );
 		dontSetAim = qtrue;
 	}
 	
@@ -2071,21 +2238,11 @@ void NPC_RunBehavior( int team, int bState )
 	{//being forced to march
 		NPC_BSDefault();
 	}
-	/* RAFIXME - impliment these weapons?
 	else if ( NPC->client->ps.weapon == WP_TUSKEN_RIFLE )
 	{
-		if ( (NPCInfo->scriptFlags & SCF_ALT_FIRE) )
-		{
-			NPC_BehaviorSet_Sniper( bState );
-			G_CheckCharmed( NPC );
-			return;
-		}
-		else
-		{
-			NPC_BehaviorSet_Tusken( bState );
-			G_CheckCharmed( NPC );
-			return;
-		}
+		NPC_BehaviorSet_Tusken( bState );
+		G_CheckCharmed( NPC );
+		return;
 	}
 	else if ( NPC->client->ps.weapon == WP_TUSKEN_STAFF )
 	{
@@ -2098,7 +2255,6 @@ void NPC_RunBehavior( int team, int bState )
 		NPC_BehaviorSet_Stormtrooper( bState );
 		G_CheckCharmed( NPC );
 	}
-	*/
 
 	/* old code
 	else if ( NPC->client->NPC_class == CLASS_RANCOR )
@@ -2353,10 +2509,29 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 {
 	bState_t	bState;
 
-	//NPCMod : pour éviter qqes bouleys en duel
-	if ( self->enemy && self->enemy->client && (self->enemy->client->ps.duelInProgress) )
+	// Defensive programming: this function relies heavily on the NPC globals
+	// (NPC/NPCInfo/client). In MP codebases it is possible for other paths to
+	// call NPC_ExecuteBState without SetNPCGlobals having been run, or for an
+	// entity to briefly exist without a client during spawn/teardown.
+	// If we don't have the required state, bail safely.
+	if ( !self || !self->inuse || !self->NPC || !self->client )
 	{
-		G_ClearEnemy( NPC );
+		return;
+	}
+
+	// Make sure NPC globals match the entity we are about to run.
+	SetNPCGlobals( self );
+	if ( !NPC || !NPCInfo || !client )
+	{
+		return;
+	}
+
+	// NPCMod: avoid some duel oddities
+	if ( self->enemy && self->enemy->client && ( self->enemy->client->ps.duelInProgress ) )
+	{
+		// Use 'self' here; relying on the global NPC pointer is unsafe if globals
+		// ever get out of sync.
+		G_ClearEnemy( self );
 	}
 
 	NPC_HandleAIFlags();
@@ -2391,7 +2566,7 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 		//Com_Printf("Stupid...\n");
 #endif
 		//G_Damage(NPC,NPC,NPC,NPC->client->ps.velocity,NPC->client->ps.origin,Q3_INFINITE,0,MOD_FALLING);
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_FALLDEATH1INAIR, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_RESTART );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_FALLDEATH1INAIR, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_RESTART);
 		G_EntitySound( NPC, CHAN_VOICE, G_SoundIndex("*falling1.wav") );
 		NPCInfo->aiFlags |= NPCAI_DIE_ON_IMPACT;
 		if (NPC->client->ps.otherKillerTime > level.time)
@@ -2463,7 +2638,7 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 		}
 	}
 
-	if ( NPC->client->ps.saberLockTime && NPC->client->ps.saberLockEnemy != ENTITYNUM_NONE )
+	if (NPC->client && NPC->client->ps.saberLockTime && NPC->client->ps.saberLockEnemy != ENTITYNUM_NONE )
 	{//racc - force looking at our saberlock target
 		NPC_SetLookTarget( NPC, NPC->client->ps.saberLockEnemy, level.time+1000 );
 	}
@@ -2512,16 +2687,16 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 	{//We just shot but aren't still shooting, so hold the gun up for a while
 		if(client->ps.weapon == WP_SABER )
 		{//One-handed
-			NPC_SetAnim(NPC,SETANIM_TORSO,TORSO_WEAPONREADY1,SETANIM_FLAG_NORMAL);
+			NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_WEAPONREADY1, SETANIM_FLAG_NORMAL);
 		}
 		else if(client->ps.weapon == WP_BRYAR_PISTOL)
 		{//Sniper pose
-			NPC_SetAnim(NPC,SETANIM_TORSO,TORSO_WEAPONREADY3,SETANIM_FLAG_NORMAL);
+			NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_WEAPONREADY3, SETANIM_FLAG_NORMAL);
 		}
 		/*//FIXME: What's the proper solution here?
 		else
 		{//heavy weapon
-			NPC_SetAnim(NPC,SETANIM_TORSO,TORSO_WEAPONREADY3,SETANIM_FLAG_NORMAL);
+			NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_WEAPONREADY3, SETANIM_FLAG_NORMAL);
 		}
 		*/
 	}
@@ -2533,7 +2708,7 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 		{
 			if( NPC->s.torsoAnim == TORSO_WEAPONREADY1 || NPC->s.torsoAnim == TORSO_WEAPONREADY3 )
 			{//we look ready for action, using one of the first 2 weapon, let's rest our weapon on our shoulder
-				NPC_SetAnim(NPC,SETANIM_TORSO,TORSO_WEAPONIDLE3,SETANIM_FLAG_NORMAL);
+				NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_WEAPONIDLE3, SETANIM_FLAG_NORMAL);
 			}
 		}
 	}
@@ -2570,6 +2745,7 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 		NPC_ApplyRoff();
 	}
 
+	NPC_CheckInSolidFix();
 	// end of thinking cleanup
 	//Temporary Fix
 	if (NPCInfo)
@@ -2675,6 +2851,52 @@ void G_DroidSounds( gentity_t *self )
 //[/CoOp]
 
 
+
+/*
+===================
+NPC_CheckInSolidFix
+
+SP has support for tracking a "last clear" position for NPCs.
+In MP, NPCs can occasionally end up embedded in solid after teleports, movers, or spawn overlaps.
+This is a conservative fix: only runs when we have a valid lastClearOrigin AND the NPC is not currently on a ROFF.
+===================
+*/
+static void NPC_CheckInSolidFix( void )
+{
+	trace_t	trace;
+	vec3_t	point;
+
+	if ( !NPC || !NPCInfo || !NPC->client )
+	{
+		return;
+	}
+
+	/* Don't fight scripted ROFF movement */
+	if ( NPC->next_roff_time && NPC->next_roff_time >= level.time )
+	{
+		return;
+	}
+
+	
+	VectorCopy( NPC->r.currentOrigin, point );
+	point[2] -= 0.25f;
+
+	trap_Trace( &trace, NPC->r.currentOrigin, NPC->r.mins, NPC->r.maxs, point, NPC->s.number, NPC->clipmask );
+
+	if ( !trace.startsolid && !trace.allsolid )
+	{
+		VectorCopy( NPC->r.currentOrigin, NPCInfo->lastClearOrigin );
+		return;
+	}
+
+	/* Stuck in solid: revert to last known clear origin */
+	if ( VectorLengthSquared( NPCInfo->lastClearOrigin ) )
+	{
+		G_SetOrigin( NPC, NPCInfo->lastClearOrigin );
+		trap_LinkEntity( NPC );
+	}
+}
+
 /*
 ===============
 NPC_Think
@@ -2687,6 +2909,12 @@ extern int AITime;
 #endif//	AI_TIMERS
 void NPC_Think ( gentity_t *self)//, int msec ) 
 {
+
+	if ( !self || !self->NPC || !self->client )
+	{
+		return;
+	}
+
 
 
 
@@ -2997,7 +3225,8 @@ void NPC_Think ( gentity_t *self)//, int msec )
 		{
 			NPC_ApplyRoff();
 		}
-		//VectorCopy(self->s.origin, self->s.origin2 );
+		//		NPC_CheckInSolidFix();
+VectorCopy(self->s.origin, self->s.origin2 );
 	}
 	//must update icarus *every* frame because of certain animation completions in the pmove stuff that can leave a 50ms gap between ICARUS animation commands
 	trap_ICARUS_MaintainTaskManager(self->s.number);
@@ -3095,56 +3324,9 @@ void NPC_InitGame( void )
 }
 
 void NPC_SetAnim(gentity_t *ent, int setAnimParts, int anim, int setAnimFlags)
-{	// FIXME : once torsoAnim and legsAnim are in the same structure for NCP and Players
-	// rename PM_SETAnimFinal to PM_SetAnim and have both NCP and Players call PM_SetAnim
-	G_SetAnim(ent, NULL, setAnimParts, anim, setAnimFlags, 0);
-/*
-	if(ent->client)
-	{//Players, NPCs
-		if (setAnimFlags&SETANIM_FLAG_OVERRIDE)
-		{		
-			if (setAnimParts & SETANIM_TORSO)
-			{
-				if( (setAnimFlags & SETANIM_FLAG_RESTART) || ent->client->ps.torsoAnim != anim )
-				{
-					PM_SetTorsoAnimTimer( ent, &ent->client->ps.torsoTimer, 0 );
-				}
-			}
-			if (setAnimParts & SETANIM_LEGS)
-			{
-				if( (setAnimFlags & SETANIM_FLAG_RESTART) || ent->client->ps.legsAnim != anim )
-				{
-					PM_SetLegsAnimTimer( ent, &ent->client->ps.legsAnimTimer, 0 );
-				}
-			}
-		}
-
-		PM_SetAnimFinal(&ent->client->ps.torsoAnim,&ent->client->ps.legsAnim,setAnimParts,anim,setAnimFlags,
-			&ent->client->ps.torsoAnimTimer,&ent->client->ps.legsAnimTimer,ent);
-	}
-	else
-	{//bodies, etc.
-		if (setAnimFlags&SETANIM_FLAG_OVERRIDE)
-		{		
-			if (setAnimParts & SETANIM_TORSO)
-			{
-				if( (setAnimFlags & SETANIM_FLAG_RESTART) || ent->s.torsoAnim != anim )
-				{
-					PM_SetTorsoAnimTimer( ent, &ent->s.torsoAnimTimer, 0 );
-				}
-			}
-			if (setAnimParts & SETANIM_LEGS)
-			{
-				if( (setAnimFlags & SETANIM_FLAG_RESTART) || ent->s.legsAnim != anim )
-				{
-					PM_SetLegsAnimTimer( ent, &ent->s.legsAnimTimer, 0 );
-				}
-			}
-		}
-
-		PM_SetAnimFinal(&ent->s.torsoAnim,&ent->s.legsAnim,setAnimParts,anim,setAnimFlags,
-			&ent->s.torsoAnimTimer,&ent->s.legsAnimTimer,ent);
-	}
-	*/
+{	// Wrapper to unify NPC animation setting with player code.
+	// Uses the shared G_SetAnim path so blend times are respected consistently.
+	G_SetAnim(ent, NULL, setAnimParts, anim, setAnimFlags, 100);
 }
+
 //[/SPPortComplete]

@@ -349,6 +349,7 @@
     <ClCompile Include="WalkerNPC.c" />
     <ClCompile Include="w_saber.c" />
     <ClCompile Include="NPC.c" />
+    <ClCompile Include="NPC_AI_Animal.c" />
     <ClCompile Include="NPC_AI_AssassinDroid.c" />
     <ClCompile Include="NPC_AI_Atst.c" />
     <ClCompile Include="NPC_AI_Civilian.c" />
@@ -366,6 +367,8 @@
     <ClCompile Include="NPC_AI_Rancor.c" />
     <ClCompile Include="NPC_AI_Remote.c" />
     <ClCompile Include="NPC_AI_RocketTrooper.c" />
+    <ClCompile Include="NPC_AI_Tusken.c" />
+    <ClCompile Include="NPC_AI_HazardTrooper.c" />
     <ClCompile Include="NPC_AI_SaberDroid.c" />
     <ClCompile Include="NPC_AI_Sand_creature.c" />
     <ClCompile Include="NPC_AI_Seeker.c" />
@@ -386,10 +389,7 @@
     <ClCompile Include="NPC_stats.c" />
     <ClCompile Include="NPC_utils.c" />
     <ClCompile Include="NPC_Vehicle.c" />
-    <ClCompile Include="ai_aotc.c" />
-    <ClCompile Include="ai_hybrid.c" />
     <ClCompile Include="ai_main.c" />
-    <ClCompile Include="ai_tab.c" />
     <ClCompile Include="ai_util.c" />
     <ClCompile Include="ai_wpnav.c" />
     <ClCompile Include="aotctc_holocron.c" />

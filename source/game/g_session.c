@@ -28,7 +28,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	char		saberType[64];
 	char		saber2Type[64];
 
-	strcpy(siegeClass, client->sess.siegeClass);
+	Q_strncpyz(siegeClass, client->sess.siegeClass, sizeof(siegeClass));
 
 	while (siegeClass[i])
 	{ //sort of a hack.. we don't want spaces by siege class names have spaces so convert them all to unused chars
@@ -42,11 +42,11 @@ void G_WriteClientSessionData( gclient_t *client ) {
 
 	if (!siegeClass[0])
 	{ //make sure there's at least something
-		strcpy(siegeClass, "none");
+		Q_strncpyz(siegeClass, "none", sizeof(siegeClass));
 	}
 
 	//Do the same for the saber
-	strcpy(saberType, client->sess.saberType);
+	Q_strncpyz(saberType, client->sess.saberType, sizeof(saberType));
 
 	i = 0;
 	while (saberType[i])
@@ -59,7 +59,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		i++;
 	}
 
-	strcpy(saber2Type, client->sess.saber2Type);
+	Q_strncpyz(saber2Type, client->sess.saber2Type, sizeof(saber2Type));
 
 	i = 0;
 	while (saber2Type[i])

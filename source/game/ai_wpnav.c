@@ -28,7 +28,7 @@ char *GetFlagStr( int flags )
 
 	if (!flags)
 	{
-		strcpy(flagstr, "none\0");
+		Q_strncpyz(flagstr, "none", 128);
 		goto fend;
 	}
 
@@ -230,7 +230,7 @@ char *GetFlagStr( int flags )
 
 	if (i == 0)
 	{
-		strcpy(flagstr, "unknown\0");
+		Q_strncpyz(flagstr, "unknown", 128);
 	}
 
 fend:
@@ -313,9 +313,10 @@ void BotWaypointRender(void)
 
 			while (n < gWPArray[i]->neighbornum)
 			{
-				if (gWPArray[i]->neighbors[n].forceJumpTo && gWPArray[gWPArray[i]->neighbors[n].num])
+				const int nei = gWPArray[i]->neighbors[n].num;
+				if (gWPArray[i]->neighbors[n].forceJumpTo && nei >= 0 && nei < MAX_WPARRAY_SIZE && gWPArray[nei])
 				{
-					G_TestLine(gWPArray[i]->origin, gWPArray[gWPArray[i]->neighbors[n].num]->origin, 0x0000ff, 5000);
+					G_TestLine(gWPArray[i]->origin, gWPArray[nei]->origin, 0x0000ff, 5000);
 				}
 				n++;
 			}
@@ -1597,7 +1598,8 @@ int RepairPaths(qboolean behindTheScenes)
 	trap_Cvar_Update(&bot_wp_distconnect);
 	trap_Cvar_Update(&bot_wp_visconnect);
 
-	while (i < gWPNum)
+	// We access i+1 below, so stop at gWPNum-1 to avoid reading past the end.
+	while (i + 1 < gWPNum)
 	{
 		if (gWPArray[i] && gWPArray[i]->inuse && gWPArray[i+1] && gWPArray[i+1]->inuse)
 		{
@@ -1797,20 +1799,30 @@ void CalculatePaths(void)
 					//forceJumpable = CanForceJumpTo(i, c, nLDist);
 					//[/BotTweaks]
 
-					if ((nLDist < maxNeighborDist || forceJumpable) &&
-						((int)gWPArray[i]->origin[2] == (int)gWPArray[c]->origin[2] || forceJumpable) &&
-						(OrgVisibleBox(gWPArray[i]->origin, mins, maxs, gWPArray[c]->origin, ENTITYNUM_NONE) || forceJumpable))
+					// Allow small Z differences (ramps/steps) so bots don't get "blocked" by strict height matching.
+					// Keep conservative tolerances to avoid creating nonsense neighbors.
 					{
-						gWPArray[i]->neighbors[gWPArray[i]->neighbornum].num = c;
-						if (forceJumpable && ((int)gWPArray[i]->origin[2] != (int)gWPArray[c]->origin[2] || nLDist < maxNeighborDist))
+						float zTol = (g_RMG.integer) ? 96.0f : 64.0f;
+						float zDiff = gWPArray[i]->origin[2] - gWPArray[c]->origin[2];
+						if (zDiff < 0.0f) { zDiff = -zDiff; }
+						// Reuse zDiff/zTol just below in the neighbor tests.
+						// (scoped block keeps the variables tight)
+						
+						if ((nLDist < maxNeighborDist || forceJumpable) &&
+							(zDiff <= zTol || forceJumpable) &&
+							(OrgVisibleBox(gWPArray[i]->origin, mins, maxs, gWPArray[c]->origin, ENTITYNUM_NONE) || forceJumpable))
 						{
-							gWPArray[i]->neighbors[gWPArray[i]->neighbornum].forceJumpTo = 999;//forceJumpable; //FJSR
+							gWPArray[i]->neighbors[gWPArray[i]->neighbornum].num = c;
+							if (forceJumpable && ((int)gWPArray[i]->origin[2] != (int)gWPArray[c]->origin[2] || nLDist < maxNeighborDist))
+							{
+								gWPArray[i]->neighbors[gWPArray[i]->neighbornum].forceJumpTo = 999;//forceJumpable; //FJSR
+							}
+							else
+							{
+								gWPArray[i]->neighbors[gWPArray[i]->neighbornum].forceJumpTo = 0;
+							}
+							gWPArray[i]->neighbornum++;
 						}
-						else
-						{
-							gWPArray[i]->neighbors[gWPArray[i]->neighbornum].forceJumpTo = 0;
-						}
-						gWPArray[i]->neighbornum++;
 					}
 
 					if (gWPArray[i]->neighbornum >= MAX_NEIGHBOR_SIZE)
@@ -2198,8 +2210,8 @@ int LoadPathData(const char* filename)
     if (!f)
     {
         G_Printf(S_COLOR_YELLOW "Bot route data not found for %s\n", filename);
-        BG_TempFree(WPARRAY_BUFFER_SIZE); // Free allocated memory
-        BG_TempFree(2048); // Free allocated memory
+		BG_TempFree(2048);
+		BG_TempFree(WPARRAY_BUFFER_SIZE);
         return 2;
     }
 
@@ -2207,8 +2219,8 @@ int LoadPathData(const char* filename)
     {
         G_Printf(S_COLOR_RED "Route file exceeds maximum length\n");
         trap_FS_FCloseFile(f);
-        BG_TempFree(WPARRAY_BUFFER_SIZE); // Free allocated memory
-        BG_TempFree(2048); // Free allocated memory
+		BG_TempFree(2048);
+		BG_TempFree(WPARRAY_BUFFER_SIZE);
         return 0;
     }
 
@@ -2399,8 +2411,8 @@ int LoadPathData(const char* filename)
         i++;
     }
 
-    BG_TempFree(WPARRAY_BUFFER_SIZE); // Free allocated memory
-    BG_TempFree(2048); // Free allocated memory
+	BG_TempFree(2048);
+	BG_TempFree(WPARRAY_BUFFER_SIZE);
 
     trap_FS_FCloseFile(f);
 
@@ -2853,8 +2865,8 @@ void G_DebugNodeFile()
         return;
     }
 
-    BG_TempFree(bufferSize); // Clear the buffer with BG_TempFree (although this is not needed right after allocation)
-
+    fileString[0] = '\0';
+	
     placeX = terrain->r.absmin[0];
 
     while (i < nodenum)

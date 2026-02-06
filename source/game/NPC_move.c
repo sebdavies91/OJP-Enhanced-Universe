@@ -579,7 +579,7 @@ void	 NPC_JumpAnimation()
 			jumpAnim = BOTH_FLIP_F;
 		}
 	}
-	NPC_SetAnim( NPC, SETANIM_BOTH, jumpAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+	NPC_SetAnim(NPC, SETANIM_BOTH, jumpAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 }
 
 //RAFIXME - CLASS_ROCKETTROOPER|CLASS_BOBAFETT
@@ -1239,18 +1239,42 @@ qboolean NPC_MoveToGoal( qboolean tryStraight )
 	int	startTime = GetTime(0);
 #endif//	AI_TIMERS
 	//If taking full body pain, don't move
-	if ( PM_InKnockDown( &NPC->client->ps ) || ( ( NPC->s.legsAnim >= BOTH_PAIN1 ) && ( NPC->s.legsAnim <= BOTH_PAIN18 ) ) )
-	{
+	if ( PM_InKnockDown( &NPC->client->ps )
+		|| ( ( NPC->client->ps.legsAnim >= BOTH_PAIN1 ) && ( NPC->client->ps.legsAnim <= BOTH_PAIN18 )
+			&& NPC->client->ps.legsTimer > 0 ) )
+	{//If taking full body pain, don't move
 		return qtrue;
 	}
 
-	/*
-	if( NPC->s.eFlags & EF_LOCKED_TO_WEAPON )
+	if ( NPC->client && NPC->client->ps.emplacedIndex )
 	{//If in an emplaced gun, never try to navigate!
 		return qtrue;
 	}
-	*/
-	//rwwFIXMEFIXME: emplaced support
+
+	if ( ( NPC->s.eFlags2 & EF2_HELD_BY_MONSTER )
+		|| ( NPC->client && ( NPC->client->ps.eFlags2 & EF2_HELD_BY_MONSTER ) ) )
+	{//If in a creature's grip/mouth, never try to navigate!
+		return qtrue;
+	}
+
+if ( NPC->watertype & CONTENTS_LADDER )
+	{//Handle ladders here so MoveToGoal doesn't overwrite ucmd values from NPC_LadderMove
+		vec3_t ldir;
+
+		if ( NPCInfo->goalEntity )
+		{
+			VectorSubtract( NPCInfo->goalEntity->r.currentOrigin, NPC->r.currentOrigin, ldir );
+			VectorNormalize( ldir );
+		}
+		else
+		{
+			VectorClear( ldir );
+			ldir[2] = 1.0f;
+		}
+
+		NPC_LadderMove( ldir );
+		return qtrue;
+	}
 
 	//FIXME: if can't get to goal & goal is a target (enemy), try to find a waypoint that has line of sight to target, at least?
 	//Get our movement direction

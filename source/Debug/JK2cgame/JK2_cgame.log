@@ -16,10 +16,11 @@
   cg_effects.c
   cg_ents.c
   cg_event.c
+  cg_g2trace.c
   cg_holster.c
-  cg_info.c
   Generating Code...
   Compiling...
+  cg_info.c
   cg_light.c
   cg_localents.c
   cg_main.c
@@ -39,9 +40,9 @@
   cg_weaponinit.c
   cg_weapons.c
   FighterNPC.c
-  fx_blaster.c
   Generating Code...
   Compiling...
+  fx_blaster.c
   fx_bowcaster.c
   fx_bryarpistol.c
   fx_demp2.c

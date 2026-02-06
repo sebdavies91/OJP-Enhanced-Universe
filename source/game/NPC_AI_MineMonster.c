@@ -49,7 +49,9 @@ MineMonster_Patrol
 */
 void MineMonster_Patrol( void )
 {
-	vec3_t dif;
+	gentity_t *closestPlayer = NULL;
+	int i;
+	float bestDistSq = 0.0f;
 
 	NPCInfo->localState = LSTATE_CLEAR;
 
@@ -67,12 +69,46 @@ void MineMonster_Patrol( void )
 		}
 	}
 
-	//rwwFIXMEFIXME: Care about all clients, not just client 0
-	VectorSubtract( g_entities[0].r.currentOrigin, NPC->r.currentOrigin, dif );
-
-	if ( VectorLengthSquared( dif ) < 256 * 256 )
+	// In MP, client 0 isn't guaranteed to be the "player".
+	// Pick the closest active client and aggro if they're within range.
+	for ( i = 0; i < level.maxclients; i++ )
 	{
-		G_SetEnemy( NPC, &g_entities[0] );
+		gentity_t *player = &g_entities[i];
+		float distSq;
+
+		if ( !player->inuse || !player->client )
+		{
+			continue;
+		}
+		if ( player->client->pers.connected != CON_CONNECTED )
+		{
+			continue;
+		}
+		if ( player->client->sess.sessionTeam == TEAM_SPECTATOR )
+		{
+			continue;
+		}
+		if ( player->health <= 0 || (player->s.eFlags & EF_DEAD) )
+		{
+			continue;
+		}
+		// Respect team filtering if this NPC uses it.
+		if ( NPC->client && NPC->client->enemyTeam != -1 && player->client->playerTeam != NPC->client->enemyTeam )
+		{
+			continue;
+		}
+
+		distSq = DistanceSquared( player->r.currentOrigin, NPC->r.currentOrigin );
+		if ( !closestPlayer || distSq < bestDistSq )
+		{
+			closestPlayer = player;
+			bestDistSq = distSq;
+		}
+	}
+
+	if ( closestPlayer && bestDistSq < (256.0f * 256.0f) )
+	{
+		G_SetEnemy( NPC, closestPlayer );
 	}
 
 	if ( NPC_CheckEnemyExt( qtrue ) == qfalse )
@@ -117,11 +153,11 @@ void MineMonster_TryDamage( gentity_t *enemy, int damage )
 	if ( tr.entityNum >= 0 && tr.entityNum < ENTITYNUM_NONE )
 	{
 		G_Damage( &g_entities[tr.entityNum], NPC, NPC, dir, tr.endpos, damage, DAMAGE_NO_KNOCKBACK, MOD_MELEE );
-		G_Sound( NPC, CHAN_AUTO, G_EffectIndex(va("sound/chars/mine/misc/bite%i.wav", Q_irand(1,4))));
+		G_SoundOnEnt( NPC, CHAN_VOICE, va("sound/chars/mine/misc/bite%i.wav", Q_irand(1,4)) );
 	}
 	else
 	{
-		G_Sound( NPC, CHAN_AUTO, G_EffectIndex(va("sound/chars/mine/misc/miss%i.wav", Q_irand(1,4))));
+		G_SoundOnEnt( NPC, CHAN_VOICE, va("sound/chars/mine/misc/miss%i.wav", Q_irand(1,4)) );
 	}
 }
 
@@ -136,7 +172,7 @@ void MineMonster_Attack( void )
 		{
 			// Going to do ATTACK4
 			TIMER_Set( NPC, "attacking", 1750 + random() * 200 );
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK4, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK4, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 
 			TIMER_Set( NPC, "attack2_dmg", 950 ); // level two damage
 		}
@@ -146,7 +182,7 @@ void MineMonster_Attack( void )
 			{
 				// Going to do ATTACK3, (rare)
 				TIMER_Set( NPC, "attacking", 850 );
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK3, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK3, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 
 				TIMER_Set( NPC, "attack2_dmg", 400 ); // level two damage
 			}
@@ -154,7 +190,7 @@ void MineMonster_Attack( void )
 			{
 				// Going to do ATTACK1
 				TIMER_Set( NPC, "attacking", 850 );
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 
 				TIMER_Set( NPC, "attack1_dmg", 450 ); // level one damage
 			}
@@ -163,7 +199,7 @@ void MineMonster_Attack( void )
 		{
 			// Going to do ATTACK2
 			TIMER_Set( NPC, "attacking", 1250 );
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 
 			TIMER_Set( NPC, "attack1_dmg", 700 ); // level one damage
 		}
@@ -244,7 +280,7 @@ void NPC_MineMonster_Pain(gentity_t *self, gentity_t *attacker, int damage)
 
 		VectorCopy( self->NPC->lastPathAngles, self->s.angles );
 
-		NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+		NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 
 		if ( self->NPC )
 		{

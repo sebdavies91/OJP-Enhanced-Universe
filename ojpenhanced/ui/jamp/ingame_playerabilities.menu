@@ -462,7 +462,7 @@
 			backcolor			0 0 0 0
 			border				0
 			bordercolor			0 0 0 0
-			descText				"Stronger punches"
+			descText				"Stronger punches and kicks"
 			visible					1 
 			action 
 			{ 

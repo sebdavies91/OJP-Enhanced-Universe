@@ -5,6 +5,10 @@
 
 GAME_INLINE void ClearSabMech( sabmech_t *sabmech)
 {
+	if ( !sabmech )
+	{
+		return;
+	}
 	sabmech->doStun = qfalse;
 	sabmech->doKnockdown = qfalse;
 	sabmech->doButterFingers = qfalse;
@@ -22,6 +26,22 @@ extern qboolean BG_SaberInNonIdleDamageMove(playerState_t *ps, int AnimIndex);
 qboolean SabBeh_RollBalance(gentity_t *self, sabmech_t *mechSelf, qboolean forceMishap)
 {
 	int randNum; 
+	/*
+	Racc - Bugfix:
+		This function previously used "randNum < 0" checks after Q_irand(0, 99),
+		which can never succeed. That effectively disabled random mishaps and only
+		allowed forced mishaps.
+	
+		Keep this conservative: low default chances, and forced mishaps still work.
+	*/
+	const int kChanceHeavyBounce = 8; /* percent */
+	const int kChanceSlowBounce  = 10; /* percent */
+
+	if ( !self || !self->client || !mechSelf )
+	{
+		return qfalse;
+	}
+
 	if( self->client->ps.MISHAP_VARIABLE <= MISHAPLEVEL_FULL )
 	{//hard mishap.
 		//mechSelf->doKnockdown = qtrue;
@@ -33,7 +53,7 @@ qboolean SabBeh_RollBalance(gentity_t *self, sabmech_t *mechSelf, qboolean force
 	else if( self->client->ps.stats[STAT_DODGE] < DODGE_CRITICALLEVEL )//added by JRHockney to do more heavybounces like old times
 	{//heavy slow bounce
 		randNum = Q_irand(0, 99);
-		if(randNum < 0 || forceMishap)
+		if(randNum < kChanceHeavyBounce || forceMishap)
 		{
 			mechSelf->doHeavySlowBounce = qtrue;
 			return qtrue;
@@ -42,7 +62,7 @@ qboolean SabBeh_RollBalance(gentity_t *self, sabmech_t *mechSelf, qboolean force
 	else if( self->client->ps.MISHAP_VARIABLE <= MISHAPLEVEL_HEAVY )
 	{//heavy slow bounce
 		randNum = Q_irand(0, 99);
-		if(randNum < 0 || forceMishap)
+		if(randNum < kChanceHeavyBounce || forceMishap)
 		{
 			mechSelf->doHeavySlowBounce = qtrue;
 			//self->client->ps.MISHAP_VARIABLE = MISHAPLEVEL_LIGHT;
@@ -52,7 +72,7 @@ qboolean SabBeh_RollBalance(gentity_t *self, sabmech_t *mechSelf, qboolean force
 	else if( self->client->ps.MISHAP_VARIABLE <= MISHAPLEVEL_LIGHT )
 	{//slow bounce
 		randNum = Q_irand(0, 99);
-		if(randNum < 0 || forceMishap)
+		if(randNum < kChanceSlowBounce || forceMishap)
 		{
 			mechSelf->doSlowBounce = qtrue;
 			//self->client->ps.MISHAP_VARIABLE = MISHAPLEVEL_NONE;
@@ -118,18 +138,32 @@ void G_RollBalance(gentity_t *self, gentity_t *inflictor, qboolean forceMishap)
 		{
 			//RAFIXME - impliment lose vector handling.
 			//ButterFingers(&g_entities[self->client->ps.saberEntityNum], self, inflictor, &tr);
-			saberKnockOutOfHand(&g_entities[self->client->ps.saberEntityNum], self, vec3_origin);
+			if ( self && self->client
+				&& self->client->ps.saberEntityNum > 0
+				&& self->client->ps.saberEntityNum < MAX_GENTITIES
+				&& g_entities[self->client->ps.saberEntityNum].inuse )
+			{
+				saberKnockOutOfHand(&g_entities[self->client->ps.saberEntityNum], self, vec3_origin);
+			}
 		}
 
 		if(mechSelf.doKnockdown)
 		{
 			AnimateKnockdown(self, inflictor);
 		}
-		else if (mechSelf.doStun)
-		{
-			//RAFIXME - impliment impact point properly.
-			AnimateStun(self, inflictor, self->client->ps.origin);
-		}
+			else if (mechSelf.doStun)
+			{
+				// RAFIXME - implement impact point properly.
+				// Be defensive: self/client can be NULL in unusual damage callback flows.
+				if ( self && self->client )
+				{
+					AnimateStun(self, inflictor, self->client->ps.origin);
+				}
+				else
+				{
+					AnimateStun(self, inflictor, vec3_origin);
+				}
+			}
 		else if(mechSelf.doSlowBounce)
 		{
 			SabBeh_AnimateSlowBounce(self, inflictor);

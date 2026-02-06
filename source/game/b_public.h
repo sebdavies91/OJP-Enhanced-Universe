@@ -22,6 +22,8 @@
 #define NPCAI_MATCHPLAYERWEAPON 0x00040000	//Match the player's weapon except when it changes during cinematics
 #define NPCAI_DIE_ON_IMPACT		0x00100000	//Next time you crashland, die!
 #define NPCAI_CUSTOM_GRAVITY	0x00200000	//Don't use g_gravity, I fly!
+
+#define NPCAI_FLAMETHROW			0x10000000	//Using a flamethrower-style special attack
 //[CoOp]
 #define NPCAI_BOSS_CHARACTER	0x00400000	//Boss NPC flag for certain immunities/defenses
 #define NPCAI_ROSH				0x00800000	//Rosh has some special stuff that he alone does.

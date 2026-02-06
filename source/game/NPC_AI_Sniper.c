@@ -55,6 +55,7 @@ void Sniper_ClearTimers( gentity_t *ent )
 	TIMER_Set( ent, "stick", 0 );
 	TIMER_Set( ent, "scoutTime", 0 );
 	TIMER_Set( ent, "flee", 0 );
+	TIMER_Set( ent, "snipeHold", 0 );
 }
 
 void NPC_Sniper_PlayConfusionSound( gentity_t *self )
@@ -310,6 +311,18 @@ ST_CheckMoveState
 
 static void Sniper_CheckMoveState( void )
 {
+	// SP outcome: if we already have a clear shot, don't keep compressing forward in tight spaces.
+	// This is a conservative MP-only guard (non-saber; debounced) to reduce corridor clumping.
+	if ( !TIMER_Done( NPC, "snipeHold" ) )
+	{
+		if ( NPCInfo->goalEntity == NPC->enemy )
+		{
+			NPCInfo->goalEntity = NULL;
+		}
+		move2 = qfalse;
+		return;
+	}
+
 	//See if we're a scout
 	if ( !(NPCInfo->scriptFlags & SCF_CHASE_ENEMIES) )//NPCInfo->behaviorState == BS_STAND_AND_SHOOT )
 	{
@@ -761,6 +774,16 @@ void NPC_BSSniper_Attack( void )
 	if ( enemyCS2 )
 	{
 		shoot2 = qtrue;
+		// SP outcome: once we have a clean shot, stop advancing for a moment and snipe.
+		// This reduces MP hallway "blob" behavior without changing weapon/saber logic.
+		if ( NPC->client && NPC->client->ps.weapon != WP_SABER
+			&& (NPCInfo->scriptFlags & SCF_CHASE_ENEMIES)
+			&& NPCInfo->goalEntity == NPC->enemy
+			&& TIMER_Done( NPC, "snipeHold" )
+			&& enemyDist2 > (192.0f*192.0f) )
+		{
+			TIMER_Set( NPC, "snipeHold", Q_irand( 600, 1000 ) );
+		}
 	}
 	else if ( level.time - NPCInfo->enemyLastSeenTime > 3000 )
 	{//Hmm, have to get around this bastard... FIXME: this NPCInfo->enemyLastSeenTime builds up when ducked seems to make them want to run when they uncrouch
@@ -769,6 +792,22 @@ void NPC_BSSniper_Attack( void )
 
 	//Check for movement to take care of
 	Sniper_CheckMoveState();
+
+	// SP outcome: if we can already take the shot from here, hold instead of continuing to chase.
+	// Only applies to snipers that are actively chasing their enemy, and never for saber users.
+	if ( NPC->client && NPC->client->ps.weapon != WP_SABER )
+	{
+		if ( enemyCS2
+			&& (NPCInfo->scriptFlags & SCF_CHASE_ENEMIES)
+			&& NPCInfo->goalEntity == NPC->enemy
+			&& enemyDist2 > (192.0f*192.0f)
+			&& TIMER_Done( NPC, "snipeHold" ) )
+		{
+			TIMER_Set( NPC, "snipeHold", Q_irand( 600, 1000 ) );
+			NPCInfo->goalEntity = NULL;
+			move2 = qfalse;
+		}
+	}
 
 	//See if we should override shooting decision with any special considerations
 	Sniper_CheckFireState();

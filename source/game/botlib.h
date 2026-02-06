@@ -6,6 +6,9 @@
  * desc:		bot AI library
  *****************************************************************************/
 
+#ifndef GAME_BOTLIB_H
+#define GAME_BOTLIB_H
+
 #define	BOTLIB_API_VERSION		2
 
 struct aas_clientmove_s;
@@ -78,7 +81,9 @@ struct weaponinfo_s;
 //New bot flag for using saber throws
 #define ACTION_SABERTHROW		0x0800000
 //[/SaberSys]
-
+// New: bot flag for thermal snap-throw
+#define ACTION_THERMALTHROW      0x1000000
+#define ACTION_GRAPPLE           0x2000000  // pick a free bit
 /*
 #define ACTION_AFFIRMATIVE		0x0100000
 #define ACTION_NEGATIVE			0x0200000
@@ -508,3 +513,4 @@ name:						default:			module(s):			description:
 
 */
 
+#endif // GAME_BOTLIB_H

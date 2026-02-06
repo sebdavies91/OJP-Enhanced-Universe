@@ -428,7 +428,6 @@
 			descText		@MENUS_SELECT_PRESET_GRAPHIC
 
 	   		visible 		0
-
 			cvar 			"ui_r_glCustom"
 			cvarFloatList 
 			{ 
@@ -439,9 +438,6 @@
 				@MENUS_CUSTOM		4 
 			}
 
-			mouseenter 
-			{ 
-			}
 			mouseexit 
 			{ 
 			} 
@@ -460,8 +456,8 @@
 			group				video
       		type				ITEM_TYPE_MULTI
 			text				@MENUS_VIDEO_MODE
-			cvarFloatList		{  @MENUS_640_X_480 3 @MENUS_800_X_600 4  @MENUS_1024_X_768 6 @MENUS_1152_X_864 7  @MENUS_1280_X_1024 8  @MENUS_1600_X_1200 9  @MENUS_2048_X_1536 10 @MENUS_2400_X_600 12 }
-			cvar				"ui_r_mode"
+			cvarFloatList			{  @MENUS_640_X_480 0 @MENUS_800_X_600 1  @MENUS_1024_X_768 2 @MENUS_1152_X_864 3  "1280 x 720" 4  @MENUS_1280_X_1024 5  "1366 x 768" 6  "1600 x 900" 7  @MENUS_1600_X_1200 8  "1920 x 1080" 9 "1920 x 1200" 10 @MENUS_2048_X_1536 11 @MENUS_2400_X_600 12 "2560 x 1440" 13 "3440 x 1440" 14 "3840 x 2160" 15 @MENUS_CUSTOM 16 }
+			cvar				"ui_r_resolution"
 
 			rect				206 115 300 20
 			textalign			ITEM_ALIGN_RIGHT
@@ -483,6 +479,7 @@
 			action 
 			{
 				play			"sound/interface/button1"
+				uiScript		update "ui_r_resolution"
 				uiScript		glCustom
 				setcvar			ui_r_modified	1
 				show			applyChanges
@@ -1879,7 +1876,7 @@
 				English  			english
 				@MENUS_LANG_FRENCH  francais
 				Deutsch   			deutsch
-				"Español" 			espanol
+				"Espaol" 			espanol
 			}
 			rect				206 275 300 20
 	   		textalign			ITEM_ALIGN_RIGHT

@@ -6,6 +6,10 @@
 #include "../ghoul2/g2.h"
 #include "../game/bg_saga.h"
 
+
+// Deterministic exhaust bolt lookup helper (forward declare; definition near vehicle FX code).
+static int CG_VehicleAddExhaustBolt( void *ghoul2, int modelIndex, int exhaustNum );
+
 //[TrueView]
 //True View Camera Position Check Function
 extern void CheckCameraLocation( vec3_t OldeyeOrigin );
@@ -439,7 +443,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 			{
 				break;
 			}		
-			strcpy(stringData, token);
+			Q_strncpyz( stringData, token, sizeof(stringData) );
 			//get lowest value
 			token = COM_Parse( text_p );
 			if ( !token[0] ) //[TicketFix143] 
@@ -472,7 +476,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 						{
 							animEvents[curAnimEvent].stringData = (char *) BG_Alloc(MAX_QPATH);
 						}
-						strcpy( animEvents[curAnimEvent].stringData, stringData );
+						Q_strncpyz( animEvents[curAnimEvent].stringData, stringData, MAX_QPATH );
 					}
 					else if ( stringData[0] != '*' )
 					//else
@@ -492,7 +496,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 					{
 						animEvents[curAnimEvent].stringData = (char *) BG_Alloc(MAX_QPATH);
 					}
-					strcpy( animEvents[curAnimEvent].stringData, stringData );
+					Q_strncpyz( animEvents[curAnimEvent].stringData, stringData, MAX_QPATH );
 				}
 				else
 				{
@@ -617,7 +621,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 			{
 				break;
 			}		
-			strcpy(stringData, token);
+			Q_strncpyz( stringData, token, sizeof(stringData) );
 			//get lowest value
 			token = COM_Parse( text_p );
 			if ( !token[0] ) //[TicketFix143] 
@@ -653,7 +657,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 						{ //eh, whatever. no dynamic stuff, so this will do.
 							animEvents[curAnimEvent].stringData = (char *) BG_Alloc(MAX_QPATH);
 						}
-						strcpy( animEvents[curAnimEvent].stringData, stringData );
+						Q_strncpyz( animEvents[curAnimEvent].stringData, stringData, MAX_QPATH );
 					}
 					else if ( stringData[0] != '*' )
 					//else
@@ -798,7 +802,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 				{ //eh, whatever. no dynamic stuff, so this will do.
 					animEvents[curAnimEvent].stringData = (char *) BG_Alloc(2048);
 				}
-				strcpy(animEvents[curAnimEvent].stringData, token);
+				Q_strncpyz( animEvents[curAnimEvent].stringData, token, MAX_QPATH );
 			}
 			//NOTE: this string will later be used to add a bolt and store the index, as below:
 			//animEvent->eventData[AED_BOLTINDEX] = gi.G2API_AddBolt( &cent->gent->ghoul2[cent->gent->playerModel], animEvent->stringData );
@@ -996,7 +1000,7 @@ trybaseskel:
                 slash++;
                 *slash = 0;
             }
-            strcpy(as_filename, SkelName);
+            Q_strncpyz( as_filename, SkelName, sizeof(as_filename) );
 
             triedbaseskelevents = qtrue;
             goto trybaseskel;
@@ -1042,7 +1046,7 @@ trybaseskel:
             if (include_filename != NULL)
             {
                 char fullIPath[MAX_QPATH];
-                strcpy(fullIPath, va("models/players/%s/", include_filename));
+                Q_strncpyz(fullIPath, va("models/players/%s/", include_filename), sizeof(fullIPath));
                 cg_animParseIncluding++;
                 CG_ParseAnimationEvtFile(fullIPath, animFileIndex, forcedIndex);
                 cg_animParseIncluding--;
@@ -1074,7 +1078,7 @@ fin:
     if (cg_animParseIncluding <= 0)
     { // if we should be parsing an included file, skip this part
         cgAllEvents[forcedIndex].eventsParsed = qtrue;
-        strcpy(cgAllEvents[forcedIndex].filename, as_filename);
+        Q_strncpyz( cgAllEvents[forcedIndex].filename, as_filename, sizeof(cgAllEvents[forcedIndex].filename) );
         if (forcedIndex)
         {
             cgNumAnimEvents++;
@@ -1304,14 +1308,14 @@ qboolean CG_ParseSurfsFile(const char* modelName, const char* skinName, char* su
     text_p = text;
 
     // Replace memset with BG_TempFree
-    if (surfOff)
-    {
-        BG_TempFree(MAX_SURF_LIST_SIZE);
-    }
-    if (surfOn)
-    {
-        BG_TempFree(MAX_SURF_LIST_SIZE);
-    }
+if (surfOff)
+{
+    memset(surfOff, 0, MAX_SURF_LIST_SIZE);
+}
+if (surfOn)
+{
+    memset(surfOn, 0, MAX_SURF_LIST_SIZE);
+}
 
     // read information for surfOff and surfOn
     while (1)
@@ -1499,7 +1503,7 @@ retryModel:
 		slash = Q_strrchr(afilename, '/');
 		if (slash)
 		{
-			strcpy(slash, "/animation.cfg");
+			Q_strncpyz( slash, "/animation.cfg", (int)(sizeof(afilename) - (slash - afilename)) );
 		}    // Now afilename holds just the path to the animation.cfg
 		else
 		{    // Didn't find any slashes, this is a raw filename right in base (whish isn't a good thing)
@@ -1665,7 +1669,7 @@ retryModel:
 		int i = 0;
 		int j;
 		char iconName[1024];
-		strcpy(iconName, "icon_");
+		Q_strncpyz(iconName, "icon_", sizeof(iconName));
 		j = strlen(iconName);
 		while (skinName[i] && skinName[i] != '|' && j < sizeof(iconName) - 1) // fix buffer overrun
 		{
@@ -1748,7 +1752,7 @@ int CG_G2SkelForModel(void *g2)
 	slash = Q_strrchr( GLAName, '/' );
 	if ( slash )
 	{
-		strcpy(slash, "/animation.cfg");
+		Q_strncpyz( slash, "/animation.cfg", (int)(sizeof(GLAName) - (slash - GLAName)) );
 
 		animIndex = BG_ParseAnimationFile(GLAName, NULL, qfalse);
 	}
@@ -2070,7 +2074,7 @@ void CG_LoadClientInfo( clientInfo_t *ci ) {
 		}
 	}
 	if( teamname[0] ) {
-		strcat( teamname, "/" );
+		Q_strcat( teamname, sizeof(teamname), "/" );
 	}
 	modelloaded = qtrue;
 	if (cgs.gametype == GT_SIEGE &&
@@ -2284,8 +2288,8 @@ static void CG_CopyClientInfoModel( clientInfo_t *from, clientInfo_t *to )
 	//Don't do this, I guess. Just leave the saber info in the original, so it will be
 	//properly initialized.
 	/*
-	strcpy(to->saberName, from->saberName);
-	strcpy(to->saber2Name, from->saber2Name);
+	Q_strncpyz(to->saberName, from->saberName, sizeof(to->saberName));
+	Q_strncpyz(to->saber2Name, from->saber2Name, sizeof(to->saber2Name));
 
 	while (i < MAX_SABERS)
 	{
@@ -10651,24 +10655,36 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 	}
 }
 
-qboolean CG_G2TraceCollide(trace_t *tr, vec3_t const mins, vec3_t const maxs, const vec3_t lastValidStart, const vec3_t lastValidEnd)
+qboolean CG_G2TraceCollide(trace_t* tr, vec3_t const mins, vec3_t const maxs, const vec3_t lastValidStart, const vec3_t lastValidEnd)
 {
 	G2Trace_t		G2Trace;
-	centity_t		*g2Hit;
+	centity_t* g2Hit;
 	vec3_t			angles;
 	int				tN = 0;
 	float			fRadius = 0.0f;
 
-	if (mins && maxs &&
-		(mins[0] || maxs[0]))
-	{
-		fRadius=(maxs[0]-mins[0])/2.0f;
+	// Defensive argument validation
+	if (!tr) {
+		return qfalse;
+	}
+	if (tr->entityNum < 0 || tr->entityNum >= MAX_ENTITIES) {
+		return qfalse;
+	}
+	if (!lastValidStart || !lastValidEnd) {
+		// caller must provide valid start/end
+		return qfalse;
 	}
 
-	memset (&G2Trace, 0, sizeof(G2Trace));
+	// quick sanity on mins/maxs -> radius
+	if (mins && maxs && (mins[0] || maxs[0])) {
+		fRadius = (maxs[0] - mins[0]) / 2.0f;
+		if (!(fRadius >= 0.0f && fRadius < 1e6f)) {
+			fRadius = 0.0f;
+		}
+	}
 
-	while (tN < MAX_G2_COLLISIONS)
-	{
+	memset(&G2Trace, 0, sizeof(G2Trace));
+	while (tN < MAX_G2_COLLISIONS) {
 		G2Trace[tN].mEntityNum = -1;
 		tN++;
 	}
@@ -10679,16 +10695,62 @@ qboolean CG_G2TraceCollide(trace_t *tr, vec3_t const mins, vec3_t const maxs, co
 		angles[ROLL] = angles[PITCH] = 0;
 		angles[YAW] = g2Hit->lerpAngles[YAW];
 
+		vec3_t tempScale = { 1.0f, 1.0f, 1.0f };
+		const float* scalePtr = g2Hit->modelScale;
+
+		// Inline validation of scalePtr (no aux functions)
+		int scaleValid = qtrue;
+		if (!scalePtr) {
+			scaleValid = qfalse;
+		}
+		else {
+			for (int i = 0; i < 3; ++i) {
+				float v = scalePtr[i];
+				if (!(v == v) || fabsf(v) > 1e30f) { // NaN or insane
+					scaleValid = qfalse;
+					break;
+				}
+			}
+		}
+		if (!scaleValid) {
+			scalePtr = tempScale;
+		}
+		else {
+			if (!(scalePtr[0] > 0.0f && scalePtr[0] < 10000.0f &&
+				scalePtr[1] > 0.0f && scalePtr[1] < 10000.0f &&
+				scalePtr[2] > 0.0f && scalePtr[2] < 10000.0f)) {
+				scalePtr = tempScale;
+			}
+		}
+
+		// Inline validation of lastValidStart/lastValidEnd contents
+		int startValid = qtrue, endValid = qtrue;
+		for (int i = 0; i < 3; ++i) {
+			float s = lastValidStart[i];
+			float e = lastValidEnd[i];
+			if (!(s == s) || fabsf(s) > 1e30f) { startValid = qfalse; }
+			if (!(e == e) || fabsf(e) > 1e30f) { endValid = qfalse; }
+		}
+		if (!startValid || !endValid) {
+			return qfalse;
+		}
+
+		// Copy into locals to ensure we never pass transient pointers
+		vec3_t safeStart, safeEnd, safeScale;
+		safeStart[0] = lastValidStart[0]; safeStart[1] = lastValidStart[1]; safeStart[2] = lastValidStart[2];
+		safeEnd[0] = lastValidEnd[0]; safeEnd[1] = lastValidEnd[1]; safeEnd[2] = lastValidEnd[2];
+		safeScale[0] = scalePtr[0]; safeScale[1] = scalePtr[1]; safeScale[2] = scalePtr[2];
+
 		if (cg_optvehtrace.integer &&
 			g2Hit->currentState.eType == ET_NPC &&
 			g2Hit->currentState.NPC_class == CLASS_VEHICLE &&
 			g2Hit->m_pVehicle)
 		{
-			trap_G2API_CollisionDetectCache ( G2Trace, g2Hit->ghoul2, angles, g2Hit->lerpOrigin, cg.time, g2Hit->currentState.number, (float *)lastValidStart, (float *)lastValidEnd, g2Hit->modelScale, 0, cg_g2TraceLod.integer, fRadius );
+			trap_G2API_CollisionDetectCache(G2Trace, g2Hit->ghoul2, angles, g2Hit->lerpOrigin, cg.time, g2Hit->currentState.number, safeStart, safeEnd, safeScale, 0, cg_g2TraceLod.integer, fRadius);
 		}
 		else
 		{
-			trap_G2API_CollisionDetect ( G2Trace, g2Hit->ghoul2, angles, g2Hit->lerpOrigin, cg.time, g2Hit->currentState.number, (float *)lastValidStart, (float *)lastValidEnd, g2Hit->modelScale, 0, cg_g2TraceLod.integer, fRadius );
+			trap_G2API_CollisionDetect(G2Trace, g2Hit->ghoul2, angles, g2Hit->lerpOrigin, cg.time, g2Hit->currentState.number, safeStart, safeEnd, safeScale, 0, cg_g2TraceLod.integer, fRadius);
 		}
 
 		if (G2Trace[0].mEntityNum != g2Hit->currentState.number)
@@ -10758,64 +10820,83 @@ void CG_G2SaberEffects(vec3_t start, vec3_t end, centity_t *owner)
 #define CG_MAX_SABER_COMP_TIME 400 //last registered saber entity hit must match within this many ms for the client effect to take place.
 
 void CG_AddGhoul2Mark(int shader, float size, vec3_t start, vec3_t end, int entnum,
-					  vec3_t entposition, float entangle, void *ghoul2, vec3_t scale, int lifeTime)
+	vec3_t entposition, float entangle, void* ghoul2, vec3_t scale, int lifeTime)
 {
-	SSkinGoreData goreSkin;
+	vec3_t rayDir;
+	SSkinGoreData* goreSkin = NULL;
 
 	if (!ghoul2 || !scale || !start || !end || !entposition)
 		return;
 
-	memset ( &goreSkin, 0, sizeof(goreSkin) );
+	// Validate ghoul2 instance to avoid passing a stale/NULL instance to the engine
+	if (!trap_G2_HaveWeGhoul2Models(ghoul2))
+		return;
+	
+	// Do a cheap early-out *before* allocating
+	VectorSubtract(end, start, rayDir);
+	if (VectorNormalize(rayDir) < 0.1f)
+		return;
+
+	// Allocate via engine allocator so the data survives beyond this stack frame
+	trap_TrueMalloc((void**)&goreSkin, sizeof(*goreSkin));
+	if (!goreSkin)
+	{
+		Com_Printf("CG_AddGhoul2Mark: failed to allocate goreSkin\n");
+		return;
+	}
+	memset(goreSkin, 0, sizeof(*goreSkin));
+
+	VectorCopy(rayDir, goreSkin->rayDirection);
 
 	if (trap_G2API_GetNumGoreMarks(ghoul2, 0) >= cg_ghoul2Marks.integer)
-	{ //you've got too many marks already
+	{ // you've got too many marks already
+		// If engine expects ownership, you may need to trap_TrueFree(goreSkin) here.
+		// But avoid freeing if engine expects to keep pointer.
 		return;
 	}
 
-	goreSkin.growDuration = -1; // default expandy time
-	goreSkin.goreScaleStartFraction = 1.0; // default start scale
-	goreSkin.frontFaces = qtrue;
-	goreSkin.backFaces = qtrue;
-	goreSkin.lifeTime = lifeTime; //last randomly 10-20 seconds
-	/*
-	if (lifeTime)
-	{
-		goreSkin.fadeOutTime = lifeTime*0.1; //default fade duration is relative to lifetime.
-	}
-	goreSkin.fadeRGB = qtrue; //fade on RGB instead of alpha (this depends on the shader really, modify if needed)
-	*/
-	//rwwFIXMEFIXME: fade has sorting issues with other non-fading decals, disabled until fixed
+	goreSkin->growDuration = -1; // default expandy time
+	goreSkin->goreScaleStartFraction = 1.0f; // default start scale
+	goreSkin->frontFaces = qtrue;
+	goreSkin->backFaces = qtrue;
+	goreSkin->lifeTime = lifeTime;
+	goreSkin->baseModelOnly = qfalse;
 
-	goreSkin.baseModelOnly = qfalse;
-	
-	goreSkin.currentTime = cg.time;
-	goreSkin.entNum      = entnum;
-	goreSkin.SSize		 = size;
-	goreSkin.TSize		 = size;
-	goreSkin.theta		 = flrand(0.0f,6.28f);
-	goreSkin.shader		 = shader;
+	goreSkin->currentTime = cg.time;
+	goreSkin->entNum = entnum;
+	goreSkin->SSize = size;
+	goreSkin->TSize = size;
+	goreSkin->theta = flrand(0.0f, 6.28f);
+	goreSkin->shader = shader;
 
+	// Ensure a valid scale vector
 	if (!scale[0] && !scale[1] && !scale[2])
 	{
-		VectorSet(goreSkin.scale, 1.0f, 1.0f, 1.0f);
+		VectorSet(goreSkin->scale, 1.0f, 1.0f, 1.0f);
 	}
 	else
 	{
-		VectorCopy(goreSkin.scale, scale);
+		VectorCopy(scale, goreSkin->scale);
 	}
 
-	VectorCopy (start, goreSkin.hitLocation);
+	VectorCopy(start, goreSkin->hitLocation);
 
-	VectorSubtract(end, start, goreSkin.rayDirection);
-	if (VectorNormalize(goreSkin.rayDirection)<.1f)
+	VectorSubtract(end, start, goreSkin->rayDirection);
+	if (VectorNormalize(goreSkin->rayDirection) < .1f)
 	{
+		// If we bail out we should free if engine doesn't take ownership, but most engines expect async ownership - avoid freeing here.
 		return;
 	}
 
-	VectorCopy ( entposition, goreSkin.position );
-	goreSkin.angles[YAW] = entangle;
+	VectorCopy(entposition, goreSkin->position);
+	// angle array was zeros via memset; set yaw explicitly
+	goreSkin->angles[YAW] = entangle;
 
-	trap_G2API_AddSkinGore(ghoul2, &goreSkin);
+	// Call the syscall with a pointer that remains valid after this function returns.
+	trap_G2API_AddSkinGore(ghoul2, goreSkin);
+
+	// NOTE: Do NOT free goreSkin here. The engine likely keeps the pointer or will free it.
+	// If you find engine docs showing caller must free, call: trap_TrueFree((void**)&goreSkin);
 }
 
 void CG_SaberCompWork(vec3_t start, vec3_t end, centity_t *owner, int saberNum, int bladeNum)
@@ -12339,7 +12420,7 @@ int CG_HandleAppendedSkin(char *modelName)
 		{ //got it, register the skin under the model path.
 			char baseFolder[MAX_QPATH];
 
-			strcpy(baseFolder, modelName);
+			Q_strncpyz(baseFolder, modelName, sizeof(baseFolder));
 			p = Q_strrchr(baseFolder, '/'); //go back to the first /, should be the path point
 
 			if (p)
@@ -12379,8 +12460,8 @@ void CG_CacheG2AnimInfo(char *modelName)
 	char useSkin[MAX_QPATH] = {0};
 	int animIndex;
 
-	strcpy(useModel, modelName);
-	strcpy(useSkin, modelName);
+	Q_strncpyz(useModel, modelName, sizeof(useModel));
+	Q_strncpyz(useSkin, modelName, sizeof(useSkin));
 
 	if (modelName[0] == '$')
 	{ //it's a vehicle name actually, let's precache the whole vehicle
@@ -12394,7 +12475,7 @@ void CG_CacheG2AnimInfo(char *modelName)
 		{
 			trap_R_RegisterSkin(va("models/players/%s/model_default.skin", useModel));
 		}
-		strcpy(useModel, va("models/players/%s/model.glm", useModel));
+		Q_strncpyz(useModel, va("models/players/%s/model.glm", useModel), sizeof(useModel));
 	}
 
 	trap_G2API_InitGhoul2Model(&g2, useModel, 0, 0, 0, 0, 0);
@@ -12409,12 +12490,12 @@ void CG_CacheG2AnimInfo(char *modelName)
 		GLAName[0] = 0;
 		trap_G2API_GetGLAName(g2, 0, GLAName);
 
-		strcpy(originalModelName, useModel);
+		Q_strncpyz(originalModelName, useModel, sizeof(originalModelName));
 			
 		slash = Q_strrchr( GLAName, '/' );
 		if ( slash )
 		{
-			strcpy(slash, "/animation.cfg");
+			Q_strncpyz( slash, "/animation.cfg", (int)(sizeof(GLAName) - (slash - GLAName)) );
 
 			animIndex = BG_ParseAnimationFile(GLAName, NULL, qfalse);
 		}
@@ -12513,7 +12594,7 @@ void CG_G2AnimEntModelLoad(centity_t *cent)
 		int skinID;
 		char *slash;
 
-		strcpy(modelName, cModelName);
+		Q_strncpyz(modelName, cModelName, sizeof(modelName));
 
 		if (cent->currentState.NPC_class == CLASS_VEHICLE && modelName[0] == '$')
 		{ //vehicles pass their veh names over as model names, then we get the model name from the veh type
@@ -12563,7 +12644,7 @@ void CG_G2AnimEntModelLoad(centity_t *cent)
 			{
 				skinID = trap_R_RegisterSkin(va("models/players/%s/model_default.skin", modelName));
 			}
-			strcpy(modelName, va("models/players/%s/model.glm", modelName));
+			Q_strncpyz(modelName, va("models/players/%s/model.glm", modelName), sizeof(modelName));
 
 			//this sound is *only* used for vehicles now
 			cgs.media.noAmmoSound = trap_S_RegisterSound( "sound/weapons/noammo.wav" );
@@ -12604,8 +12685,7 @@ void CG_G2AnimEntModelLoad(centity_t *cent)
 				// Setup the Exhausts.
 				for ( i = 0; i < MAX_VEHICLE_EXHAUSTS; i++ )
 				{
-					Com_sprintf( strTemp, 128, "*exhaust%i", i + 1 );
-					cent->m_pVehicle->m_iExhaustTag[i] = trap_G2API_AddBolt( cent->ghoul2, 0, strTemp );
+					cent->m_pVehicle->m_iExhaustTag[i] = CG_VehicleAddExhaustBolt( cent->ghoul2, 0, i + 1 );
 				}
 
 				// Setup the Muzzles.
@@ -12693,7 +12773,7 @@ void CG_G2AnimEntModelLoad(centity_t *cent)
 			GLAName[0] = 0;
 			trap_G2API_GetGLAName(cent->ghoul2, 0, GLAName);
 
-			strcpy(originalModelName, modelName);
+			Q_strncpyz(originalModelName, modelName, sizeof(originalModelName));
 
 			if (GLAName[0] &&
 				!strstr(GLAName, "players/_humanoid/") /*&&
@@ -12702,7 +12782,7 @@ void CG_G2AnimEntModelLoad(centity_t *cent)
 				slash = Q_strrchr( GLAName, '/' );
 				if ( slash )
 				{
-					strcpy(slash, "/animation.cfg");
+					Q_strncpyz( slash, "/animation.cfg", (int)(sizeof(GLAName) - (slash - GLAName)) );
 
 					cent->localAnimIndex = BG_ParseAnimationFile(GLAName, NULL, qfalse);
 				}
@@ -13244,7 +13324,7 @@ int FindGender( const char *modelPath, centity_t *cent )
 		return GENDER_MALE;
 	}
 
-	strcpy(modelName, modelPath);
+	Q_strncpyz(modelName, modelPath, sizeof(modelName));
 
 	temp = Q_strrchr( modelName, '/' );
 
@@ -14260,6 +14340,97 @@ static void CG_VehicleHeatEffect( vec3_t org, centity_t *cent )
 #endif
 
 static int lastFlyBySound[MAX_GENTITIES] = {0};
+
+// Deterministic vehicle speed estimate for MP: entityState.speed is often 0 for TR_INTERPOLATE vehicles.
+static vec3_t s_vehLastOrigin[MAX_GENTITIES];
+static int    s_vehLastTime[MAX_GENTITIES];
+static float  s_vehLastSpeed[MAX_GENTITIES];
+
+static float CG_VehicleSpeedEstimate( const centity_t *cent )
+{
+    const int entNum = cent->currentState.number;
+    float sp = (float)cent->currentState.speed;
+
+    // If the networked speed looks valid, use it.
+    if ( sp > 1.0f )
+    {
+        // keep cache warm
+        VectorCopy( cent->lerpOrigin, s_vehLastOrigin[entNum] );
+        s_vehLastTime[entNum]  = cg.time;
+        s_vehLastSpeed[entNum] = sp;
+        return sp;
+    }
+
+    // Prefer predicted playerState velocity when we have it (local driver), but keep it simple:
+    // fall back to frame-to-frame origin delta which works for TR_INTERPOLATE too.
+    if ( s_vehLastTime[entNum] > 0 && cg.time > s_vehLastTime[entNum] )
+    {
+        vec3_t d;
+        const float dt = (float)(cg.time - s_vehLastTime[entNum]) * 0.001f;
+        if ( dt > 0.0f )
+        {
+            VectorSubtract( cent->lerpOrigin, s_vehLastOrigin[entNum], d );
+            sp = VectorLength( d ) / dt;
+        }
+    }
+    else
+    {
+        sp = 0.0f;
+    }
+
+    VectorCopy( cent->lerpOrigin, s_vehLastOrigin[entNum] );
+    s_vehLastTime[entNum]  = cg.time;
+    s_vehLastSpeed[entNum] = sp;
+
+    return sp;
+}
+
+// Deterministic exhaust bolt lookup with fallback tag naming (some fighter models use 01, engine, thruster, etc).
+static int CG_VehicleAddExhaustBolt( void *ghoul2, int modelIndex, int exhaustNum )
+{
+    char name[128];
+    int bolt;
+
+    Com_sprintf( name, sizeof(name), "*exhaust%i", exhaustNum );
+    bolt = trap_G2API_AddBolt( ghoul2, modelIndex, name );
+    if ( bolt != -1 ) return bolt;
+
+    Com_sprintf( name, sizeof(name), "*exhaust%02i", exhaustNum );
+    bolt = trap_G2API_AddBolt( ghoul2, modelIndex, name );
+    if ( bolt != -1 ) return bolt;
+
+    Com_sprintf( name, sizeof(name), "*engine%i", exhaustNum );
+    bolt = trap_G2API_AddBolt( ghoul2, modelIndex, name );
+    if ( bolt != -1 ) return bolt;
+
+    Com_sprintf( name, sizeof(name), "*engine%02i", exhaustNum );
+    bolt = trap_G2API_AddBolt( ghoul2, modelIndex, name );
+    if ( bolt != -1 ) return bolt;
+
+    Com_sprintf( name, sizeof(name), "*thruster%i", exhaustNum );
+    bolt = trap_G2API_AddBolt( ghoul2, modelIndex, name );
+    if ( bolt != -1 ) return bolt;
+
+    Com_sprintf( name, sizeof(name), "*thruster%02i", exhaustNum );
+    bolt = trap_G2API_AddBolt( ghoul2, modelIndex, name );
+    if ( bolt != -1 ) return bolt;
+
+    // For the first exhaust only, try non-numbered fallbacks.
+    if ( exhaustNum == 1 )
+    {
+        bolt = trap_G2API_AddBolt( ghoul2, modelIndex, "*exhaust" );
+        if ( bolt != -1 ) return bolt;
+
+        bolt = trap_G2API_AddBolt( ghoul2, modelIndex, "*engine" );
+        if ( bolt != -1 ) return bolt;
+
+        bolt = trap_G2API_AddBolt( ghoul2, modelIndex, "*thruster" );
+        if ( bolt != -1 ) return bolt;
+    }
+
+    return -1;
+}
+
 #define	FLYBYSOUNDTIME 2000
 int	cg_lastHyperSpaceEffectTime = 0;
 CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
@@ -14371,8 +14542,9 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 			}
 
 			if (surfDmg)
-			{ //if any surface are damaged, neglect exhaust etc effects (so we don't have exhaust trails coming out of invisible surfaces)
-				return;
+			{
+				// In MP, surfaces can be off for LOD/variants; do not suppress all FX.
+				// Debris flames were already spawned above.
 			}
 		}
 		//[Asteroids]
@@ -14431,7 +14603,7 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 						// We hit an invalid tag, we quit (they should be created in order so tough luck if not).
 						if ( pVehNPC->m_iExhaustTag[i] == -1 )
 						{
-							break;
+							continue;
 						}
 
 						if ( (cent->currentState.brokenLimbs&(1<<SHIPSURF_DAMAGE_BACK_HEAVY)) )

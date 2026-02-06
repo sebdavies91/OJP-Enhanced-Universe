@@ -43,7 +43,7 @@
 
 #ifdef _JK2MP
 extern gentity_t *NPC_Spawn_Go( gentity_t *ent );
-extern void NPC_SetAnim(gentity_t	*ent,int setAnimParts,int anim,int setAnimFlags);
+extern void NPC_SetAnim(gentity_t	*ent, int setAnimParts, int anim, int setAnimFlags);
 //[Asteroids]
 extern void G_DamageFromKiller( gentity_t *pEnt, gentity_t *pVehEnt, gentity_t *attacker, vec3_t org, int damage, int dflags, int mod );
 //[/Asteroids]	
@@ -69,7 +69,7 @@ extern cvar_t	*g_speederControlScheme;
 extern cvar_t *in_joystick;
 extern void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
 extern int PM_AnimLength( int index, animNumber_t anim );
-extern void NPC_SetAnim(gentity_t* ent, int setAnimParts, int anim, int setAnimFlags)
+extern void NPC_SetAnim(gentity_t* ent, int setAnimParts, int anim, int setAnimFlags);
 extern void G_Knockdown( gentity_t *self, gentity_t *attacker, const vec3_t pushDir, float strength, qboolean breakSaberLock );
 #endif
 
@@ -90,12 +90,19 @@ extern qboolean BG_UnrestrainedPitchRoll( playerState_t *ps, Vehicle_t *pVeh );
 
 void Vehicle_SetAnim(gentity_t *ent,int setAnimParts,int anim,int setAnimFlags, int iBlend)
 {
+    if (!ent || !ent->client)
+    {
+        return;
+    }
 #ifdef _JK2MP
-	assert(ent->client);
+	if ( !ent || !ent->client )
+	{
+		return;
+	}
 	BG_SetAnim(&ent->client->ps, bgAllAnims[ent->localAnimIndex].anims, setAnimParts, anim, setAnimFlags, iBlend);
 	ent->s.legsAnim = ent->client->ps.legsAnim;
 #else
-	NPC_SetAnim(ent, setAnimParts, anim, setAnimFlags, iBlend);
+	NPC_SetAnim(ent, setAnimParts, anim, setAnimFlags);
 #endif
 }
 
@@ -112,11 +119,24 @@ Vehicle_t *G_IsRidingVehicle( gentity_t *pEnt )
 {
 	gentity_t *ent = (gentity_t *)pEnt;
 
-	if ( ent && ent->client && ent->client->NPC_class != CLASS_VEHICLE && ent->s.m_iVehicleNum != 0 ) //ent->client && ( ent->client->ps.eFlags & EF_IN_VEHICLE ) && ent->owner )
+	if ( !ent || !ent->client )
 	{
-		return g_entities[ent->s.m_iVehicleNum].m_pVehicle;
+		return NULL;
 	}
-	return NULL;
+
+	// Only riders (not vehicle NPCs themselves)
+	if ( ent->client->NPC_class == CLASS_VEHICLE )
+	{
+		return NULL;
+	}
+
+	// Defensive bounds check: m_iVehicleNum can be clobbered by malformed state or modded code.
+	if ( ent->s.m_iVehicleNum <= 0 || ent->s.m_iVehicleNum >= MAX_GENTITIES )
+	{
+		return NULL;
+	}
+
+	return g_entities[ent->s.m_iVehicleNum].m_pVehicle;
 }
 
 
@@ -421,7 +441,7 @@ void G_DriveATST( gentity_t *pEnt, gentity_t *atst )
 		{//no pEnt to copy from
 			G_ChangePlayerModel( pEnt, "atst" );
 			//G_SetG2PlayerModel( pEnt, "atst", NULL, NULL, NULL );
-			NPC_SetAnim( pEnt, SETANIM_BOTH, BOTH_STAND1, SETANIM_FLAG_OVERRIDE, 200 );
+			NPC_SetAnim(pEnt, SETANIM_BOTH, BOTH_STAND1, SETANIM_FLAG_OVERRIDE);
 		}
 		else
 		{
@@ -435,17 +455,49 @@ void G_DriveATST( gentity_t *pEnt, gentity_t *atst )
 			G_Sound( pEnt, G_SoundIndex( "sound/chars/atst/atst_hatch_close" ));
 		}
 		pEnt->s.radius = 320;
-		//weapon
-		gitem_t	*item = FindItemForWeapon( WP_ATST_MAIN );	//precache the weapon
-		CG_RegisterItemSounds( (item-bg_itemlist) );
-		CG_RegisterItemVisuals( (item-bg_itemlist) );
-		item = FindItemForWeapon( WP_ATST_SIDE );	//precache the weapon
-		CG_RegisterItemSounds( (item-bg_itemlist) );
-		CG_RegisterItemVisuals( (item-bg_itemlist) );
-		pEnt->client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_ATST_MAIN )|( 1 << WP_ATST_SIDE );
-		pEnt->client->ps.ammo[weaponData[WP_ATST_MAIN].ammoIndex] = ammoData[weaponData[WP_ATST_MAIN].ammoIndex].max;
-		pEnt->client->ps.ammo[weaponData[WP_ATST_SIDE].ammoIndex] = ammoData[weaponData[WP_ATST_SIDE].ammoIndex].max;
-		CG_ChangeWeapon( WP_ATST_MAIN );
+		// weapon
+		gitem_t *item;
+		// In MP codebases that don't define bg_itemlist entries for the ATST weapons,
+		// FindItemForWeapon(WP_ATST_MAIN/SIDE) will return NULL (weapon 27/28), which
+		// used to crash here. Fall back to supported weapons so the ATST can still fire.
+		{
+			gitem_t *itemMain = FindItemForWeapon( WP_ATST_MAIN );
+			gitem_t *itemSide = FindItemForWeapon( WP_ATST_SIDE );
+
+			if ( itemMain && itemSide )
+			{
+				CG_RegisterItemSounds( (itemMain-bg_itemlist) );
+				CG_RegisterItemVisuals( (itemMain-bg_itemlist) );
+				CG_RegisterItemSounds( (itemSide-bg_itemlist) );
+				CG_RegisterItemVisuals( (itemSide-bg_itemlist) );
+
+				pEnt->client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_ATST_MAIN )|( 1 << WP_ATST_SIDE );
+				pEnt->client->ps.ammo[weaponData[WP_ATST_MAIN].ammoIndex] = ammoData[weaponData[WP_ATST_MAIN].ammoIndex].max;
+				pEnt->client->ps.ammo[weaponData[WP_ATST_SIDE].ammoIndex] = ammoData[weaponData[WP_ATST_SIDE].ammoIndex].max;
+				CG_ChangeWeapon( WP_ATST_MAIN );
+			}
+			else
+			{
+				// Fallback: bowcaster (main) + rocket launcher (side/charger)
+				item = FindItemForWeapon( WP_BOWCASTER );
+				if ( item )
+				{
+					CG_RegisterItemSounds( (item-bg_itemlist) );
+					CG_RegisterItemVisuals( (item-bg_itemlist) );
+				}
+				item = FindItemForWeapon( WP_ROCKET_LAUNCHER );
+				if ( item )
+				{
+					CG_RegisterItemSounds( (item-bg_itemlist) );
+					CG_RegisterItemVisuals( (item-bg_itemlist) );
+				}
+
+				pEnt->client->ps.stats[STAT_WEAPONS] |= ( 1 << WP_BOWCASTER )|( 1 << WP_ROCKET_LAUNCHER );
+				pEnt->client->ps.ammo[weaponData[WP_BOWCASTER].ammoIndex] = ammoData[weaponData[WP_BOWCASTER].ammoIndex].max;
+				pEnt->client->ps.ammo[weaponData[WP_ROCKET_LAUNCHER].ammoIndex] = ammoData[weaponData[WP_ROCKET_LAUNCHER].ammoIndex].max;
+				CG_ChangeWeapon( WP_BOWCASTER );
+			}
+		}
 		//HACKHACKHACKTEMP
 		item = FindItemForWeapon( WP_EMPLACED_GUN );
 		CG_RegisterItemSounds( (item-bg_itemlist) );
@@ -1771,7 +1823,7 @@ bool Initialize( Vehicle_t *pVeh )
 			bgAllAnims[pVeh->m_pParentEntity->localAnimIndex].anims,
 			SETANIM_BOTH, BOTH_VS_IDLE, iFlags, iBlend);
 #else
-		NPC_SetAnim( pVeh->m_pParentEntity, SETANIM_BOTH, BOTH_VS_IDLE, iFlags, iBlend );
+		NPC_SetAnim(pVeh->m_pParentEntity, SETANIM_BOTH, BOTH_VS_IDLE, iFlags);
 #endif
 	}
 
@@ -2786,7 +2838,9 @@ static void AttachRiders( Vehicle_t *pVeh )
 
 			if ( droid->NPC )
 			{
-				NPC_SetAnim( droid, SETANIM_BOTH, BOTH_STAND2, (SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD) );
+				// NPC_SetAnim in this codebase expects an explicit blend time (iBlend).
+				// Use a conservative default (100ms) consistent with SP-style callers.
+				NPC_SetAnim(droid, SETANIM_BOTH, BOTH_STAND2, (SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD));
 				droid->client->ps.legsTimer = 500;
 				droid->client->ps.torsoTimer = 500;
 			}

@@ -135,6 +135,14 @@ id removed checks against waypoints and is now checking surfaces
 //qboolean NAV_HitNavGoal( vec3_t point, vec3_t mins, vec3_t maxs, gentity_t *goal, qboolean flying );
 qboolean ReachedGoal( gentity_t *goal ) 
 {
+	vec3_t	npcAbsMins, npcAbsMaxs;
+	vec3_t	goalAbsMins, goalAbsMaxs;
+
+	if ( !goal )
+	{
+		return qfalse;
+	}
+
 	//FIXME: For script waypoints, need a special check
 /*
 	int		goalWpNum;
@@ -226,7 +234,26 @@ qboolean ReachedGoal( gentity_t *goal )
 			}
 		}
 	}
-*/	
+*/
+	/*
+	SP uses a steering-layer reach test that also considers overlapping bounds.
+	MP primarily uses NAV_HitNavGoal (point-radius). For goals with real bounds (triggers,
+	movers, etc.), treat actual bbox overlap as reaching the goal.
+	*/
+	if ( goal->r.mins[0] || goal->r.mins[1] || goal->r.mins[2]
+		|| goal->r.maxs[0] || goal->r.maxs[1] || goal->r.maxs[2] )
+	{
+		VectorAdd( NPC->r.currentOrigin, NPC->r.mins, npcAbsMins );
+		VectorAdd( NPC->r.currentOrigin, NPC->r.maxs, npcAbsMaxs );
+		VectorAdd( goal->r.currentOrigin, goal->r.mins, goalAbsMins );
+		VectorAdd( goal->r.currentOrigin, goal->r.maxs, goalAbsMaxs );
+
+		if ( G_BoundsOverlap( npcAbsMins, npcAbsMaxs, goalAbsMins, goalAbsMaxs ) )
+		{
+			return qtrue;
+		}
+	}
+
 	return NAV_HitNavGoal( NPC->r.currentOrigin, NPC->r.mins, NPC->r.maxs, goal->r.currentOrigin, NPCInfo->goalRadius, FlyingCreature( NPC ) );
 }
 

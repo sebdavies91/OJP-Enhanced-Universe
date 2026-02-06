@@ -758,7 +758,7 @@ void scriptrunner_run (gentity_t *self)
 	{	
 		char	newname[MAX_FILENAME_LENGTH];
 
-		sprintf((char *) &newname, "%s/%s", Q3_SCRIPT_DIR, self->behaviorSet[BSET_USE] );
+		Com_sprintf((char *)&newname, sizeof(newname), "%s/%s", Q3_SCRIPT_DIR, self->behaviorSet[BSET_USE] );
 
 		ICARUS_RunScript( self, newname );
 	}
@@ -967,7 +967,7 @@ void target_level_change_use(gentity_t *self, gentity_t *other, gentity_t *activ
 	//Add this map's name to the tiers_complete cvar
 	trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
 
-	strcpy( tiers_complete.string, va("%s|%s", tiers_complete.string, mapname.string) );
+	Q_strncpyz(tiers_complete.string, va("%s|%s", tiers_complete.string, mapname.string), sizeof(tiers_complete.string));
 
 	if(g_autoMapCycle.integer)
 	{//cycle to whatever this map is supposed to go to.
@@ -1181,7 +1181,27 @@ void Use_Autosave( gentity_t *ent, gentity_t *other, gentity_t *activator )
 
 	if(!CheckforGoodSpawnPoint(spawnloc, qfalse))
 	{
-		G_Error("Bad spawnpoint in Use_Autosave().\n");
+		/*
+			Some SP maps can trigger autosaves from a position that isn't safe to
+			convert into a spawnpoint (inside solid or over a drop). Hard-failing
+			the game here is overkill; fall back to the autosave entity origin.
+
+			Only if THAT is also bad do we skip spawning a new point.
+		*/
+		vec3_t fallbackLoc;
+		VectorCopy(ent->s.origin, fallbackLoc);
+		if (CheckforGoodSpawnPoint(fallbackLoc, qfalse))
+		{
+			VectorCopy(fallbackLoc, spawnloc);
+			VectorSet(spawnang, 0, ent->s.angles[YAW], 0);
+		}
+		else
+		{
+			G_Printf("WARNING: Bad spawnpoint in Use_Autosave (activator %d, ent %d). Skipping checkpoint spawn.\n",
+				activator ? activator->s.number : -1,
+				ent ? ent->s.number : -1);
+			return;
+		}
 	}
 
 	spawn = G_Spawn();

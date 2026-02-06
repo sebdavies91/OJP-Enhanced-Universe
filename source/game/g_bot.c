@@ -82,7 +82,7 @@ int G_ParseInfos( char *buf, int max, char *infos[] ) {
 
 			token = COM_ParseExt( (const char **)(&buf), qfalse );
 			if ( !token[0] ) {
-				strcpy( token, "<NULL>" );
+				token = "<NULL>";
 			}
 			Info_SetValueForKey( info, key, token );
 		}
@@ -381,8 +381,7 @@ void G_LoadArenas( void ) {
 	dirptr  = dirlist;
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
-		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strncpyz( filename, "scripts/", sizeof(filename) );		Q_strcat( filename, sizeof(filename), dirptr);
 		G_LoadArenasFromFile(filename);
 	}
 //	trap_Printf( va( "%i arenas parsed\n", g_numArenas ) );
@@ -795,8 +794,7 @@ int G_RemoveRandomBot( int team ) {
 				continue;
 			}
 		}
-		strcpy(netname, cl->pers.netname);
-		Q_CleanStr(netname);
+		Q_strncpyz( netname, cl->pers.netname, sizeof(netname) );		Q_CleanStr(netname);
 		//[test]
 		//hmmm, this method seems to be breaking stuff.  doublechecking.
 		//bots that left disconnect instead of being kicked.  I think it's scaring
@@ -1627,6 +1625,41 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 
 	// have the server allocate a client slot
 	clientNum = trap_BotAllocateClient();
+	
+	
+// Preserve bot team across map changes / match restarts.
+//
+// Bots are (re)spawned via G_AddBot on every new level/game init. If the caller
+// did not explicitly request a team ("bot_add <name>" with no team argument),
+// the old logic re-runs PickTeam() and can move the bot to the opposite team.
+//
+// However, client session data is persisted across level loads in cvars named
+// "session<clientNum>" where the first integer is sess.sessionTeam.
+// If a prior session exists for this client slot, prefer it.
+if( (!team || !*team) && g_gametype.integer >= GT_TEAM )
+{
+    char sessionStr[MAX_STRING_CHARS];
+    int sessionTeam = TEAM_FREE;
+
+    trap_Cvar_VariableStringBuffer( va("session%i", clientNum), sessionStr, sizeof(sessionStr) );
+    if ( sessionStr[0] && sscanf(sessionStr, "%i", &sessionTeam) == 1 )
+    {
+        if ( sessionTeam == TEAM_RED )
+        {
+            team = "red";
+        }
+        else if ( sessionTeam == TEAM_BLUE )
+        {
+            team = "blue";
+        }
+    }
+}
+	
+	
+	
+	
+	
+	
 	if ( clientNum == -1 ) {
 //		G_Printf( S_COLOR_RED "Unable to add bot.  All player slots are in use.\n" );
 //		G_Printf( S_COLOR_RED "Start server with more 'open' slots.\n" );
@@ -1880,22 +1913,14 @@ void Svcmd_BotList_f( void ) {
 
 	trap_Printf("^1name             model            personality              funname\n");
 	for (i = 0; i < g_numBots; i++) {
-		strcpy(name, Info_ValueForKey( g_botInfos[i], "name" ));
-		if ( !*name ) {
-			strcpy(name, "Padawan");
-		}
-		strcpy(funname, Info_ValueForKey( g_botInfos[i], "funname" ));
-		if ( !*funname ) {
-			strcpy(funname, "");
-		}
-		strcpy(model, Info_ValueForKey( g_botInfos[i], "model" ));
-		if ( !*model ) {
-			strcpy(model, DEFAULT_MODEL"/default");
-		}
-		strcpy(personality, Info_ValueForKey( g_botInfos[i], "personality"));
-		if (!*personality ) {
-			strcpy(personality, "botfiles/kyle.jkb");
-		}
+		Q_strncpyz( name, Info_ValueForKey( g_botInfos[i], "name" ), sizeof(name) );		if ( !*name ) {
+			Q_strncpyz( name, "Padawan", sizeof(name) );		}
+		Q_strncpyz( funname, Info_ValueForKey( g_botInfos[i], "funname" ), sizeof(funname) );		if ( !*funname ) {
+			Q_strncpyz( funname, "", sizeof(funname) );		}
+		Q_strncpyz( model, Info_ValueForKey( g_botInfos[i], "model" ), sizeof(model) );		if ( !*model ) {
+			Q_strncpyz( model, DEFAULT_MODEL"/default", sizeof(model) );		}
+		Q_strncpyz( personality, Info_ValueForKey( g_botInfos[i], "personality"), sizeof(personality) );		if (!*personality ) {
+			Q_strncpyz( personality, "botfiles/kyle.jkb", sizeof(personality) );		}
 		trap_Printf(va("%-16s %-16s %-20s %-20s\n", name, model, personality, funname));
 	}
 }
@@ -2033,8 +2058,7 @@ static void G_LoadBots( void ) {
 	dirptr  = dirlist;
 	for (i = 0; i < numdirs; i++, dirptr += dirlen+1) {
 		dirlen = strlen(dirptr);
-		strcpy(filename, "scripts/");
-		strcat(filename, dirptr);
+		Q_strncpyz( filename, "scripts/", sizeof(filename) );		Q_strcat( filename, sizeof(filename), dirptr);
 		G_LoadBotsFromFile(filename);
 	}
 //	trap_Printf( va( "%i bots parsed\n", g_numBots ) );

@@ -69,7 +69,7 @@ qboolean Rancor_CheckRoar( gentity_t *self )
 	{//haven't ever gotten mad yet
 		self->wait = 1;//do this only once
 		self->client->ps.eFlags2 |= EF2_ALERTED;
-		NPC_SetAnim( self, SETANIM_BOTH, BOTH_STAND1TO2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+		NPC_SetAnim(self, SETANIM_BOTH, BOTH_STAND1TO2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 		TIMER_Set( self, "rageTime", self->client->ps.legsTimer );
 		return qtrue;
 	}
@@ -116,16 +116,35 @@ void Rancor_Move( qboolean visible )
 {
 	if ( NPCInfo->localState != LSTATE_WAITING )
 	{
+		float savYaw;
+		qboolean savWalking;
+
 		NPCInfo->goalEntity = NPC->enemy;
+		NPCInfo->goalRadius = NPC->r.maxs[0] + (MIN_DISTANCE * NPC->modelScale[0]);	// just get us within combat range
+
+		// NOTE: NPC_MoveToGoal() can stomp desiredYaw and BUTTON_WALKING.
+		savYaw = NPCInfo->desiredYaw;
+		savWalking = (qboolean)((ucmd.buttons & BUTTON_WALKING) != 0);
+
 		if ( !NPC_MoveToGoal( qtrue ) )
 		{
 			NPCInfo->consecutiveBlockedMoves++;
+
+			// If we failed to move, don't let MoveToGoal force our facing.
+			NPCInfo->lockedDesiredYaw = NPCInfo->desiredYaw = savYaw;
+			if ( savWalking )
+			{
+				ucmd.buttons |= BUTTON_WALKING;
+			}
+			else
+			{
+				ucmd.buttons &= ~BUTTON_WALKING;
+			}
 		}
 		else
 		{
 			NPCInfo->consecutiveBlockedMoves = 0;
 		}
-		NPCInfo->goalRadius = MAX_DISTANCE;	// just get us within combat range
 	}
 }
 
@@ -276,7 +295,7 @@ void Rancor_Swing( qboolean tryGrab )
 				{
 					radiusEnt->client->ps.forceHandExtend = HANDEXTEND_NONE;
 					radiusEnt->client->ps.forceHandExtendTime = 0;
-					NPC_SetAnim( radiusEnt, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+					NPC_SetAnim(radiusEnt, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 				}
 			}
 			else
@@ -428,11 +447,11 @@ void Rancor_Bite( void )
 					int hitLoc = Q_irand( G2_MODELPART_HEAD, G2_MODELPART_RLEG );
 					if ( hitLoc == G2_MODELPART_HEAD )
 					{
-						NPC_SetAnim( radiusEnt, SETANIM_BOTH, BOTH_DEATH17, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+						NPC_SetAnim(radiusEnt, SETANIM_BOTH, BOTH_DEATH17, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					}
 					else if ( hitLoc == G2_MODELPART_WAIST )
 					{
-						NPC_SetAnim( radiusEnt, SETANIM_BOTH, BOTH_DEATHBACKWARD2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+						NPC_SetAnim(radiusEnt, SETANIM_BOTH, BOTH_DEATHBACKWARD2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					}
 					//radiusEnt->client->dismembered = qfalse;
 					//FIXME: the limb should just disappear, cuz I ate it
@@ -457,18 +476,18 @@ void Rancor_Attack( float distance, qboolean doCharge )
 		{//holding enemy
 			if ( NPC->activator->health > 0 && Q_irand( 0, 1 ) )
 			{//quick bite
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 				TIMER_Set( NPC, "attack_dmg", 450 );
 			}
 			else
 			{//full eat
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK3, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK3, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 				TIMER_Set( NPC, "attack_dmg", 900 );
 				//Make victim scream in fright
 				if ( NPC->activator->health > 0 && NPC->activator->client )
 				{
 					G_AddEvent( NPC->activator, Q_irand(EV_DEATH1, EV_DEATH3), 0 );
-					NPC_SetAnim( NPC->activator, SETANIM_TORSO, BOTH_FALLDEATH1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC->activator, SETANIM_TORSO, BOTH_FALLDEATH1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					if ( NPC->activator->NPC )
 					{//no more thinking for you
 						TossClientItems( NPC );
@@ -486,17 +505,17 @@ void Rancor_Attack( float distance, qboolean doCharge )
 			NPC->client->ps.velocity[2] = 150;
 			NPC->client->ps.groundEntityNum = ENTITYNUM_NONE;
 
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_MELEE2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_MELEE2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 			TIMER_Set( NPC, "attack_dmg", 1250 );
 		}
 		else if ( !Q_irand(0, 1) )
 		{//smash
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_MELEE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_MELEE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 			TIMER_Set( NPC, "attack_dmg", 1000 );
 		}
 		else
 		{//try to grab
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 			TIMER_Set( NPC, "attack_dmg", 1000 );
 		}
 
@@ -532,7 +551,7 @@ void Rancor_Attack( float distance, qboolean doCharge )
 					//G_DoDismemberment( NPC->activator, NPC->activator->r.currentOrigin, MOD_SABER, 1000, HL_HEAD, qtrue );
 					NPC->activator->client->ps.forceHandExtend = HANDEXTEND_NONE;
 					NPC->activator->client->ps.forceHandExtendTime = 0;
-					NPC_SetAnim( NPC->activator, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC->activator, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 				}
 				G_Sound( NPC->activator, CHAN_AUTO, G_SoundIndex( "sound/chars/rancor/chomp.wav" ) );
 			}
@@ -557,7 +576,7 @@ void Rancor_Attack( float distance, qboolean doCharge )
 				{
 					NPC->activator->client->ps.forceHandExtend = HANDEXTEND_NONE;
 					NPC->activator->client->ps.forceHandExtendTime = 0;
-					NPC_SetAnim( NPC->activator, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC->activator, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 				}
 				TIMER_Set( NPC, "attack_dmg2", 1350 );
 				G_Sound( NPC->activator, CHAN_AUTO, G_SoundIndex( "sound/chars/rancor/swipehit.wav" ) );
@@ -595,7 +614,7 @@ void Rancor_Attack( float distance, qboolean doCharge )
 					G_Damage( NPC->activator, NPC, NPC, vec3_origin, NPC->activator->r.currentOrigin, NPC->enemy->health+10, DAMAGE_NO_PROTECTION|DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|DAMAGE_NO_HIT_LOC, MOD_MELEE );//, HL_NONE );
 					NPC->activator->client->ps.forceHandExtend = HANDEXTEND_NONE;
 					NPC->activator->client->ps.forceHandExtendTime = 0;
-					NPC_SetAnim( NPC->activator, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC->activator, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					G_AddEvent( NPC->activator, EV_JUMP, NPC->activator->health );
 				}
 				if ( NPC->activator->client )
@@ -749,7 +768,7 @@ void NPC_Rancor_Pain( gentity_t *self, gentity_t *attacker, int damage )
 		{
 			//[CoOp]
 			//adjusting for more than one player
-			if ( (attacker->s.number < MAX_CLIENTS &&!Q_irand(0,3))
+			if ( (attacker->s.number < level.maxclients &&!Q_irand(0,3))
 			//if ( (!attacker->s.number&&!Q_irand(0,3))
 			//[/CoOp]
 				|| !self->enemy
@@ -822,11 +841,11 @@ void NPC_Rancor_Pain( gentity_t *self, gentity_t *attacker, int damage )
 
 						if ( self->count == 1 )
 						{
-							NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+							NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 						}
 						else
 						{
-							NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+							NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 						}
 						
 						//[CoOp] SP Code

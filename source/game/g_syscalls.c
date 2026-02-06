@@ -1316,7 +1316,11 @@ void trap_G2API_CollisionDetect (
 	float fRadius
 	)
 {
-	syscall ( G_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum, rayStart, rayEnd, scale, traceFlags, useLod, PASSFLOAT(fRadius) );
+	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
+	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+
+	syscall(G_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum,
+		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
 }
 
 void trap_G2API_CollisionDetectCache ( 
@@ -1334,7 +1338,11 @@ void trap_G2API_CollisionDetectCache (
 	float fRadius
 	)
 {
-	syscall ( G_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum, rayStart, rayEnd, scale, traceFlags, useLod, PASSFLOAT(fRadius) );
+	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
+	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+
+	syscall(G_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum,
+		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
 }
 
 void trap_G2API_GetSurfaceName(void *ghoul2, int surfNumber, int modelIndex, char *fillBuf)

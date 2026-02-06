@@ -23,6 +23,7 @@ typedef struct gclient_s gclient_t;
 //npc stuff
 #include "b_public.h"
 
+extern qboolean stop_icarus;
 extern int gPainMOD;
 extern int gPainHitLoc;
 extern vec3_t gPainPoint;
@@ -1481,7 +1482,7 @@ void TossClientWeapon(gentity_t *self, vec3_t direction, float speed);
 void TossClientItems( gentity_t *self );
 void TossClientCubes( gentity_t *self );										
 void ExplodeDeath( gentity_t *self );
-void G_CheckForDismemberment(gentity_t *ent, gentity_t *enemy, vec3_t point, int damage, int deathAnim, qboolean postDeath);
+void G_CheckForDismemberment(gentity_t *ent, gentity_t *enemy, vec3_t point, int damage, int deathAnim, qboolean postDeath, int mod);
 extern int gGAvoidDismember;
 //[ExpSys]
 void AddSkill(gentity_t *self, float amount);
@@ -1678,10 +1679,16 @@ void FindIntermissionPoint( void );
 void SetLeader(int team, int client);
 void CheckTeamLeader( int team );
 void G_RunThink (gentity_t *ent);
-void QDECL G_LogPrintf( const char *fmt, ... );
+	#ifdef __cplusplus
+	extern "C" {
+	#endif
+	void QDECL G_LogPrintf( const char *fmt, ... );
 void SendScoreboardMessageToAllClients( void );
 void QDECL G_Printf( const char *fmt, ... );
 void QDECL G_Error( const char *fmt, ... );
+	#ifdef __cplusplus
+	}
+	#endif
 const char *G_GetStringEdString(char *refSection, char *refName);
 
 //

@@ -528,6 +528,12 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 #ifdef _JK2MP//SP can cheat and just check m_iTurboTime directly... :)
 		//add flag to let cgame know to draw the iTurboFX effect
 		parentPS->eFlags |= EF_JETPACK_ACTIVE;
+#ifdef QAGAME
+			if ( pVeh && pVeh->m_pParentEntity )
+			{
+				((gentity_t *)pVeh->m_pParentEntity)->s.eFlags |= EF_JETPACK_ACTIVE;
+			}
+#endif
 #endif
 	}
 	/*
@@ -544,7 +550,13 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 		if ( (parentPS->eFlags&EF_JETPACK_ACTIVE) )
 		{//stop cgame from playing the turbo exhaust effect
 			parentPS->eFlags &= ~EF_JETPACK_ACTIVE;
-		}
+		#ifdef QAGAME
+			if ( pVeh && pVeh->m_pParentEntity )
+			{
+				((gentity_t *)pVeh->m_pParentEntity)->s.eFlags &= ~EF_JETPACK_ACTIVE;
+			}
+#endif
+}
 #endif
 	}
 	speedIdleDec = pVeh->m_pVehicleInfo->decelIdle * pVeh->m_fTimeModifier;
@@ -1970,7 +1982,7 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 			BG_SetAnim(pVeh->m_pParentEntity->playerState, bgAllAnims[pVeh->m_pParentEntity->localAnimIndex].anims,
 				SETANIM_BOTH, Anim, iFlags, iBlend);
 		#else
-			NPC_SetAnim( pVeh->m_pParentEntity, SETANIM_BOTH, Anim, iFlags, iBlend );
+			NPC_SetAnim(pVeh->m_pParentEntity, SETANIM_BOTH, Anim, iFlags);
 		#endif
 	}
 }

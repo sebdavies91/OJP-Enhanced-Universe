@@ -1780,7 +1780,7 @@ qboolean PM_AdjustAngleForWallRunUp( playerState_t *ps, usercmd_t *ucmd, qboolea
 		{//stop it
 			VectorScale( fwd, -300.0f, ps->velocity );
 			ps->velocity[2] += 200;
-			//NPC_SetAnim( ent, SETANIM_BOTH, BOTH_FORCEWALLRUNFLIP_END, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			//NPC_SetAnim(ent, SETANIM_BOTH, BOTH_FORCEWALLRUNFLIP_END, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			//why?!?#?#@!%$R@$KR#F:Hdl;asfm
 			PM_SetAnim(SETANIM_BOTH, BOTH_FORCEWALLRUNFLIP_END, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0);
 			ps->pm_flags |= PMF_JUMP_HELD;
@@ -4740,7 +4740,7 @@ static void PM_CrashLand( void ) {
 	//[CoOp]
 	//falling to death NPCs pavement smear.
 #ifdef QAGAME
-	if ( g_entities[pm->ps->clientNum].NPC && g_entities[pm->ps->clientNum].NPC->aiFlags & NPCAI_DIE_ON_IMPACT )
+	if ( g_entities[pm->ps->clientNum].NPC && g_entities[pm->ps->clientNum].NPC->aiFlags & NPCAI_DIE_ON_IMPACT && !pm->ps->m_iVehicleNum)
 	{//have to do death on impact if we are falling to our death, FIXME: should we avoid any additional damage this func?
 		PM_CrashLandDamage( 1000 );
 	}
@@ -7538,96 +7538,7 @@ void PM_FinishWeaponChange( void ) {
 
 #ifdef QAGAME
 
-	pm->ps->eFlags &= ~EF_DUAL_WEAPONS;
-	
-	if(weapon == WP_BRYAR_PISTOL 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_3)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_DUAL_WEAPONS;
-	}
-	else if(weapon == WP_BRYAR_OLD 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] >= FORCE_LEVEL_3)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_DUAL_WEAPONS;
-	}
-	else if(weapon == WP_STUN_BATON 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] >= FORCE_LEVEL_3)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_DUAL_WEAPONS;
-	}
-	else
-	{
-	pm->ps->eFlags &= ~EF_DUAL_WEAPONS;		
-	}
-	
-	
-	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;
-	
-	if(weapon == WP_STUN_BATON 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_BRYAR_PISTOL 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_BLASTER
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTER] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_DISRUPTOR 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTOR] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_REPEATER
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATER] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_DEMP2
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP2] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_FLECHETTE 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTE] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_CONCUSSION
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSION] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_ROCKET_LAUNCHER
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_THERMAL
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMAL] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_TRIP_MINE 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINE] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}	
-	else if(weapon == WP_BRYAR_OLD 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] < FORCE_LEVEL_2)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags2 |= EF2_NOALTFIRE;
-	}		
-	else
-	{
-	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;		
-	}
-	
+
 	pm->ps->eFlags &= ~EF_WP_OPTION_2;
 	pm->ps->eFlags &= ~EF_WP_OPTION_3;	
 	pm->ps->eFlags &= ~EF_WP_OPTION_4;
@@ -8084,7 +7995,95 @@ void PM_FinishWeaponChange( void ) {
 	}
 	
 
+	pm->ps->eFlags &= ~EF_DUAL_WEAPONS;
 	
+	if(weapon == WP_BRYAR_PISTOL 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_DUAL_WEAPONS;
+	}
+	else if(weapon == WP_BRYAR_OLD 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] >= FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_DUAL_WEAPONS;
+	}
+	else if(weapon == WP_STUN_BATON 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] >= FORCE_LEVEL_3)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags |= EF_DUAL_WEAPONS;
+	}
+	else
+	{
+	pm->ps->eFlags &= ~EF_DUAL_WEAPONS;		
+	}
+	
+	
+	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;
+	
+	if(weapon == WP_STUN_BATON 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_BRYAR_PISTOL 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_BLASTER
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_BLASTER] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_DISRUPTOR 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DISRUPTOR] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_REPEATER
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_REPEATER] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_DEMP2
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_DEMP2] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_FLECHETTE 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_FLECHETTE] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_CONCUSSION
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_CONCUSSION] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_ROCKET_LAUNCHER
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_ROCKET] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_THERMAL
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_THERMAL] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_TRIP_MINE 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_TRIPMINE] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}	
+	else if(weapon == WP_BRYAR_OLD 
+		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] < FORCE_LEVEL_2)
+	{//Changed weaps, add dual weaps
+		pm->ps->eFlags2 |= EF2_NOALTFIRE;
+	}		
+	else
+	{
+	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;		
+	}	
 #endif
 	//[SaberThrowSys][test]
 	/* racc - I'm not sure this code by Keshire is needed for saber throw anymore.  Disabling for now to see.
@@ -15438,7 +15437,7 @@ void PmoveSingle (pmove_t *pmove) {
 
 	if (pm->ps->emplacedIndex)
 	{
-		if (pm->cmd.forwardmove < 0 || PM_GroundDistance() > 32.0f)
+		if (pm->cmd.forwardmove < 0)
 		{
 			pm->ps->emplacedIndex = 0;
 			pm->ps->saberHolstered = 0;

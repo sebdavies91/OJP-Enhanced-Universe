@@ -67,7 +67,7 @@
 #define MOD_EXPLOSIVE MOD_SUICIDE
 #else
 #define bgEntity_t gentity_t
-extern void NPC_SetAnim(gentity_t* ent, int setAnimParts, int anim, int setAnimFlags);
+extern void NPC_SetAnim(gentity_t *ent, int setAnimParts, int anim, int setAnimFlags);
 #endif
 
 extern float DotToSpot( vec3_t spot, vec3_t from, vec3_t fromAngles );
@@ -284,6 +284,12 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 	playerState_t *pilotPS = NULL;
 	int	curTime;
 
+	// Static analysis: ProcessMoveCommands assumes a valid vehicle + parent.
+	if ( !pVeh || !pVeh->m_pParentEntity || !pVeh->m_pVehicleInfo )
+	{
+		return;
+	}
+
 #ifdef _JK2MP
 	parentPS = pVeh->m_pParentEntity->playerState;
 	if (pVeh->m_pPilot)
@@ -402,7 +408,13 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 		if (parentPS)
 		{
 			parentPS->eFlags |= EF_JETPACK_ACTIVE;
-		}
+		#ifdef QAGAME
+			if ( pVeh && pVeh->m_pParentEntity )
+			{
+				((gentity_t *)pVeh->m_pParentEntity)->s.eFlags |= EF_JETPACK_ACTIVE;
+			}
+#endif
+}
 	}
 	else
 	{
@@ -410,7 +422,13 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 		if (parentPS)
 		{
 			parentPS->eFlags &= ~EF_JETPACK_ACTIVE;
-		}
+		#ifdef QAGAME
+			if ( pVeh && pVeh->m_pParentEntity )
+			{
+				((gentity_t *)pVeh->m_pParentEntity)->s.eFlags &= ~EF_JETPACK_ACTIVE;
+			}
+#endif
+}
 	}
 
 
@@ -691,11 +709,11 @@ void AnimateRiders( Vehicle_t *pVeh )
 			BG_SetAnim(pVeh->m_pPilot->playerState, bgAllAnims[pVeh->m_pPilot->localAnimIndex].anims,
 				SETANIM_BOTH, Anim, iFlags, iBlend);
 #else
-			NPC_SetAnim( pVeh->m_pPilot, SETANIM_BOTH, Anim, iFlags, iBlend );
+			NPC_SetAnim(pVeh->m_pPilot, SETANIM_BOTH, Anim, iFlags);
 			if (pVeh->m_pOldPilot)
 			{
 				iAnimLen = PM_AnimLength( pVeh->m_pPilot->client->clientInfo.animFileIndex, BOTH_VS_MOUNTTHROWEE);
-				NPC_SetAnim( pVeh->m_pOldPilot, SETANIM_BOTH, BOTH_VS_MOUNTTHROWEE, iFlags, iBlend );
+				NPC_SetAnim(pVeh->m_pOldPilot, SETANIM_BOTH, BOTH_VS_MOUNTTHROWEE, iFlags);
 			}
 #endif
 		}
@@ -728,7 +746,7 @@ void AnimateRiders( Vehicle_t *pVeh )
 			// Now Throw Him Out
 			//-------------------
 			G_Throw(oldPilot, throwDir, VectorLength(pVeh->m_pParentEntity->client->ps.velocity)/10.0f);
-			NPC_SetAnim(oldPilot, SETANIM_BOTH, BOTH_DEATHBACKWARD1, SETANIM_FLAG_OVERRIDE, iBlend );
+			NPC_SetAnim(oldPilot, SETANIM_BOTH, BOTH_DEATHBACKWARD1, SETANIM_FLAG_OVERRIDE);
 		}
 #endif
 
@@ -1031,7 +1049,7 @@ void AnimateRiders( Vehicle_t *pVeh )
 	BG_SetAnim(pVeh->m_pPilot->playerState, bgAllAnims[pVeh->m_pPilot->localAnimIndex].anims,
 		SETANIM_BOTH, Anim, iFlags|SETANIM_FLAG_HOLD, iBlend);
 #else
-	NPC_SetAnim( pVeh->m_pPilot, SETANIM_BOTH, Anim, iFlags, iBlend );
+	NPC_SetAnim(pVeh->m_pPilot, SETANIM_BOTH, Anim, iFlags);
 #endif
 }
 

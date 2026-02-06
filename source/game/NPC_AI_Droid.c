@@ -76,20 +76,20 @@ void R2D2_TurnAnims ( void )
 		{
 			if (anim != BOTH_TURN_LEFT1)
 			{
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_TURN_LEFT1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_TURN_LEFT1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			}
 		}
 		else
 		{
 			if (anim != BOTH_TURN_RIGHT1)
 			{
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_TURN_RIGHT1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_TURN_RIGHT1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			}
 		}
 	}
 	else
 	{
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 	}
 
 }
@@ -106,10 +106,8 @@ void Droid_Patrol( void )
 
 	if ( NPC->client && NPC->client->NPC_class != CLASS_GONK )
 	{
-		if (NPC->client->NPC_class != CLASS_R5D2)
-		{ //he doesn't have an eye.
-			R2D2_PartsMove();		// Get his eye moving.
-		}
+		// SP parity: R5D2 also animates its front lens movement.
+		R2D2_PartsMove();		// Get his eye moving.
 		R2D2_TurnAnims();
 	}
 
@@ -344,7 +342,7 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 					anim = BOTH_PAIN2;
 				}
 
-				NPC_SetAnim( self, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(self, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 
 				// Spin around in pain
 				if (self->NPC)
@@ -437,7 +435,7 @@ void NPC_Droid_Pain(gentity_t *self, gentity_t *attacker, int damage)
 					anim = BOTH_PAIN2;
 				}
 
-				NPC_SetAnim( self, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(self, SETANIM_BOTH, anim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 
 				// Spin around in pain
 				if (self->NPC)

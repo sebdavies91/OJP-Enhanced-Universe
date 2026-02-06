@@ -59,16 +59,16 @@ void NPC_SandCreature_Pain( gentity_t *self, gentity_t *attacker, int damage )
 		vec3_t shakePos;
 		//FIXME: effect and sound
 		//FIXME: shootable during this anim?
-		NPC_SetAnim( self, SETANIM_LEGS, Q_irand(BOTH_ATTACK1,BOTH_ATTACK2), SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART );
+		NPC_SetAnim(self, SETANIM_LEGS, Q_irand(BOTH_ATTACK1,BOTH_ATTACK2), SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART);
 		G_AddEvent( self, EV_PAIN, Q_irand( 0, 100 ) );
 		TIMER_Set( self, "pain", self->client->ps.legsTimer + Q_irand( 500, 2000 ) );
 		//wahoo fix for el camera shake effect
 		G_GetBoltPosition( self, self->client->renderInfo.headBolt, shakePos, 0 );
-		for(counter = 0; counter < MAX_CLIENTS; counter++)
+		for(counter = 0; counter < level.maxclients; counter++)
 		{
 			float playerDist;
 			gentity_t *radiusEnt = &g_entities[counter];
-			if(radiusEnt && radiusEnt->client)
+			if(radiusEnt && radiusEnt->inuse && radiusEnt->client)
 			{
 				playerDist = Distance( radiusEnt->r.currentOrigin, self->r.currentOrigin );
 				if ( playerDist < 256 )
@@ -95,11 +95,11 @@ void SandCreature_MoveEffect( void )
 		//CGCam_Shake( 0.75f*playerDist/256.0f, 250 );
 		G_GetBoltPosition( NPC, NPC->client->renderInfo.headBolt, shakePos, 0 );
 	//}
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for(i = 0; i < level.maxclients; i++)
 	{
 		float playerDist;
 		gentity_t *radiusEnt = &g_entities[i];
-		if(radiusEnt && radiusEnt->client)
+		if(radiusEnt && radiusEnt->inuse && radiusEnt->client)
 		{
 			playerDist = Distance( radiusEnt->r.currentOrigin, NPC->r.currentOrigin );
 			if ( playerDist < 256 )
@@ -132,7 +132,7 @@ void SandCreature_MoveEffect( void )
 
 			//FIXME: Breach sound?
 			//FIXME: Breach effect?
-			NPC_SetAnim( NPC, SETANIM_LEGS, BOTH_WALK2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART );
+			NPC_SetAnim(NPC, SETANIM_LEGS, BOTH_WALK2, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART);
 			TIMER_Set( NPC, "breaching", NPC->client->ps.legsTimer );
 			TIMER_Set( NPC, "breachDebounce", NPC->client->ps.legsTimer+Q_irand( 0, 10000 ) );
 		}
@@ -265,11 +265,11 @@ void SandCreature_Attack( qboolean miss )
 	//FIXME: shootable during this anim?
 	if ( !NPC->enemy->client )
 	{
-		NPC_SetAnim( NPC, SETANIM_LEGS, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART );
+		NPC_SetAnim(NPC, SETANIM_LEGS, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART);
 	}
 	else
 	{
-		NPC_SetAnim( NPC, SETANIM_LEGS, Q_irand( BOTH_ATTACK1, BOTH_ATTACK2 ), SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART );
+		NPC_SetAnim(NPC, SETANIM_LEGS, Q_irand( BOTH_ATTACK1, BOTH_ATTACK2 ), SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD|SETANIM_FLAG_RESTART);
 	}
 	//don't do anything else while in this anim
 	TIMER_Set( NPC, "attacking", NPC->client->ps.legsTimer );
@@ -283,11 +283,11 @@ void SandCreature_Attack( qboolean miss )
 		G_GetBoltPosition( NPC, NPC->client->renderInfo.headBolt, shakePos, 0 );
 		//G_ScreenShake( shakePos, NULL, 1.0f, NPC->client->ps.legsTimer, qfalse );
 
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for(i = 0; i < level.maxclients; i++)
 	{
 		float playerDist;
 		gentity_t *radiusEnt = &g_entities[i];
-		if(radiusEnt && radiusEnt->client)
+		if(radiusEnt && radiusEnt->inuse && radiusEnt->client)
 		{
 			playerDist = Distance( radiusEnt->r.currentOrigin, NPC->r.currentOrigin );
 			if ( playerDist < 256 )
@@ -327,7 +327,7 @@ void SandCreature_Attack( qboolean miss )
 							&& Q_flrand( 50, 150 ) > enemyDist )
 						{//knock them down
 							G_Knockdown( NPC->enemy, NPC, dir2Enemy, 300, qtrue );
-							if ( NPC->enemy->s.number < MAX_CLIENTS )
+							if ( NPC->enemy->s.number < level.maxclients )
 							{//make the player look up at me
 								vec3_t vAng;
 								vectoangles( dir2Enemy, vAng );
@@ -356,8 +356,8 @@ void SandCreature_Attack( qboolean miss )
 			if ( NPC->activator->health > 0 && NPC->activator->client )
 			{
 				G_AddEvent( NPC->activator, Q_irand(EV_DEATH1, EV_DEATH3), 0 );
-				NPC_SetAnim( NPC->activator, SETANIM_LEGS, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
-				NPC_SetAnim( NPC->activator, SETANIM_TORSO, BOTH_FALLDEATH1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC->activator, SETANIM_LEGS, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
+				NPC_SetAnim(NPC->activator, SETANIM_TORSO, BOTH_FALLDEATH1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 				TossClientItems( NPC );
 				if ( NPC->activator->NPC )
 				{//no more thinking for you
@@ -453,7 +453,7 @@ void SandCreature_CheckMovingEnts( void )
 		}
 		else
 		{
-			if ( (radiusEnts[i]->client->ps.eFlags&EF2_HELD_BY_MONSTER) )
+			if ( (radiusEnts[i]->client->ps.eFlags2&EF2_HELD_BY_MONSTER) )
 			{//can't be one being held
 				continue;
 			}
@@ -587,7 +587,7 @@ void SandCreature_Chase( void )
 
 	if ( NPC->enemy->client )
 	{
-		if ( NPC->enemy->client->ps.eFlags&EF2_HELD_BY_MONSTER)
+		if ( NPC->enemy->client->ps.eFlags2&EF2_HELD_BY_MONSTER)
 			//|| (NPC->enemy->client->ps.eFlags&EF_HELD_BY_RANCOR)
 			//|| (NPC->enemy->client->ps.eFlags&EF_HELD_BY_WAMPA) )
 		{//was picked up by another monster, forget about him

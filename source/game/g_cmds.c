@@ -1720,7 +1720,7 @@ void Cmd_SiegeClass_f( gentity_t *ent )
 	BG_SiegeCheckClassLegality(team, className);
 
 	//Set the session data
-	strcpy(ent->client->sess.siegeClass, className);
+	Q_strncpyz( ent->client->sess.siegeClass, className, sizeof( ent->client->sess.siegeClass ) );
 
 	// get and distribute relevent paramters
 	ClientUserinfoChanged( ent->s.number );
@@ -1768,8 +1768,7 @@ void Cmd_ForceChanged_f( gentity_t *ent )
 
 	buf = G_GetStringEdString("MP_SVGAME", "FORCEPOWERCHANGED");
 
-	strcpy(fpChStr, buf);
-
+	Q_strncpyz( fpChStr, buf, sizeof(fpChStr) );
 	trap_SendServerCommand( ent-g_entities, va("print \"%s%s\n\n\"", S_COLOR_GREEN, fpChStr) );
 
 	ent->client->ps.fd.forceDoInit = 1;
@@ -1847,8 +1846,7 @@ qboolean G_SetSaber(gentity_t *ent, int saberNum, char *saberName, qboolean sieg
 
 	if ( saberNum == 0 && (Q_stricmp( "none", truncSaberName ) == 0 || Q_stricmp( "remove", truncSaberName ) == 0) )
 	{ //can't remove saber 0 like this
-        strcpy(truncSaberName, DEFAULT_SABER);
-	}
+        Q_strncpyz( truncSaberName, DEFAULT_SABER, sizeof(truncSaberName) );	}
 
 	//Set the saber with the arg given. If the arg is
 	//not a valid sabername defaults will be used.
@@ -1857,20 +1855,20 @@ qboolean G_SetSaber(gentity_t *ent, int saberNum, char *saberName, qboolean sieg
 	if (!ent->client->saber[0].model[0])
 	{
 		assert(0); //should never happen!
-		strcpy(ent->client->sess.saberType, DEFAULT_SABER);
+		Q_strncpyz( ent->client->sess.saberType, DEFAULT_SABER, sizeof( ent->client->sess.saberType ) );
 	}
 	else
 	{
-		strcpy(ent->client->sess.saberType, ent->client->saber[0].name);
+		Q_strncpyz( ent->client->sess.saberType, ent->client->saber[0].name, sizeof( ent->client->sess.saberType ) );
 	}
 
 	if (!ent->client->saber[1].model[0])
 	{
-		strcpy(ent->client->sess.saber2Type, "none");
+		Q_strncpyz( ent->client->sess.saber2Type, "none", sizeof( ent->client->sess.saber2Type ) );
 	}
 	else
 	{
-		strcpy(ent->client->sess.saber2Type, ent->client->saber[1].name);
+		Q_strncpyz( ent->client->sess.saber2Type, ent->client->saber[1].name, sizeof( ent->client->sess.saber2Type ) );
 	}
 
 	//[StanceSelection]
@@ -2137,8 +2135,7 @@ void BotOrderParser(gentity_t *ent, gentity_t *target, int mode, const char *cha
 		{
 			continue;
 		}
-		strcpy(tempname, cl->pers.netname);
-		Q_CleanStr(tempname);
+		Q_strncpyz( tempname, cl->pers.netname, sizeof(tempname) );		Q_CleanStr(tempname);
 		Q_strlwr(tempname);
 
 		temp = strstr( text, tempname );	
@@ -2206,8 +2203,7 @@ void BotOrderParser(gentity_t *ent, gentity_t *target, int mode, const char *cha
 				{//Don't want the orderee to be the target
 					continue;
 				}
-				strcpy(tempname, cl->pers.netname);
-				Q_CleanStr(tempname);
+				Q_strncpyz( tempname, cl->pers.netname, sizeof(tempname) );				Q_CleanStr(tempname);
 				Q_strlwr(tempname);
 
 				temp = strstr( text, tempname );	
@@ -3022,7 +3018,7 @@ void Cmd_CallTeamVote_f( gentity_t *ent ) {
 	arg2[0] = '\0';
 	for ( i = 2; i < trap_Argc(); i++ ) {
 		if (i > 2)
-			strcat(arg2, " ");
+			Q_strcat( arg2, sizeof(arg2), " ");
 		trap_Argv( i, &arg2[strlen(arg2)], sizeof( arg2 ) - strlen(arg2) );
 	}
 
@@ -4814,7 +4810,7 @@ void ClientCommand( int clientNum ) {
 							player_die (hEnt, hEnt, hEnt, 100000, MOD_SUICIDE);
 						}
 						gGAvoidDismember = 2;
-						G_CheckForDismemberment(hEnt, ent, hEnt->client->ps.origin, 999, hEnt->client->ps.legsAnim, qfalse);
+						G_CheckForDismemberment(hEnt, ent, hEnt->client->ps.origin, 999, hEnt->client->ps.legsAnim, qfalse, MOD_SABER);
 						gGAvoidDismember = 0;
 					}
 				}

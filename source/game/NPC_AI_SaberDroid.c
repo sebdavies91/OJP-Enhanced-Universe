@@ -104,7 +104,7 @@ void NPC_BSSaberDroid_Patrol( void )
 					if ( level.alertEvents[alertEvent].owner && 
 						level.alertEvents[alertEvent].owner->client && 
 						level.alertEvents[alertEvent].owner->health >= 0 &&
-						level.alertEvents[alertEvent].owner->client->playerTeam == NPC->client->enemyTeam )
+						NPC_ValidEnemy( level.alertEvents[alertEvent].owner ) )
 					{//an enemy
 						G_SetEnemy( NPC, level.alertEvents[alertEvent].owner );
 						//NPCInfo->enemyLastSeenTime = level.time;
@@ -159,7 +159,7 @@ void NPC_BSSaberDroid_Patrol( void )
 		if ( !NPC->client->ps.saberHolstered )
 		{//saber is on.
 			WP_DeactivateSaber( NPC, qfalse );
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_TURNOFF, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_TURNOFF, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		}
 	}
 
@@ -260,15 +260,17 @@ void NPC_SaberDroid_PickAttack( void )
 	cgame.
 	if ( saberMoveData[NPC->client->ps.saberMove].trailLength > 0 )
 	{
-		NPC->client->ps.SaberActivateTrail( saberMoveData[NPC->client->ps.saberMove].trailLength ); // saber trail lasts for 75ms...feel free to change this if you want it longer or shorter
+		// NOTE: Base MP playerState_t does not expose SaberActivateTrail/SaberDeactivateTrail.
+		// This trail code remains cgame-side only (as indicated by the RAFIXME block).
+		//NPC->client->ps.SaberActivateTrail( saberMoveData[NPC->client->ps.saberMove].trailLength );
 	}
 	else
 	{
-		NPC->client->ps.SaberDeactivateTrail( 0 );
+		//NPC->client->ps.SaberDeactivateTrail( 0 );
 	}
 	*/
 
-	NPC_SetAnim( NPC, SETANIM_BOTH, attackAnim, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+	NPC_SetAnim(NPC, SETANIM_BOTH, attackAnim, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 	NPC->client->ps.torsoAnim = NPC->client->ps.legsAnim;//need to do this because we have no anim split but saber code checks torsoAnim
 	NPC->client->ps.weaponTime = NPC->client->ps.torsoTimer = NPC->client->ps.legsTimer;
 	NPC->client->ps.weaponstate = WEAPON_FIRING;
@@ -417,7 +419,7 @@ void NPC_BSSD_Default( void )
 			if ( NPC->client->ps.legsAnim == BOTH_TURNOFF
 				|| NPC->client->ps.legsAnim == BOTH_STAND1 )
 			{
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_TURNON, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_TURNON, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			}
 		}
 

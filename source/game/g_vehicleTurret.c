@@ -16,13 +16,24 @@ void VEH_TurretCheckFire( Vehicle_t *pVeh,
 						 vehWeaponInfo_t *vehWeapon, 
 						 int turretNum, int curMuzzle )
 {
+	if ( !pVeh || !parent || !turretStats || !vehWeapon )
+	{
+		return;
+	}
+	if ( turretNum < 0 || turretNum >= MAX_VEHICLE_TURRETS )
+	{
+		return;
+	}
+	if ( curMuzzle < 0 || curMuzzle >= MAX_VEHICLE_MUZZLES )
+	{
+		return;
+	}
+
 	// if it's time to fire and we have an enemy, then gun 'em down!  pushDebounce time controls next fire time
 	if ( pVeh->m_iMuzzleTag[curMuzzle] == -1 )
 	{//invalid muzzle?
 		return;
-	}
-	
-	if ( pVeh->m_iMuzzleWait[curMuzzle] >= level.time )
+	}	if ( pVeh->m_iMuzzleWait[curMuzzle] >= level.time )
 	{//can't fire yet
 		return;
 	}
@@ -53,8 +64,20 @@ void VEH_TurretCheckFire( Vehicle_t *pVeh,
 		{//a valid muzzle to toggle to
 			pVeh->turretStatus[turretNum].nextMuzzle = nextMuzzle-1;//-1 because you type muzzles 1-10 in the .veh file
 		}
-		//add delay to the next muzzle so it doesn't fire right away on the next frame
-		pVeh->m_iMuzzleWait[pVeh->turretStatus[turretNum].nextMuzzle] = level.time + turretStats->iDelay;
+			// add delay to the next muzzle so it doesn't fire right away on the next frame.
+			// Be defensive: nextMuzzle can be stale/invalid if the .veh is misconfigured
+			// or if we're in an unexpected state.
+			{
+				int delayMuzzle = pVeh->turretStatus[turretNum].nextMuzzle;
+				if ( delayMuzzle < 0 || delayMuzzle >= MAX_VEHICLE_MUZZLES )
+				{
+					delayMuzzle = curMuzzle;
+				}
+				if ( delayMuzzle >= 0 && delayMuzzle < MAX_VEHICLE_MUZZLES )
+				{
+					pVeh->m_iMuzzleWait[delayMuzzle] = level.time + turretStats->iDelay;
+				}
+			}
 	}
 }
 

@@ -42,6 +42,7 @@ void LoadDynamicMusic(void)
     }
 
     trap_FS_Read(buffer, len, f);  // Read data into buffer
+					   
     trap_FS_FCloseFile(f);         // Close file
 
     trap_Cvar_Register(&mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM);
@@ -51,6 +52,7 @@ void LoadDynamicMusic(void)
     // Use BG_TempFree instead of memset to "clear" memory
     BG_TempFree(DMS_INFO_SIZE);
 }
+
 
 
 
@@ -86,7 +88,7 @@ void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char
     }
 
     // convert/store the name of the music file
-    strcpy(songData->fileName, va("music/%s/%s.mp3", mapname, song));
+    Com_sprintf( songData->fileName, sizeof( songData->fileName ), "music/%s/%s.mp3", mapname, song );
 
     songData->numTransitions = 0; // init the struct's number of transitions
 
@@ -106,8 +108,9 @@ void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char
 
         // find transition file name
         BG_SiegeGetPairedValue(transitionGroup, "nextfile", Value);
-        strcpy(songData->Transitions[numTransitions].fileName,
-               va("music/%s/%s.mp3", mapname, Value));
+        Q_strncpyz( songData->Transitions[numTransitions].fileName,
+                   va("music/%s/%s.mp3", mapname, Value),
+                   sizeof( songData->Transitions[numTransitions].fileName ) );
 
         // load in exit points for this transition file
         while (BG_SiegeGetPairedValue(transitionGroup, va("time%i", numExits), Value)) {
@@ -138,6 +141,7 @@ void LoadDMSSongData(char* buffer, char* song, DynamicMusicSet_t* songData, char
 
 
 
+
 void LoadLengthforSong(char *buffer, DynamicMusicSet_t *song)
 {//load in the song lengths for the given DMS song
 	char TempLength[MAX_QPATH];
@@ -149,8 +153,7 @@ void LoadLengthforSong(char *buffer, DynamicMusicSet_t *song)
 	//grab the token name
 	char *tokenpointer = strrchr(song->fileName, '/');
 	tokenpointer++;
-	strcpy(token, tokenpointer);
-	tokenpointer = strrchr(token, '.');
+	Q_strncpyz( token, tokenpointer, sizeof(token) );	tokenpointer = strrchr(token, '.');
 	*tokenpointer = '\0';
 	
 
@@ -163,8 +166,7 @@ void LoadLengthforSong(char *buffer, DynamicMusicSet_t *song)
 		//grab pointer
 		tokenpointer = strrchr(song->Transitions[transNum-1].fileName, '/');
 		tokenpointer++;
-		strcpy(token, tokenpointer);
-		tokenpointer = strrchr(token, '.');
+		Q_strncpyz( token, tokenpointer, sizeof(token) );		tokenpointer = strrchr(token, '.');
 		*tokenpointer = '\0';
 
         if(BG_SiegeGetPairedValue(buffer, token, TempLength))
@@ -250,6 +252,7 @@ void LoadDMSSongLengths(void)
 
 
 
+
 //loads in the DMS data for this map
 void LoadDynamicMusicGroup(char* mapname, char* buffer)
 {
@@ -277,6 +280,7 @@ void LoadDynamicMusicGroup(char* mapname, char* buffer)
     if (BG_SiegeGetPairedValue(MapMusicGroup, "uses", text)) {
         LoadDynamicMusicGroup(text, buffer);  // recursion is safe, this one uses its own buffer
         BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "clear" memory
+								   
         return;
     }
 
@@ -306,6 +310,7 @@ void LoadDynamicMusicGroup(char* mapname, char* buffer)
 
     BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "clear" memory before returning
 }
+
 
 
 

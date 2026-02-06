@@ -4,6 +4,9 @@
 #include "cg_local.h"
 #include "fx_local.h"
 
+// Vehicle weapon assets may be registered lazily by bg_vehicleLoad.c.
+extern void BG_EnsureVehWeaponAssetsLoaded( int weaponIndex );
+
 extern vec4_t	bluehudtint;
 extern vec4_t	redhudtint;
 extern float	*hudTintColor;
@@ -190,7 +193,7 @@ void CG_RegisterItemVisuals( int itemNum ) {
 
 	item = &bg_itemlist[ itemNum ];
 
-	memset( itemInfo, 0, sizeof( &itemInfo ) );
+	memset( itemInfo, 0, sizeof( *itemInfo ) );
 	itemInfo->registered = qtrue;
 
 	if (item->giType == IT_TEAM &&
@@ -3867,6 +3870,10 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 
 qboolean CG_VehicleWeaponImpact( centity_t *cent )
 {//see if this is a missile entity that's owned by a vehicle and should do a special, overridden impact effect
+		if ( (cent->currentState.eFlags & EF_JETPACK_ACTIVE) && cent->currentState.otherEntityNum2 )
+		{
+			BG_EnsureVehWeaponAssetsLoaded( cent->currentState.otherEntityNum2 );
+		}
 	if ((cent->currentState.eFlags&EF_JETPACK_ACTIVE)//hack so we know we're a vehicle Weapon shot
 		&& cent->currentState.otherEntityNum2
 		&& g_vehWeaponInfo[cent->currentState.otherEntityNum2].iImpactFX)

@@ -2138,7 +2138,7 @@ void SpewDebugStuffToFile()
 
 	while (i < MAX_ANIMATIONS)
 	{
-		strcat(BGPAFtext, va("%i %i\n", i, bgHumanoidAnimations[i].frameLerp));
+		Q_strcat(BGPAFtext, sizeof(BGPAFtext), va("%i %i\n", i, bgHumanoidAnimations[i].frameLerp));
 		i++;
 	}
 
@@ -2388,7 +2388,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 			{
 				break;
 			}		
-			strcpy(stringData, token);
+			Q_strncpyz(stringData, token, sizeof(stringData));
 			//get lowest value
 			token = COM_Parse( text_p );
 			if ( !token ) 
@@ -2540,7 +2540,7 @@ void ParseAnimationEvtBlock(const char *aeb_filename, animevent_t *animEvents, a
 				{ //eh, whatever. no dynamic stuff, so this will do.
 					animEvents[curAnimEvent].stringData = (char *) BG_Alloc(2048);
 				}
-				strcpy(animEvents[curAnimEvent].stringData, token);
+				Q_strncpyz(animEvents[curAnimEvent].stringData, token, sizeof(animEvents[curAnimEvent].stringData));
 			}
 			//NOTE: this string will later be used to add a bolt and store the index, as below:
 			//animEvent->eventData[AED_BOLTINDEX] = gi.G2API_AddBolt( &cent->gent->ghoul2[cent->gent->playerModel], animEvent->stringData );
@@ -2740,7 +2740,7 @@ int BG_ParseAnimationEvtFile( const char *as_filename, int animFileIndex, int ev
 			if ( include_filename != NULL )
 			{
 				char fullIPath[MAX_QPATH];
-				strcpy(fullIPath, va("models/players/%s/", include_filename));
+				Q_strncpyz(fullIPath, va("models/players/%s/", include_filename), sizeof(fullIPath));
 				bg_animParseIncluding++;
 				BG_ParseAnimationEvtFile( fullIPath, animFileIndex, forcedIndex );
 				bg_animParseIncluding--;
@@ -2764,7 +2764,7 @@ fin:
 	if (bg_animParseIncluding <= 0)
 	{ //if we should be parsing an included file, skip this part
 		bgAllEvents[forcedIndex].eventsParsed = qtrue;
-		strcpy(bgAllEvents[forcedIndex].filename, as_filename);
+		Q_strncpyz(bgAllEvents[forcedIndex].filename, as_filename, sizeof(bgAllEvents[forcedIndex].filename));
 		if (forcedIndex)
 		{
 			bgNumAnimEvents++;
@@ -2994,7 +2994,7 @@ int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean i
     {
         bgAllAnims[0].anims = animset;
         {
-            strcpy(bgAllAnims[0].filename, filename);
+            Q_strncpyz(bgAllAnims[0].filename, filename, sizeof(bgAllAnims[0].filename));
         }
 
         BGPAFtextLoaded = qtrue;
@@ -3004,7 +3004,7 @@ int BG_ParseAnimationFile(const char* filename, animation_t* animset, qboolean i
     else
     {
         bgAllAnims[nextIndex].anims = animset;
-        strcpy(bgAllAnims[nextIndex].filename, filename);
+        Q_strncpyz(bgAllAnims[nextIndex].filename, filename, sizeof(bgAllAnims[nextIndex].filename));
 
         usedIndex = bgNumAllAnims;
 

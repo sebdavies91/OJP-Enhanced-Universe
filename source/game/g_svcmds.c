@@ -599,8 +599,7 @@ qboolean	ConsoleCommand( void ) {
 			char output[1024];
 			
 			//copy the print text.
-			strcpy(temp, ConcatArgs(1));
-			
+			Q_strncpyz( temp, ConcatArgs(1), sizeof(temp) );			
 			TextWrapCenterPrint(temp, output);
 
 			trap_SendServerCommand( -1, va("cp \"%s\n\"", output ) );

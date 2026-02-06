@@ -2926,7 +2926,7 @@ float CG_DrawVehicleShields( const menuDef_t	*menuHUD, const centity_t *veh )
 	inc = (float) maxShields / MAX_VHUD_ARMOR_TICS;
 	for (i=1;i<=MAX_VHUD_ARMOR_TICS;i++)
 	{
-		sprintf( itemName, "armor_tic%d",	i );
+		Com_sprintf( itemName, sizeof(itemName), "armor_tic%d",	i );
 
 		item = Menu_FindItemByName((menuDef_t *) menuHUD, itemName);
 
@@ -2991,7 +2991,7 @@ void CG_DrawVehicleAmmo( const menuDef_t *menuHUD, const centity_t *veh )
 	inc = (float) maxAmmo / MAX_VHUD_AMMO_TICS;
 	for (i=1;i<=MAX_VHUD_AMMO_TICS;i++)
 	{
-		sprintf( itemName, "ammo_tic%d",	i );
+		Com_sprintf( itemName, sizeof(itemName), "ammo_tic%d",	i );
 
 		item = Menu_FindItemByName((menuDef_t *)menuHUD, itemName);
 
@@ -3062,7 +3062,7 @@ void CG_DrawVehicleAmmoUpper( const menuDef_t *menuHUD, const centity_t *veh )
 	inc = (float) maxAmmo / MAX_VHUD_AMMO_TICS;
 	for (i=1;i<MAX_VHUD_AMMO_TICS;i++)
 	{
-		sprintf( itemName, "ammoupper_tic%d",	i );
+		Com_sprintf( itemName, sizeof(itemName), "ammoupper_tic%d",	i );
 
 		item = Menu_FindItemByName((menuDef_t *)menuHUD, itemName);
 
@@ -3134,7 +3134,7 @@ void CG_DrawVehicleAmmoLower( const menuDef_t *menuHUD, const centity_t *veh )
 	inc = (float) maxAmmo / MAX_VHUD_AMMO_TICS;
 	for (i=1;i<MAX_VHUD_AMMO_TICS;i++)
 	{
-		sprintf( itemName, "ammolower_tic%d",	i );
+		Com_sprintf( itemName, sizeof(itemName), "ammolower_tic%d",	i );
 
 		item = Menu_FindItemByName((menuDef_t *)menuHUD, itemName);
 
@@ -3304,7 +3304,7 @@ void CG_DrawVehicleSpeed( const menuDef_t	*menuHUD, const centity_t *veh )
 	inc = (float) maxSpeed / MAX_VHUD_SPEED_TICS;
 	for (i=1;i<=MAX_VHUD_SPEED_TICS;i++)
 	{
-		sprintf( itemName, "speed_tic%d",	i );
+		Com_sprintf( itemName, sizeof(itemName), "speed_tic%d",	i );
 
 		item = Menu_FindItemByName((menuDef_t *)menuHUD, itemName);
 
@@ -3397,7 +3397,7 @@ void CG_DrawVehicleArmor( const menuDef_t *menuHUD, const centity_t *veh )
 	inc = (float) maxArmor / MAX_VHUD_SHIELD_TICS;
 	for (i=1;i <= MAX_VHUD_SHIELD_TICS;i++)
 	{
-		sprintf( itemName, "shield_tic%d",	i );
+		Com_sprintf( itemName, sizeof(itemName), "shield_tic%d",	i );
 
 		item = Menu_FindItemByName((menuDef_t	*) menuHUD, itemName);
 
@@ -3852,8 +3852,7 @@ static float CG_DrawMiniScoreboard ( float y )
 
 	if ( cgs.gametype >= GT_TEAM )
 	{
-		strcpy ( temp, va("%s: ", CG_GetStringEdString("MP_INGAME", "RED")));
-		Q_strcat ( temp, MAX_QPATH, cgs.scores1==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores1)) );
+		Q_strncpyz( temp, va("%s: ", CG_GetStringEdString("MP_INGAME", "RED")), sizeof(temp) );		Q_strcat ( temp, MAX_QPATH, cgs.scores1==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores1)) );
 		Q_strcat ( temp, MAX_QPATH, va(" %s: ", CG_GetStringEdString("MP_INGAME", "BLUE")) );
 		Q_strcat ( temp, MAX_QPATH, cgs.scores2==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores2)) );
 
@@ -3863,8 +3862,7 @@ static float CG_DrawMiniScoreboard ( float y )
 	else
 	{
 		/*
-		strcpy ( temp, "1st: " );
-		Q_strcat ( temp, MAX_QPATH, cgs.scores1==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores1)) );
+		Q_strncpyz( temp, "1st: " , sizeof(temp) );		Q_strcat ( temp, MAX_QPATH, cgs.scores1==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores1)) );
 		
 		Q_strcat ( temp, MAX_QPATH, " 2nd: " );
 		Q_strcat ( temp, MAX_QPATH, cgs.scores2==SCORE_NOT_PRESENT?"-":(va("%i",cgs.scores2)) );
@@ -8029,19 +8027,19 @@ static void CG_DrawTemporaryStats()
 		return;
 	}
 
-	sprintf(s, "Force: %i", cg.snap->ps.fd.forcePower);
+	Com_sprintf(s, sizeof(s), "Force: %i", cg.snap->ps.fd.forcePower);
 
 	CG_DrawBigString(SCREEN_WIDTH-164, SCREEN_HEIGHT-dmgIndicSize, s, 1.0f);
 
-	sprintf(s, "Ammo: %i", cg.snap->ps.ammo[weaponData[cg.snap->ps.weapon].ammoIndex]);
+	Com_sprintf(s, sizeof(s), "Ammo: %i", cg.snap->ps.ammo[weaponData[cg.snap->ps.weapon].ammoIndex]);
 
 	CG_DrawBigString(SCREEN_WIDTH-164, SCREEN_HEIGHT-112, s, 1.0f);
 
-	sprintf(s, "Health: %i", cg.snap->ps.stats[STAT_HEALTH]);
+	Com_sprintf(s, sizeof(s), "Health: %i", cg.snap->ps.stats[STAT_HEALTH]);
 
 	CG_DrawBigString(8, SCREEN_HEIGHT-dmgIndicSize, s, 1.0f);
 
-	sprintf(s, "Armor: %i", cg.snap->ps.stats[STAT_ARMOR]);
+	Com_sprintf(s, sizeof(s), "Armor: %i", cg.snap->ps.stats[STAT_ARMOR]);
 
 	CG_DrawBigString(8, SCREEN_HEIGHT-112, s, 1.0f);
 }
@@ -8586,8 +8584,7 @@ static void CG_DrawSiegeTimer(int timeRemaining, qboolean isMyTeam)
 		seconds -= 60;
 	}
 
-	strcpy(timeStr, va( "%i:%02i", minutes, seconds ));
-
+	Q_strncpyz( timeStr, va( "%i:%02i", minutes, seconds ), sizeof(timeStr) );
 	if (isMyTeam)
 	{
 		fColor = CT_HUD_RED;
@@ -8652,12 +8649,10 @@ static void CG_DrawSiegeDeathTimer( int timeRemaining )
 
 	if (seconds < 10)
 	{
-		strcpy(timeStr, va( "%i:0%i", minutes, seconds ));
-	}
+		Q_strncpyz( timeStr, va( "%i:0%i", minutes, seconds ), sizeof(timeStr) );	}
 	else
 	{
-		strcpy(timeStr, va( "%i:%i", minutes, seconds ));
-	}
+		Q_strncpyz( timeStr, va( "%i:%i", minutes, seconds ), sizeof(timeStr) );	}
 
 	item = Menu_FindItemByName(menuHUD, "deathtimer");
 	if (item)
@@ -8765,7 +8760,7 @@ void CG_ChatBox_AddString(char *chatStr)
 		chatStr[sizeof(chat->string)-1] = 0;
 	}
 
-	strcpy(chat->string, chatStr);
+	Q_strncpyz( chat->string, chatStr, sizeof( chat->string ) );
 	chat->time = cg.time + cg_chatBox.integer;
 
 	chat->lines = 1;
@@ -10089,8 +10084,7 @@ static void CG_Draw2D( void ) {
 				}
 			}
 
-			strcpy(pStr, va("%s %i...", CG_GetStringEdString("MP_INGAME", "ROUNDBEGINSIN"), rTime));
-			CG_CenterPrint(pStr, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
+			Q_strncpyz( pStr, va("%s %i...", CG_GetStringEdString("MP_INGAME", "ROUNDBEGINSIN"), rTime), sizeof(pStr) );			CG_CenterPrint(pStr, SCREEN_HEIGHT * 0.30, BIGCHAR_WIDTH);
 			//same
 			break;
 		default:

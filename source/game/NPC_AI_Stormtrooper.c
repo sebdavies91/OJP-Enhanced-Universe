@@ -10,6 +10,7 @@ extern void AI_GroupUpdateEnemyLastSeen( AIGroupInfo_t *group, vec3_t spot );
 extern void AI_GroupUpdateClearShotTime( AIGroupInfo_t *group );
 extern void NPC_TempLookTarget( gentity_t *self, int lookEntNum, int minLookTime, int maxLookTime );
 extern qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs, int ignore, int clipmask );
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 extern void ChangeWeapon( gentity_t *ent, int newWeapon );
 extern void NPC_CheckGetNewWeapon( void );
 extern int BG_GetTime(void);
@@ -57,6 +58,17 @@ static float	enemyDist;
 static vec3_t	impactPos;
 
 int groupSpeechDebounceTime[TEAM_NUM_TEAMS];//used to stop several group AI from speaking all at once
+
+// playerTeam can be temporarily invalid in edge cases; clamp before indexing arrays.
+static int TeamIndexSafe( team_t team )
+{
+	int i = (int)team;
+	if ( i < 0 || i >= TEAM_NUM_TEAMS )
+	{
+		return 0;
+	}
+	return i;
+}
 
 //[CoOp]
 void NPC_Saboteur_Precache( void )
@@ -208,7 +220,7 @@ static void ST_Speech( gentity_t *self, int speechType, float failChance )
 			/*
 			else if ( !self->NPC->group->enemy )
 			{
-				if ( groupSpeechDebounceTime[self->client->playerTeam] > level.time )
+				if ( groupSpeechDebounceTime[TeamIndexSafe(self->client->playerTeam)] > level.time )
 				{
 					return;
 				}
@@ -219,7 +231,7 @@ static void ST_Speech( gentity_t *self, int speechType, float failChance )
 		{//personal timer
 			return;
 		}
-		else if ( groupSpeechDebounceTime[self->client->playerTeam] > level.time )
+		else if ( groupSpeechDebounceTime[TeamIndexSafe(self->client->playerTeam)] > level.time )
 		{//for those not in group AI
 			//FIXME: let certain speech types interrupt others?  Let closer NPCs interrupt farther away ones?
 			return;
@@ -235,7 +247,7 @@ static void ST_Speech( gentity_t *self, int speechType, float failChance )
 	{
 		TIMER_Set( self, "chatter", Q_irand( 2000, 4000 ) );
 	}
-	groupSpeechDebounceTime[self->client->playerTeam] = level.time + Q_irand( 2000, 4000 );
+	groupSpeechDebounceTime[TeamIndexSafe(self->client->playerTeam)] = level.time + Q_irand( 2000, 4000 );
 
 	if ( self->NPC->blockedSpeechDebounceTime > level.time )
 	{
@@ -405,69 +417,197 @@ ST_Move
 -------------------------
 */
 void ST_TransferMoveGoal( gentity_t *self, gentity_t *other );
+static qboolean ST_ShouldHoldForSpacing( void )
+{
+	AIGroupInfo_t *group;
+	vec3_t toEnemy;
+	float distToEnemy;
+	float nearestAhead = 99999.0f;
+	int i;
+
+	if ( !NPC || !NPCInfo || !NPC->client )
+	{
+		return qfalse;
+	}
+	// Never interfere with saber behavior.
+	if ( NPC->client->ps.weapon == WP_SABER )
+	{
+		return qfalse;
+	}
+	if ( !NPC->enemy )
+	{
+		return qfalse;
+	}
+	group = NPCInfo->group;
+	if ( !group || group->numGroup <= 1 )
+	{
+		return qfalse;
+	}
+	// If we recently decided to hold for spacing, keep holding until the timer expires.
+	if ( !TIMER_Done( NPC, "spacingHold" ) )
+	{
+		return qtrue;
+	}
+
+	VectorSubtract( NPC->enemy->r.currentOrigin, NPC->r.currentOrigin, toEnemy );
+	toEnemy[2] = 0;
+	distToEnemy = VectorLength( toEnemy );
+	// When very close, don't hold back; let close-range combat resolve naturally.
+	if ( distToEnemy < 96.0f )
+	{
+		return qfalse;
+	}
+	if ( distToEnemy <= 0.0f )
+	{
+		return qfalse;
+	}
+	VectorScale( toEnemy, 1.0f / distToEnemy, toEnemy );
+
+	for ( i = 0; i < group->numGroup; i++ )
+	{
+		int entNum = group->member[i].number;
+		gentity_t *ally;
+		vec3_t toAlly, dir;
+		float dist, ahead;
+
+		if ( entNum == NPC->s.number )
+		{
+			continue;
+		}
+		ally = &g_entities[ entNum ];
+		if ( !ally || !ally->inuse || !ally->client )
+		{
+			continue;
+		}
+		if ( !OnSameTeam( ally, NPC ) )
+		{
+			continue;
+		}
+
+		VectorSubtract( ally->r.currentOrigin, NPC->r.currentOrigin, toAlly );
+		toAlly[2] = 0;
+		dist = VectorLength( toAlly );
+		if ( dist <= 1.0f )
+		{
+			continue;
+		}
+		VectorScale( toAlly, 1.0f / dist, dir );
+		ahead = DotProduct( dir, toEnemy );
+		// Only consider allies that are generally between us and the enemy.
+		if ( ahead > 0.55f )
+		{
+			if ( dist < nearestAhead )
+			{
+				nearestAhead = dist;
+			}
+		}
+	}
+
+	// SP troop formation keeps spacing; emulate by letting the front-most mover lead.
+	if ( nearestAhead < 72.0f )
+	{
+		TIMER_Set( NPC, "spacingHold", Q_irand( 250, 450 ) );
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 static qboolean ST_Move( void )
 {
 	qboolean	moved;
-	//[CoOp]
-	//navInfo_t	info;
-	//[/CoOp]
+	navInfo_t	info;
 
 	NPCInfo->combatMove = qtrue;//always move straight toward our goal
 
-	moved = NPC_MoveToGoal( qtrue );
-	
-	//[CoOp]
-	if (moved==qfalse)
+	// SP-inspired: maintain spacing in tight areas so squads don't "blob" in corridors.
+	// This is conservative: only applies to non-saber NPCs in groups, and only when
+	// another ally is directly ahead along the enemy vector.
+	if ( ST_ShouldHoldForSpacing() )
 	{
 		ST_HoldPosition();
+		NPC_ST_SayMovementSpeech();
+		return qfalse;
 	}
 
-	NPC_ST_SayMovementSpeech();
+	moved = NPC_MoveToGoal( qtrue );
 
 	/*
-	//Get the move info
-	NAV_GetLastMove( &info );
-
-	//FIXME: if we bump into another one of our guys and can't get around him, just stop!
-	//If we hit our target, then stop and fire!
-	if ( info.flags & NIF_COLLISION ) 
+	SP parity note:
+	SP ST_Move() simply holds position when movement fails. In MP, "movement failed" is
+	often caused by short-lived entity collisions (doorway clumping). To better match
+	SP's *result* (NPCs stop looking dumb and keep pressure), we try a brief sidestep
+	when blocked by a friendly, otherwise we fall back to the classic hold-position.
+	This is intentionally conservative and is disabled for saber users.
+	*/
+	if ( moved == qfalse )
 	{
-		if ( info.blocker == NPC->enemy )
+		//Never interfere with saber behavior.
+		if ( NPC->client && NPC->client->ps.weapon == WP_SABER )
 		{
 			ST_HoldPosition();
 		}
-	}
+		else
+		{
+			//Get the move info for this frame (set by navigation).
+			NAV_GetLastMove( &info );
 
-	//If our move failed, then reset
-	if ( moved == qfalse )
-	{//FIXME: if we're going to a combat point, need to pick a different one
-		if ( !trap_ICARUS_TaskIDPending( NPC, TID_MOVE_NAV ) )
-		{//can't transfer movegoal or stop when a script we're running is waiting to complete
-			if ( info.blocker && info.blocker->NPC && NPCInfo->group != NULL && info.blocker->NPC->group == NPCInfo->group )//(NPCInfo->aiFlags&NPCAI_BLOCKED) && NPCInfo->group != NULL )
-			{//dammit, something is in our way
-				//see if it's one of ours
-				int j;
-
-				for ( j = 0; j < NPCInfo->group->numGroup; j++ )
+			if ( (info.flags & NIF_COLLISION) && info.blocker )
+			{
+				//If we hit our enemy, stop and fire.
+				if ( info.blocker == NPC->enemy )
 				{
-					if ( NPCInfo->group->member[j].number == NPCInfo->blockingEntNum )
-					{//we're being blocked by one of our own, pass our goal onto them and I'll stand still
-						ST_TransferMoveGoal( NPC, &g_entities[NPCInfo->group->member[j].number] );
-						break;
+					ST_HoldPosition();
+				}
+				//If we bumped a friendly, try a short sidestep instead of giving up immediately.
+				else if ( NPC->client && info.blocker->client && OnSameTeam( info.blocker, NPC )
+					&& TIMER_Done( NPC, "collideStrafe" ) )
+				{
+					vec3_t toBlocker, fwd, right;
+					float side;
+					vec3_t flatAngles;
+
+					VectorSubtract( info.blocker->r.currentOrigin, NPC->r.currentOrigin, toBlocker );
+					toBlocker[2] = 0;
+
+					//Use current yaw for a stable "right" vector (ignore pitch).
+					VectorCopy( NPC->client->ps.viewangles, flatAngles );
+					flatAngles[PITCH] = 0;
+					flatAngles[ROLL] = 0;
+					AngleVectors( flatAngles, fwd, right, NULL );
+					right[2] = 0;
+					VectorNormalize( right );
+
+					side = DotProduct( toBlocker, right );
+
+					//Strafe away from the blocker.
+					if ( side > 0.0f )
+					{
+						TIMER_Set( NPC, "strafeLeft", Q_irand( 250, 450 ) );
 					}
+					else
+					{
+						TIMER_Set( NPC, "strafeRight", Q_irand( 250, 450 ) );
+					}
+					//Debounce so we don't jitter if packed in tight.
+					TIMER_Set( NPC, "collideStrafe", Q_irand( 200, 350 ) );
+				}
+				else
+				{
+					//Non-friendly blocker (or debounce active) – default safe behavior.
+					ST_HoldPosition();
 				}
 			}
-			
-			ST_HoldPosition();
+			else
+			{
+				//No collision data; default safe behavior.
+				ST_HoldPosition();
+			}
 		}
 	}
-	else
-	{
-		//First time you successfully move, say what it is you're doing
-		NPC_ST_SayMovementSpeech();
-	}
-	*/
-	//[/CoOp]
+
+	//Say movement lines after we decide whether we're holding/adjusting.
+	NPC_ST_SayMovementSpeech();
 
 	return moved;
 }
@@ -867,7 +1007,10 @@ qboolean NPC_CheckPlayerTeamStealth( void )
 			continue;
 		}
 
-		if ( enemy && enemy->client && NPC_ValidEnemy( enemy ) && enemy->client->playerTeam == NPC->client->enemyTeam )
+		// Match SP behavior: NPC_ValidEnemy already encodes hostility rules.
+		// In MP, team fields can be temporarily inconsistent (or unused) depending on
+		// game type/mod logic, so avoid over-filtering here.
+		if ( enemy && enemy->client && NPC_ValidEnemy( enemy ) )
 		{
 			if ( NPC_CheckEnemyStealth( enemy ) )	//Change this pointer to assess other entities
 			{
@@ -1000,7 +1143,7 @@ static qboolean NPC_ST_InvestigateEvent( int eventID, qboolean extraSuspicious )
 			if ( !level.alertEvents[eventID].owner || 
 				!level.alertEvents[eventID].owner->client || 
 				level.alertEvents[eventID].owner->health <= 0 ||
-				level.alertEvents[eventID].owner->client->playerTeam != NPC->client->enemyTeam )
+			!G_ValidEnemy( NPC, level.alertEvents[eventID].owner ) )
 			{//not an enemy
 				return qfalse;
 			}
@@ -1147,7 +1290,7 @@ static qboolean NPC_ST_InvestigateEvent( int eventID, qboolean extraSuspicious )
 		{
 			//if ( !Q_irand( 0, 2 ) )
 			{//look around
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_GUARD_LOOKAROUND1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_GUARD_LOOKAROUND1, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			}
 		}
 		//[/CoOp]
@@ -1410,7 +1553,7 @@ void NPC_BSST_Patrol( void )
 				if ( !level.alertEvents[alertEvent].owner || 
 					!level.alertEvents[alertEvent].owner->client || 
 					level.alertEvents[alertEvent].owner->health <= 0 ||
-					level.alertEvents[alertEvent].owner->client->playerTeam != NPC->client->enemyTeam )
+					!G_ValidEnemy( NPC, level.alertEvents[alertEvent].owner ) )
 				{//not an enemy
 					return;
 				}
@@ -1475,7 +1618,7 @@ void NPC_BSST_Patrol( void )
 					if ( (ucmd.buttons&BUTTON_WALKING) && !(NPCInfo->scriptFlags&SCF_RUNNING) )
 					{//not running, only set upper anim
 						//  No longer overrides scripted anims
-						NPC_SetAnim( NPC, SETANIM_TORSO, BOTH_STAND4, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+						NPC_SetAnim(NPC, SETANIM_TORSO, BOTH_STAND4, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 						NPC->client->ps.torsoTimer = 200;
 					}
 				}
@@ -1490,7 +1633,7 @@ void NPC_BSST_Patrol( void )
 				//	( NPC->client->ps.legsTimer <= 0  || (NPC->client->ps.legsAnim == BOTH_STAND4) ) )
 				//[/CoOp]
 				{
-					NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_STAND4, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+					NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_STAND4, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 					NPC->client->ps.torsoTimer = NPC->client->ps.legsTimer = 200;
 				}
 			}

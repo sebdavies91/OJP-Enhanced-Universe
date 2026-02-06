@@ -11,6 +11,9 @@ we need it...
 #include "g_nav.h"
 #include "../icarus/Q3_Interface.h"
 
+// Used for validating the leader's enemy in follow behavior (especially for player-owned followers like seekers/squadteam).
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
+
 extern	qboolean	showBBoxes;
 extern vec3_t NPCDEBUG_BLUE;
 extern void G_Cube( vec3_t mins, vec3_t maxs, vec3_t color, float alpha );
@@ -293,7 +296,7 @@ void NPC_BSInvestigate (void)
 		}
 	}
 
-	NPC_SetAnim( NPC, SETANIM_TORSO, TORSO_WEAPONREADY3, SETANIM_FLAG_NORMAL );
+	NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_WEAPONREADY3, SETANIM_FLAG_NORMAL);
 
 	if(NPCInfo->stats.vigilance <= 1.0 && NPCInfo->eventOwner)
 	{
@@ -332,14 +335,14 @@ void NPC_BSInvestigate (void)
 		NPC_MoveToGoal( qtrue );
 
 		//FIXME: walk2?
-		NPC_SetAnim(NPC,SETANIM_LEGS,BOTH_WALK1,SETANIM_FLAG_NORMAL);
+		NPC_SetAnim(NPC, SETANIM_LEGS, BOTH_WALK1, SETANIM_FLAG_NORMAL);
 
 		ucmd.buttons |= BUTTON_WALKING;
 	}
 	else
 	{
 
-		NPC_SetAnim(NPC,SETANIM_LEGS,BOTH_STAND1,SETANIM_FLAG_NORMAL);
+		NPC_SetAnim(NPC, SETANIM_LEGS, BOTH_STAND1, SETANIM_FLAG_NORMAL);
 
 		if(NPCInfo->hlookCount > 30)
 		{
@@ -467,7 +470,7 @@ qboolean NPC_CheckInvestigate( int alertEventNum )
 		return qfalse;
 	}
 
-	if ( owner->client && owner->client->playerTeam && NPC->client->playerTeam && owner->client->playerTeam != NPC->client->playerTeam )
+	if ( owner->client && NPC->client && G_ValidEnemy( NPC, owner ) )
 	{
 		if( (float)NPCInfo->investigateCount >= (NPCInfo->stats.vigilance*200) && owner )
 		{//If investigateCount == 10, just take it as enemy and go
@@ -551,7 +554,7 @@ qboolean NPC_BSFollowLeader_UpdateLeader(void)
 {//racc - checks the status of our leader.  If the leader is invalid, do some backup behavior.
 	
 	if ( NPC->client->leader//have a leader
-		&& NPC->client->leader->s.number < MAX_CLIENTS //player
+		&& NPC->client->leader->s.number < level.maxclients //player
 		&& NPC->client->leader->client//player is a client
 		&& !NPC->client->leader->client->pers.enterTime )//player has not finished spawning in yet
 	{//don't do anything just yet, but don't clear the leader either
@@ -561,7 +564,7 @@ qboolean NPC_BSFollowLeader_UpdateLeader(void)
 	if (NPC->client->leader && NPC->client->leader->health<=0)
 	{
 		//[test]
-		if(NPC->client->leader->s.number < MAX_CLIENTS)
+		if(NPC->client->leader->s.number < level.maxclients)
 		{//leader is a player.  Check to look for another player on this 
 			//team to follow.  Otherwise just wait, we don't want to lose 
 			//our leader.
@@ -627,7 +630,7 @@ void NPC_BSFollowLeader_UpdateEnemy(void)
 					if ( !level.alertEvents[eventID].owner || 
 						!level.alertEvents[eventID].owner->client || 
 						level.alertEvents[eventID].owner->health <= 0 ||
-						level.alertEvents[eventID].owner->client->playerTeam != NPC->client->enemyTeam )
+						!G_ValidEnemy( NPC, level.alertEvents[eventID].owner ) )
 					{//not an enemy
 					}
 					else
@@ -648,7 +651,7 @@ void NPC_BSFollowLeader_UpdateEnemy(void)
 				&& NPC->client->leader->enemy 
 				&& NPC->client->leader->enemy != NPC
 				//[RAFIXME] - impliment these flags.
-				&& (NPC->client->leader->enemy->client&&NPC->client->leader->enemy->client->playerTeam==NPC->client->enemyTeam)
+				&& G_ValidEnemy( NPC, NPC->client->leader->enemy )
 				//&& ( (NPC->client->leader->enemy->client&&NPC->client->leader->enemy->client->playerTeam==NPC->client->enemyTeam)
 				//	||(NPC->client->leader->enemy->svFlags&SVF_NONNPC_ENEMY&&NPC->client->leader->enemy->noDamageTeam==NPC->client->enemyTeam) )
 				//[/RAFIXME]
@@ -859,7 +862,7 @@ void NPC_BSFollowLeader (void)
 					if ( !level.alertEvents[eventID].owner || 
 						!level.alertEvents[eventID].owner->client || 
 						level.alertEvents[eventID].owner->health <= 0 ||
-						level.alertEvents[eventID].owner->client->playerTeam != NPC->client->enemyTeam )
+						!G_ValidEnemy( NPC, level.alertEvents[eventID].owner ) )
 					{//not an enemy
 					}
 					else
@@ -879,8 +882,7 @@ void NPC_BSFollowLeader (void)
 			if ( NPC->client->leader 
 				&& NPC->client->leader->enemy 
 				&& NPC->client->leader->enemy != NPC
-				&& ( (NPC->client->leader->enemy->client&&NPC->client->leader->enemy->client->playerTeam==NPC->client->enemyTeam)
-					||(*//*NPC->client->leader->enemy->r.svFlags&SVF_NONNPC_ENEMY*//*0&&NPC->client->leader->enemy->alliedTeam==NPC->client->enemyTeam) )
+				&& G_ValidEnemy( NPC, NPC->client->leader->enemy )
 				&& NPC->client->leader->enemy->health > 0 )
 			{ //rwwFIXMEFIXME: use SVF_NONNPC_ENEMY?
 				G_SetEnemy( NPC, NPC->client->leader->enemy );
@@ -2028,12 +2030,12 @@ void NPC_Surrender( void )
 	{
 		if (NPC->client->ps.torsoAnim==BOTH_COWER1_START && NPC->client->ps.torsoTimer<=100)
 		{
-		 	NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_COWER1, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+		 	NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_COWER1, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 	 	 	NPCInfo->surrenderTime = level.time + NPC->client->ps.torsoTimer;
 		}
  		if (NPC->client->ps.torsoAnim==BOTH_COWER1 && NPC->client->ps.torsoTimer<=100)
 		{
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_COWER1_STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_COWER1_STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 		 	NPCInfo->surrenderTime = level.time + NPC->client->ps.torsoTimer;
 		}
 	}
@@ -2044,7 +2046,7 @@ void NPC_Surrender( void )
 	{
 		if ( NPC->client->NPC_class == CLASS_JAWA && NPC->client->ps.weapon == WP_NONE )
 		{//an unarmed Jawa is very scared
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_COWER1, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_COWER1, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 			//FIXME: stop doing this if decide to take off and run
 		}
 		else
@@ -2053,21 +2055,21 @@ void NPC_Surrender( void )
 			//------------------------------------------
 			if ( (NPC->enemy && NPC->enemy->client && NPC->enemy->client->NPC_class==CLASS_RANCOR) || !TIMER_Done( NPC, "rocketChasing" ) )
 			{
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_COWER1_START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_COWER1_START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 			}
 
 			// Otherwise, Use The Old Surrender "Arms In Air" Animation
 			//----------------------------------------------------------
 			else
 			{
-				NPC_SetAnim( NPC, SETANIM_TORSO, TORSO_SURRENDER_START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+				NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_SURRENDER_START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 				NPC->client->ps.torsoTimer = Q_irand(3000, 8000);				// Pretend the anim lasts longer
 			}
 		}
 	 	NPCInfo->surrenderTime = level.time + NPC->client->ps.torsoTimer + 1000;
 	}
 
-//	NPC_SetAnim( NPC, SETANIM_TORSO, TORSO_SURRENDER_START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+//	NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_SURRENDER_START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 //	NPC->client->ps.torsoTimer = 1000;
 	//NPCInfo->surrenderTime = level.time + 1000;//stay surrendered for at least 1 second
 	//FIXME: while surrendering, make a big sight/sound alert? Or G_AlertTeam?
@@ -2080,7 +2082,9 @@ qboolean NPC_CheckSurrender( void )
 		&& NPC->client->ps.groundEntityNum != ENTITYNUM_NONE //racc - not in the air
 		&& !NPC->client->ps.weaponTime && !PM_InKnockDown( &NPC->client->ps )//racc - not firing and not on the ground
 		//RAFIXME - Does the NPC->enemy->enemy == NPC prevent players from causing surrenders?
-		&& NPC->enemy && NPC->enemy->client && NPC->enemy->enemy == NPC && NPC->enemy->s.weapon != WP_NONE 
+		&& NPC->enemy && NPC->enemy->client && NPC->enemy->enemy == NPC && NPC->enemy->s.weapon != WP_NONE
+			&& ( NPC->enemy->s.weapon != WP_MELEE
+				|| ( NPC->enemy->client->NPC_class == CLASS_RANCOR || NPC->enemy->client->NPC_class == CLASS_WAMPA ) )
 		&& NPC->enemy->health > 20 && NPC->enemy->painDebounceTime < level.time - 3000 && NPC->enemy->client->ps.fd.forcePowerDebounce[FP_SABER_DEFENSE] < level.time - 1000 )
 	{//don't surrender if scripted to run somewhere or if we're in the air or if we're busy or if we don't have an enemy or if the enemy is not mad at me or is hurt or not a threat or busy being attacked
 		//FIXME: even if not in a group, don't surrender if there are other enemies in the PVS and within a certain range?
@@ -2114,8 +2118,8 @@ qboolean NPC_CheckSurrender( void )
 					{//I'm not looking at them
 						return qfalse;
 					}
-					else if ( DistanceSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin ) < 65536/*256*256*/ )
-					{//they're not close
+				else if ( DistanceSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin ) > 65536/*256*256*/ )
+				{//they're too far
 						return qfalse;
 					}
 					else if ( !trap_InPVS( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin ) )
@@ -2133,14 +2137,14 @@ qboolean NPC_CheckSurrender( void )
 			{//I'm alone but I was in a group//FIXME: surrender anyway if just melee or no weap?
 				if ( NPC->s.weapon == WP_NONE 
 					//NPC has a weapon
-					|| (NPC->enemy && NPC->enemy->s.number < MAX_CLIENTS) //racc - battling player
+					|| (NPC->enemy && NPC->enemy->s.number < level.maxclients) //racc - battling player
 					//[CoOp]
 					//accounting for partially lit sabers
 					|| (NPC->enemy->s.weapon == WP_SABER&&NPC->enemy->client&&NPC->enemy->client->ps.saberHolstered < 2) //racc - a jedi
 					//|| (NPC->enemy->s.weapon == WP_SABER&&NPC->enemy->client&&!NPC->enemy->client->ps.saberHolstered)
 					|| (NPC->enemy->NPC && NPC->enemy->NPC->group && NPC->enemy->NPC->group->numGroup > 2) )
 				{//surrender only if have no weapon or fighting a player or jedi or if we are outnumbered at least 3 to 1
-					if ( (NPC->enemy && NPC->enemy->s.number < MAX_CLIENTS) )
+					if ( (NPC->enemy && NPC->enemy->s.number < level.maxclients) )
 					{//player is the guy I'm running from
 						//if ( g_crosshairEntNum == NPC->s.number )
 						if (NPC_SomeoneLookingAtMe(NPC))

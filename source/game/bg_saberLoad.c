@@ -636,9 +636,9 @@ void WP_SaberSetDefaults( saberInfo_t *saber )
 
 	saber->saberFlags |= SFL_NOT_ACTIVE_BLOCKING;
 
-	strcpy(saber->name, DEFAULT_SABER);
-	strcpy(saber->fullName, "lightsaber");
-	strcpy(saber->model, DEFAULT_SABER_MODEL);
+	Q_strncpyz( saber->name, DEFAULT_SABER, sizeof( saber->name ) );
+	Q_strncpyz( saber->fullName, "lightsaber", sizeof( saber->fullName ) );
+	Q_strncpyz( saber->model, DEFAULT_SABER_MODEL, sizeof( saber->model ) );
 	saber->skin = 0;
 	saber->soundOn = BG_SoundIndex( "sound/weapons/saber/enemy_saber_on.wav" );
 	saber->soundLoop = BG_SoundIndex( "sound/weapons/saber/saberhum3.wav" );
@@ -775,12 +775,12 @@ qboolean WP_SaberParseParms( const char *SaberName, saberInfo_t *saber )
 
 	if ( !SaberName || !SaberName[0] ) 
 	{
-		strcpy(useSaber, DEFAULT_SABER); //default
+		Q_strncpyz( useSaber, DEFAULT_SABER, sizeof( useSaber ) ); //default
 		triedDefault = qtrue;
 	}
 	else
 	{
-		strcpy(useSaber, SaberName);
+		Q_strncpyz( useSaber, SaberName, sizeof( useSaber ) );
 	}
 
 	//try to parse it out
@@ -797,7 +797,7 @@ qboolean WP_SaberParseParms( const char *SaberName, saberInfo_t *saber )
 			{ //fall back to default and restart, should always be there
 				p = SaberParms;
 				COM_BeginParseSession("saberinfo");
-				strcpy(useSaber, DEFAULT_SABER);
+				Q_strncpyz( useSaber, DEFAULT_SABER, sizeof( useSaber ) );
 				triedDefault = qtrue;
 			}
 			else
@@ -819,7 +819,7 @@ qboolean WP_SaberParseParms( const char *SaberName, saberInfo_t *saber )
 	}
 
 	//got the name we're using for sure
-	strcpy(saber->name, useSaber);
+	Q_strncpyz( saber->name, useSaber, sizeof( saber->name ) );
 
 	if ( BG_ParseLiteral( &p, "{" ) ) 
 	{
@@ -848,7 +848,7 @@ qboolean WP_SaberParseParms( const char *SaberName, saberInfo_t *saber )
 			{
 				continue;
 			}
-			strcpy(saber->fullName, value);
+			Q_strncpyz( saber->fullName, value, sizeof( saber->fullName ) );
 			continue;
 		}
 
@@ -876,7 +876,7 @@ qboolean WP_SaberParseParms( const char *SaberName, saberInfo_t *saber )
 			{
 				continue;
 			}
-			strcpy(saber->model, value);
+			Q_strncpyz( saber->model, value, sizeof( saber->model ) );
 			continue;
 		}
 
@@ -2711,7 +2711,7 @@ qboolean WP_SaberParseParms( const char *SaberName, saberInfo_t *saber )
 	return qtrue;
 }
 
-qboolean WP_SaberParseParm( const char *saberName, const char *parmname, char *saberData ) 
+qboolean WP_SaberParseParm( const char *saberName, const char *parmname, char *saberData, int saberDataSize ) 
 {
 	const char	*token;
 	const char	*value;
@@ -2773,7 +2773,11 @@ qboolean WP_SaberParseParm( const char *saberName, const char *parmname, char *s
 			{
 				continue;
 			}
-			strcpy( saberData, value );
+			if ( !saberData || saberDataSize <= 0 )
+			{
+				return qfalse;
+			}
+			Q_strncpyz( saberData, value, saberDataSize );
 			return qtrue;
 		}
 
@@ -2787,7 +2791,7 @@ qboolean WP_SaberParseParm( const char *saberName, const char *parmname, char *s
 qboolean WP_SaberValidForPlayerInMP( const char *saberName )
 {
 	char allowed [8]={0};
-	if ( !WP_SaberParseParm( saberName, "notInMP", allowed ) )
+	if ( !WP_SaberParseParm( saberName, "notInMP", allowed, sizeof( allowed ) ) )
 	{//not defined, default is yes
 		return qtrue;
 	}
@@ -2810,7 +2814,7 @@ void WP_RemoveSaber( saberInfo_t *sabers, int saberNum )
 	//reset everything for this saber just in case
 	WP_SaberSetDefaults( &sabers[saberNum] );
 
-	strcpy(sabers[saberNum].name, "none");
+	Q_strncpyz( sabers[saberNum].name, "none", sizeof( sabers[saberNum].name ) );
 	sabers[saberNum].model[0] = 0;
 
 	//ent->client->ps.dualSabers = qfalse;

@@ -87,6 +87,18 @@ qboolean Jedi_WaitingAmbush( gentity_t *self );
 extern int bg_parryDebounce[];
 
 static int	jediSpeechDebounceTime[TEAM_NUM_TEAMS];//used to stop several jedi from speaking all at once
+
+// NPC->client->playerTeam can be temporarily invalid in some edge cases (bad spawns/mod data).
+// Clamp before using as an array index (prevents OOB and silences MSVC analyzer warnings).
+static int TeamIndexSafe( team_t team )
+{
+	int i = (int)team;
+	if ( i < 0 || i >= TEAM_NUM_TEAMS )
+	{
+		return 0;
+	}
+	return i;
+}
 //Local state enums
 enum
 {
@@ -939,12 +951,28 @@ void Boba_FlyStart( gentity_t *self )
 {//switch to seeker AI for a while
 	if ( TIMER_Done( self, "jetRecharge" ) )
 	{
-		self->client->ps.gravity = 0;
+		// MP-safe: keep normal gravity; PM_JETPACK will handle gravity while thrusting.
+		self->client->ps.gravity = g_gravity.value;
 		if ( self->NPC )
 		{
-			self->NPC->aiFlags |= NPCAI_CUSTOM_GRAVITY;
+			self->NPC->aiFlags &= ~NPCAI_CUSTOM_GRAVITY;
 		}
-		self->client->ps.eFlags2 |= EF2_FLYING;//moveType = MT_FLYSWIM;
+		self->client->ps.eFlags2 |= EF2_FLYING; // flying state for knockdown immunity
+		self->client->jetPackOn = qtrue;
+		self->client->ps.pm_type = PM_JETPACK;
+		self->client->ps.eFlags |= (EF_JETPACK|EF_JETPACK_ACTIVE|EF_JETPACK_FLAMING);
+		// Ensure MP client has the jetpack holdable available while flying so
+		// JetpackSys keeps rendering flames/sounds even after weapon/holdable transitions.
+		self->client->ps.stats[STAT_HOLDABLE_ITEMS] |= (1 << HI_JETPACK);
+		// MP physics note:
+		// If we leave groundEntityNum set, the NPC can "stick" to the ground even
+		// with gravity 0. Force an airborne state and a small upward impulse so
+		// jetpack AI can immediately steer in the air (SP sets a fly movetype).
+		self->client->ps.groundEntityNum = ENTITYNUM_NONE;
+		if ( self->client->ps.velocity[2] < 150.0f )
+		{
+			self->client->ps.velocity[2] = 200.0f;
+		}
 		self->client->jetPackTime = level.time + Q_irand( 3000, 10000 );
 				if ( self->client->NPC_class == CLASS_ROCKETTROOPER )
 		{
@@ -976,6 +1004,12 @@ void Boba_FlyStop( gentity_t *self )
 	{
 		self->client->ps.eFlags &= ~EF_JETPACK_ACTIVE;
 	}
+	else
+	{
+		// For Boba (and other jetpack users), fully clear the "active" visual state when stopping.
+		// Leaving EF_JETPACK_ACTIVE set can result in "walking with jetpack" visuals.
+		self->client->ps.eFlags &= ~(EF_JETPACK_ACTIVE|EF_JETPACK_FLAMING);
+	}
 	self->client->jetPackTime = 0;
 	//stop jet loop sound
 	self->s.loopSound = 0;
@@ -985,11 +1019,24 @@ void Boba_FlyStop( gentity_t *self )
 		TIMER_Set( self, "jetRecharge", Q_irand( 1000, 5000 ) );
 		TIMER_Set( self, "jumpChaseDebounce", Q_irand( 500, 2000 ) );
 	}
+	if ( self && self->client ) { self->client->jetPackOn = qfalse; self->client->ps.eFlags &= ~EF_JETPACK_FLAMING; }
 }
 
 qboolean Boba_Flying( gentity_t *self )
 {
-	return ((qboolean)(self->client->ps.eFlags2&EF2_FLYING));//moveType==MT_FLYSWIM));
+	// MP-safe: jetpack state can be expressed via pm_type / eFlags even if EF2_FLYING
+	// gets momentarily cleared during weapon/state transitions.
+	if ( !self || !self->client )
+	{
+		return qfalse;
+	}
+	// NOTE: Do NOT use EF_JETPACK here. EF_JETPACK can simply mean the holdable exists,
+	// not that the entity is actually flying. Using it here prevents proper takeoff and
+	// causes "walking with jetpack" edge cases.
+	return (qboolean)( (self->client->ps.eFlags2 & EF2_FLYING) ||
+		(self->client->ps.pm_type == PM_JETPACK) ||
+		(self->client->ps.eFlags & (EF_JETPACK_ACTIVE|EF_JETPACK_FLAMING)) ||
+		(self->client->jetPackOn) );
 }
 
 void Boba_FireFlameThrower( gentity_t *self )
@@ -999,22 +1046,32 @@ void Boba_FireFlameThrower( gentity_t *self )
 	gentity_t	*traceEnt = NULL;
 	mdxaBone_t	boltMatrix;
 	vec3_t		start, end, dir, traceMins = {-4, -4, -4}, traceMaxs = {4, 4, 4};
+	vec3_t		fwd;
 
+	// SP inspiration: the flamethrower projects forward from the attacker.
+	// In MP we want the effect to originate at the extended hand, but the
+	// direction must follow current viewangles so it always fires forward.
 	trap_G2API_GetBoltMatrix( self->ghoul2, 0, self->client->renderInfo.handLBolt,
 			&boltMatrix, self->r.currentAngles, self->r.currentOrigin, level.time,
 			NULL, self->modelScale );
 
 	BG_GiveMeVectorFromMatrix( &boltMatrix, ORIGIN, start );
-	BG_GiveMeVectorFromMatrix( &boltMatrix, NEGATIVE_Y, dir );
-	//G_PlayEffect( "boba/fthrw", start, dir );
-	VectorMA( start, 128, dir, end );
+	// Use ps.viewangles so the flame always goes where the AI is aiming (forward),
+	// even if r.currentAngles lags behind.
+	AngleVectors( self->client->ps.viewangles, fwd, NULL, NULL );
+	VectorNormalize( fwd );
+	VectorCopy( fwd, dir );
+	// Flamethrower reach (requested): 192 units.
+	VectorMA( start, 192, dir, end );
 
 	trap_Trace( &tr, start, traceMins, traceMaxs, end, self->s.number, MASK_SHOT );
 
 	traceEnt = &g_entities[tr.entityNum];
 	if ( tr.entityNum < ENTITYNUM_WORLD && traceEnt->takedamage )
 	{
-		G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_LAVA );
+		// MP/SP intent: flamethrower should use normal damage routing (shields/armor first)
+		// and report as flame damage.
+		G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_FLAME );
 		//rwwFIXMEFIXME: add DAMAGE_NO_HIT_LOC?
 	}
 }
@@ -1023,8 +1080,8 @@ void Boba_FireFlameThrower( gentity_t *self )
 void Boba_StartFlameThrower( gentity_t *self )
 {
 	int	flameTime = 4000;//Q_irand( 1000, 3000 );
-	mdxaBone_t	boltMatrix;
-	vec3_t		org, dir;
+	/* MP note: Flamethrower visual FX is emitted continuously from Boba_DoFlameThrower().
+	   Keep StartFlameThrower() limited to timers/sound to avoid depending on bolt names. */
 
 	self->client->ps.torsoTimer = flameTime;//+1000;
 	if ( self->NPC )
@@ -1033,6 +1090,14 @@ void Boba_StartFlameThrower( gentity_t *self )
 		TIMER_Set( self, "walking", 0 );
 	}
 	TIMER_Set( self, "flameTime", flameTime );
+	TIMER_Set( self, "flameFX", 0 );
+	if ( self->NPC )
+	{
+		self->NPC->aiFlags |= NPCAI_FLAMETHROW;
+	}
+	// Drive MP cgame flamethrower rendering (clientside FX uses entityState.userInt3).
+	self->client->ps.userInt3 |= (1 << FLAG_THROWER);
+	self->s.userInt3 |= (1 << FLAG_THROWER);
 	/*
 	gentity_t *fire = G_Spawn();
 	if ( fire != NULL )
@@ -1062,19 +1127,111 @@ void Boba_StartFlameThrower( gentity_t *self )
 	}
 	*/
 	G_SoundOnEnt( self, CHAN_WEAPON, "sound/effects/combustfire.mp3" );
-
-	trap_G2API_GetBoltMatrix(NPC->ghoul2, 0, NPC->client->renderInfo.handRBolt, &boltMatrix, NPC->r.currentAngles,
-		NPC->r.currentOrigin, level.time, NULL, NPC->modelScale);
-
-	BG_GiveMeVectorFromMatrix( &boltMatrix, ORIGIN, org );
-	BG_GiveMeVectorFromMatrix( &boltMatrix, NEGATIVE_Y, dir );
-
-	G_PlayEffectID( G_EffectIndex("boba/fthrw"), org, dir);
 }
+
+
+void Boba_StopFlameThrower( gentity_t *self )
+{
+	if ( !self || !self->client )
+		return;
+
+	self->NPC->aiFlags &= ~NPCAI_FLAMETHROW;
+	self->client->ps.userInt3 &= ~(1 << FLAG_THROWER);
+	self->s.userInt3 &= ~(1 << FLAG_THROWER);
+	self->client->ps.torsoTimer = 0;
+	TIMER_Set( self, "flameTime", 0 );
+	TIMER_Set( self, "nextAttackDelay", 0 );
+	// Stop sound if needed by your sound system (not strictly required).
+}
+
 
 void Boba_DoFlameThrower( gentity_t *self )
 {
+	if ( !self || !self->client || !self->NPC )
+	{
+		return;
+	}
+
+	/* Visual flame FX: MP's G_PlayEffectID expects *angles*, not a direction vector.
+	   We emit from a reliable bolt origin and use ps.viewangles for effect orientation. */
+	static int s_fxMiniFlameJet = -1;
+	static int s_fxBobaFlame = -1;
+
+	// Static analysis: protect against unexpected NULL callers.
+	if ( !self || !self->client || !self->NPC )
+	{
+		return;
+	}
+
+	// Ensure viewangles are aligned before using them for effect direction.
+	if ( self && self->enemy )
+	{
+		NPC_FaceEnemy( qtrue );
+		NPC_UpdateAngles( qtrue, qtrue );
+	}
 	NPC_SetAnim( self, SETANIM_TORSO, BOTH_FORCELIGHTNING_HOLD, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+
+	if ( self->NPC->aiFlags & NPCAI_FLAMETHROW )
+	{
+		self->client->ps.userInt3 |= (1 << FLAG_THROWER);
+		self->s.userInt3 |= (1 << FLAG_THROWER);
+	}
+	// SP-inspired: continuous visible flame effect from the extended hand.
+	if ( (self->NPC->aiFlags & NPCAI_FLAMETHROW) && !TIMER_Done( self, "flameTime" ) && TIMER_Done( self, "flameFX" ) )
+	{
+			mdxaBone_t	boltMatrix;
+			vec3_t		org, fxAng, fwd;
+			int bolt;
+
+		bolt = self->client->renderInfo.handLBolt;
+		if ( bolt <= 0 )
+		{
+			bolt = self->client->renderInfo.handRBolt;
+		}
+			if ( bolt > 0 && self->ghoul2 )
+			{
+				trap_G2API_GetBoltMatrix( self->ghoul2, 0, bolt,
+					&boltMatrix, self->r.currentAngles, self->r.currentOrigin, level.time,
+					NULL, self->modelScale );
+				BG_GiveMeVectorFromMatrix( &boltMatrix, ORIGIN, org );
+
+				/* Aim forward based on what the AI is actually aiming at. */
+				VectorCopy( self->client->ps.viewangles, fxAng );
+				AngleVectors( fxAng, fwd, NULL, NULL );
+				VectorNormalize( fwd );
+
+				/* Nudge forward so the effect doesn't start inside the model/gauntlet. */
+				VectorMA( org, 18.0f, fwd, org );
+
+				if ( s_fxMiniFlameJet < 0 )
+				{
+					s_fxMiniFlameJet = G_EffectIndex( "env/mini_flamejet" );
+				}
+				if ( s_fxBobaFlame < 0 )
+				{
+					s_fxBobaFlame = G_EffectIndex( "boba/fthrw" );
+				}
+
+				/* Use a flame FX that is known to exist in MP assets, and also try the
+				   SP-named effect if the client has it. */
+				if ( s_fxMiniFlameJet >= 0 )
+				{
+					G_PlayEffectID( s_fxMiniFlameJet, org, fxAng );
+				}
+				if ( s_fxBobaFlame >= 0 )
+				{
+					G_PlayEffectID( s_fxBobaFlame, org, fxAng );
+				}
+
+				TIMER_Set( self, "flameFX", 60 );
+			}
+	}
+	if ( TIMER_Done( self, "flameTime" ) && (self->NPC->aiFlags & NPCAI_FLAMETHROW) )
+	{
+		Boba_StopFlameThrower( self );
+	}
+	// Start a new flame burst when we're allowed to attack and no flame is currently running.
+	// (Matches original MP logic; SP does the same conceptually with a flame timer.)
 	if ( TIMER_Done( self, "nextAttackDelay" ) && TIMER_Done( self, "flameTime" ) )
 	{
 		Boba_StartFlameThrower( self );
@@ -1128,6 +1285,12 @@ void Boba_FireDecide( void )
 	float	dot;
 	vec3_t	enemyDir, shootDir;
 
+	// Static analysis: Boba behavior assumes a valid, client-backed NPC.
+	if ( !NPC || !NPCInfo || !NPC->client )
+	{
+		return;
+	}
+
 	if ( NPC->client->ps.groundEntityNum == ENTITYNUM_NONE 
 		&& NPC->client->ps.fd.forceJumpZStart
 		&& !BG_FlippingAnim( NPC->client->ps.legsAnim )
@@ -1141,6 +1304,21 @@ void Boba_FireDecide( void )
 		return;
 	}
 
+	// MP improvement (SP-inspired): proactively take off to engage at range.
+	// The original MP Boba can fail to ever take off depending on jump/anim state.
+	// Use 192 as the preferred "take off" distance band (as requested).
+	if ( NPC->client && NPC->client->NPC_class == CLASS_BOBAFETT && !Boba_Flying( NPC )
+		&& TIMER_Done( NPC, "bobaTakeoffDebounce" ) )
+	{
+		const float distSqr = DistanceSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin );
+		if ( distSqr > (192.0f*192.0f) || (NPC->enemy->s.weapon == WP_SABER && distSqr > (96.0f*96.0f)) )
+		{
+			Boba_FlyStart( NPC );
+			TIMER_Set( NPC, "bobaTakeoffDebounce", Q_irand( 2500, 4500 ) );
+			TIMER_Set( NPC, "bobaTakeoff", Q_irand( 700, 1000 ) );
+		}
+	}
+
 	/*
 	if ( NPC->enemy->enemy != NPC && NPC->health == NPC->client->pers.maxHealth )
 	{
@@ -1150,24 +1328,39 @@ void Boba_FireDecide( void )
 	else */if ( NPC->enemy->s.weapon == WP_SABER )
 	{
 		NPCInfo->scriptFlags &= ~SCF_ALT_FIRE;
-		Boba_ChangeWeapon( WP_ROCKET_LAUNCHER );
+			// Prefer rockets vs saber if we actually own them; otherwise don't force a weapon.
+			if ( NPC->client->ps.stats[STAT_WEAPONS] & (1u<<WP_ROCKET_LAUNCHER) )
+			{
+				Boba_ChangeWeapon( WP_ROCKET_LAUNCHER );
+			}
 	}
 	else
 	{
-		if ( NPC->health < NPC->client->pers.maxHealth*0.5f )
-		{
-			NPCInfo->scriptFlags |= SCF_ALT_FIRE;
-			Boba_ChangeWeapon( WP_BLASTER );
-			NPCInfo->burstMin = 3;
-			NPCInfo->burstMean = 12;
-			NPCInfo->burstMax = 20;
-			NPCInfo->burstSpacing = Q_irand( 300, 750 );//attack debounce
-		}
-		else
-		{
-			NPCInfo->scriptFlags &= ~SCF_ALT_FIRE;
-			Boba_ChangeWeapon( WP_BLASTER );
-		}
+			// MP behavior: prefer the weapon configured in the NPC file (bowcaster) instead of
+			// hard-forcing blaster. Falling back to blaster is only correct if bowcaster is absent.
+			if ( NPC->client->ps.stats[STAT_WEAPONS] & (1u<<WP_BOWCASTER) )
+			{
+				// SP Boba varies fire mode based on aggression/health; keep it simple and MP-safe.
+				NPCInfo->scriptFlags &= ~SCF_ALT_FIRE;
+				Boba_ChangeWeapon( WP_BOWCASTER );
+			}
+			else
+			{
+				if ( NPC->health < NPC->client->pers.maxHealth*0.5f )
+				{
+					NPCInfo->scriptFlags |= SCF_ALT_FIRE;
+					Boba_ChangeWeapon( WP_BLASTER );
+					NPCInfo->burstMin = 3;
+					NPCInfo->burstMean = 12;
+					NPCInfo->burstMax = 20;
+					NPCInfo->burstSpacing = Q_irand( 300, 750 );//attack debounce
+				}
+				else
+				{
+					NPCInfo->scriptFlags &= ~SCF_ALT_FIRE;
+					Boba_ChangeWeapon( WP_BLASTER );
+				}
+			}
 	}
 
 	VectorClear( impactPos );
@@ -1182,7 +1375,8 @@ void Boba_FireDecide( void )
 		enemyInFOV = qtrue;
 	}
 
-	if ( (enemyDist < (128*128)&&enemyInFOV) || !TIMER_Done( NPC, "flameTime" ) )
+		// Slightly extend flamethrower engagement distance.
+		if ( (enemyDist < (192*192)&&enemyInFOV) || !TIMER_Done( NPC, "flameTime" ) )
 	{//flamethrower
 		Boba_DoFlameThrower( NPC );
 		enemyCS = qfalse;
@@ -1639,7 +1833,7 @@ static qboolean Jedi_BattleTaunt( void )
 	if ( TIMER_Done( NPC, "chatter" ) 
 		&& !Q_irand( 0, 3 ) 
 		&& NPCInfo->blockedSpeechDebounceTime < level.time 
-		&& jediSpeechDebounceTime[NPC->client->playerTeam] < level.time )
+		&& jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] < level.time )
 	{//racc - try to taunt
 		int event = -1;
 		//[CoOp]
@@ -1669,7 +1863,7 @@ static qboolean Jedi_BattleTaunt( void )
 			if ( event != -1 )
 			{
 				G_AddVoiceEvent( NPC, event, 3000 );
-				jediSpeechDebounceTime[NPC->client->playerTeam] = NPCInfo->blockedSpeechDebounceTime = level.time + 6000;
+				jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = NPCInfo->blockedSpeechDebounceTime = level.time + 6000;
 				//[CoOp]
 				if ( (NPCInfo->aiFlags&NPCAI_ROSH) )
 				{//Rosh taunts less often
@@ -2109,17 +2303,31 @@ static void Jedi_AdjustSaberAnimLevel( gentity_t *self, int newLevel )
 
 	//[StanceSelection]
 	//override stance with special saber style if we're using special sabers
-	if (self->client->saber[0].model[0] && self->client->saber[1].model[0]
-		&& !G_ValidSaberStyle(self, SS_DUAL))
+	if (self->client->saber[0].model[0] && self->client->saber[1].model[0])
 	{
+		// Dual sabers => always SS_DUAL
+		self->client->ps.fd.saberAnimLevelBase = SS_DUAL;
 		self->client->ps.fd.saberAnimLevel = SS_DUAL;
+		self->client->ps.fd.saberDrawAnimLevel = SS_DUAL;
+		self->client->saberCycleQueue = 0;
+		if (!self->client->ps.saberInFlight)
+		{
+			self->client->ps.saberHolstered = 0;
+		}
 		return;
 	}
-	else if (self->client->saber[0].numBlades > 1
-		&& WP_SaberCanTurnOffSomeBlades(&self->client->saber[0])
-		&& !G_ValidSaberStyle(self, SS_STAFF))
+	else if (self->client->saber[0].model[0] &&
+		((self->client->saber[0].saberFlags & SFL_TWO_HANDED) || self->client->saber[0].numBlades > 1))
 	{
+		// Saberstaff / two-handed => always SS_STAFF
+		self->client->ps.fd.saberAnimLevelBase = SS_STAFF;
 		self->client->ps.fd.saberAnimLevel = SS_STAFF;
+		self->client->ps.fd.saberDrawAnimLevel = SS_STAFF;
+		self->client->saberCycleQueue = 0;
+		if (!self->client->ps.saberInFlight)
+		{
+			self->client->ps.saberHolstered = 0;
+		}
 		return;
 	}
 	else
@@ -2259,9 +2467,8 @@ static void Jedi_CheckDecreaseSaberAnimLevel( void )
 	{
 		return;
 	}
-	else if (client->saber[0].numBlades > 1
-		&& WP_SaberCanTurnOffSomeBlades( &client->saber[0] )
-		 )
+	else if (client->saber[0].model[0] &&
+		((client->saber[0].saberFlags & SFL_TWO_HANDED) || client->saber[0].numBlades > 1))
 	{
 		return;
 	}
@@ -2834,13 +3041,13 @@ static void Jedi_CombatDistance( int enemy_dist )
 		}
 		if ( enemy_dist > 384 )
 		{//FIXME: check for enemy facing away and/or moving away
-			if ( !Q_irand( 0, 10 ) && NPCInfo->blockedSpeechDebounceTime < level.time && jediSpeechDebounceTime[NPC->client->playerTeam] < level.time )
+			if ( !Q_irand( 0, 10 ) && NPCInfo->blockedSpeechDebounceTime < level.time && jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] < level.time )
 			{
 				if ( NPC_ClearLOS4( NPC->enemy ) )
 				{//racc - yell at escaping enemy.
 					G_AddVoiceEvent( NPC, Q_irand( EV_JCHASE1, EV_JCHASE3 ), 3000 );
 				}
-				jediSpeechDebounceTime[NPC->client->playerTeam] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
+				jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
 			}
 		}
 		//Unless we're totally hiding, go after him
@@ -2911,10 +3118,10 @@ static void Jedi_CombatDistance( int enemy_dist )
 			//[/CoOp]
 		{//They're throwing their saber, grip them!
 			//taunt
-			if ( TIMER_Done( NPC, "chatter" ) && jediSpeechDebounceTime[NPC->client->playerTeam] < level.time && NPCInfo->blockedSpeechDebounceTime < level.time )
+			if ( TIMER_Done( NPC, "chatter" ) && jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] < level.time && NPCInfo->blockedSpeechDebounceTime < level.time )
 			{
 				G_AddVoiceEvent( NPC, Q_irand( EV_TAUNT1, EV_TAUNT3 ), 3000 );
-				jediSpeechDebounceTime[NPC->client->playerTeam] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
+				jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
 				//[CoOp]
 				if ( (NPCInfo->aiFlags&NPCAI_ROSH) )
 				{
@@ -3068,10 +3275,10 @@ static void Jedi_CombatDistance( int enemy_dist )
 						//else if ( WP_ForcePowerAvailable( NPC, FP_GRIP, 0 ) )
 						{
 							//taunt
-							if ( TIMER_Done( NPC, "chatter" ) && jediSpeechDebounceTime[NPC->client->playerTeam] < level.time && NPCInfo->blockedSpeechDebounceTime < level.time )
+							if ( TIMER_Done( NPC, "chatter" ) && jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] < level.time && NPCInfo->blockedSpeechDebounceTime < level.time )
 							{
 								G_AddVoiceEvent( NPC, Q_irand( EV_TAUNT1, EV_TAUNT3 ), 3000 );
-								jediSpeechDebounceTime[NPC->client->playerTeam] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
+								jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
 								if ( (NPCInfo->aiFlags&NPCAI_ROSH) )
 								{//Rosh has a longer taunt?
 									TIMER_Set( NPC, "chatter", 6000 );
@@ -5968,6 +6175,11 @@ static void Jedi_FaceEnemy( qboolean doPitch )
 
 static void Jedi_DebounceDirectionChanges( void )
 {//debounce all the movement directional timers.
+	// Static analysis: Jedi logic assumes global NPC is valid.
+	if ( !NPC || !NPC->client )
+	{
+		return;
+	}
 	//FIXME: check these before making fwd/back & right/left decisions?
 	//Time-debounce changes in forward/back dir
 	if ( ucmd.forwardmove > 0 )
@@ -6065,6 +6277,23 @@ static void Jedi_DebounceDirectionChanges( void )
 		ucmd.forwardmove = -127;
 		VectorClear( NPC->client->ps.moveDir );
 	}
+
+		// Boba Fett should pressure like RocketTrooper: do not "retreat forever".
+		// Allow a small back-off only when extremely close; otherwise clamp negative forwardmove
+		// to prevent the common "flies/lands then walks backwards without attacking" failure mode.
+		if ( NPC && NPC->client && NPC->client->NPC_class == CLASS_BOBAFETT && NPC->enemy )
+		{
+			const float d = DistanceSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin );
+			if ( d > (96.0f*96.0f) )
+			{
+				if ( ucmd.forwardmove < 0 )
+				{
+					ucmd.forwardmove = 0;
+				}
+				// Also clear the timer so we don't get "forced" moveback every frame.
+				TIMER_Set( NPC, "moveback", 0 );
+			}
+		}
 	//Time-debounce changes in right/left dir
 	if ( ucmd.rightmove > 0 )
 	{
@@ -6374,11 +6603,11 @@ static void Jedi_CombatTimersUpdate( int enemy_dist )
 				}
 				if ( !Q_irand( 0, 3 ) 
 					&& NPCInfo->blockedSpeechDebounceTime < level.time 
-					&& jediSpeechDebounceTime[NPC->client->playerTeam] < level.time 
+					&& jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] < level.time 
 					&& NPC->painDebounceTime < level.time - 1000 )
 				{
 					G_AddVoiceEvent( NPC, Q_irand( EV_GLOAT1, EV_GLOAT3 ), 3000 );
-					jediSpeechDebounceTime[NPC->client->playerTeam] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
+					jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
 				}
 			}
 			if ( !Q_irand( 0, 2 ) )
@@ -7552,10 +7781,10 @@ static void Jedi_Combat( void )
 				}
 				if ( Jedi_Hunt() && !(NPCInfo->aiFlags&NPCAI_BLOCKED) )//FIXME: have to do this because they can ping-pong forever
 				{//can macro-navigate to him //racc - but we can't actually see him?
-					if ( enemy_dist < 384 && !Q_irand( 0, 10 ) && NPCInfo->blockedSpeechDebounceTime < level.time && jediSpeechDebounceTime[NPC->client->playerTeam] < level.time && !NPC_ClearLOS4( NPC->enemy ) )
+					if ( enemy_dist < 384 && !Q_irand( 0, 10 ) && NPCInfo->blockedSpeechDebounceTime < level.time && jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] < level.time && !NPC_ClearLOS4( NPC->enemy ) )
 					{//racc - bitch about losting our enemy
 						G_AddVoiceEvent( NPC, Q_irand( EV_JLOST1, EV_JLOST3 ), 3000 );
-						jediSpeechDebounceTime[NPC->client->playerTeam] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
+						jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = NPCInfo->blockedSpeechDebounceTime = level.time + 3000;
 					}
 					//[CoOp]
 					//blastem?
@@ -8601,7 +8830,7 @@ static void Jedi_Attack( void )
 				{//racc - talk the smack
 					NPCInfo->walkDebounceTime = -2;
 					G_AddVoiceEvent( NPC, Q_irand( EV_VICTORY1, EV_VICTORY3 ), 3000 );
-					jediSpeechDebounceTime[NPC->client->playerTeam] = level.time + 3000;
+					jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = level.time + 3000;
 					NPCInfo->desiredPitch = 0;
 					NPCInfo->goalEntity = NULL;
 				}
@@ -8626,7 +8855,7 @@ static void Jedi_Attack( void )
 					if ( BG_SabersOff( &NPC->client->ps ) && !NPC->client->ps.saberInFlight )
 					{//turned off saber (in hand), gloat
 						G_AddVoiceEvent( NPC, Q_irand( EV_VICTORY1, EV_VICTORY3 ), 3000 );
-						jediSpeechDebounceTime[NPC->client->playerTeam] = level.time + 3000;
+						jediSpeechDebounceTime[TeamIndexSafe(NPC->client->playerTeam)] = level.time + 3000;
 						NPCInfo->desiredPitch = 0;
 						NPCInfo->goalEntity = NULL;
 					}
@@ -9189,7 +9418,6 @@ qboolean Jedi_InSpecialMove( void )
 		{
 			NPC->s.loopSound = 0;
 			//RAFIXME - impliment
-			//G_StopEffect( G_EffectIndex( "scepter/beam.efx" ), NPC->client->weaponGhoul2[1], NPC->NPC->genericBolt1, NPC->s.number );
 			NPC->client->ps.legsTimer = NPC->client->ps.torsoTimer = 0;
 			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_SCEPTER_STOP, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
 			NPC->painDebounceTime = level.time + NPC->client->ps.torsoTimer;
@@ -9436,7 +9664,6 @@ qboolean Jedi_InSpecialMove( void )
 			}
 			NPC_UpdateAngles( qtrue, qtrue );
 			//NPC->client->ps.eFlags &= ~EF_POWERING_ROSH;
-			//G_StopEffect( G_EffectIndex( "force/kothos_beam.efx" ), NPC->playerModel, NPC->handLBolt, NPC->s.number );
 		}
 		else if ( (NPCInfo->aiFlags&NPCAI_ROSH) )
 		{//I'm rosh!

@@ -148,7 +148,7 @@ void Remote_Strafe( void )
 
 	// Pick a random strafe direction, then check to see if doing a strafe would be
 	//	reasonable valid
-	dir = ( rand() & 1 ) ? -1 : 1;
+	dir = ( Q_irand( 0, 1 ) ) ? -1 : 1;
 	VectorMA( NPC->r.currentOrigin, REMOTE_STRAFE_DIS * dir, right, end );
 
 	trap_Trace( &tr, NPC->r.currentOrigin, NULL, NULL, end, NPC->s.number, MASK_SOLID );
@@ -280,13 +280,35 @@ Remote_Ranged
 */
 void Remote_Ranged( qboolean visible, qboolean advance, qboolean retreat )
 {
+	int delay_min;
+	int delay_max;
+
+	// Skill-scaled fire cadence (SP-ish). Conservative: easiest shots on high skill.
+	switch ( g_spskill.integer )
+	{
+	case 0: // easy
+		delay_min = 1500;
+		delay_max = 3000;
+		break;
+	case 1: // medium
+		delay_min = 1000;
+		delay_max = 2500;
+		break;
+	case 2: // hard
+		delay_min = 750;
+		delay_max = 2000;
+		break;
+	default: // very hard / modded values
+		delay_min = 500;
+		delay_max = 1500;
+		break;
+	}
 
 	if ( TIMER_Done( NPC, "attackDelay" ) )	// Attack?
 	{
-		TIMER_Set( NPC, "attackDelay", Q_irand( 500, 3000 ) );
+		TIMER_Set( NPC, "attackDelay", Q_irand( delay_min, delay_max ) );
 		Remote_Fire();
 	}
-
 	if ( NPCInfo->scriptFlags & SCF_CHASE_ENEMIES )
 	{
 		Remote_Hunt( visible, advance, retreat );

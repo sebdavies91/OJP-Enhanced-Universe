@@ -2,7 +2,7 @@
 #define __AI_MAIN_H__
 
 #include "bg_saga.h"
-
+#include "botlib.h"   // or whatever the actual path is that defines bot_input_t
 //[ExpSys]
 //moved to bg_public.h since we want to use it in a variety of locations now.
 //#define DEFAULT_FORCEPOWERS		"5-1-000000000000000000"
@@ -573,6 +573,24 @@ int GetBestIdleGoal(bot_state_t *bs);
 //ai_tab.c
 void TAB_StandardBotAI(bot_state_t *bs, float thinktime);
 //[/TABBot]
+
+void HYBRID_StandardBotAI(bot_state_t *bs, float thinktime);
+void AOTC_StandardBotAI(bot_state_t *bs, float thinktime);
+
+// Navigation / reroute
+qboolean TrySwitchWPBranch(bot_state_t* bs);
+
+// Movement helpers
+void BotHandleJetpack(bot_state_t* bs, bot_input_t* bi, const vec3_t fwd);
+void BotHandleGrapple(bot_state_t* bs, bot_input_t* bi, const vec3_t fwd);
+void BotHandleThermal(bot_state_t* bs, bot_input_t* bi);
+qboolean BotAvoidTeamCluster(bot_state_t* bs, bot_input_t* bi,
+                         const vec3_t fwd, const vec3_t right);
+qboolean BotAvoidTeammates(bot_state_t* bs, bot_input_t* bi,
+                       const vec3_t fwd, const vec3_t right);
+
+// Shared inventory logic
+int BotUseInventoryItem(bot_state_t* bs);
 
 char *ConcatArgs( int start );
 

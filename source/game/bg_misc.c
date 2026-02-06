@@ -1293,18 +1293,17 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	{ //This should not happen. If it does, this is obviously a bogus string.
 		//They can have this string. Because I said so.
 		//[ExpSys]
-		strcpy(powerBuf, DEFAULT_FORCEPOWERS);
-		//strcpy(powerBuf, "7-1-032330000000001333");
-		//[/ExpSys]
+		Q_strncpyz(powerBuf, DEFAULT_FORCEPOWERS, sizeof(powerBuf));
+		//Q_strncpyz( powerBuf, "7-1-032330000000001333", sizeof(powerBuf) );		//[/ExpSys]
 		maintainsValidity = qfalse;
 	}
 	else
 	{
-		strcpy(powerBuf, powerOut); //copy it as the original
+		Q_strncpyz(powerBuf, powerOut, sizeof(powerBuf)); //copy it as the original
 	}
 
 	//first of all, print the max rank into the string as the rank
-	strcpy(powerOut, va("%i-", maxRank));
+	Q_strncpyz(powerOut, va("%i-", maxRank), 128);
 
 	//racc - skip over the maxRank in the string and the following '-'
 	while (i < 128 && powerBuf[i] && powerBuf[i] != '-')
@@ -1735,7 +1734,7 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	//while (c < NUM_FORCE_POWERS)
 	//[/ExpSys]
 	{
-		strcpy(readBuf, va("%i", final_Powers[c]));
+		Q_strncpyz(readBuf, va("%i", final_Powers[c]), sizeof(readBuf));
 		powerOut[i] = readBuf[0];
 		c++;
 		i++;
@@ -3063,16 +3062,32 @@ BG_FindItemForWeapon
 */
 gitem_t	*BG_FindItemForWeapon( weapon_t weapon ) {
 	gitem_t	*it;
-	
-	for ( it = bg_itemlist + 1 ; it->classname ; it++) {
+
+	for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
 		if ( it->giType == IT_WEAPON && it->giTag == weapon ) {
 			return it;
 		}
 	}
 
-	Com_Error( ERR_DROP, "Couldn't find item for weapon %i", weapon);
+	// In MP we can have NPC-only weapons (e.g. AT-ST cannons) that are not
+	// exposed as pickup items. SP tolerates this, but MP's original helper
+	// hard-dropped the game.
+	//
+	// We provide a safe fallback so things like AT-ST NPCs can spawn and fire
+	// without requiring itemlist changes (which must stay identical for game/cgame).
+	if ( weapon == WP_ATST_MAIN || weapon == WP_ATST_SIDE ) {
+		for ( it = bg_itemlist + 1 ; it->classname ; it++ ) {
+			if ( it->giType == IT_WEAPON && it->giTag == WP_TURRET ) {
+				return it;
+			}
+		}
+		return NULL;
+	}
+
+	Com_Error( ERR_DROP, "Couldn't find item for weapon %i", weapon );
 	return NULL;
 }
+
 
 /*
 ===============
@@ -4458,7 +4473,10 @@ void *BG_Alloc ( int size )
 	return &bg_pool[bg_poolSize-size];
 }
 void BG_ResetAlloc(void) {
+	// Reset BOTH ends of the shared BG memory pool.
+	// BG_Alloc grows from the head (bg_poolSize) and BG_TempAlloc grows from the tail (bg_poolTail).
 	bg_poolSize = 0;
+	bg_poolTail = MAX_POOL_SIZE;
 }
 void *BG_AllocUnaligned ( int size )
 {

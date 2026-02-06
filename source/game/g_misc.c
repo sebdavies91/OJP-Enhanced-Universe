@@ -839,10 +839,10 @@ void SP_misc_bsp(gentity_t *ent)
 	level.mBSPInstanceDepth++;
 	/*
 	G_SpawnString("filter", "", &out);
-	strcpy(level.mFilter, out);
+	Q_strncpyz(level.mFilter, out, sizeof(level.mFilter));
 	*/
 	G_SpawnString("teamfilter", "", &out);
-	strcpy(level.mTeamFilter, out);
+	Q_strncpyz(level.mTeamFilter, out, sizeof(level.mTeamFilter));
 
 	VectorCopy( ent->s.origin, ent->s.pos.trBase );
 	VectorCopy( ent->s.origin, ent->r.currentOrigin );
@@ -5161,7 +5161,7 @@ qboolean INV_GoodieKeyGive( gentity_t *target )
 
 qboolean INV_SecurityKeyGive( gentity_t *target, const char *keyname )
 {//add this key to the key pool
-	strcpy(KeyPool, keyname);
+	Q_strncpyz(KeyPool, keyname, sizeof(KeyPool));
 	return qtrue;
 }
 

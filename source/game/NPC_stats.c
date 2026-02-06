@@ -228,13 +228,13 @@ char	*ClassNames[CLASS_NUM_CLASSES] =
 	"trandoshan",
 	"ugnaught",
 	"weequay",
-	"bobafett"
+	"bobafett",
 	//[CoOp]
 	"rockettrooper",
 	"saberdroid",
 	"assassindroid",
 	"hazardtrooper",
-	//[/CoOp],
+	//[/CoOp]
 	"vehicle",
 	"rancor",
 	//[CoOp]
@@ -439,7 +439,7 @@ void SpewDebugStuffToFile(animation_t *anims)
 
 	while (i < MAX_ANIMATIONS)
 	{
-		strcat(BGPAFtext, va("%i %i\n", i, anims[i].frameLerp));
+		Q_strcat( BGPAFtext, sizeof(BGPAFtext), va("%i %i\n", i, anims[i].frameLerp));
 		i++;
 	}
 
@@ -602,14 +602,13 @@ void NPC_PrecacheWeapons( npcteam_t playerTeam, int spawnflags, char *NPCtype )
 
 			char weaponModel[64];
 			
-			strcpy (weaponModel, weaponData[curWeap].weaponMdl);	
-			if (char *spot = strstr(weaponModel, ".md3") ) {
+			Q_strncpyz( weaponModel, weaponData[curWeap].weaponMdl, sizeof(weaponModel) );			if (char *spot = strstr(weaponModel, ".md3") ) {
 				*spot = 0;
 				spot = strstr(weaponModel, "_w");//i'm using the in view weapon array instead of scanning the item list, so put the _w back on
 				if (!spot) {
-					strcat (weaponModel, "_w");
+					Q_strcat( weaponModel, sizeof(weaponModel), "_w");
 				}
-				strcat (weaponModel, ".glm");	//and change to ghoul2
+				Q_strcat( weaponModel, sizeof(weaponModel), ".glm");	//and change to ghoul2
 			}
 			gi.G2API_PrecacheGhoul2Model( weaponModel ); // correct way is item->world_model
 		}
@@ -639,8 +638,7 @@ void NPC_Precache ( gentity_t *spawner )
 	{//sorry, can't precache a random just yet
 		return;
 	}
-	strcpy(customSkin,"default");
-
+	Q_strncpyz( customSkin, "default", sizeof(customSkin) );
 	p = NPCParms;
 	COM_BeginParseSession(NPCFile);
 
@@ -907,7 +905,7 @@ void NPC_Precache ( gentity_t *spawner )
 			Com_sprintf(modelName, sizeof(modelName), "models/players/%s/model.glm", playerModel);
 			if (customSkin[0])
 			{ //append it after a *
-				strcat( modelName, va("*%s", customSkin) );
+				Q_strcat( modelName, sizeof(modelName), va("*%s", customSkin) );
 			}
 			G_ModelIndex(modelName);
 		}
@@ -925,7 +923,7 @@ void NPC_Precache ( gentity_t *spawner )
 			Com_sprintf(modelName, sizeof(modelName), "models/players/%s/model.glm", playerModel);
 			if (customSkin[0])
 			{ //append it after a *
-				strcat( modelName, va("*%s", customSkin) );
+				Q_strcat( modelName, sizeof(modelName), va("*%s", customSkin) );
 			}
 
 			G_ModelIndex(modelName);
@@ -1071,14 +1069,18 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 	VectorSet(playerMins, -15, -15, DEFAULT_MINS_2);
 	VectorSet(playerMaxs, 15, 15, DEFAULT_MAXS_2);
 
-	strcpy(customSkin,"default");
-	if ( !NPCName || !NPCName[0]) 
+	Q_strncpyz( customSkin, "default", sizeof(customSkin) );	if ( !NPCName || !NPCName[0]) 
 	{
 		NPCName = "Player";
 	}
 
-	if ( !NPC->s.number && NPC->client != NULL )
-	{//player, only want certain data
+	/*
+	** SP only ever has client 0 as the player, but MP may call this for any
+	** connected client entity. Treat any client entity in the client range
+	** as a player parse so "Player"-only fields apply correctly.
+	*/
+	if ( NPC->client != NULL && NPC->s.number >= 0 && NPC->s.number < level.maxclients )
+	{
 		parsingPlayer = qtrue;
 	}
 
@@ -1104,6 +1106,7 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 		stats->intelligence	= 3;
 		stats->move			= 3;
 		stats->reactions	= 3;
+		stats->shootDistance	= 0.0f;
 		stats->vfov			= 60;
 		stats->vigilance	= 0.1f;
 		stats->visrange		= 1024;
@@ -2775,6 +2778,7 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 
 			//have a sabers.cfg and just name your saber in your NPCs.cfg/ICARUS script
 			//saber name
+			 
 			if ( !Q_stricmp( token, "saber" ) ) 
 			{
 				char *saberName;
@@ -2785,14 +2789,22 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				}
 
 				saberName = (char *)BG_TempAlloc(4096);//G_NewString( value );
-				strcpy(saberName, value);
+				Q_strncpyz( saberName, value, 4096 );
+	 
+																		   
+				 
+	 
 
 				WP_SaberParseParms( saberName, &NPC->client->saber[0] );
 				npcSaber1 = G_ModelIndex(va("@%s", saberName));
 
+															
+												   
+
 				BG_TempFree(4096);
 				continue;
 			}
+
 			
 			//second saber name
 			if ( !Q_stricmp( token, "saber2" ) ) 
@@ -2805,7 +2817,13 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 				if ( !(NPC->client->saber[0].saberFlags&SFL_TWO_HANDED) )
 				{//can't use a second saber if first one is a two-handed saber...?
 					char *saberName = (char *)BG_TempAlloc(4096);//G_NewString( value );
-					strcpy(saberName, value);
+					Q_strncpyz( saberName, value, 4096 );
+		 
+																				
+					 
+		 
+
+								 
 
 					WP_SaberParseParms( saberName, &NPC->client->saber[1] );
 					if ( (NPC->client->saber[1].saberFlags&SFL_TWO_HANDED) )
@@ -2817,10 +2835,12 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 						//NPC->client->ps.dualSabers = qtrue;
 						npcSaber2 = G_ModelIndex(va("@%s", saberName));
 					}
+
 					BG_TempFree(4096);
 				}
 				continue;
 			}
+
 
 
 			//skills
@@ -3680,8 +3700,7 @@ Ghoul2 Insert Start
 			if(s)
 			{//model has custom skin
 				s++;
-				strcpy(customSkin, s);
-				s--;
+				Q_strncpyz( customSkin, s, sizeof(customSkin) );				s--;
 				*s = '\0';
 			}
 		}
@@ -3698,14 +3717,12 @@ Ghoul2 Insert Start
 
 		if (!customSkin[0])
 		{
-			strcpy(customSkin, "default");
-		}
+			Q_strncpyz( customSkin, "default", sizeof(customSkin) );		}
 
 		if ( NPC->client && NPC->client->NPC_class == CLASS_VEHICLE )
 		{ //vehicles want their names fed in as models
 			//we put the $ in front to indicate a name and not a model
-			strcpy(playerModel, va("$%s", NPCName));
-		}
+			Q_strncpyz( playerModel, va("$%s", NPCName), sizeof(playerModel) );		}
 		SetupGameGhoul2Model(NPC, playerModel, customSkin);
 
 		if (!NPC->NPC_type)
@@ -3787,6 +3804,7 @@ void NPC_LoadParms(void)
     char* holdChar, * marker;
     char* npcExtensionListBuf;
     fileHandle_t f;
+
     len = 0;
 
     // Allocate large buffer using BG_TempAlloc instead of BG_Alloc
@@ -3818,16 +3836,38 @@ void NPC_LoadParms(void)
         {
             if (totallen + len >= MAX_NPC_DATA_SIZE)
             {
+												 
                 G_Error("NPC extensions (*.npc) are too large");
             }
+
             trap_FS_Read(npcParseBuffer, len, f);
             npcParseBuffer[len] = 0;
 
             len = COM_Compress(npcParseBuffer);
 
-            strcat(marker, npcParseBuffer);
-            strcat(marker, "\n");
-            len++;
+            {
+                int remaining = MAX_NPC_DATA_SIZE - totallen;
+                int wrote;
+
+                /* Need room for data + newline + NUL */
+                if (totallen + len + 2 > MAX_NPC_DATA_SIZE)
+                {
+                    G_Error("NPC extensions (*.npc) are too large");
+                }
+
+                Q_strncpyz(marker, npcParseBuffer, remaining);
+                wrote = strlen(marker);
+
+                if (wrote + 2 > remaining)
+                {
+                    G_Error("NPC extensions (*.npc) are too large");
+                }
+
+                marker[wrote++] = '\n';
+                marker[wrote] = 0;
+                len = wrote;
+            }
+
             trap_FS_FCloseFile(f);
 
             totallen += len;
@@ -3838,6 +3878,7 @@ void NPC_LoadParms(void)
     // Replace memset with BG_TempFree to clear the buffer instead of freeing it
     BG_TempFree(32768);  // Clear memory to ensure no dangling pointer issues
 }
+
 
 
 

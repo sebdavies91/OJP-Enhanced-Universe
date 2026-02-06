@@ -45,8 +45,8 @@ void Interrogator_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacke
 	*/
 	{
 		self->client->ps.eFlags2 &= ~EF2_FLYING;//moveType = MT_WALK;
-		self->client->ps.velocity[0] = Q_irand( -10, -20 );
-		self->client->ps.velocity[1] = Q_irand( -10, -20 );
+		self->client->ps.velocity[0] = Q_irand( -20, -10 );
+		self->client->ps.velocity[1] = Q_irand( -20, -10 );
 		self->client->ps.velocity[2] = -100;
 	}
 	//self->takedamage = qfalse;
@@ -320,9 +320,10 @@ void Interrogator_Hunt( qboolean visible, qboolean advance )
 		NPCInfo->goalEntity = NPC->enemy;
 		NPCInfo->goalRadius = 12;
 
-		//Get our direction from the navigator if we can't see our target
-		if ( NPC_GetMoveDirection( forward, &distance ) == qfalse )
-			return;
+		// SP behavior: if we can't see the target, let the navigator handle it.
+		// This avoids the MP "straight-line push" that tends to get stuck on corners.
+		NPC_MoveToGoal( qtrue );
+		return;
 	}
 	else
 	{

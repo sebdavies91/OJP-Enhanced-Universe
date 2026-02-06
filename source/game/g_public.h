@@ -755,18 +755,32 @@ typedef struct {
 	int				next_roff_time; //rww - npc's need to know when they're getting roff'd
 } sharedEntity_t;
 
-#ifdef __cplusplus
+// ICARUS is a game-side (QAGAME) feature primarily used by singleplayer.
+// In multiplayer builds, the ../icarus/ headers may not exist. However, some IDEs
+// (and cgame/ui projects) parse this header as C++ and will error on missing includes.
+//
+// Keep the forward declarations (safe for pointer use) and only include the ICARUS
+// headers if they actually exist.
+#if defined(__cplusplus) && defined(QAGAME)
 class CSequencer;
 class CTaskManager;
 
-//I suppose this could be in another in-engine header or something. But we never want to
-//include an icarus file before sharedentity_t is declared.
+// We never want to include an ICARUS header before sharedentity_t is declared.
 extern CSequencer	*gSequencers[MAX_GENTITIES];
 extern CTaskManager	*gTaskManagers[MAX_GENTITIES];
 
-#include "../icarus/icarus.h"
-#include "../icarus/sequencer.h"
-#include "../icarus/taskmanager.h"
+// Conditionally include headers if present (avoids IntelliSense/IDE missing-file errors).
+#if defined(__has_include)
+	#if __has_include("../icarus/icarus.h")
+		#include "../icarus/icarus.h"
+	#endif
+	#if __has_include("../icarus/sequencer.h")
+		#include "../icarus/sequencer.h"
+	#endif
+	#if __has_include("../icarus/taskmanager.h")
+		#include "../icarus/taskmanager.h"
+	#endif
+#endif
 #endif
 
 //

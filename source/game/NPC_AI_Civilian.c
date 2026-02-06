@@ -8,6 +8,33 @@
 extern qboolean NPC_CheckSurrender( void );
 extern void NPC_BehaviorSet_Default( int bState );
 
+
+// SP AI_Civilian.cpp uses NPC_BSFlee() returning true when the flee goal is reached.
+// MP's NPC_BSFlee() is void, so we conservatively approximate "reached goal" here
+// (civilian-only) to preserve SP behavior intent without touching shared nav code.
+static qboolean Civilian_ReachedFleeGoal( void )
+{
+	float goalRadius = 64.0f;
+
+	if ( !NPCInfo )
+	{
+		return qfalse;
+	}
+
+	if ( !NPCInfo->goalEntity )
+	{
+		return qfalse;
+	}
+
+	// Use any explicit goal radius if available; fall back to a small default.
+	if ( NPCInfo->goalRadius > 0 )
+	{
+		goalRadius = (float)NPCInfo->goalRadius;
+	}
+
+	return ( DistanceSquared( NPC->r.currentOrigin, NPCInfo->goalEntity->r.currentOrigin ) <= ( goalRadius * goalRadius ) );
+}
+
 void NPC_BSCivilian_Default( int bState )
 {
 	if ( NPC->enemy
@@ -24,10 +51,8 @@ void NPC_BSCivilian_Default( int bState )
 			|| bState != BS_FLEE //not fleeing
 			//[CoOp]
 			//RAFIXME - Impliment Nav code in that function
-			|| ( NPC->enemy//still have enemy (NPC_BSFlee checks enemy and can clear it)
-			//|| ( NPC_BSFlee()//have reached our flee goal
-			//	&& NPC->enemy//still have enemy (NPC_BSFlee checks enemy and can clear it)
-			//[/CoOp]			
+			|| ( Civilian_ReachedFleeGoal() // SP intent: reached flee goal
+				&& NPC->enemy
 				&& DistanceSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin ) < 16384 )//enemy within 128
 			)
 		{//run away!

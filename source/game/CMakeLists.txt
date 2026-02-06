@@ -55,10 +55,7 @@ set(SDKGAMEHEADERS
 
 set(SDKGAMESOURCES
 	"${SRCDir}/game/g_main.c" # keep this on top (qvm compiler needs VM_Main as the first compiled function)
-	"${SRCDir}/game/ai_aotc.c"
-	"${SRCDir}/game/ai_hybrid.c"
 	"${SRCDir}/game/ai_main.c"
-	"${SRCDir}/game/ai_tab.c"
 	"${SRCDir}/game/ai_util.c"
 	"${SRCDir}/game/ai_wpnav.c"
 	"${SRCDir}/game/AnimalNPC.c"
@@ -116,6 +113,7 @@ set(SDKGAMESOURCES
 	"${SRCDir}/game/g_weapon.c"
 
 	"${SRCDir}/game/NPC.c"
+	"${SRCDir}/game/NPC_AI_Animal.c"
     "${SRCDir}/game/NPC_AI_AssassinDroid.c"
     "${SRCDir}/game/NPC_AI_Atst.c"
     "${SRCDir}/game/NPC_AI_Civilian.c"

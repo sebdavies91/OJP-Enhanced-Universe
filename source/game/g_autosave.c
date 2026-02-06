@@ -232,7 +232,7 @@ void Save_Autosaves(void)
 			autosavePoint->r.currentOrigin[0], autosavePoint->r.currentOrigin[1],
 			autosavePoint->r.currentOrigin[2], (int) autosavePoint->r.maxs[0],
 			(autosavePoint->spawnflags & AUTOSAVE_TELE) );
-		strcat(fileBuf, lineBuf);
+		Q_strcat( fileBuf, sizeof(fileBuf), lineBuf);
 	}
 
 	//find all the manually added spawnpoints
@@ -246,7 +246,7 @@ void Save_Autosaves(void)
 		Com_sprintf(lineBuf, MAX_QPATH, "%f %f %f %i %i\n", 
 			autosavePoint->r.currentOrigin[0], autosavePoint->r.currentOrigin[1],
 			autosavePoint->r.currentOrigin[2], -1, 0 );
-		strcat(fileBuf, lineBuf);
+		Q_strcat( fileBuf, sizeof(fileBuf), lineBuf);
 	}
 
 	if(fileBuf[0] != '\0')

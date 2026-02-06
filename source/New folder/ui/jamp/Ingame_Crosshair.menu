@@ -1,0 +1,468 @@
+//____________________
+// CROSSHAIR MENU  
+//____________________
+{
+
+   menuDef  
+	{
+		name					"ingame_crosshair"
+		visible					0
+		fullscreen				0
+		outOfBoundsClick							// this closes the window if it gets a click out of the rectangle
+		rect					0 45 640 440
+		focusColor				0 0.4 0.8 1
+		style					1
+		border					1
+            descX						380
+		descY						400
+		descScale					1
+		descColor				1 1 1 1					// Focus color for text and items
+		descAlignment				ITEM_ALIGN_CENTER	
+	// Overall window backdrop
+		itemDef 
+		{
+			name				background_pic
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 440
+			border				1
+			bordercolor			0 0 0 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Crosshair"
+			rect				0 0 640 25
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			255
+			textaligny			2
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 1
+			font				3
+			textscale			0.9
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			1 1 1 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0 0 0 .6
+			forecolor			1 1 1 1
+			border				1
+			bordercolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				icon1
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				320 75 32 32
+			background			"gfx/2d/crosshairb"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon1 forecolor 1 1 1 1
+				setitemcolor		icon1 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon1 forecolor .75 .75 .75 1
+				setitemcolor		icon1 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 1"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon2
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				356 75 32 32
+			background			"gfx/2d/crosshairc"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon2 forecolor 1 1 1 1
+				setitemcolor		icon2 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon2 forecolor .75 .75 .75 1
+				setitemcolor		icon2 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 2"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon3
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				392 75 32 32
+			background			"gfx/2d/crosshaird"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon3 forecolor 1 1 1 1
+				setitemcolor		icon3 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon3 forecolor .75 .75 .75 1
+				setitemcolor		icon3 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 3"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon4
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				320 111 32 32
+			background			"gfx/2d/crosshaire"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon4 forecolor 1 1 1 1
+				setitemcolor		icon4 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon4 forecolor .75 .75 .75 1
+				setitemcolor		icon4 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 4"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon5
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				356 111 32 32
+			background			"gfx/2d/crosshairf"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon5 forecolor 1 1 1 1
+				setitemcolor		icon5 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon5 forecolor .75 .75 .75 1
+				setitemcolor		icon5 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 5"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon6
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				392 111 32 32
+			background			"gfx/2d/crosshairg"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon6 forecolor 1 1 1 1
+				setitemcolor		icon6 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon6 forecolor .75 .75 .75 1
+				setitemcolor		icon6 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 6"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon7
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				320 147 32 32
+			background			"gfx/2d/crosshairh"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon7 forecolor 1 1 1 1
+				setitemcolor		icon7 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon7 forecolor .75 .75 .75 1
+				setitemcolor		icon7 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 7"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon8
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				356 147 32 32
+			background			"gfx/2d/crosshairi"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon8 forecolor 1 1 1 1
+				setitemcolor		icon8 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon8 forecolor .75 .75 .75 1
+				setitemcolor		icon8 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 8"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon9
+			group				cicons
+			descText			"Select this crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				392 147 32 32
+			background			"gfx/2d/crosshaira"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon9 forecolor 1 1 1 1
+				setitemcolor		icon9 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon9 forecolor .75 .75 .75 1
+				setitemcolor		icon9 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 9"
+			}
+		}
+
+		itemDef 
+		{
+			name				icon0
+			group				cicons
+			descText			"Don't use crosshair"
+			style				WINDOW_STYLE_SHADER
+			type				ITEM_TYPE_BUTTON
+			rect				356 183 32 32
+			background			"gfx/2d/defer"
+			forecolor			.75 .75 .75 1
+			border				1
+			bordersize			1
+			bordercolor			.33 .33 .5 1
+			visible			1
+			mouseEnter 
+			{ 
+				setitemcolor		icon0 forecolor 1 1 1 1
+				setitemcolor		icon0 bordercolor .66 .66 1 1
+			}
+			mouseExit 
+			{ 
+				setitemcolor		icon0 forecolor .75 .75 .75 1
+				setitemcolor		icon0 bordercolor .33 .33 .5 1
+			}	  	  
+			action 
+			{
+				play			"sound/weapons/change.wav"
+				exec			"cg_drawcrosshair 0"
+
+			}
+		}
+
+		
+		itemDef 
+		{
+			name				Crosshairsize
+			group				video2
+			type				ITEM_TYPE_SLIDER
+			text				"Crosshair Size:"
+			cvarfloat			"cg_crosshairsize" 10 10 400
+			rect				150 225 340 14
+	   		textalign			ITEM_ALIGN_CENTER
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			.615 .615 .956 1
+			visible				1
+			descText			Crosshairsize
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				hide 			button_glow
+				setitemrect		button_glow	260 427 340 20
+			}
+			mouseexit 
+			{ 
+				hide			button_glow		
+			} 
+
+}
+
+
+		itemDef 
+		{
+			name				defa
+			group				none
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				305 240 340 14
+			text				"Default:" 
+			descText			defa
+			font				4
+			textscale			1
+			textalignx			60
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			.615 .615 .956 1
+			visible			1  	  
+			mouseEnter 
+			{ 
+				hide			button_glow
+				setitemrect		button_glow	140 400 340 14
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{ 
+				play			"sound/interface/button1.wav" ; 
+				setcvar		 cg_crosshairsize	"24"
+			}	
+
+		}
+
+	}
+}
+
+
+
+
+	

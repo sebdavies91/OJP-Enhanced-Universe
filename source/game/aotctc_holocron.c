@@ -169,8 +169,8 @@ void AOTCTC_Holocron_Loadpositions( void )
 				
 				if (number_of_holocronpositions <= 18)
 				{
-					G_Printf(" ^3FAILED!!!\n");
 					G_Printf("^5You need at least 18 holocron points!\n");
+					BG_TempFree(len+1);  // FIX: release temp buffer
 					return;
 				}
 			}

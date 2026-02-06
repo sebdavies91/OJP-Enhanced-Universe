@@ -1,4 +1,27 @@
 #include "g_local.h"
+
+extern stringID_table_t TeamTable[];
+
+static int Turret_ParseTeamString( const char *teamStr )
+{
+	int t;
+	if ( !teamStr || !teamStr[0] )
+	{
+		return 0;
+	}
+	// Numeric teams are used in MP/Siege. SP/CoOp maps often use strings like "enemy"/"player".
+	if ( (teamStr[0] >= '0' && teamStr[0] <= '9') || (teamStr[0] == '-' && teamStr[1] >= '0' && teamStr[1] <= '9') )
+	{
+		return atoi( teamStr );
+	}
+	t = GetIDForString( TeamTable, teamStr );
+	if ( t < 0 )
+	{
+		return 0;
+	}
+	return t;
+}
+
 #include "../ghoul2/g2.h"
 #include "q_shared.h"
 
@@ -742,20 +765,25 @@ static qboolean turretG2_find_enemies( gentity_t *self )
 		}
 		if ( self->alliedTeam )
 		{
+			// In SP/CoOp, NPCs are usually TEAM_FREE in sess, but have a meaningful playerTeam (NPCTEAM_*).
+			// In MP team modes, use sess.sessionTeam.
 			if ( target->client )
 			{
-				if ( target->client->sess.sessionTeam == self->alliedTeam )
-				{ 
-					// A bot/client/NPC we don't want to shoot
+				int targTeam = ( (g_gametype.integer == GT_SINGLE_PLAYER) || target->client->sess.sessionTeam == TEAM_FREE )
+					? target->client->playerTeam
+					: target->client->sess.sessionTeam;
+				if ( targTeam == self->alliedTeam )
+				{
+					// Friendly, don't shoot.
 					continue;
 				}
 			}
 			else if ( target->teamnodmg == self->alliedTeam )
-			{ 
-				// An ent we don't want to shoot
+			{
 				continue;
 			}
 		}
+
 		if ( !trap_InPVS( org2, target->r.currentOrigin ))
 		{
 			continue;
@@ -1115,9 +1143,29 @@ void finish_spawning_turretG2( gentity_t *base )
 	if ( base->team && base->team[0] && //g_gametype.integer == GT_SIEGE &&
 		!base->teamnodmg)
 	{
-		base->teamnodmg = atoi(base->team);
+		base->teamnodmg = Turret_ParseTeamString( base->team );
+		if ( !base->alliedTeam && base->teamnodmg )
+		{
+			base->alliedTeam = base->teamnodmg;
+		}
 	}
 	base->team = NULL;
+		if ( !base->alliedTeam && base->teamnodmg )
+		{
+			base->alliedTeam = base->teamnodmg;
+		}
+
+	// CoOp/SP maps frequently omit team keys on turrets that are meant to be Imperial/enemy.
+	// If no team was specified at all, default to NPCTEAM_ENEMY so we don't target allied stormtroopers.
+	if ( g_gametype.integer == GT_SINGLE_PLAYER && !base->alliedTeam && !base->teamnodmg )
+	{
+		base->alliedTeam = NPCTEAM_ENEMY;
+		base->teamnodmg  = NPCTEAM_ENEMY;
+	}
+	if ( g_gametype.integer == GT_SINGLE_PLAYER && !base->s.teamowner )
+	{
+		base->s.teamowner = base->alliedTeam ? base->alliedTeam : NPCTEAM_ENEMY;
+	}
 
 	// Set up our explosion effect for the ExplodeDeath code....
 	G_EffectIndex( "turret/explode" );

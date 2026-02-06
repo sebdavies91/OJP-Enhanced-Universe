@@ -68,7 +68,7 @@ typedef enum {
 #define CROUCH_VIEWHEIGHT	(CROUCH_MAXS_2+STANDARD_VIEWHEIGHT_OFFSET)//12
 #define	DEAD_VIEWHEIGHT		-16
 
-#define MAX_CLIENT_SCORE_SEND 20
+#define MAX_CLIENT_SCORE_SEND 32
 
 //[DodgeSys]
 //[/DodgeDefines]
@@ -2014,6 +2014,7 @@ float BG_SI_LengthMax(saberInfo_t *saber);
 void BG_SI_ActivateTrail ( saberInfo_t *saber, float duration );
 void BG_SI_DeactivateTrail ( saberInfo_t *saber, float duration );
 extern void BG_AttachToRancor( void *ghoul2,float rancYaw,vec3_t rancOrigin,int time,qhandle_t *modelList,vec3_t modelScale,qboolean inMouth,vec3_t out_origin,vec3_t out_angles,vec3_t out_axis[3] );
+extern void BG_AttachToWampa( void *ghoul2,float wampaYaw,vec3_t wampaOrigin,int time,qhandle_t *modelList,vec3_t modelScale,vec3_t out_origin,vec3_t out_angles,vec3_t out_axis[3] );
 //[NPCSandCreature]
 extern void BG_AttachToSandCreature( void *ghoul2, float rancYaw, vec3_t rancOrigin, int time, qhandle_t *modelList, vec3_t modelScale, vec3_t out_origin, vec3_t out_angles, vec3_t out_axis[3] );
 //[/NPCSandCreature]

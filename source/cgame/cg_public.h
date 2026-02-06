@@ -8,8 +8,8 @@
 // allow a lot of command backups for very fast systems
 // multiple commands may be combined into a single packet, so this
 // needs to be larger than PACKET_BACKUP
-#include "../game/q_shared.h" // usually where basic shared structs like vec3_t are
-#include "../game/bg_public.h" // contains playerState_t and entityState_t
+//#include "../game/q_shared.h" // usually where basic shared structs like vec3_t are
+//#include "../game/bg_public.h" // contains playerState_t and entityState_t
       
 #define	MAX_ENTITIES_IN_SNAPSHOT	256
 
@@ -33,7 +33,6 @@ typedef struct {
 
 	int				numServerCommands;		// text based server commands to execute when this
 	int				serverCommandSequence;	// snapshot becomes current
-	float fpvalue;
 } snapshot_t;
 
 enum {

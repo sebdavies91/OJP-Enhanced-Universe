@@ -95,7 +95,7 @@ void UpdateTournamentInfo( void ) {
 		if( msglen + buflen + 1 >= sizeof(msg) ) {
 			break;
 		}
-		strcat( msg, buf );
+		Q_strcat( msg, sizeof(msg), buf );
 	}
 	trap_SendConsoleCommand( EXEC_APPEND, msg );
 }

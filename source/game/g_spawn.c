@@ -1404,9 +1404,13 @@ void SP_worldspawn( void )
 	int			i;
 	int			lengthRed, lengthBlue, lengthGreen;
 
-	//I want to "cull" entities out of net sends to clients to reduce
-	//net traffic on our larger open maps -rww
-	G_SpawnFloat("distanceCull", "6000.0", &g_cullDistance);
+	// Cull entities out of net sends to clients to reduce net traffic on open
+	// maps. Some very large stock/custom maps (e.g. hoth2) place important
+	// scenery props far from the playable area; a too-small default causes them
+	// to disappear and can expose the void/black background at long distances.
+	//
+	// Maps can (and should) override this via worldspawn "distanceCull".
+	G_SpawnFloat("distanceCull", "12000.0", &g_cullDistance);
 	trap_SetServerCull(g_cullDistance);
 
 	G_SpawnString( "classname", "", &text );

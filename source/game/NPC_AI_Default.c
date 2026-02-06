@@ -75,7 +75,7 @@ void NPC_StandIdle( void )
 	}
 	
 	//Start that animation going
-	NPC_SetAnim( NPC, SETANIM_BOTH, baseSeq + newIdle, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+	NPC_SetAnim(NPC, SETANIM_BOTH, baseSeq + newIdle, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 	
 	int newTime = PM_AnimLength( NPC->client->clientInfo.animFileIndex, (animNumber_t) (baseSeq + newIdle) );
 
@@ -736,7 +736,7 @@ void NPC_BSDefault( void )
 	{//being forced to walk
 		if( NPC->client->ps.torsoAnim != TORSO_SURRENDER_START )
 		{
-			NPC_SetAnim( NPC, SETANIM_TORSO, TORSO_SURRENDER_START, SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_TORSO, TORSO_SURRENDER_START, SETANIM_FLAG_HOLD);
 		}
 	}
 	//look for a new enemy if don't have one and are allowed to look, validate current enemy if have one

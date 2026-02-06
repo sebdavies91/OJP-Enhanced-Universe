@@ -15,6 +15,30 @@ Ghoul2 Insert end
 extern qboolean CG_InFighter( void );
 static void CG_Missile( centity_t *cent );
 
+// Vehicle weapon assets may be registered lazily by bg_vehicleLoad.c.
+extern void BG_EnsureVehWeaponAssetsLoaded( int weaponIndex );
+extern int numVehicleWeapons;
+
+static qboolean CG_IsVehicleWeaponMissile( const entityState_t *es )
+{
+	int idx;
+	if ( !es || es->eType != ET_MISSILE )
+	{
+		return qfalse;
+	}
+	idx = es->otherEntityNum2;
+	if ( idx <= VEH_WEAPON_NONE || idx >= numVehicleWeapons )
+	{
+		return qfalse;
+	}
+	if ( !g_vehWeaponInfo[idx].name )
+	{
+		return qfalse;
+	}
+	return qtrue;
+}
+
+
 //serenity...for grapplemod
 #define	FX_ALPHA_LINEAR		0x00000001
 #define	FX_SIZE_LINEAR		0x00000100
@@ -887,39 +911,67 @@ static void CG_General( centity_t *cent ) {
 			trap_G2API_CleanGhoul2Models(&(cent->ghoul2));
 		}
 	}
-	//serenity grapplemod
-	s1 = &cent->currentState;
-	if ( s1->weapon == WP_MELEE && pm->cmd.buttons & BUTTON_GRAPPLE )
+// serenity grapplemod – draw rope while hook entity exists (stuck / pulling)
+{
+	const entityState_t *s1 = &cent->currentState;
+
+	// Hook entities are sent as ET_GENERAL with weapon==WP_MELEE.
+	// Be strict: other ET_GENERAL entities (like emplaced guns) can temporarily
+	// carry WP_MELEE in s.weapon, which would otherwise create a "ghost" rope.
+	// Real hooks are non-solid and do not have models.
+	if ( s1->eType == ET_GENERAL &&
+			 s1->weapon == WP_MELEE &&
+			 s1->solid == 0 &&
+			 s1->modelindex == 0 &&
+			 s1->modelGhoul2 == 0 &&
+		 s1->otherEntityNum >= 0 &&
+		 s1->otherEntityNum < MAX_CLIENTS )
 	{
+		int clientNum = s1->otherEntityNum;
+		vec3_t     rHandPos;
+		mdxaBone_t boltMatrix;
+		vec3_t     hookPos;
 
-            int clientNum =
-                (cent->currentState.otherEntityNum == cg.snap->ps.clientNum) ? cg.predictedPlayerState.clientNum : cent->currentState.otherEntityNum;
-           vec3_t rHandPos;
-            mdxaBone_t boltMatrix;
-            vec3_t pos;
+		// Don't show grapple in duels, and only if we have a valid model
+		if ( cg.predictedPlayerState.duelInProgress ||
+			 !cg_entities[clientNum].ghoul2 ||
+			 cgs.clientinfo[clientNum].bolt_rhand == -1 )
+		{
+			// Just fall through to normal CG_General handling
+		}
+		else
+		{
+			// Remember: this hook entity belongs to clientNum
+			cg_entities[clientNum].bolt1 = s1->number;
 
-            assert("Invalid bolt" && cgs.clientinfo[clientNum].bolt_rhand != -1);
-            //	assert( "Invalid G2 instance" && !cg_entities[clientNum].ghoul2 );
+			trap_G2API_GetBoltMatrix(
+				cg_entities[clientNum].ghoul2, 0,
+				cgs.clientinfo[clientNum].bolt_rhand,
+				&boltMatrix,
+				cg_entities[clientNum].turAngles,
+				cg_entities[clientNum].lerpOrigin,
+				cg.time,
+				cgs.gameModels,
+				cg_entities[clientNum].modelScale
+			);
 
-            // Don't show grapple in duels
-            if (cg.predictedPlayerState.duelInProgress || !cg_entities[clientNum].ghoul2)
-                return;
+			rHandPos[0] = boltMatrix.matrix[0][3];
+			rHandPos[1] = boltMatrix.matrix[1][3];
+			rHandPos[2] = boltMatrix.matrix[2][3];
 
-            cg_entities[clientNum].bolt1 = s1->number;
+			// When hooked, the entity sits at the impact point:
+			// use the current interpolated origin as the rope target.
+			VectorCopy( cent->lerpOrigin, hookPos );
 
-            trap_G2API_GetBoltMatrix(cg_entities[clientNum].ghoul2, 0, cgs.clientinfo[clientNum].bolt_rhand, &boltMatrix, cg_entities[clientNum].turAngles,
-                                      cg_entities[clientNum].lerpOrigin, cg.time, cgs.gameModels, cg_entities[clientNum].modelScale);
+			// Draw the rope
+			CG_TestLine( rHandPos, hookPos, 1, 0x000000u, 1 );
 
-            rHandPos[0] = boltMatrix.matrix[0][3];
-            rHandPos[1] = boltMatrix.matrix[1][3];
-            rHandPos[2] = boltMatrix.matrix[2][3];
-
-            BG_EvaluateTrajectory(&s1->pos, cg.time, pos);
-
-            CG_TestLine(rHandPos, pos, 1, 0x000000u, 1);
-            return;
+			// We *do not* return here; let CG_General render any other effects
+			// for this entity if there are any.
+		}
 	}
-	//END
+}
+
 	if (cent->currentState.eFlags & EF_RADAROBJECT)
 	{
 		CG_AddRadarEnt(cent);
@@ -2648,37 +2700,58 @@ static void CG_Missile( centity_t *cent ) {
 		ent.radius = cent->currentState.g2radius;
 	}
 
-	//serenity GRAPPLEMOD
-	if (s1->weapon == WP_MELEE && pm->cmd.buttons & BUTTON_GRAPPLE)
+// serenity grapplemod – draw rope while hook missile is flying
+{
+	const entityState_t *s1 = &cent->currentState;
+
+	// Same filtering for the flying hook missile.
+	if ( s1->eType == ET_MISSILE &&
+			 s1->weapon == WP_MELEE &&
+			 s1->solid == 0 &&
+			 s1->modelindex == 0 &&
+			 s1->modelGhoul2 == 0 &&
+		 s1->otherEntityNum >= 0 &&
+		 s1->otherEntityNum < MAX_CLIENTS )
 	{
-            int clientNum =
-                (cent->currentState.otherEntityNum == cg.snap->ps.clientNum) ? cg.predictedPlayerState.clientNum : cent->currentState.otherEntityNum;
-            vec3_t rHandPos;
-            mdxaBone_t boltMatrix;
-            vec3_t pos;
+		int clientNum = s1->otherEntityNum;
+		vec3_t     rHandPos;
+		mdxaBone_t boltMatrix;
+		vec3_t     hookPos;
 
-            assert("Invalid bolt" && cgs.clientinfo[clientNum].bolt_rhand != -1);
-            //	assert( "Invalid G2 instance" && !cg_entities[clientNum].ghoul2 );
+		// Don't show grapple in duels, and only if we have a valid model
+		if ( cg.predictedPlayerState.duelInProgress ||
+			 !cg_entities[clientNum].ghoul2 ||
+			 cgs.clientinfo[clientNum].bolt_rhand == -1 )
+		{
+			// Just fall through to normal missile handling
+		}
+		else
+		{
+			cg_entities[clientNum].bolt1 = s1->number;
 
-            // Don't show grapple in duels
-            if (cg.predictedPlayerState.duelInProgress || !cg_entities[clientNum].ghoul2)
-                return;
+			trap_G2API_GetBoltMatrix(
+				cg_entities[clientNum].ghoul2, 0,
+				cgs.clientinfo[clientNum].bolt_rhand,
+				&boltMatrix,
+				cg_entities[clientNum].turAngles,
+				cg_entities[clientNum].lerpOrigin,
+				cg.time,
+				cgs.gameModels,
+				cg_entities[clientNum].modelScale
+			);
 
-            cg_entities[clientNum].bolt1 = s1->number;
+			rHandPos[0] = boltMatrix.matrix[0][3];
+			rHandPos[1] = boltMatrix.matrix[1][3];
+			rHandPos[2] = boltMatrix.matrix[2][3];
 
-            trap_G2API_GetBoltMatrix(cg_entities[clientNum].ghoul2, 0, cgs.clientinfo[clientNum].bolt_rhand, &boltMatrix, cg_entities[clientNum].turAngles,
-                                      cg_entities[clientNum].lerpOrigin, cg.time, cgs.gameModels, cg_entities[clientNum].modelScale);
+			// While flying, use the missile's trajectory so interpolation works nicely
+			BG_EvaluateTrajectory( &s1->pos, cg.time, hookPos );
 
-            rHandPos[0] = boltMatrix.matrix[0][3];
-            rHandPos[1] = boltMatrix.matrix[1][3];
-            rHandPos[2] = boltMatrix.matrix[2][3];
-
-            BG_EvaluateTrajectory(&s1->pos, cg.time, pos);
-
-            CG_TestLine(rHandPos, pos, 1, 0x000000u, 1);
-            return;
-		
+			CG_TestLine( rHandPos, hookPos, 1, 0x000000u, 1 );
+		}
 	}
+}
+
 
 	if (cent->ghoul2)
 	{ //give us a proper radius
@@ -2692,15 +2765,20 @@ static void CG_Missile( centity_t *cent ) {
 	//VectorCopy( s1->angles, cent->lerpAngles);
 	//[/SaberThrowSys]
 
-	if ( s1->otherEntityNum2 && s1->weapon != WP_SABER )
+		if ( s1->otherEntityNum2 && s1->weapon != WP_SABER )
 	{//using an over-ridden trail effect!
 		vec3_t forward;
+
+			if ( CG_IsVehicleWeaponMissile( s1 ) )
+			{
+				BG_EnsureVehWeaponAssetsLoaded( s1->otherEntityNum2 );
+			}
 
 		if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 		{
 			forward[2] = 1.0f;
 		}
-		if ((s1->eFlags&EF_JETPACK_ACTIVE)//hack so we know we're a vehicle Weapon shot
+		if ((CG_IsVehicleWeaponMissile( s1 ))//vehicle weapon missile
 			&& (g_vehWeaponInfo[s1->otherEntityNum2].iShotFX
 				|| g_vehWeaponInfo[s1->otherEntityNum2].iModel != NULL_HANDLE) )
 		{ //a vehicle with an override for the weapon trail fx or model
@@ -2966,6 +3044,10 @@ Ghoul2 Insert End
 	//add custom model
 	else
 	{
+			if ( (s1->eFlags & EF_JETPACK_ACTIVE) && s1->otherEntityNum2 )
+			{
+				BG_EnsureVehWeaponAssetsLoaded( s1->otherEntityNum2 );
+			}
 		if ( g_vehWeaponInfo[s1->otherEntityNum2].iModel != NULL_HANDLE )
 		{
 			ent.hModel = g_vehWeaponInfo[s1->otherEntityNum2].iModel;
@@ -4042,7 +4124,7 @@ void CG_ROFF_NotetrackCallback( centity_t *cent, const char *notetrack)
 	{
 		if (!addlArgs)
 		{
-			//sprintf(errMsg, "Offset position argument for 'effect' type is invalid.");
+			//Com_sprintf( errMsg, sizeof(errMsg), "Offset position argument for 'effect' type is invalid.");
 			//goto functionend;
 			VectorClear(parsedOffset);
 			goto defaultoffsetposition;
@@ -4063,7 +4145,7 @@ void CG_ROFF_NotetrackCallback( centity_t *cent, const char *notetrack)
 			i++;
 			if (!r)
 			{ //failure..
-				//sprintf(errMsg, "Offset position argument for 'effect' type is invalid.");
+				//Com_sprintf( errMsg, sizeof(errMsg), "Offset position argument for 'effect' type is invalid.");
 				//goto functionend;
 				VectorClear(parsedOffset);
 				i = 0;

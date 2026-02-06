@@ -275,7 +275,7 @@ const char *String_Alloc(const char *p) {
 	len = strlen(p);
 	if (len + strPoolIndex + 1 < STRING_POOL_SIZE) {
 		int ph = strPoolIndex;
-		strcpy(&strPool[strPoolIndex], p);
+		Q_strncpyz( &strPool[strPoolIndex], p, STRING_POOL_SIZE - strPoolIndex );
 		strPoolIndex += len + 1;
 
 		str = strHandle[hash];
@@ -349,7 +349,7 @@ void PC_SourceWarning(int handle, char *format, ...) {
 	static char string[4096];
 
 	va_start (argptr, format);
-	vsprintf (string, format, argptr);
+	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end (argptr);
 
 	filename[0] = '\0';
@@ -371,7 +371,7 @@ void PC_SourceError(int handle, char *format, ...) {
 	static char string[4096];
 
 	va_start (argptr, format);
-	vsprintf (string, format, argptr);
+	Q_vsnprintf( string, sizeof( string ), format, argptr );
 	va_end (argptr);
 
 	filename[0] = '\0';
@@ -2127,34 +2127,40 @@ qboolean Script_SetCvarToCvar(itemDef_t *item, char **args) {
 }
 
 qboolean Script_Exec(itemDef_t *item, char **args) {
-	//[CoOp]
-	//This needs to be changeable now.
-	char *val;
-	//const char *val;
-	//[/CoOp]
-	if (String_Parse(args, &val)) {
-		//[CoOp]
-		//hack to replace tier_mapname with it's string value in exec commands
-		char *s;
-		char buf[MAX_QPATH];
-		s = strstr(val, "vstr");
-		if(s)
-		{
-			s += 5;
-			DC->getCVarString(s, buf, MAX_QPATH);
-			strcpy(val, buf);
-		}
-		//MP doesn't apprenently doesn't like the maptransition command.  use map instead
-		s = strstr(val, "maptransition");
-		if(s)
-		{
-			s += 14;
-			strcpy(val, va("map %s", s) );
-		}
-		//[/CoOp]
-		DC->executeText(EXEC_APPEND, va("%s ; ", val));
-	}
-	return qtrue;
+    //[CoOp]
+    //This needs to be changeable now.
+    char *val;
+    //const char *val;
+    //[/CoOp]
+    if (String_Parse(args, &val)) {
+        //[CoOp]
+        // Do not write back into the parsed string buffer (val may not be writable/large enough).
+        // Instead, build the command into a local buffer and execute that.
+        char *s;
+        char buf[MAX_QPATH];
+        char execBuf[MAX_STRING_CHARS];
+
+        Q_strncpyz(execBuf, val, sizeof(execBuf));
+
+        // hack to replace tier_mapname with it's string value in exec commands
+        s = strstr(execBuf, "vstr");
+        if (s) {
+            s += 5;
+            DC->getCVarString(s, buf, MAX_QPATH);
+            Q_strncpyz(execBuf, buf, sizeof(execBuf));
+        }
+
+        // MP doesn't apparently like the maptransition command. use map instead
+        s = strstr(execBuf, "maptransition");
+        if (s) {
+            s += 14;
+            Com_sprintf(execBuf, sizeof(execBuf), "map %s", s);
+        }
+        //[/CoOp]
+
+        DC->executeText(EXEC_APPEND, va("%s ; ", execBuf));
+    }
+    return qtrue;
 }
 
 qboolean Script_Play(itemDef_t *item, char **args) {
@@ -5203,14 +5209,13 @@ void BindingFromName(const char *cvar) {
 
 					trap_SP_GetStringTextString("MENUS_KEYBIND_OR",sOR, sizeof(sOR));
 
-					strcat( g_nameBind1, va(" %s ",sOR));
-					strcat( g_nameBind1, g_nameBind2 );
+					Q_strcat( g_nameBind1, sizeof(g_nameBind1), va(" %s ",sOR));
+					Q_strcat( g_nameBind1, sizeof(g_nameBind1), g_nameBind2 );
 				}
 			return;
 		}
 	}
-	strcpy(g_nameBind1, "???");
-}
+	Q_strncpyz( g_nameBind1, "???", sizeof(g_nameBind1) );}
 
 void Item_Slider_Paint(itemDef_t *item) {
 	vec4_t newColor, lowLight;
@@ -7324,7 +7329,7 @@ qboolean ItemParse_asset_model_go( itemDef_t *item, const char *name,int *runTim
 
 					if ( slash )
 					{ //If this isn't true the gla path must be messed up somehow.
-						strcpy(slash, "/animation.cfg");
+						Q_strncpyz( slash, "/animation.cfg", sizeof( GLAName ) - ( slash - GLAName ) );
 					
 						animIndex = UI_ParseAnimationFile(GLAName, NULL, qfalse);
 						if (animIndex != -1)

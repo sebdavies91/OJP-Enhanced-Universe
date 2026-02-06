@@ -4,6 +4,11 @@
 #include "cg_local.h"
 
 #include "../ui/ui_shared.h"
+
+// Vehicle .veh/.dat must be loaded after FX init in MP so VF_EFFECT_CLIENT registers valid handles.
+void BG_VehicleLoadParms( void );
+
+// Vehicle .veh/.dat must be loaded after FX init in MP so VF_EFFECT_CLIENT registers valid handles.
 // display context for new ui stuff
 displayContextDef_t cgDC;
 
@@ -288,7 +293,7 @@ Q_EXPORT intptr_t vmMain( int command, intptr_t arg0, intptr_t arg1, intptr_t ar
 			}
 			else if (strstr(icc->conCommand, "blah"))
 			{ //any command containing the string "blah" is redirected to "quit"
-				strcpy(icc->conCommand, "quit");
+				Q_strncpyz( icc->conCommand, "quit", sizeof(icc->conCommand) );
 				return 0;
 			}
 		}
@@ -650,10 +655,32 @@ void CG_DrawMiscEnts(void)
 	float		*radius, *zOff;
 	vec3_t		difference;
 	vec3_t		cullOrigin;
+	float		drawCull;
+	float		minCull;
 
 	RefEnt = MiscEnts;
 	radius = Radius;
 	zOff = zOffset;
+
+	// Some very large/outdoor maps rely heavily on clientside misc_model_static props.
+	// If the map (or default) distanceCull is too low, you'll see black void/"missing world"
+	// behind the player where those props were expected to fill the horizon.
+	//
+	// Be conservative: keep distanceCull behavior, but clamp misc_model_static draw distance
+	// to a sane minimum so large maps remain visually intact.
+	minCull = 12000.0f;
+	if (cg.distanceCull <= 0.0f)
+	{
+		drawCull = 999999.0f; // treat <= 0 as "no cull"
+	}
+	else
+	{
+		drawCull = cg.distanceCull;
+		if (drawCull < minCull)
+		{
+			drawCull = minCull;
+		}
+	}
 	for(i=0;i<NumMiscEnts;i++)
 	{
 		VectorCopy(RefEnt->origin, cullOrigin);
@@ -667,7 +694,7 @@ void CG_DrawMiscEnts(void)
 		if (cg.snap && trap_R_inPVS(cg.refdef.vieworg, cullOrigin, cg.snap->areamask))
 		{
 			VectorSubtract(RefEnt->origin, cg.refdef.vieworg, difference);
-			if (VectorLength(difference)-(*radius) <= cg.distanceCull)
+				if (VectorLength(difference)-(*radius) <= drawCull)
 			{
 				trap_R_AddRefEntityToScene(RefEnt);
 			}
@@ -1058,7 +1085,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 	{ &cg_animBlend, "cg_animBlend", "1", 0 },
 
-	{ &cg_dismember, "cg_dismember", "0", CVAR_ARCHIVE },
+	{ &cg_dismember, "cg_dismember", "1", CVAR_ARCHIVE },
 
 	{ &cg_thirdPersonSpecialCam, "cg_thirdPersonSpecialCam", "0", 0 },
 
@@ -1389,7 +1416,7 @@ void QDECL CG_Printf( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	Q_vsnprintf( text, sizeof( text ), msg, argptr );
 	va_end (argptr);
 
 	trap_Print( text );
@@ -1400,7 +1427,7 @@ void QDECL CG_Error( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	Q_vsnprintf( text, sizeof( text ), msg, argptr );
 	va_end (argptr);
 
 	trap_Error( text );
@@ -1414,7 +1441,7 @@ void QDECL Com_Error( int level, const char *error, ... ) {
 	char		text[1024];
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	Q_vsnprintf( text, sizeof( text ), error, argptr );
 	va_end (argptr);
 
 	CG_Error( "%s", text);
@@ -1425,7 +1452,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	Q_vsnprintf( text, sizeof( text ), msg, argptr );
 	va_end (argptr);
 
 	CG_Printf ("%s", text);
@@ -2023,8 +2050,7 @@ static void CG_RegisterSounds( void ) {
 	// only register the items that the server says we need
 	//[BugFix37]
 	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
-	//strcpy( items, CG_ConfigString( CS_ITEMS ) );
-	//[/BugFix37]
+	//Q_strncpyz( items, CG_ConfigString( CS_ITEMS ) , sizeof(items) );	//[/BugFix37]
 
 	for ( i = 1 ; i < bg_numItems ; i++ ) {
 		if ( items[ i ] == '1' || cg_buildScript.integer ) {
@@ -2269,6 +2295,8 @@ static void CG_RegisterGraphics( void ) {
 	cgs.media.connectionShader = trap_R_RegisterShaderNoMip( "gfx/2d/net" );
 
 	trap_FX_InitSystem(&cg.refdef);
+	// Load external vehicle data after FX init (MP): allows trap_FX_RegisterEffect to return valid handles
+	BG_VehicleLoadParms();
 	CG_RegisterEffects();
 	
 
@@ -2632,8 +2660,7 @@ Ghoul2 Insert End
 	// only register the items that the server says we need
 	//[BugFix37]
 	Q_strncpyz(items, CG_ConfigString(CS_ITEMS), sizeof(items));
-	//strcpy( items, CG_ConfigString( CS_ITEMS ) );
-	//[/BugFix37]
+	//Q_strncpyz( items, CG_ConfigString( CS_ITEMS ) , sizeof(items) );	//[/BugFix37]
 
 	for ( i = 1 ; i < bg_numItems ; i++ ) {
 		if ( items[ i ] == '1' || cg_buildScript.integer ) {
@@ -2699,7 +2726,7 @@ Ghoul2 Insert End
 			break;
 		}
 
-		strcpy(modelName, cModelName);
+		Q_strncpyz( modelName, cModelName, sizeof(modelName) );
 		if (strstr(modelName, ".glm") || modelName[0] == '$')
 		{ //Check to see if it has a custom skin attached.
 			CG_HandleAppendedSkin(modelName);
@@ -3724,6 +3751,41 @@ void CG_InitItems(void)
 	memset( cg_items, 0, sizeof( cg_items ) );
 }
 
+// On very large maps, an overly-small renderer far clip (zFar) can cause distant world
+// surfaces/sky to clip out and reveal the black void. We can't change the BSP, but we
+// *can* nudge the renderer cvar on map load using the map's distanceCull as a hint.
+// This is deliberately conservative to avoid harming depth precision on normal maps.
+static void CG_AdjustFarClipForLargeMaps(void)
+{
+	char	buf[64];
+	float	curZFar;
+	float	targetZFar;
+
+	// Use distanceCull (worldspawn) as a proxy for map scale.
+	// If distanceCull is not available, still allow a sane minimum.
+	targetZFar = (cg.distanceCull > 0.0f) ? (cg.distanceCull + 4096.0f) : 16384.0f;
+	if (targetZFar < 16384.0f)
+	{
+		targetZFar = 16384.0f;
+	}
+	if (targetZFar > 65536.0f)
+	{
+		// Don't go crazy; very large zFar hurts depth precision.
+		targetZFar = 65536.0f;
+	}
+
+	trap_Cvar_VariableStringBuffer("r_zfar", buf, sizeof(buf));
+	curZFar = (float)atof(buf);
+
+	// If unset/auto (0) or clearly too small for this map, bump it.
+	if (curZFar <= 0.0f || curZFar < (targetZFar * 0.9f))
+	{
+		Com_sprintf(buf, sizeof(buf), "%.0f", targetZFar);
+		trap_Cvar_Set("r_zfar", buf);
+		CG_Printf("^3Auto-set r_zfar to %s for large-map far clip.\n", buf);
+	}
+}
+
 void CG_TransitionPermanent(void)
 {
 	centity_t	*cent = cg_entities;
@@ -4143,7 +4205,6 @@ extern playerState_t *cgSendPS[MAX_GENTITIES]; //is not MAX_CLIENTS because NPCs
 void CG_PmoveClientPointerUpdate();
 
 void WP_SaberLoadParms( void );
-void BG_VehicleLoadParms( void );
 
 //[WEAPONSDAT]
 extern void BG_LoadWeaponsData();
@@ -4156,6 +4217,9 @@ Called after every level change or subsystem restart
 Will perform callbacks to make the loading info screen update.
 =================
 */
+
+
+extern void BG_ResetAlloc(void);
 void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 {
 	static gitem_t *item;
@@ -4166,9 +4230,9 @@ void CG_Init( int serverMessageNum, int serverCommandSequence, int clientNum )
 	BG_InitAnimsets(); //clear it out
 
 	trap_CG_RegisterSharedMemory(cg.sharedBuffer);
-
+	BG_ResetAlloc();   // REQUIRED
 	//Load external vehicle data
-	BG_VehicleLoadParms();
+	//BG_VehicleLoadParms(); // moved to after trap_FX_InitSystem so VF_EFFECT_CLIENT registers valid handles in MP
 
 	// clear everything
 /*
@@ -4652,6 +4716,7 @@ Ghoul2 Insert End
 	trap_S_ClearLoopingSounds();
 
 	trap_R_GetDistanceCull(&cg.distanceCull);
+	CG_AdjustFarClipForLargeMaps();
 
 	//now get all the cgame only cents
 	CG_SpawnCGameOnlyEnts();

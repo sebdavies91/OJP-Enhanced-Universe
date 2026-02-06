@@ -11,6 +11,9 @@
 //[SVN]
 //rearraigned repository to make it easier to initially compile.
 #include "../../ojpenhanced/ui/jamp/menudef.h"
+
+// Vehicle weapon assets may be registered lazily by bg_vehicleLoad.c.
+extern void BG_EnsureVehWeaponAssetsLoaded( int weaponIndex );
 //#include "../../ui/menudef.h"
 //[/SVN]
 
@@ -62,7 +65,7 @@ const char	*CG_PlaceString( int rank ) {
 	trap_SP_GetStringTextString("MP_INGAME_NUMBER_RD",sRD, sizeof(sRD) );
 	trap_SP_GetStringTextString("MP_INGAME_NUMBER_TH",sTH, sizeof(sTH) );
 	trap_SP_GetStringTextString("MP_INGAME_TIED_FOR" ,sTiedFor,sizeof(sTiedFor) );
-	strcat(sTiedFor," ");	// save worrying about translators adding spaces or not
+	Q_strcat( sTiedFor, sizeof(sTiedFor), " ");	// save worrying about translators adding spaces or not
 
 	if ( rank & RANK_TIED_FLAG ) {
 		rank &= ~RANK_TIED_FLAG;
@@ -223,7 +226,7 @@ static void CG_Obituary( entityState_t *ent ) {
 		return;
 	}
 	Q_strncpyz( targetName, Info_ValueForKey( targetInfo, "n" ), sizeof(targetName) - 2);
-	strcat( targetName, S_COLOR_WHITE );
+	Q_strcat( targetName, sizeof(targetName), S_COLOR_WHITE );
 
 	//[Asteroids]
 	// check for target in a vehicle
@@ -440,7 +443,7 @@ clientkilled:
 				trap_SP_GetStringTextString("MP_INGAME_KILLED_MESSAGE", part1, sizeof(part1));
 				/*
 				kmsg1 = "for 0 points.\nGo for the saber!";
-				strcpy(part2, kmsg1);
+				Q_strncpyz( part2, kmsg1, sizeof(part2) );
 
 				s = va("%s %s %s\n", part1, targetName, part2);
 				*/
@@ -480,12 +483,12 @@ clientkilled:
 		//[/Asteroids]
 
 		//[ImprovedObituary]
-		strcpy(attackerName, GetStringForID( NPCClasses, cg_entities[attacker].currentState.NPC_class ));
-		//strcpy( attackerName, "noname" );		
+		Q_strncpyz(attackerName, GetStringForID( NPCClasses, cg_entities[attacker].currentState.NPC_class ), sizeof(attackerName));
+		//Q_strncpyz( attackerName, "noname" , sizeof(attackerName) );		
 		//[/ImprovedObituary]
 	} else {
 		Q_strncpyz( attackerName, Info_ValueForKey( attackerInfo, "n" ), sizeof(attackerName) - 2);
-		strcat( attackerName, S_COLOR_WHITE );
+		Q_strcat( attackerName, sizeof(attackerName), S_COLOR_WHITE );
 		// check for kill messages about the current clientNum
 		if ( target == cg.snap->ps.clientNum ) {
 			Q_strncpyz( cg.killerName, attackerName, sizeof( cg.killerName ) );
@@ -1023,7 +1026,7 @@ static void CG_ItemPickup( int itemNum ) {
 		char	text[1024];
 		char	upperKey[1024];
 
-		strcpy(upperKey, bg_itemlist[itemNum].classname);
+		Q_strncpyz( upperKey, bg_itemlist[itemNum].classname, sizeof(upperKey) );
 
 		if ( trap_SP_GetStringTextString( va("SP_INGAME_%s",Q_strupr(upperKey)), text, sizeof( text )))
 		{
@@ -1454,8 +1457,12 @@ void CG_G2MarkEvent(entityState_t *es)
 		VectorCopy(es->origin, startPoint);
 	}
 
-	if ( (es->eFlags&EF_JETPACK_ACTIVE) )
+		if ( (es->eFlags&EF_JETPACK_ACTIVE) )
 	{// a vehicle weapon, make it a larger size mark
+			if ( es->otherEntityNum2 )
+			{
+				BG_EnsureVehWeaponAssetsLoaded( es->otherEntityNum2 );
+			}
 		//OR base this on the size of the thing you hit?
 		if ( g_vehWeaponInfo[es->otherEntityNum2].fG2MarkSize )
 		{
@@ -1582,6 +1589,7 @@ void CG_VehMuzzleFireFX(centity_t *veh, entityState_t *broadcaster)
 					{
 						if ( pVeh->m_pVehicleInfo->turret[i].iMuzzle[j]-1 == curMuz )
 						{//this muzzle belongs to this turret
+								BG_EnsureVehWeaponAssetsLoaded( pVeh->m_pVehicleInfo->turret[i].iWeapon );
 							muzFX = g_vehWeaponInfo[pVeh->m_pVehicleInfo->turret[i].iWeapon].iMuzzleFX;
 							break;
 						}
@@ -1590,6 +1598,7 @@ void CG_VehMuzzleFireFX(centity_t *veh, entityState_t *broadcaster)
 			}
 			else
 			{
+					BG_EnsureVehWeaponAssetsLoaded( pVeh->m_pVehicleInfo->weapMuzzle[curMuz] );
 				muzFX = g_vehWeaponInfo[pVeh->m_pVehicleInfo->weapMuzzle[curMuz]].iMuzzleFX;
 			}
 			if ( muzFX )
@@ -4062,7 +4071,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			centity_t *vChatEnt = &cg_entities[es->groundEntityNum];
 			char descr[1024];
 
-			strcpy(descr, CG_GetStringForVoiceSound(CG_ConfigString( CS_SOUNDS + es->eventParm )));
+			Q_strncpyz(descr, CG_GetStringForVoiceSound(CG_ConfigString( CS_SOUNDS + es->eventParm )), sizeof(descr));
 
 			if (!sfx)
 			{
@@ -4084,7 +4093,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				{ //add to the chat box
 					//hear it in the world spot.
 					char vchatstr[1024];
-					strcpy(vchatstr, va("<%s: %s>\n", ci->name, descr));
+					Q_strncpyz(vchatstr, va("<%s: %s>\n", ci->name, descr), sizeof(vchatstr));
 					CG_Printf(vchatstr);
 					CG_ChatBox_AddString(vchatstr);
 				}
@@ -4237,11 +4246,11 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 					if(!strstr(s, "SOUND/CHARS/JADEN_MALE/MISC/"))
 					{//check for misc sounds
-						strcpy(soundName, "SOUND/CHARS/JADEN_FMLE/");
+						Q_strncpyz( soundName, "SOUND/CHARS/JADEN_FMLE/", sizeof(soundName) );
 					}
 					else
 					{
-						strcpy(soundName, "SOUND/CHARS/JADEN_FMLE/MISC/");
+						Q_strncpyz( soundName, "SOUND/CHARS/JADEN_FMLE/MISC/", sizeof(soundName) );
 					}
 
 					//find the slash
@@ -4249,7 +4258,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 					//find the filename
 					fileName = Q_strrchr( r, '/' );
-					strcpy(nameSlash, fileName);
+					Q_strncpyz( nameSlash, fileName, sizeof(nameSlash) );
 
 					trap_S_StartSound (NULL, es->clientNum, es->trickedentindex, CG_CustomSound( es->clientNum, soundName ) );
 					break;
@@ -4404,30 +4413,45 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		cg_entities[es->owner].teamPowerType = 8;
 		break;			
 	case EV_BURNED:
-		DEBUGNAME("EV_BURNED");
-		ByteToDir( es->eventParm, dir );
-		FX_Burned(position, dir);
-		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.incinerationSound );
-		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].itemPowerType = 0;
-		break;
+		{
+			int victim;
+			DEBUGNAME("EV_BURNED");
+			ByteToDir( es->eventParm, dir );
+			victim = (es->eType == ET_EVENTS && es->owner) ? es->owner : es->number;
+			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
+			FX_Burned(position, dir);
+			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.incinerationSound );
+			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
+			cg_entities[victim].itemPowerType = 0;
+		}
+			break;
 
 	case EV_FROZEN:
-		DEBUGNAME("EV_FROZEN");
-		ByteToDir( es->eventParm, dir );
-		FX_Frozen(position, dir);
-		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.cryoSound );
-		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].itemPowerType = 1;
-		break;
+		{
+			int victim;
+			DEBUGNAME("EV_FROZEN");
+			ByteToDir( es->eventParm, dir );
+			victim = (es->eType == ET_EVENTS && es->owner) ? es->owner : es->number;
+			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
+			FX_Frozen(position, dir);
+			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.cryoSound );
+			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
+			cg_entities[victim].itemPowerType = 1;
+		}
+			break;
 
 	case EV_SHOCKED:
-		DEBUGNAME("EV_SHOCKED");
-		ByteToDir( es->eventParm, dir );
-		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
-		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].itemPowerType = 2;
-		break;	
+		{
+			int victim;
+			DEBUGNAME("EV_SHOCKED");
+			ByteToDir( es->eventParm, dir );
+			victim = (es->eType == ET_EVENTS && es->owner) ? es->owner : es->number;
+			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
+			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.crackleSound );
+			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
+			cg_entities[victim].itemPowerType = 2;
+		}
+			break;	
 
 	case EV_SOUNDED:
 		DEBUGNAME("EV_SOUNDED");

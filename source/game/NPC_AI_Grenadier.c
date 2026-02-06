@@ -5,6 +5,7 @@
 
 extern qboolean BG_SabersOff( playerState_t *ps );
 
+extern qboolean NPC_MoveDirClear( int forwardmove, int rightmove, qboolean reset );
 //extern void CG_DrawAlert( vec3_t origin, float rating );
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
 extern void G_SoundOnEnt( gentity_t *ent, int channel, const char *soundPath );
@@ -12,6 +13,12 @@ extern void NPC_TempLookTarget( gentity_t *self, int lookEntNum, int minLookTime
 extern qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs, int ignore, int clipmask );
 extern void NPC_AimAdjust( int change );
 extern qboolean FlyingCreature( gentity_t *ent );
+extern qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
+
+// Grenadier-only short sidestep timers (keeps changes local to this AI).
+#define GRENA_SIDESTEP_MIN_MS	200
+#define GRENA_SIDESTEP_MAX_MS	350
+#define GRENA_TAILGATE_DIST		72.0f
 
 #define	MAX_VIEW_DIST		1024
 #define MAX_VIEW_SPEED		250
@@ -129,26 +136,96 @@ static qboolean Grenadier_Move( void )
 	qboolean	moved;
 	navInfo_t	info;
 
+	// Static analysis: Grenadiers should always be client-backed NPCs, but guard anyway.
+	if ( !NPC || !NPCInfo || !NPC->client )
+	{
+		return qfalse;
+	}
+
+	// SP tends to avoid the "corridor blob" look by not endlessly pushing forward
+	// when a teammate is directly ahead. We emulate that safely here with a very
+	// short, debounced sidestep that is *local to Grenadiers*.
+	if ( NPC->client && NPC->client->ps.weapon != WP_SABER )
+	{
+		if ( !TIMER_Done( NPC, "grSideStepL" ) )
+		{
+			ucmd.forwardmove = 0;
+			ucmd.rightmove = -127;
+			// If the side direction is no longer clear, cancel early.
+			if ( !NPC_MoveDirClear( 0, -127, qfalse ) )
+			{
+				TIMER_Set( NPC, "grSideStepL", 0 );
+			}
+			NPCInfo->combatMove = qtrue;
+			return qtrue;
+		}
+		else if ( !TIMER_Done( NPC, "grSideStepR" ) )
+		{
+			ucmd.forwardmove = 0;
+			ucmd.rightmove = 127;
+			if ( !NPC_MoveDirClear( 0, 127, qfalse ) )
+			{
+				TIMER_Set( NPC, "grSideStepR", 0 );
+			}
+			NPCInfo->combatMove = qtrue;
+			return qtrue;
+		}
+	}
+
 	NPCInfo->combatMove = qtrue;//always move straight toward our goal
 	moved = NPC_MoveToGoal( qtrue );
 	
 	//Get the move info
 	NAV_GetLastMove( &info );
 
-	//[CoOp]
-	//not in SP version.
-	/*
-	//FIXME: if we bump into another one of our guys and can't get around him, just stop!
-	//If we hit our target, then stop and fire!
-	if ( info.flags & NIF_COLLISION ) 
+	// If we collide with something, react conservatively.
+	// - If it's the enemy: stop trying to walk through them (SP-like result: hold & fight).
+	// - If it's a teammate: do a short sidestep to reduce hallway/doorway clumping.
+	if ( (info.flags & NIF_COLLISION) && info.blocker && NPC->client && NPC->client->ps.weapon != WP_SABER )
 	{
 		if ( info.blocker == NPC->enemy )
 		{
 			Grenadier_HoldPosition();
+			return qfalse;
+		}
+		if ( info.blocker->client && OnSameTeam( NPC, info.blocker ) && TIMER_Done( NPC, "grSideStepL" ) && TIMER_Done( NPC, "grSideStepR" ) )
+		{
+			vec3_t toBlocker, right;
+			float d;
+			VectorSubtract( info.blocker->r.currentOrigin, NPC->r.currentOrigin, toBlocker );
+			toBlocker[2] = 0.0f;
+			if ( VectorLengthSquared( toBlocker ) < (GRENA_TAILGATE_DIST*GRENA_TAILGATE_DIST) )
+			{
+				// Decide a stable sidestep direction (away from blocker).
+				AngleVectors( NPC->r.currentAngles, NULL, right, NULL );
+				d = DotProduct( right, toBlocker );
+				if ( d > 0.0f )
+				{
+					// Blocker is to our right -> step left if possible, else right.
+					if ( NPC_MoveDirClear( 0, -127, qtrue ) )
+					{
+						TIMER_Set( NPC, "grSideStepL", Q_irand( GRENA_SIDESTEP_MIN_MS, GRENA_SIDESTEP_MAX_MS ) );
+					}
+					else if ( NPC_MoveDirClear( 0, 127, qtrue ) )
+					{
+						TIMER_Set( NPC, "grSideStepR", Q_irand( GRENA_SIDESTEP_MIN_MS, GRENA_SIDESTEP_MAX_MS ) );
+					}
+				}
+				else
+				{
+					// Blocker is to our left -> step right if possible, else left.
+					if ( NPC_MoveDirClear( 0, 127, qtrue ) )
+					{
+						TIMER_Set( NPC, "grSideStepR", Q_irand( GRENA_SIDESTEP_MIN_MS, GRENA_SIDESTEP_MAX_MS ) );
+					}
+					else if ( NPC_MoveDirClear( 0, -127, qtrue ) )
+					{
+						TIMER_Set( NPC, "grSideStepL", Q_irand( GRENA_SIDESTEP_MIN_MS, GRENA_SIDESTEP_MAX_MS ) );
+					}
+				}
+			}
 		}
 	}
-	*/
-	//[/CoOp]
 
 	//If our move failed, then reset
 	if ( moved == qfalse )

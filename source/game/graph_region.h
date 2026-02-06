@@ -6,6 +6,7 @@
 
 namespace ragl
 {
+	template <class Node, int nodeNum, class Edge, int edgeNum, int edgesPerNode>
 	class graph_vs;
 
 
@@ -14,7 +15,7 @@ namespace ragl
 	{
 	public:
 		//constructor using graph_vs as input
-		graph_region(graph_vs <Node, nodeNum, Edge, edgeNum, edgesPerNode> a);
+		graph_region( const graph_vs <Node, nodeNum, Edge, edgeNum, edgesPerNode> &a );
 
 		//I assume this blanks out the class object.
 		void clear(void);

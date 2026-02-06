@@ -1168,7 +1168,7 @@ int PM_SaberLockLoseAnim( playerState_t *genemy, qboolean victory, qboolean supe
 	if ( loseAnim != -1 )
 	{
 #ifdef QAGAME
-		NPC_SetAnim( &g_entities[genemy->clientNum], SETANIM_BOTH, loseAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(&g_entities[genemy->clientNum], SETANIM_BOTH, loseAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 		genemy->weaponTime = genemy->torsoTimer;// + 250;
 #endif
 		genemy->saberBlocked = BLOCKED_NONE;
@@ -1229,7 +1229,7 @@ int PM_SaberLockResultAnim( playerState_t *duelist, qboolean superBreak, qboolea
 	}
 	else
 	{//other guy
-		NPC_SetAnim( &g_entities[duelist->clientNum], SETANIM_BOTH, baseAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+		NPC_SetAnim(&g_entities[duelist->clientNum], SETANIM_BOTH, baseAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 	}
 #else
 	PM_SetAnim( SETANIM_BOTH, baseAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD, 0 );
@@ -2538,11 +2538,11 @@ saberMoveName_t PM_CheckPullAttack( void )
 					vec3_t targAngles = {0,targEnt->client->ps.viewangles[YAW],0};
 					if ( InFront( pm->ps->origin, targEnt->currentOrigin, targAngles ) )
 					{
-						NPC_SetAnim( targEnt, SETANIM_BOTH, BOTH_PULLED_INAIR_F, SETANIM_FLAG_OVERRIDE, SETANIM_FLAG_HOLD );
+						NPC_SetAnim(targEnt, SETANIM_BOTH, BOTH_PULLED_INAIR_F, SETANIM_FLAG_OVERRIDE);
 					}
 					else
 					{
-						NPC_SetAnim( targEnt, SETANIM_BOTH, BOTH_PULLED_INAIR_B, SETANIM_FLAG_OVERRIDE, SETANIM_FLAG_HOLD );
+						NPC_SetAnim(targEnt, SETANIM_BOTH, BOTH_PULLED_INAIR_B, SETANIM_FLAG_OVERRIDE);
 					}
 					//hold the anim until I'm with done pull anim
 					targEnt->client->ps.legsAnimTimer = targEnt->client->ps.torsoAnimTimer = PM_AnimLength( pm->gent->client->clientInfo.animFileIndex, (animNumber_t)saberMoveData[pullAttackMove].animToUse );
@@ -5626,6 +5626,14 @@ void PM_SetSaberMove(short newMove)
 saberInfo_t *BG_MySaber( int clientNum, int saberNum )
 {
 	//returns a pointer to the requested saberNum
+	if ( saberNum < 0 || saberNum >= MAX_SABERS )
+	{
+		return NULL;
+	}
+	if ( clientNum < 0 || clientNum >= MAX_GENTITIES )
+	{
+		return NULL;
+	}
 #ifdef QAGAME
 	gentity_t *ent = &g_entities[clientNum];
 	if ( ent->inuse && ent->client )

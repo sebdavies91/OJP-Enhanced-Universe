@@ -189,7 +189,7 @@ void CG_ParseServerinfo( void ) {
 	cgs.timelimit = atoi( Info_ValueForKey( info, "timelimit" ) );
 	cgs.maxclients = atoi( Info_ValueForKey( info, "sv_maxclients" ) );
 	//[MapURLs]
-	strcpy( cgs.mapURL, Info_ValueForKey( info, "mapURL" ) );
+	Q_strncpyz( cgs.mapURL, Info_ValueForKey( info, "mapURL" ), sizeof( cgs.mapURL ) );
 	//[/MapURLs]
 	cgs.m_nerf = atoi ( Info_ValueForKey( info, "m_nerf" ) );
 	cgs.m_grapple = atoi ( Info_ValueForKey ( info, "m_grapple" ) );
@@ -465,8 +465,7 @@ static void CG_RegisterCustomSounds(clientInfo_t *ci, int setType, const char *p
 			char modifiedSound[MAX_QPATH];
 			char *p;
 
-			strcpy(modifiedSound, s);
-			p = strchr(modifiedSound,'.');
+			Q_strncpyz( modifiedSound, s, sizeof(modifiedSound) );			p = strchr(modifiedSound,'.');
 
 			if (p)
 			{
@@ -482,7 +481,7 @@ static void CG_RegisterCustomSounds(clientInfo_t *ci, int setType, const char *p
 				{
 					*p = 0;
 
-					strcat(modifiedSound, "1.wav");
+					Q_strcat( modifiedSound, sizeof(modifiedSound), "1.wav");
 
 					hSFX = trap_S_RegisterSound( va("sound/chars/%s/misc/%s", psDir, modifiedSound) );
 				}
@@ -841,8 +840,7 @@ static void CG_ConfigStringModified( void ) {
 		cg.intermissionStarted = atoi( str );
 	} else if ( num >= CS_MODELS && num < CS_MODELS+MAX_MODELS ) {
 		char modelName[MAX_QPATH];
-		strcpy(modelName, str);
-		if (strstr(modelName, ".glm") || modelName[0] == '$')
+		Q_strncpyz( modelName, str, sizeof(modelName) );		if (strstr(modelName, ".glm") || modelName[0] == '$')
 		{ //Check to see if it has a custom skin attached.
 			CG_HandleAppendedSkin(modelName);
 			CG_CacheG2AnimInfo(modelName);
@@ -1150,13 +1148,11 @@ void CG_CheckSVStringEdRef(char *buf, const char *str)
 	{
 		if (str)
 		{
-			strcpy(buf, str);
-		}
+			Q_strncpyz( buf, str, sizeof(buf) );		}
 		return;
 	}
 
-	strcpy(buf, str);
-
+	Q_strncpyz( buf, str, sizeof(buf) );
 	strLen = strlen(str);
 
 	if (strLen >= MAX_STRINGED_SV_STRING)
@@ -1703,11 +1699,7 @@ static void CG_ServerCommand( void ) {
 				return;
 			}
 
-			strcpy(name, CG_Argv(1));
-			strcpy(loc, CG_Argv(2));
-			strcpy(color, CG_Argv(3));
-			strcpy(message, CG_Argv(4));
-
+			Q_strncpyz( name, CG_Argv(1), sizeof(name) );			Q_strncpyz( loc, CG_Argv(2), sizeof(loc) );			Q_strncpyz( color, CG_Argv(3), sizeof(color) );			Q_strncpyz( message, CG_Argv(4), sizeof(message) );
 			if (loc[0] == '@')
 			{ //get localized text
 				trap_SP_GetStringTextString(loc+1, loc, MAX_STRING_CHARS);
@@ -1733,11 +1725,7 @@ static void CG_ServerCommand( void ) {
 			return;
 		}
 
-		strcpy(name, CG_Argv(1));
-		strcpy(loc, CG_Argv(2));
-		strcpy(color, CG_Argv(3));
-		strcpy(message, CG_Argv(4));
-
+		Q_strncpyz( name, CG_Argv(1), sizeof(name) );		Q_strncpyz( loc, CG_Argv(2), sizeof(loc) );		Q_strncpyz( color, CG_Argv(3), sizeof(color) );		Q_strncpyz( message, CG_Argv(4), sizeof(message) );
 		if (loc[0] == '@')
 		{ //get localized text
 			trap_SP_GetStringTextString(loc+1, loc, MAX_STRING_CHARS);
@@ -1811,8 +1799,7 @@ static void CG_ServerCommand( void ) {
 	{
 		fileHandle_t file;
 		char name[MAX_STRING_CHARS];
-		strcpy(name, va("video/%s.roq", CG_Argv(1)));
-
+		Q_strncpyz( name, va("video/%s.roq", CG_Argv(1)), sizeof(name) );
 		//precashe the file?
 		trap_FS_FOpenFile( name, &file, FS_READ );	// trigger the file copy
 		if (file)

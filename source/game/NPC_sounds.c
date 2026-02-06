@@ -44,6 +44,27 @@ void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime )
 		return;
 	}
 
+#if defined(CLASS_SABOTEUR) && defined(PW_CLOAKED) && defined(PW_UNCLOAKING)
+	if ( self->client && self->client->NPC_class == CLASS_SABOTEUR )
+	{
+		if ( self->client->ps.powerups[PW_CLOAKED]
+			|| self->client->ps.powerups[PW_UNCLOAKING] > level.time )
+		{
+			/* Cloaked (or still decloaking): don't give away position with combat/alert chatter */
+			if ( (event >= EV_ANGER1 && event <= EV_VICTORY3)
+				|| (event >= EV_CHASE1 && event <= EV_SUSPICIOUS5) )
+			{
+				return;
+			}
+			if ( event >= EV_GIVEUP1 && event <= EV_SUSPICIOUS5 )
+			{
+				return;
+			}
+		}
+	}
+#endif
+
+
 	
 	if ( (self->NPC->scriptFlags&SCF_NO_COMBAT_TALK) && ( (event >= EV_ANGER1 && event <= EV_VICTORY3) || (event >= EV_CHASE1 && event <= EV_SUSPICIOUS5) ) )//(event < EV_FF_1A || event > EV_FF_3C) && (event < EV_RESPOND1 || event > EV_MISSION3) )
 	{

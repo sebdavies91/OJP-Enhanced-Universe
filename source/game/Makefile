@@ -33,7 +33,6 @@ OFILES += g_autosave.o g_active.o g_arenas.o g_bot.o g_breakable.o g_camera.o g_
 			g_syscalls.o g_target.o g_team.o g_timer.o g_trigger.o g_turret.o g_turret_G2.o g_utils.o g_vehicleTurret.o g_vehicles.o g_weapon.o
 OFILES += NPC.o AnimalNPC.o FighterNPC.o SpeederNPC.o WalkerNPC.o
 OFILES += NPC_AI_AssassinDroid.o NPC_AI_Atst.o NPC_AI_Civilian.o NPC_AI_Default.o NPC_AI_Droid.o NPC_AI_GalakMech.o NPC_AI_Grenadier.o NPC_AI_Howler.o NPC_AI_ImperialProbe.o \
-			NPC_AI_Interrogator.o NPC_AI_Jedi.o NPC_AI_Mark1.o NPC_AI_Mark2.o NPC_AI_MineMonster.o NPC_AI_Rancor.o NPC_AI_Remote.o NPC_AI_RocketTrooper.o NPC_AI_SaberDroid.o \
 			NPC_AI_Sand_creature.o NPC_AI_Seeker.o NPC_AI_Sentry.o NPC_AI_Sniper.o NPC_AI_Stormtrooper.o NPC_AI_Utils.o NPC_AI_Wampa.o
 OFILES += NPC_behavior.o NPC_combat.o NPC_goal.o NPC_misc.o NPC_move.o NPC_reactions.o NPC_senses.o NPC_sounds.o NPC_spawn.o NPC_stats.o NPC_utils.o
 OFILES += q_math.o q_shared.o

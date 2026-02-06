@@ -89,9 +89,11 @@ Bots:
 
 Classes setup including (Assault, Support, Officer, Specialist, Aerial, Gunner, Infiltrator, Hunter, Enforcer, Demolition, Grenadier, Incinerator, Pestifier, Freezer, Warrior, Jedi Knight, Jedi Master, Sith Assasin, and Sith Lord.
 
+Bot Types setup including Battlefront (Gunner Behavior), Force Unleashed (Duelist Behavior) and Jedi Academy (Default Behavior).
+
 NPCS:
 
-Adjusted in the cooperative gametype.
+Inspired from singleplayer for the cooperative gametype.
 
 Gametypes:
 

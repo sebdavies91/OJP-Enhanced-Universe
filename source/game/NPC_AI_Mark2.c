@@ -139,7 +139,13 @@ void Mark2_FireBlaster(qboolean advance)
 //	static	vec3_t	muzzle;
 	gentity_t	*missile;
 	mdxaBone_t	boltMatrix;
-	int bolt = trap_G2API_AddBolt(NPC->ghoul2, 0, "*flash");
+	// Cache the muzzle bolt index once per NPC (SP behavior).
+	int bolt = NPCInfo->genericBolt1;
+	if ( bolt == -1 )
+	{
+		bolt = trap_G2API_AddBolt( NPC->ghoul2, 0, "*flash" );
+		NPCInfo->genericBolt1 = bolt;
+	}
 
 	trap_G2API_GetBoltMatrix( NPC->ghoul2, 0, 
 				bolt,
@@ -223,7 +229,7 @@ void Mark2_AttackDecision( void )
 	if (NPCInfo->localState == LSTATE_RISINGUP)
 	{
 		NPC->flags &= ~FL_SHIELDED;
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1START, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 		if ((NPC->client->ps.legsTimer<=0) && 
 			NPC->client->ps.torsoAnim == BOTH_RUN1START )
 		{
@@ -241,7 +247,7 @@ void Mark2_AttackDecision( void )
 			if ( TIMER_Done( NPC, "downTime" ) )	// Down being down?? (The delay is so he doesn't pop up and down when the player goes in and out of range)
 			{
 				NPCInfo->localState = LSTATE_RISINGUP;
-				NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+				NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 				TIMER_Set( NPC, "runTime", Q_irand( 3000, 8000) );	// So he runs for a while before testing to see if he should drop down.
 			}
 		}
@@ -256,7 +262,7 @@ void Mark2_AttackDecision( void )
 	if ((advance) && (TIMER_Done( NPC, "downTime" )) && (NPCInfo->localState == LSTATE_DOWN))
 	{
 		NPCInfo->localState = LSTATE_RISINGUP;
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 		TIMER_Set( NPC, "runTime", Q_irand( 3000, 8000) );	// So he runs for a while before testing to see if he should drop down.
 	}
 
@@ -265,7 +271,7 @@ void Mark2_AttackDecision( void )
 	// Dropping down to shoot
 	if (NPCInfo->localState == LSTATE_DROPPINGDOWN)
 	{
-		NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_RUN1STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE );
+		NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_RUN1STOP, SETANIM_FLAG_HOLD|SETANIM_FLAG_OVERRIDE);
 		TIMER_Set( NPC, "downTime", Q_irand( 3000, 9000) );
 
 		if ((NPC->client->ps.legsTimer<=0) && NPC->client->ps.torsoAnim == BOTH_RUN1STOP )

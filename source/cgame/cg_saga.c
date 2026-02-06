@@ -211,6 +211,7 @@ void CG_PrecacheSiegeObjectiveAssetsForTeam(int myTeam)
 
 
 
+
 void CG_PrecachePlayersForSiegeTeam(int team)
 {
 	siegeTeam_t *stm;
@@ -232,17 +233,17 @@ void CG_PrecachePlayersForSiegeTeam(int team)
 			clientInfo_t fake;
 
 			memset(&fake, 0, sizeof(fake));
-			strcpy(fake.modelName, scl->forcedModel);
+			Q_strncpyz( fake.modelName, scl->forcedModel, sizeof( fake.modelName ) );
 
 			trap_R_RegisterModel(va("models/players/%s/model.glm", scl->forcedModel));
 			if (scl->forcedSkin[0])
 			{
 				trap_R_RegisterSkin(va("models/players/%s/model_%s.skin", scl->forcedModel, scl->forcedSkin));
-				strcpy(fake.skinName, scl->forcedSkin);
+				Q_strncpyz( fake.skinName, scl->forcedSkin, sizeof( fake.skinName ) );
 			}
 			else
 			{
-				strcpy(fake.skinName, "default");
+				Q_strncpyz( fake.skinName, "default", sizeof( fake.skinName ) );
 			}
 
 			//precache the sounds for the model...
@@ -271,11 +272,14 @@ void CG_InitSiegeMode(void)
 	siegeTeam_t* sTeam;
 	fileHandle_t f;
 
-	if (!btime || !teams || !teamInfo) {
-		// handle memory allocation failure
-		CG_Error("Memory allocation failed in CG_InitSiegeMode");
-		return;
-	}
+if (!btime || !teams || !teamInfo) {
+    if (btime)    BG_TempFree(1024);
+    if (teams)    BG_TempFree(2048);
+    if (teamInfo) BG_TempFree(MAX_SIEGE_INFO_SIZE);
+
+    CG_Error("Memory allocation failed in CG_InitSiegeMode");
+    return;
+}
 
 	if (cgs.gametype != GT_SIEGE)
 	{
@@ -328,8 +332,7 @@ void CG_InitSiegeMode(void)
 		siege_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, sizeof(buf));
 		if (buf[0] && Q_stricmp(buf, "none"))
 		{
-			strcpy(team1, buf);
-		}
+			Q_strncpyz( team1, buf, sizeof(team1) );		}
 		else
 		{
 			BG_SiegeGetPairedValue(teams, "team1", team1);
@@ -349,8 +352,7 @@ void CG_InitSiegeMode(void)
 		siege_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, sizeof(buf));
 		if (buf[0] && Q_stricmp(buf, "none"))
 		{
-			strcpy(team2, buf);
-		}
+			Q_strncpyz( team2, buf, sizeof(team2) );		}
 		else
 		{
 			BG_SiegeGetPairedValue(teams, "team2", team2);
@@ -1179,6 +1181,7 @@ void CG_SiegeObjectiveCompleted(centity_t* ent, int won, int objectivenum)
     // Free memory using BG_TempFree instead of memset
     BG_TempFree(MAX_SIEGE_INFO_SIZE);
 }
+
 
 
 

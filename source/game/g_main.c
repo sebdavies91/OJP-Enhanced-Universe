@@ -18,6 +18,9 @@
 #define DEADBODYSPHYSICS 0
 //[/Experimental]
 
+// SP parity: used as a global kill-switch to stop ICARUS script execution.
+qboolean stop_icarus = qfalse;
+
 level_locals_t	level;
 
 int		eventClearTime = 0;
@@ -642,7 +645,10 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &pmove_fixed, "pmove_fixed", "0", CVAR_SYSTEMINFO, 0, qfalse},
 	{ &pmove_msec, "pmove_msec", "8", CVAR_SYSTEMINFO, 0, qfalse},
 
-	{ &g_dismember, "g_dismember", "0", CVAR_ARCHIVE, 0, qtrue  },
+	// Multiplayer dismemberment (server-side):
+	// 0 = off, 1-99 = percent chance, 100 = always.
+	// This drives whether the server spawns G2_MODEL_PART limb entities.
+	{ &g_dismember, "g_dismember", "100", CVAR_ARCHIVE|CVAR_SERVERINFO },
 	{ &g_forceDodge, "g_forceDodge", "1", 0, 0, qtrue  },
 
 	{ &g_timeouttospec, "g_timeouttospec", "70", CVAR_ARCHIVE, 0, qfalse },
@@ -1008,7 +1014,7 @@ Q_EXPORT intptr_t vmMain( int command, intptr_t arg0, intptr_t arg1, intptr_t ar
 
 			if (crap)
 			{ //success!
-				strcpy(sharedMem->value, crap);
+				Q_strncpyz(sharedMem->value, crap, sizeof(sharedMem->value));
 			}
 
 
@@ -1059,7 +1065,7 @@ void QDECL G_Printf( const char *fmt, ... ) {
 	char		text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
 	va_end (argptr);
 
 	trap_Printf( text );
@@ -1070,7 +1076,7 @@ void QDECL G_Error( const char *fmt, ... ) {
 	char		text[1024];
 
 	va_start (argptr, fmt);
-	vsprintf (text, fmt, argptr);
+	Q_vsnprintf( text, sizeof( text ), fmt, argptr );
 	va_end (argptr);
 
 	trap_Error( text );
@@ -1254,6 +1260,8 @@ extern void G_LoadArenas(void);
 
 void SP_light( gentity_t *self );//[Experimental]
 
+
+extern void BG_ResetAlloc(void);
 void G_InitGame( int levelTime, int randomSeed, int restart ) {
 	int					i;
 	vmCvar_t	mapname;
@@ -1269,7 +1277,7 @@ void G_InitGame( int levelTime, int randomSeed, int restart ) {
 
 	//Clean up any client-server ghoul2 instance attachments that may still exist exe-side
 	trap_G2API_CleanEntAttachments();
-
+	BG_ResetAlloc();   // REQUIRED
 	BG_InitAnimsets(); //clear it out
 
 	B_InitAlloc(); //make sure everything is clean
@@ -1680,7 +1688,7 @@ void QDECL Com_Error ( int level, const char *error, ... ) {
 	char		text[1024];
 
 	va_start (argptr, error);
-	vsprintf (text, error, argptr);
+	Q_vsnprintf( text, sizeof( text ), error, argptr );
 	va_end (argptr);
 
 	G_Error( "%s", text);
@@ -1691,7 +1699,7 @@ void QDECL Com_Printf( const char *msg, ... ) {
 	char		text[1024];
 
 	va_start (argptr, msg);
-	vsprintf (text, msg, argptr);
+	Q_vsnprintf( text, sizeof( text ), msg, argptr );
 	va_end (argptr);
 
 	G_Printf ("%s", text);
@@ -3860,7 +3868,7 @@ void G_KickAllBots(void)
 		{
 			continue;
 		}
-		strcpy(netname, cl->pers.netname);
+		Q_strncpyz(netname, cl->pers.netname, sizeof(netname));
 		Q_CleanStr(netname);
 		trap_SendConsoleCommand( EXEC_INSERT, va("kick \"%s\"\n", netname) );
 	}
@@ -4093,7 +4101,7 @@ void CheckCvars( void ) {
 		char *c = password;
 		lastMod = g_password.modificationCount;
 		
-		strcpy( password, g_password.string );
+		Q_strncpyz(password, g_password.string, sizeof(password));
 		while( *c )
 		{
 			if ( *c == '%' )

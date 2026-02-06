@@ -1087,24 +1087,98 @@ gentity_t *AI_DistributeAttack( gentity_t *attacker, gentity_t *enemy, npcteam_t
 	int			j;
 	vec3_t		mins, maxs;
 
+	if ( !attacker )
+	{
+		return enemy;
+	}
+
+	// Static analysis: protect against NULL/invalid enemy pointers.
+	if ( !enemy )
+	{
+		return NULL;
+	}
+	if ( !enemy->client )
+	{
+		return enemy;
+	}
+
 	//Don't take new targets
 //	if ( NPC->svFlags & SVF_LOCKEDENEMY )
 //		return enemy;
 
 	numSurrounding = AI_GetGroupSize( enemy->r.currentOrigin, 48, team, attacker );
 
-	//First, see if we should look for the player
-	if ( enemy != &g_entities[0] )
+	//First, see if we should look for a player.
+	// In SP, this is always the single player (g_entities[0]).
+	// In MP/co-op, pick any *active* player who isn't already overwhelmed.
 	{
-		//rwwFIXMEFIXME: care about all clients not just 0
-		int	aroundPlayer = AI_GetGroupSize( g_entities[0].r.currentOrigin, 48, team, attacker );
+		qboolean currentEnemyIsPlayer = qfalse;
 
-		//See if we're above our threshold
-		if ( aroundPlayer < threshold )
+		if ( enemy && enemy->client &&
+			 enemy->s.number >= 0 && enemy->s.number < level.maxclients &&
+			 enemy->inuse &&
+			 enemy->client->pers.connected == CON_CONNECTED &&
+			 enemy->client->sess.sessionTeam != TEAM_SPECTATOR )
 		{
-			return &g_entities[0];
+			currentEnemyIsPlayer = qtrue;
+		}
+
+		if ( !currentEnemyIsPlayer )
+		{
+			gentity_t	*bestPlayer = NULL;
+			int			bestAround = 9999;
+			float		bestDistSqr = 0.0f;
+			int			p;
+
+			for ( p = 0; p < level.maxclients; p++ )
+			{
+				gentity_t *player = &g_entities[p];
+				int around;
+				float distSqr;
+				vec3_t dif;
+
+				if ( !player || !player->client || !player->inuse )
+				{
+					continue;
+				}
+				if ( player->client->pers.connected != CON_CONNECTED )
+				{
+					continue;
+				}
+				if ( player->client->sess.sessionTeam == TEAM_SPECTATOR )
+				{
+					continue;
+				}
+				if ( player->health <= 0 || (player->s.eFlags & EF_DEAD) )
+				{
+					continue;
+				}
+
+				around = AI_GetGroupSize( player->r.currentOrigin, 48, team, attacker );
+
+				if ( around >= threshold )
+				{
+					continue;
+				}
+
+				VectorSubtract( player->r.currentOrigin, attacker->r.currentOrigin, dif );
+				distSqr = VectorLengthSquared( dif );
+
+				if ( !bestPlayer || around < bestAround || (around == bestAround && distSqr < bestDistSqr) )
+				{
+					bestPlayer = player;
+					bestAround = around;
+					bestDistSqr = distSqr;
+				}
+			}
+
+			if ( bestPlayer )
+			{
+				return bestPlayer;
+			}
 		}
 	}
+
 
 	//See if our current enemy is still ok
 	if ( numSurrounding < threshold )
@@ -1162,7 +1236,7 @@ gentity_t *FindClosestPlayer(vec3_t position, int enemyTeam)
 	float dist;
 	float bestdist = 9999;
 	gentity_t *closestplayer = NULL;
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		player = &g_entities[i];
 		if(!player || !player->client || !player->inuse
@@ -1201,7 +1275,7 @@ float DistancetoClosestPlayer(vec3_t position, int enemyTeam)
 	int i;
 	float dist;
 	float bestdist = 9999;
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		player = &g_entities[i];
 		if(!player || !player->client || !player->inuse
@@ -1238,7 +1312,7 @@ qboolean InPlayersFOV(vec3_t position, int enemyTeam, int hFOV,
 	//CheckClearLOS = toggle check a clear LOS
 	gentity_t *player;
 	int i;
-	for(i = 0; i < MAX_CLIENTS; i++)
+	for ( i = 0; i < level.maxclients; i++ )
 	{
 		player = &g_entities[i];
 		if(!player || !player->client || !player->inuse
@@ -1274,3 +1348,77 @@ qboolean InPlayersFOV(vec3_t position, int enemyTeam, int hFOV,
 	return qfalse;
 }
 //[/CoOp]
+
+
+/*
+================================================================================
+SP-inspired MP helper: conservative group enemy sharing for non-saber NPCs.
+
+SP trooper AIs feel "aware" largely because their state machine keeps pressure on
+a known threat and doesn't let squadmates drift. MP already has group structures;
+this helper just synchronizes enemy selection through that existing system.
+
+Safety rules:
+- Never runs for saber users.
+- Does nothing if d_noGroupAI is enabled or no group exists.
+- Does NOT change bStates, movement, or weapon logic.
+================================================================================
+*/
+void NPC_NonSaber_GroupEnemyThink( int distributeThreshold )
+{
+	AIGroupInfo_t *group;
+	gentity_t *newEnemy;
+
+	if ( !NPC || !NPC->client || !NPC->NPC )
+	{
+		return;
+	}
+
+	// Safety: do not interfere with saber behavior at all.
+	if ( NPC->client->ps.weapon == WP_SABER )
+	{
+		return;
+	}
+
+	if ( d_noGroupAI.integer )
+	{
+		return;
+	}
+
+	// Build/update a group for this NPC (MP feature). No-op if groups disabled for this NPC.
+	AI_GetGroup( NPC );
+
+	group = NPC->NPC->group;
+	if ( !group )
+	{
+		return;
+	}
+
+	// If we have a valid enemy, publish it to the group.
+	if ( NPC->enemy && NPC->enemy->inuse && NPC->enemy->health > 0 )
+	{
+		if ( !group->enemy || !group->enemy->inuse || group->enemy->health <= 0 )
+		{
+			group->enemy = NPC->enemy;
+		}
+
+		// Update last-seen info for search/coordination.
+		group->lastSeenEnemyTime = level.time;
+		VectorCopy( NPC->enemy->r.currentOrigin, group->enemyLastSeenPos );
+	}
+	// Otherwise, if the group has a valid enemy, inherit it.
+	else if ( group->enemy && group->enemy->inuse && group->enemy->health > 0 )
+	{
+		G_SetEnemy( NPC, group->enemy );
+	}
+
+	// Optional: reduce extreme dogpiling. Disabled by default by passing 0.
+	if ( distributeThreshold > 0 && NPC->enemy && NPC->enemy->client )
+	{
+		newEnemy = AI_DistributeAttack( NPC, NPC->enemy, NPC->client->playerTeam, distributeThreshold );
+		if ( newEnemy && newEnemy != NPC->enemy )
+		{
+			G_SetEnemy( NPC, newEnemy );
+		}
+	}
+}

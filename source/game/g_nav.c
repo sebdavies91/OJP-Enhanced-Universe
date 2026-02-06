@@ -1650,12 +1650,15 @@ qboolean NAV_WaypointsTooFar( gentity_t *wp1, gentity_t *wp2 )
 			Com_sprintf( temp, sizeof(temp), S_COLOR_RED"Waypoint conn %s->%s > 1024\n", wp1->targetname, wp2->targetname );
 		}
 		len = strlen( temp );
-		if ( (fatalErrorPointer-fatalErrorString)+len >= sizeof( fatalErrorString ) )
+		// We will copy len bytes plus a NUL terminator into fatalErrorString.
+		// fatalErrorPointer points inside fatalErrorString; avoid strcat/strcpy here.
+		if ( (fatalErrorPointer-fatalErrorString)+len+1 >= sizeof( fatalErrorString ) )
 		{
 			Com_Error( ERR_DROP, "%s%s%dTOO MANY FATAL NAV ERRORS!!!\n", fatalErrorString, temp, fatalErrors );
 			return qtrue;
 		}
-		strcat( fatalErrorPointer, temp );
+		// temp is already NUL-terminated.
+		memmove( fatalErrorPointer, temp, len + 1 );
 		fatalErrorPointer += len;
 		return qtrue;
 	}

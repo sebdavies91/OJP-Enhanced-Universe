@@ -1,0 +1,1183 @@
+//[NewMenus]
+//-----------------------------------
+// Gunery Skills
+//-----------------------------------
+//
+// This menu works the same as the ingame_playergunnery2.menu.
+//
+
+{
+	menuDef 
+	{
+		name						"ingame_playergunnery2"
+		visible						1
+		fullscreen					0
+//		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
+		rect						120 45 570 400
+		focusColor					0 0.4 0.8 1								// Focus color for text and items
+		style						1
+		border						1
+		descX						380
+		descY						422
+		descScale					1
+		descColor					0 0.4 0.8 1
+		descAlignment				ITEM_ALIGN_CENTER		
+		onOpen  
+		{ 
+			uiScript setForce "none"
+		}
+		onClose 
+		{ 
+			uiScript setForce "none"
+		//	open			ingame_player 
+		}
+		onEsc
+		{
+			close ingame_playergunnery2 ;
+		}
+		
+//------------------------------------------------------------------------------------------------
+// Gunnery2
+//------------------------------------------------------------------------------------------------
+
+		// Gunnery2 Title
+		itemDef
+		{
+			name 				gunnery2title
+			style				WINDOW_STYLE_FILLED
+			text				"Choose your heavy weapons"
+			rect				5 0 520 25
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			255
+			textaligny			0
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 1
+			font				3
+			textscale			1
+			forecolor			1 1 1 1
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+		}
+		
+		itemDef
+		{
+			name				descbackground
+			style				0
+			rect				5 390 520 20
+			backcolor			0 0 0 1
+			forecolor			1 1 1 1
+			border				0
+			visible				1
+		}
+		
+		// Force points remaining
+		itemDef 
+		{
+			name				siderank
+			group				"playersettingforcegroup"
+			style				WINDOW_STYLE_EMPTY	
+			text				@MENUS_POINTS_REMAINING
+			ownerdraw			UI_FORCE_POINTS
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				2
+			textscale			0.7
+			forecolor			1 1 1 1
+			outlinecolor		1 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			0 0 0 0
+			visible				1 
+			decoration
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////
+		// The Weapon Skills
+		////////////////////////////////////////////////////////////////////////////////
+		
+		// Force Ranks title	
+		
+		itemDef 
+		{
+			name				forceranktitle
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Sniper Rifles"
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}
+
+		// disruptor title by JRHockney
+		itemDef 
+		{
+			name					setsk_disruptor
+			group					gunpowers
+			style					0	
+			text					"Sniper Rifle:"
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+						forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+		
+				// diruptor assign by JRHockney
+		itemDef 
+		{
+			name					setsk_disruptor
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_DISRUPTOR   
+			rect					80 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+					forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Sniper Rifle"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_disruptor forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_disruptor forecolor .2 1 .2 1
+			}
+		}
+		
+			// disruptorA title
+		itemDef 
+		{
+			name					setsk_disruptorA
+			group					gunpowers
+			style					0	
+			text					"DXR-6 / DLT-20A / DC-15X:"
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+	
+		// disruptorA assign
+		itemDef 
+		{
+			name					setsk_disruptorA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_DISRUPTORA
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Tenloss DXR-6 Disruptor Rifle / Blastech DLT-20A Laser Rifle / Blastech DC-15X Laser Rifle"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_disruptorA forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_disruptorA forecolor .2 1 .2 1
+			}
+		}
+
+
+			// disruptorB title
+		itemDef 
+		{
+			name					setsk_disruptorB
+			group					gunpowers 
+			style					0	
+			text					"E-5s / Cycler / PSG:"
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+		// disruptorB assign
+		itemDef 
+		{
+			name					setsk_disruptorB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_DISRUPTORB
+			rect					80 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Baktoid E-5S Disruptor Rifle / Tusken Cycler Projectile Rifle / Imperial PSG Disruptor Rifle"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_disruptorB forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_disruptorB forecolor .2 1 .2 1
+			}
+		}
+
+
+		
+			// Force Ranks title	
+		
+		itemDef 
+		{
+			name				forceranktitleA
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Repeater Rifles"
+			rect				430 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2A
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				380 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}		
+		// repeater title
+		itemDef 
+		{
+			name					setsk_repeater
+			group					gunpowers
+			style					0	
+			text					"Repeater Rifle:"
+			rect					430 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+		
+		// repeater assign
+		itemDef 
+		{
+			name					setsk_repeater
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_REPEATER
+			rect					330 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+					forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Repeater Rifle"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_repeater forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_repeater forecolor .2 1 .2 1
+			}
+		}
+			// repeaterA title
+		itemDef 
+		{
+			name					setsk_repeaterA
+			group					gunpowers
+			style					0	
+			text					"TL-50 / DLT-18 / DC-15A:"
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+
+	
+		// repeaterA assign
+		itemDef 
+		{
+			name					setsk_repeaterA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_REPEATERA
+			rect					330 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Imperial TL-50 Repeater Rifle / Blastech DLT-18 Repeater Rifle / Blastech DC-15A Repeater Rifle"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_repeaterA forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_repeaterA forecolor .2 1 .2 1
+			}
+		}
+
+
+			// repeaterB title
+		itemDef 
+		{
+			name					setsk_repeaterB
+			group					gunpowers
+			style					0	
+			text					"T-21 / DC-17M / FWMB-10:"
+			rect					430 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+		// repeaterB assign
+		itemDef 
+		{
+			name					setsk_repeaterB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_REPEATERB
+			rect					330 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Blastech T-21 Repeater Rifle / Blastech DC-17M Repeater Rifle / Merr Sonn FWMB-10 Repeater Rifle"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_repeaterB forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_repeaterB forecolor .2 1 .2 1
+			}
+		}
+
+
+		
+		
+			// Force Ranks title	
+		
+		itemDef 
+		{
+			name				forceranktitleB
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Shot/Array Guns"
+			rect				180 165 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2B
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 165 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}				
+		// t-21 title
+		itemDef 
+		{
+			name					setsk_flechette
+			group					gunpowers
+			style					0	
+			text					"Shot/Array Gun:"
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+		
+		// t-21 assign
+		itemDef 
+		{
+			name					setsk_flechette
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_FLECHETTE  
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+					forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Shot/Array Gun"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_flechette forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_flechette forecolor .2 1 .2 1
+			}
+		}
+		
+			// flechetteA title
+		itemDef 
+		{
+			name					setsk_flechetteA
+			group					gunpowers
+			style					0	
+			text					"FC-1 / K-16S / DBA:"
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+
+	
+		// flechetteA assign
+		itemDef 
+		{
+			name					setsk_flechetteA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_FLECHETTEA
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Golan Arms FC-1 Shotgun / Bryar K-16 Shotgun / Blastech DBA Array Gun"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_flechetteA forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_flechetteA forecolor .2 1 .2 1
+			}
+		}
+
+
+			// flechetteB title
+		itemDef 
+		{
+			name					setsk_flechetteB
+			group					gunpowers
+			style					0	
+			text					"ACP / CR-1 / S-22:"
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+		// flechetteB assign
+		itemDef 
+		{
+			name					setsk_flechetteB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_FLECHETTEB
+			rect					80 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Arakyd ACP Array Gun / Golan Arms CR-1 Shotgun / Imperial S-22 Shotgun"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_flechetteB forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_flechetteB forecolor .2 1 .2 1
+			}
+		}
+
+
+
+		
+			// Force Ranks title	
+		
+		itemDef 
+		{
+			name				forceranktitleC
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Conc/Rotary Cannons"
+			rect				430 165 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2C
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				380 165 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}				
+		
+			// concussion title
+		itemDef 
+		{
+			name					setsk_concussion
+			group					gunpowers
+			style					0	
+			text					"Conc/Rotary Cannon:"
+			rect					430 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+		// concussion assign
+		itemDef 
+		{
+			name					setsk_concussion
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_CONCUSSION
+			rect					330 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+					forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Concussion/Rotary Cannon"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_concussion forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_concussion forecolor .2 1 .2 1
+			}
+		}
+			// concussionA title
+		itemDef 
+		{
+			name					setsk_concussionA
+			group					gunpowers
+			style					0	
+			text					"Stouker / LJ-70 / Pulse:"
+			rect					430 195 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+	
+		// concussionA assign
+		itemDef 
+		{
+			name					setsk_concussionA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_CONCUSSIONA
+			rect					330 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Stouker Concussion Cannon / Arakyd LJ-70 Concussion Cannon / Merr Sonn Pulse Cannon"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_concussionA forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_concussionA forecolor .2 1 .2 1
+			}
+		}
+
+
+			// concussionB title
+		itemDef 
+		{
+			name					setsk_concussionB
+			group					gunpowers
+			style					0	
+			text					"Sonic / Z-6 / Z-12:"
+			rect					430 210 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+		// concussionB assign
+		itemDef 
+		{
+			name					setsk_concussionB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_CONCUSSIONB
+			rect					330 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Geonosian Sonic Cannon / Merr Sonn Z-6 Rotary Cannon / Merr Sonn Z-12 Rotary Cannon"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_concussionBforecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_concussionB forecolor .2 1 .2 1
+			}
+		}		
+		
+		
+		itemDef 
+		{
+			name				forceranktitleD
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Rocket/Grenade Launchers"
+			rect				180 255 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2D
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 255 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}			
+			// rocket title
+		itemDef 
+		{
+			name					setsk_rocket
+			group					gunpowers
+			style					0	
+			text					"Rocket/Grenade Launcher:"
+			rect					180 270 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+		// rocket assign
+		itemDef 
+		{
+			name					setsk_rocket
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_ROCKETS
+			rect					80 270 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Rocket/Grenade Launcher"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_rocket forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_rocket forecolor .2 1 .2 1
+			}
+		}
+			// rocketA title
+		itemDef 
+		{
+			name					setsk_rocketA
+			group					gunpowers
+			style					0	
+			text					"PLX-2M / MML / PLX-1:"
+			rect					180 285 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+
+
+	
+		// rocketA assign
+		itemDef 
+		{
+			name					setsk_rocketA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_ROCKETSA
+			rect					80 285 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Merr Sonn PLX-2M Rocket Launcher / Krupx MML Rocket Launcher / Merr Sonn PLX-1 Rocket Launcher"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_rocketA forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_rocketA forecolor .2 1 .2 1
+			}
+		}
+
+
+
+
+			// rocketB title
+		itemDef 
+		{
+			name					setsk_rocketB
+			group					gunpowers
+			style					0	
+			text					"E-60R / MG-T / MG-F:"
+			rect					180 300 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			visible					1 
+			decoration
+		}
+	
+		// rocketB assign
+		itemDef 
+		{
+			name					setsk_rocketB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_ROCKETSB
+			rect					80 300 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor				.2 1 .2 1
+			outlinecolor			1 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				0 0 0 0
+			descText				"Baktoid E-60R Rocket Launcher / Packered MG-T Grenade Launcher / Packered MG-F Grenade Launcher"
+			visible					1 
+			action 
+			{ 
+				play			"sound/interface/button1.wav" ;
+			}
+
+			mouseenter 
+			{ 
+				setitemcolor	setsk_rocketB forecolor .7 1 2. 1
+			}
+			mouseexit 
+			{ 
+				setitemcolor	setsk_rocketB forecolor .2 1 .2 1
+			}
+		}		
+
+					
+	
+
+		
+	}
+}
+//[/NewMenus]

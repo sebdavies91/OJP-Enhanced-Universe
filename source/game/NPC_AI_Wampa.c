@@ -13,6 +13,16 @@
 
 float enemyDist = 0;
 
+// In MP, NPC_GetEntsNearBolt is used by several creature AIs (e.g. rancor/howler),
+// but it is not declared in a shared header for all translation units.
+// Provide a local prototype to avoid MSVC implicit-int warnings.
+extern int NPC_GetEntsNearBolt( int *radiusEnts, float radius, int boltIndex, vec3_t boltOrg );
+
+// Wampa grab/hold support (MP): modeled after the SP/MP rancor grab system.
+static void Wampa_DropVictim( gentity_t *self );
+static qboolean Wampa_TryGrab( void );
+static void Wampa_HoldVictim( void );
+
 void Wampa_SetBolts( gentity_t *self )
 {
 	if ( self && self->client )
@@ -32,6 +42,237 @@ void Wampa_SetBolts( gentity_t *self )
 		//ri->kneeRBolt = trap_G2API_AddBolt(self->ghoul2, 0, "*hips_r_knee");
 		ri->footLBolt = trap_G2API_AddBolt(self->ghoul2, 0, "*l_leg_foot");
 		ri->footRBolt = trap_G2API_AddBolt(self->ghoul2, 0, "*r_leg_foot");
+	}
+}
+
+static void Wampa_DropVictim( gentity_t *self )
+{
+	gentity_t	*victim;
+vec3_t		start, end, dropOrg;
+	trace_t		tr;
+if ( !self || !self->activator || !self->activator->client )
+	{
+		if ( self )
+		{
+			self->count = 0;
+			self->activator = NULL;
+		}
+		return;
+	}
+
+	victim = self->activator;
+
+	victim->client->ps.eFlags2 &= ~EF2_HELD_BY_MONSTER;
+	victim->client->ps.hasLookTarget = qfalse;
+	victim->client->ps.lookTarget = ENTITYNUM_NONE;
+
+	// Clear any held victim anim timers so movement/anim can resume immediately.
+	victim->client->ps.legsTimer = 0;
+	victim->client->ps.torsoTimer = 0;
+
+	// Clear any "all times" locks so the client regains control immediately.
+	victim->client->ps.pm_time = 0;
+	victim->client->ps.pm_flags &= ~PMF_ALL_TIMES;
+	victim->client->ps.groundEntityNum = ENTITYNUM_NONE;
+
+	// Drop the victim to a safe, non-solid position and land them on real world ground.
+	// Important: do not rely on a single forward drop; if the Wampa is near walls/ledges,
+	// that can place the victim inside architecture. Try several directions.
+	{
+		vec3_t yawAngles;
+		vec3_t fwd, right;
+		vec3_t dirs[4];
+		float dists[2] = { 160.0f, 224.0f };
+		int dirI, distI;
+		qboolean placed = qfalse;
+
+		yawAngles[PITCH] = 0.0f;
+		yawAngles[YAW] = self->r.currentAngles[YAW];
+		yawAngles[ROLL] = 0.0f;
+		AngleVectors( yawAngles, fwd, right, NULL );
+		VectorNormalize( fwd );
+		VectorNormalize( right );
+
+		VectorCopy( fwd, dirs[0] );
+		VectorCopy( right, dirs[1] );
+		VectorScale( right, -1.0f, dirs[2] );
+		VectorScale( fwd, -1.0f, dirs[3] );
+
+		// Temporarily unlink the victim so we don't collide with their existing (held) link state.
+		trap_UnlinkEntity( victim );
+
+		for ( distI = 0; distI < 2 && !placed; distI++ )
+		{
+			for ( dirI = 0; dirI < 4 && !placed; dirI++ )
+			{
+				VectorCopy( self->r.currentOrigin, start );
+				VectorMA( start, dists[distI], dirs[dirI], start );
+				start[2] += 96.0f; // start above so we can fall to ground
+
+				// Is the candidate start position free?
+				trap_Trace( &tr, start, victim->r.mins, victim->r.maxs, start, self->s.number, MASK_PLAYERSOLID );
+				if ( tr.startsolid || tr.allsolid )
+				{
+					continue;
+				}
+
+				VectorCopy( start, end );
+				end[2] -= 1024.0f;
+				trap_Trace( &tr, start, victim->r.mins, victim->r.maxs, end, self->s.number, MASK_PLAYERSOLID );
+				if ( tr.startsolid || tr.allsolid )
+				{
+					continue;
+				}
+				if ( tr.fraction >= 1.0f )
+				{
+					continue; // no ground found
+				}
+
+				VectorCopy( tr.endpos, dropOrg );
+				dropOrg[2] += 1.0f; // small epsilon
+
+				// Final occupancy check.
+				trap_Trace( &tr, dropOrg, victim->r.mins, victim->r.maxs, dropOrg, self->s.number, MASK_PLAYERSOLID );
+				if ( tr.startsolid || tr.allsolid )
+				{
+					continue;
+				}
+
+				VectorCopy( dropOrg, victim->client->ps.origin );
+				G_SetOrigin( victim, dropOrg );
+				VectorClear( victim->client->ps.velocity );
+				victim->client->ps.groundEntityNum = tr.entityNum;
+				trap_LinkEntity( victim );
+				placed = qtrue;
+			}
+		}
+
+		if ( !placed )
+		{
+			// Worst-case fallback: put them at the Wampa origin and let the server fix-up on release handle it.
+			VectorCopy( self->r.currentOrigin, dropOrg );
+			dropOrg[2] += 96.0f;
+			VectorCopy( dropOrg, victim->client->ps.origin );
+			G_SetOrigin( victim, dropOrg );
+			VectorClear( victim->client->ps.velocity );
+			victim->client->ps.groundEntityNum = ENTITYNUM_NONE;
+			trap_LinkEntity( victim );
+		}
+	}
+// Prevent instant re-grab loops.
+	TIMER_Set( self, "wampaNoGrab", 1500 );
+
+	// If we were focusing our enemy pointer on the held victim, clear it.
+	if ( self->enemy == victim )
+	{
+		self->enemy = NULL;
+	}
+
+	// Let go.
+	self->count = 0;
+	self->activator = NULL;
+}
+
+static qboolean Wampa_TryGrab( void )
+{
+	int     radiusEntNums[128];
+	int     numEnts;
+	int     i;
+	vec3_t  boltOrg;
+	const int   boltIndex = NPC->client->renderInfo.handRBolt;
+	const float radius = 80.0f;
+
+	if ( NPC->count )
+	{
+		return qfalse;
+	}
+	if ( !TIMER_Done( NPC, "wampaNoGrab" ) )
+	{
+		return qfalse;
+	}
+	if ( !NPC->enemy || !NPC->enemy->client || NPC->enemy->health <= 0 )
+	{
+		return qfalse;
+	}
+	if ( NPC->enemy->client->ps.eFlags2 & EF2_HELD_BY_MONSTER )
+	{
+		return qfalse;
+	}
+
+	// Don't grab "large" classes or special cases (mirrors other monster AI checks).
+	if ( NPC->enemy->client->NPC_class == CLASS_RANCOR
+		|| NPC->enemy->client->NPC_class == CLASS_WAMPA
+		|| NPC->enemy->client->NPC_class == CLASS_ATST )
+	{
+		return qfalse;
+	}
+
+	numEnts = NPC_GetEntsNearBolt( radiusEntNums, radius, boltIndex, boltOrg );
+
+	for ( i = 0; i < numEnts; i++ )
+	{
+		gentity_t *ent = &g_entities[radiusEntNums[i]];
+
+		if ( !ent->inuse || ent == NPC )
+		{
+			continue;
+		}
+		if ( ent != NPC->enemy )
+		{
+			continue;
+		}
+		if ( !ent->client || ent->health <= 0 )
+		{
+			continue;
+		}
+		if ( ent->client->ps.eFlags2 & EF2_HELD_BY_MONSTER )
+		{
+			return qfalse;
+		}
+
+		NPC->activator = ent;
+		NPC->count = 1;
+
+		ent->client->ps.eFlags2 |= EF2_HELD_BY_MONSTER;
+		ent->client->ps.hasLookTarget = qtrue;
+		ent->client->ps.lookTarget = NPC->s.number;
+
+		// Freeze victim in a safe generic pose while held.
+		NPC_SetAnim( ent, SETANIM_BOTH, BOTH_SWIM_IDLE1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+		ent->client->ps.torsoTimer = 0;
+		ent->client->ps.legsTimer = 0;
+
+		// Bite shortly after grabbing; also auto-drop as a safety net.
+		TIMER_Set( NPC, "wampaBite", 1200 );
+		TIMER_Set( NPC, "clearGrabbed", 3500 );
+
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void Wampa_HoldVictim( void )
+{
+	if ( !NPC->activator || !NPC->activator->inuse || !NPC->activator->client )
+	{
+		Wampa_DropVictim( NPC );
+		return;
+	}
+
+	// Don't spin chasing the held victim.
+	ucmd.forwardmove = ucmd.rightmove = ucmd.upmove = 0;
+
+	// Periodic bite damage.
+	if ( TIMER_Done( NPC, "wampaBite" ) )
+	{
+		G_Damage( NPC->activator, NPC, NPC, NULL, NPC->activator->r.currentOrigin, 25, DAMAGE_NO_KNOCKBACK, MOD_MELEE );
+		TIMER_Set( NPC, "wampaBite", 900 );
+	}
+
+	if ( NPC->activator->health <= 0 || TIMER_Done( NPC, "clearGrabbed" ) )
+	{
+		Wampa_DropVictim( NPC );
 	}
 }
 
@@ -80,7 +321,7 @@ qboolean Wampa_CheckRoar( gentity_t *self )
 	if ( self->wait < level.time )
 	{
 		self->wait = level.time + Q_irand( 5000, 20000 );
-		NPC_SetAnim( self, SETANIM_BOTH, Q_irand(BOTH_GESTURE1,BOTH_GESTURE2), (SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD) );
+		NPC_SetAnim(self, SETANIM_BOTH, Q_irand(BOTH_GESTURE1,BOTH_GESTURE2), (SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD));
 		TIMER_Set( self, "rageTime", self->client->ps.legsTimer );
 		return qtrue;
 	}
@@ -174,7 +415,6 @@ extern void G_Knockdown( gentity_t *self, gentity_t *attacker, const vec3_t push
 //extern void G_Knockdown( gentity_t *victim );
 //[/KnockdownSys]
 extern void G_Dismember( gentity_t *ent, gentity_t *enemy, vec3_t point, int limbType, float limbRollBase, float limbPitchBase, int deathAnim, qboolean postDeath );
-extern int NPC_GetEntsNearBolt( int *radiusEnts, float radius, int boltIndex, vec3_t boltOrg );
 
 void Wampa_Slash( int boltIndex, qboolean backhand )
 {
@@ -241,11 +481,11 @@ void Wampa_Slash( int boltIndex, qboolean backhand )
 					int hitLoc = Q_irand( G2_MODELPART_HEAD, G2_MODELPART_RLEG );
 					if ( hitLoc == G2_MODELPART_HEAD )
 					{
-						NPC_SetAnim( radiusEnt, SETANIM_BOTH, BOTH_DEATH17, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+						NPC_SetAnim(radiusEnt, SETANIM_BOTH, BOTH_DEATH17, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					}
 					else if ( hitLoc == G2_MODELPART_WAIST )
 					{
-						NPC_SetAnim( radiusEnt, SETANIM_BOTH, BOTH_DEATHBACKWARD2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+						NPC_SetAnim(radiusEnt, SETANIM_BOTH, BOTH_DEATHBACKWARD2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					}
 					G_Dismember( radiusEnt, NPC, radiusEnt->r.currentOrigin, hitLoc, 90, 0, radiusEnt->client->ps.torsoAnim, qtrue);
 				}
@@ -276,14 +516,14 @@ void Wampa_Attack( float distance, qboolean doCharge )
 	{
 		if ( Q_irand(0, 2) && !doCharge )
 		{//double slash
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 			TIMER_Set( NPC, "attack_dmg", 750 );
 		}
 		else if ( doCharge || (distance > 270 && distance < 430 && !Q_irand(0, 1)) )
 		{//leap
 			vec3_t	fwd, yawAng;
 			VectorSet( yawAng, 0, NPC->client->ps.viewangles[YAW], 0 );
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 			TIMER_Set( NPC, "attack_dmg", 500 );
 			AngleVectors( yawAng, fwd, NULL, NULL );
 			VectorScale( fwd, distance*1.5f, NPC->client->ps.velocity );
@@ -292,7 +532,7 @@ void Wampa_Attack( float distance, qboolean doCharge )
 		}
 		else
 		{//backhand
-			NPC_SetAnim( NPC, SETANIM_BOTH, BOTH_ATTACK3, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+			NPC_SetAnim(NPC, SETANIM_BOTH, BOTH_ATTACK3, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 			TIMER_Set( NPC, "attack_dmg", 250 );
 		}
 
@@ -310,11 +550,23 @@ void Wampa_Attack( float distance, qboolean doCharge )
 		switch ( NPC->client->ps.legsAnim )
 		{
 		case BOTH_ATTACK1:
+				// Occasionally turn a close-range swipe into a grab.
+				if ( NPC->count == 0 && enemyDist < 96 && !Q_irand( 0, 2 ) && Wampa_TryGrab() )
+				{
+					// Cancel follow-up hit; the hold logic will take over.
+					TIMER_Remove( NPC, "attack_dmg2" );
+					return;
+				}
 			Wampa_Slash( NPC->client->renderInfo.handRBolt, qfalse );
 			//do second hit
 			TIMER_Set( NPC, "attack_dmg2", 100 );
 			break;
 		case BOTH_ATTACK2:
+				if ( NPC->count == 0 && enemyDist < 96 && !Q_irand( 0, 2 ) && Wampa_TryGrab() )
+				{
+					TIMER_Remove( NPC, "attack_dmg2" );
+					return;
+				}
 			Wampa_Slash( NPC->client->renderInfo.handRBolt, qfalse );
 			TIMER_Set( NPC, "attack_dmg2", 100 );
 			break;
@@ -349,6 +601,13 @@ void Wampa_Attack( float distance, qboolean doCharge )
 //----------------------------------
 void Wampa_Combat( void )
 {
+	// If we're holding a victim, don't do normal facing/movement logic.
+	if ( NPC->count )
+	{
+		Wampa_HoldVictim();
+		return;
+	}
+
 	// If we cannot see our target or we have somewhere to go, then do that
 	if ( !NPC_ClearLOS( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin ) )
 	{
@@ -438,6 +697,12 @@ NPC_Wampa_Pain
 //void NPC_Wampa_Pain( gentity_t *self, gentity_t *inflictor, gentity_t *other, const vec3_t point, int damage, int mod,int hitLoc ) 
 void NPC_Wampa_Pain( gentity_t *self, gentity_t *attacker, int damage ) 
 {
+	// If we're holding someone, pain forces us to release them (prevents stuck victims).
+	if ( self->count && self->activator )
+	{
+		Wampa_DropVictim( self );
+	}
+
 	qboolean hitByWampa = qfalse;
 	if ( attacker&&attacker->client&&attacker->client->NPC_class==CLASS_WAMPA )
 	{
@@ -482,11 +747,11 @@ void NPC_Wampa_Pain( gentity_t *self, gentity_t *attacker, int damage )
 
 					if ( !Q_irand( 0, 1 ) )
 					{
-						NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+						NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN2, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					}
 					else
 					{
-						NPC_SetAnim( self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD );
+						NPC_SetAnim(self, SETANIM_BOTH, BOTH_PAIN1, SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD);
 					}
 					TIMER_Set( self, "takingPain", self->client->ps.legsTimer+Q_irand(0, 500) );
 					//allow us to re-evaluate our running speed/anim

@@ -2361,14 +2361,32 @@ void DeathFX( gentity_t *ent )
 {
 	vec3_t		effectPos, right;
 	vec3_t		defaultDir;
+	int			npcClass;
 
 	if ( !ent || !ent->client )
 		return;
 
 	VectorSet(defaultDir, 0, 0, 1);
 
-	// team no longer indicates species/race.  NPC_class should be used to identify certain npc types
-	switch(ent->client->NPC_class)
+	// team no longer indicates species/race. NPC_class should be used to identify certain npc types.
+	// In MP, the networked NPC class (ent->s.NPC_class) can be more reliable than the client copy.
+	npcClass = ent->client->NPC_class;
+	if ( ent->s.eType == ET_NPC && ent->s.NPC_class )
+	{
+		npcClass = ent->s.NPC_class;
+	}
+	else if ( (!npcClass) && ent->NPC_type )
+	{
+		// Fallback: some spawners set NPC_type but not NPC_class.
+		if ( !Q_stricmp( ent->NPC_type, "probe" )
+			|| !Q_stricmp( ent->NPC_type, "imperialprobe" )
+			|| !Q_stricmp( ent->NPC_type, "imperial_probe" ) )
+		{
+			npcClass = CLASS_PROBE;
+		}
+	}
+
+	switch( npcClass )
 	{
 	case CLASS_MOUSE:
 		VectorCopy( ent->r.currentOrigin, effectPos );
@@ -3015,11 +3033,25 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 			//self->owner = old;
 		}
 		*/
-		//if ( self->client->NPC_class == CLASS_BOBAFETT && self->client->moveType == MT_FLYSWIM )
-		if (0)
-		{
-			Boba_FlyStop( self );
-		}
+		// Jetpack NPCs: ensure we fully exit jetpack/flying state on death so the corpse falls.
+// SP doesn't use MP's PM_JETPACK state, but the intent is the same: stop flying when dead.
+if ( self->client )
+{
+	const qboolean wasJetpacking =
+		(self->client->ps.pm_type == PM_JETPACK) ||
+		(self->client->ps.eFlags & (EF_JETPACK|EF_JETPACK_ACTIVE|EF_JETPACK_FLAMING)) ||
+		(self->client->ps.eFlags2 & EF2_FLYING);
+
+	if ( wasJetpacking )
+	{
+		Boba_FlyStop( self );
+		// Belt-and-suspenders: clear flags so the corpse isn't treated as flying.
+		self->client->jetPackOn = qfalse;
+		self->client->ps.pm_type = PM_NORMAL;
+		self->client->ps.eFlags &= ~(EF_JETPACK|EF_JETPACK_ACTIVE|EF_JETPACK_FLAMING);
+		self->client->ps.eFlags2 &= ~EF2_FLYING;
+	}
+}
 		//[NPCSandCreature]
 		if ( self->s.NPC_class == CLASS_RANCOR || self->s.NPC_class == CLASS_WAMPA || self->s.NPC_class == CLASS_SAND_CREATURE)
 		//if ( self->s.NPC_class == CLASS_RANCOR )
@@ -3637,7 +3669,7 @@ extern void RunEmplacedWeapon( gentity_t *ent, usercmd_t **ucmd );
 			//if (meansOfDeath == MOD_SABER || (meansOfDeath == MOD_MELEE && G_HeavyMelee( attacker )) )//saber or heavy melee (claws)
 			{ //update the anim on the actual skeleton (so bolt point will reflect the correct position) and then check for dismem
 				G_UpdateClientAnims(self, 1.0f);
-				G_CheckForDismemberment(self, attacker, self->pos1, damage, anim, qfalse);
+				G_CheckForDismemberment(self, attacker, self->pos1, damage, anim, qfalse, meansOfDeath);
 			}
 			//GIBBING!!! making use of g_checkforblowing up - Wahoo
 			if (meansOfDeath == MOD_ROCKET || (meansOfDeath == MOD_ROCKET_SPLASH) || (meansOfDeath == MOD_ROCKET_HOMING) || (meansOfDeath == MOD_ROCKET_HOMING_SPLASH) || (meansOfDeath == MOD_THERMAL) || (meansOfDeath == MOD_FLAME_EXPLOSION) || (meansOfDeath == MOD_DIOXIS_EXPLOSION) || (meansOfDeath == MOD_ICE_EXPLOSION) || (meansOfDeath == MOD_ION_EXPLOSION) || (meansOfDeath == MOD_SONIC_EXPLOSION_SPLASH) || (meansOfDeath == MOD_FLASH_EXPLOSION_SPLASH) || (meansOfDeath == MOD_DET_PACK_SPLASH) || (meansOfDeath == MOD_TELEFRAG) || (meansOfDeath == MOD_TRIGGER_HURT) || (meansOfDeath == MOD_LAVA))
@@ -5099,7 +5131,7 @@ qboolean G_GetHitLocFromSurfName( gentity_t *ent, const char *surfName, int *hit
 	return dismember;
 }
 
-void G_CheckForDismemberment(gentity_t *ent, gentity_t *enemy, vec3_t point, int damage, int deathAnim, qboolean postDeath)
+void G_CheckForDismemberment(gentity_t *ent, gentity_t *enemy, vec3_t point, int damage, int deathAnim, qboolean postDeath, int mod)
 {
 	int hitLoc = -1, hitLocUse = -1;
 	vec3_t boltPoint;
@@ -5141,36 +5173,75 @@ void G_CheckForDismemberment(gentity_t *ent, gentity_t *enemy, vec3_t point, int
 		}
 	}
 
-	if (gGAvoidDismember == 2)
-	{
-		hitLoc = HL_HAND_RT;
-	}
-	else
-	{
-		//[BUGFIX12]
-		if (d_saberGhoul2Collision.integer && ent->client 
-			&& ent->client->g2LastSurfaceTime == level.time
-			&& ent->client->g2LastSurfaceModel == G2MODEL_PLAYER)
-		//if (d_saberGhoul2Collision.integer && ent->client && ent->client->g2LastSurfaceTime == level.time)
-		//[/BUGFIX12]
-		{
-			char hitSurface[MAX_QPATH];
+	vec3_t usePoint;
+vec3_t dir;
+vec3_t bladeDir;
 
-			trap_G2API_GetSurfaceName(ent->ghoul2, ent->client->g2LastSurfaceHit, 0, hitSurface);
+VectorClear(dir);
+VectorClear(bladeDir);
 
-			if (hitSurface[0])
-			{
-				G_GetHitLocFromSurfName(ent, hitSurface, &hitLoc, point, vec3_origin, vec3_origin, MOD_UNKNOWN);
-			}
-		}
+/*
+** SP-style dismemberment selection relies on an accurate impact point and the correct MOD_*.
+** In MP, ent->pos1 is not reliably a last-impact point for clients, so prefer ps.lastHitLoc.
+*/
+if (ent->client && VectorLengthSquared(ent->client->ps.lastHitLoc) > 0.0f)
+{
+    VectorCopy(ent->client->ps.lastHitLoc, usePoint);
+}
+else if (point && VectorLengthSquared(point) > 0.0f)
+{
+    VectorCopy(point, usePoint);
+}
+else
+{
+    VectorCopy(ent->r.currentOrigin, usePoint);
+}
 
-		if (hitLoc == -1)
-		{
-			hitLoc = G_GetHitLocation( ent, point );
-		}
-	}
+if (enemy)
+{
+    VectorSubtract(usePoint, enemy->r.currentOrigin, dir);
+    VectorNormalize(dir);
+}
 
-	switch(hitLoc)
+if (enemy && enemy->client &&
+    enemy->client->ps.weapon == WP_SABER &&
+    enemy->client->olderIsValid &&
+    (level.time - enemy->client->lastSaberStorageTime) < 200)
+{
+    VectorSubtract(enemy->client->lastSaberBase_Always, enemy->client->olderSaberBase, bladeDir);
+    VectorNormalize(bladeDir);
+}
+
+if (gGAvoidDismember == 2)
+{
+    hitLoc = HL_HAND_RT;
+}
+else
+{
+    //[BUGFIX12]
+    if (d_saberGhoul2Collision.integer && ent->client
+        && ent->client->g2LastSurfaceTime == level.time
+        && ent->client->g2LastSurfaceModel == G2MODEL_PLAYER)
+    //[BUGFIX12]
+    {
+        char hitSurface[MAX_QPATH];
+
+        trap_G2API_GetSurfaceName(ent->ghoul2, ent->client->g2LastSurfaceHit, 0, hitSurface);
+
+        if (hitSurface[0])
+        {
+            G_GetHitLocFromSurfName(ent, hitSurface, &hitLoc, usePoint, dir, bladeDir, mod);
+        }
+    }
+
+    if (hitLoc == -1)
+    {
+        hitLoc = G_GetHitLocation(ent, usePoint);
+    }
+}
+
+switch(hitLoc)
+
 	{
 	case HL_FOOT_RT:
 	case HL_LEG_RT:
@@ -5207,7 +5278,7 @@ void G_CheckForDismemberment(gentity_t *ent, gentity_t *enemy, vec3_t point, int
 		hitLocUse = G2_MODELPART_HEAD;
 		break;
 	default:
-		hitLocUse = G_GetHitQuad(ent, point);
+		hitLocUse = G_GetHitQuad(ent, usePoint);
 		break;
 	}
 
@@ -5338,7 +5409,7 @@ void G_LocationBasedDamageModifier(gentity_t *ent, vec3_t point, int mod, int df
 
 		if (hitSurface[0])
 		{
-			G_GetHitLocFromSurfName(ent, hitSurface, &hitLoc, point, vec3_origin, vec3_origin, MOD_UNKNOWN);
+			G_GetHitLocFromSurfName(ent, hitSurface, &hitLoc, point, vec3_origin, vec3_origin, mod);
 		}
 	}
 
@@ -5521,7 +5592,7 @@ void G_Knockdown( gentity_t *self, gentity_t *attacker, const vec3_t pushDir, fl
 			{//push *hard*
 				knockAnim = BOTH_KNOCKDOWN2;
 			}
-			NPC_SetAnim( self, SETANIM_BOTH, knockAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD );
+			NPC_SetAnim(self, SETANIM_BOTH, knockAnim, SETANIM_FLAG_OVERRIDE|SETANIM_FLAG_HOLD);
 			if ( self->s.number >= MAX_CLIENTS )
 			{//randomize getup times
 				int addTime = Q_irand( -200, 200 );
@@ -5865,30 +5936,30 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 
 		if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_3))
 		{
-			damage *= 1/2;
+			damage *= 5/10;
 		}
 		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_2))
 		{
-			damage *= 2/3;
+			damage *= 7/10;
 		}
 		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_1))
 		{
-			damage *= 3/4;
+			damage *= 9/10;
 		}		
 		
 		
 		
 		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_3))
 		{
-			damage *= 2;				
+			damage *= 10/5;				
 		}
 		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_2))
 		{
-			damage *= 3/2;				
+			damage *= 10/7;				
 		}
 		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_1))
 		{
-			damage *= 4/3;				
+			damage *= 10/9;				
 		}
 
 		
@@ -5909,10 +5980,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->burnTime  < (level.time + BURN_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-				gentity_t	*tent;
-				tent = G_TempEntity(targ->r.currentOrigin, EV_BURNED);
-				tent->s.eventParm = DirToByte(dir);
-				tent->s.owner = targ->s.number;
+				G_AddEvent(targ, EV_BURNED, DirToByte(dir));
 				targ->client->burnTime = level.time + BURN_TIME;
 			}
 		}
@@ -5937,10 +6005,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->freezeTime  < (level.time + FREEZE_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-					gentity_t	*tent;
-					tent = G_TempEntity(targ->r.currentOrigin, EV_FROZEN);
-					tent->s.eventParm = DirToByte(dir);
-					tent->s.owner = targ->s.number;
+					G_AddEvent(targ, EV_FROZEN, DirToByte(dir));
 					targ->client->freezeTime = level.time + FREEZE_TIME;
 					targ->client->ps.userInt1 |= LOCK_MOVERIGHT;
 					targ->client->ps.userInt1 |= LOCK_MOVELEFT;
@@ -6013,10 +6078,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->burnTime  < (level.time + BURN_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-				gentity_t	*tent;
-				tent = G_TempEntity(targ->r.currentOrigin, EV_BURNED);
-				tent->s.eventParm = DirToByte(dir);
-				tent->s.owner = targ->s.number;
+				G_AddEvent(targ, EV_BURNED, DirToByte(dir));
 				targ->client->burnTime = level.time + BURN_TIME;
 			}
 		}
@@ -6041,10 +6103,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->freezeTime  < (level.time + FREEZE_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-					gentity_t	*tent;
-					tent = G_TempEntity(targ->r.currentOrigin, EV_FROZEN);
-					tent->s.eventParm = DirToByte(dir);
-					tent->s.owner = targ->s.number;
+					G_AddEvent(targ, EV_FROZEN, DirToByte(dir));
 					targ->client->freezeTime = level.time + FREEZE_TIME;
 					targ->client->ps.userInt1 |= LOCK_MOVERIGHT;
 					targ->client->ps.userInt1 |= LOCK_MOVELEFT;
@@ -7453,7 +7512,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 					&& take > 2
 					&& !(dflags&DAMAGE_NO_DISMEMBER) )
 				{
-					G_CheckForDismemberment(targ, attacker, targ->pos1, take, targ->client->ps.torsoAnim, qtrue);
+					G_CheckForDismemberment(targ, attacker, targ->pos1, take, targ->client->ps.torsoAnim, qtrue, mod);
 				}
 			}
 

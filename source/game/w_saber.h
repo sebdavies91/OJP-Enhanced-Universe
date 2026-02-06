@@ -1,3 +1,6 @@
+#ifndef W_SABER_H
+#define W_SABER_H
+
 #define ARMOR_EFFECT_TIME	500
 
 //saberEventFlags
@@ -72,3 +75,5 @@ extern int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
 extern float forceJumpHeight[NUM_FORCE_POWER_LEVELS];
 extern float forceJumpStrength[NUM_FORCE_POWER_LEVELS];
 extern float forcePushPullRadius[NUM_FORCE_POWER_LEVELS];
+
+#endif /* W_SABER_H */
