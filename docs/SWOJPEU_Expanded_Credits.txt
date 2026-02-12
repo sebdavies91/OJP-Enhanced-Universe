@@ -1024,6 +1024,7 @@ Low Altitude Assault Transport	/	gunshipvm	/	Mars Marshall
 Low Altitude Assault Transport II	/	gunshipyoda	/	Mars Marshall
 Luke Skywalker Speeder	/	lukespeeder	/	neomarz1 
 Mace Windu Astromech	/	windu-droid	/	 Zymotico
+Mandalorian Shuttle	/	NH	/	Zander Nao
 Mark I Assault Droid	/	mark1	/	Averus Retruthan
 N1 Starfighter	/	n1_mst	/	Monsoontide
 Obiwan Kenobi Astromech	/	obi-droid	/	 Zymotico

@@ -76,6 +76,13 @@ extern vec3_t playerMaxs;
 extern cvar_t	*g_speederControlScheme;
 extern void ChangeWeapon( gentity_t *ent, int newWeapon );
 extern void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
+
+// Local-only latch used by FighterNPC.c to prevent wing/gear thrash during landing.
+// Uses a bit outside the stock vehFlags_t range.
+#ifndef VEH_LANDCFG
+#define VEH_LANDCFG 0x00000800
+#endif
+
 extern int PM_AnimLength( int index, animNumber_t anim );
 extern void G_VehicleTrace( trace_t *results, const vec3_t start, const vec3_t tMins, const vec3_t tMaxs, const vec3_t end, int passEntityNum, int contentmask );
 #endif
@@ -1391,7 +1398,10 @@ void FighterPitchAdjust(Vehicle_t *pVeh, playerState_t *riderPS, playerState_t *
 		{
 			angDif = -maxDif;
 		}
-		pVeh->m_vOrientation[PITCH] = AngleNormalize360(pVeh->m_vOrientation[PITCH] - angDif*(pVeh->m_fTimeModifier*0.2f));
+			// Pitch is used as a signed angle throughout fighter vehicle code (-180..180).
+			// AngleNormalize360 can turn small negative pitches into ~359, which then gets
+			// treated as an enormous pitch and can cause "somersault" flips near takeoff/landing.
+			pVeh->m_vOrientation[PITCH] = AngleNormalize180(pVeh->m_vOrientation[PITCH] - angDif*(pVeh->m_fTimeModifier*0.2f));
 	}
 }
 #endif// VEH_CONTROL_SCHEME_4
@@ -1890,7 +1900,7 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 {
 	int Anim = -1; 
 	int iFlags = SETANIM_FLAG_NORMAL, iBlend = 300;
-	qboolean isLanding = qfalse, isLanded = qfalse;
+	qboolean isLanding = qfalse, isLanded = qfalse, isLaunching = qfalse;
 #ifdef _JK2MP
 	playerState_t *parentPS = pVeh->m_pParentEntity->playerState;
 #else
@@ -1917,28 +1927,63 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 	}
 	else
 	{
-		isLanding = FighterIsLanding( pVeh, parentPS );
-		isLanded = FighterIsLanded( pVeh, parentPS );
+		isLanding   = FighterIsLanding( pVeh, parentPS );
+		isLanded    = FighterIsLanded( pVeh, parentPS );
+		isLaunching = FighterIsLaunching( pVeh, parentPS );
 
-		// if we're above launch height (way up in the air)... 
-		if ( !isLanding && !isLanded ) 
+		//-----------------------------------------------------------------------------
+		// Landing/takeoff state latching
+		//
+		// FighterIsLanding() depends on player input (forwardmove/upmove) and a speed
+		// threshold. Near touchdown that input can fluctuate for a frame (or prediction
+		// can disagree), which used to cause wings/gears to toggle open/closed repeatedly.
+		//
+		// We latch "landing mode" using VEH_LANDING once landing has started (or we've
+		// come to rest), and only clear it on a clear takeoff.
+		//-----------------------------------------------------------------------------
+		if ( isLanding || isLanded )
 		{
-			if ( !( pVeh->m_ulFlags & VEH_WINGSOPEN ) )
-			{
-				pVeh->m_ulFlags |= VEH_WINGSOPEN;
-				pVeh->m_ulFlags &= ~VEH_GEARSOPEN;
-				Anim = BOTH_WINGS_OPEN;
-			}
+			pVeh->m_ulFlags |= VEH_LANDING;
 		}
-		// otherwise we're below launch height and still taking off.
-		else
+		else if ( ( pVeh->m_ulFlags & VEH_LANDING )
+			&& isLaunching
+			&& parentPS->velocity[2] > 0.0f
+			&& pVeh->m_LandTrace.fraction >= FIGHTER_MIN_TAKEOFF_FRACTION )
 		{
-			if ( (pVeh->m_ucmd.forwardmove < 0 || pVeh->m_ucmd.upmove < 0||isLanded)
-				&& pVeh->m_LandTrace.fraction <= 0.4f
-				&& pVeh->m_LandTrace.plane.normal[2] >= MIN_LANDING_SLOPE )
-			{//already landed or trying to land and close to ground
-				// Open gears.
-				if ( !( pVeh->m_ulFlags & VEH_GEARSOPEN ) )
+			pVeh->m_ulFlags &= ~VEH_LANDING;
+			pVeh->m_ulFlags &= ~VEH_LANDCFG;
+		}
+
+		//-----------------------------------------------------------------------------
+		// If we're in landing mode, switch to "landing configuration" (wings closed,
+		// gears open) once we get close enough to the ground, then NEVER revert until
+		// we actually take off again.
+		//-----------------------------------------------------------------------------
+		if ( pVeh->m_ulFlags & VEH_LANDING )
+		{
+			// If we ever reach landing config once, keep it latched until takeoff.
+			if ( ( pVeh->m_ulFlags & VEH_GEARSOPEN ) || !( pVeh->m_ulFlags & VEH_WINGSOPEN ) )
+			{
+				pVeh->m_ulFlags |= VEH_LANDCFG;
+			}
+
+			// Near-ground commitment to landing configuration.
+			if ( isLanded
+				|| ( pVeh->m_LandTrace.fraction <= 0.4f
+					&& pVeh->m_LandTrace.plane.normal[2] >= MIN_LANDING_SLOPE ) )
+			{
+				pVeh->m_ulFlags |= VEH_LANDCFG;
+			}
+
+			if ( pVeh->m_ulFlags & VEH_LANDCFG )
+			{
+				// Ensure wings closed and gears open. Only kick one anim per frame.
+				if ( pVeh->m_ulFlags & VEH_WINGSOPEN )
+				{
+					pVeh->m_ulFlags &= ~VEH_WINGSOPEN;
+					Anim = BOTH_WINGS_CLOSE;
+				}
+				else if ( !( pVeh->m_ulFlags & VEH_GEARSOPEN ) )
 				{
 #ifdef _JK2MP
 					if ( pVeh->m_pVehicleInfo->soundLand )
@@ -1955,23 +2000,35 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 				}
 			}
 			else
-			{//trying to take off and almost halfway off the ground
-				// Close gears (if they're open).
+			{
+				// Still high enough that we haven't committed to landing configuration yet.
+				// Keep "flight configuration" (wings open, gears closed) but don't spam anims.
 				if ( pVeh->m_ulFlags & VEH_GEARSOPEN )
 				{
 					pVeh->m_ulFlags &= ~VEH_GEARSOPEN;
 					Anim = BOTH_GEARS_CLOSE;
-					//iFlags = SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD; 
 				}
-				// If gears are closed, and we are below launch height, close the wings.
-				else
+				else if ( !( pVeh->m_ulFlags & VEH_WINGSOPEN ) )
 				{
-					if ( pVeh->m_ulFlags & VEH_WINGSOPEN )
-					{
-						pVeh->m_ulFlags &= ~VEH_WINGSOPEN;
-						Anim = BOTH_WINGS_CLOSE;
-					}
+					pVeh->m_ulFlags |= VEH_WINGSOPEN;
+					Anim = BOTH_WINGS_OPEN;
 				}
+			}
+		}
+		else
+		{
+			// Flight mode: wings open, gears closed.
+			if ( !( pVeh->m_ulFlags & VEH_WINGSOPEN ) )
+			{
+				pVeh->m_ulFlags |= VEH_WINGSOPEN;
+				pVeh->m_ulFlags &= ~VEH_GEARSOPEN;
+				Anim = BOTH_WINGS_OPEN;
+			}
+			else if ( pVeh->m_ulFlags & VEH_GEARSOPEN )
+			{
+				// If gears somehow stayed open, close them once (don't touch wings).
+				pVeh->m_ulFlags &= ~VEH_GEARSOPEN;
+				Anim = BOTH_GEARS_CLOSE;
 			}
 		}
 	}
@@ -1986,6 +2043,7 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 		#endif
 	}
 }
+
 
 // This function makes sure that the rider's in this vehicle are properly animated.
 static void AnimateRiders( Vehicle_t *pVeh )

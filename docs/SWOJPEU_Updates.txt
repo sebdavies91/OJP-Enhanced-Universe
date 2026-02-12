@@ -2815,6 +2815,22 @@ F) Client (cgame) — visuals, polish, and crash-prevention
 138) Siege init failure paths now free temp allocations properly if allocation fails (cleaner fail behavior).
 
 
+Update 64 12/02/2026 (Fixes and changes)
+
+1) Fighter vehicles: Fixed wing + landing gear animation “thrash” during landing by latching landing state (VEH_LANDING) and adding a local landing-configuration latch (VEH_LANDCFG). Wings/gears now transition once per takeoff/landing sequence instead of re-triggering near touchdown.
+
+2) Fighter pitch stability: Fixed fighter pitch normalization in FighterNPC.c (PITCH now uses AngleNormalize180 instead of AngleNormalize360) to prevent negative pitch angles wrapping to ~359° and causing sudden flip/somersault behavior around takeoff/landing.
+
+3) Collision angular impulse: Fixed fighter impact handling in bg_slidemove.c so m_vFullAngleVelocity receives a true angular-velocity impulse (with clamping) instead of accidentally storing an absolute angle, preventing huge instantaneous pitch/roll kicks during vehicle collisions.
+
+4) Vehicle mount spawns: Updated several skill-tier mount spawns in g_items.c (multiple NPC/vehicle names swapped, including fixes like bantha → Bantha, and several light/fighter/bomber/transport mappings adjusted).
+
+5) Dismount reliability: Fixed +use dismount in g_vehicles.c to be edge-triggered (fresh press required) to prevent instantly ejecting the rider when boarding completes while still holding USE (not applied to speeders).
+
+6) Modified the vehicles menu including the new options.
+
+
+
 PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
 
 

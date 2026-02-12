@@ -313,8 +313,20 @@ void PM_VehicleImpact(bgEntity_t *pEnt, trace_t *trace)
 						{
 							pitchTurnStrength = -MAX_IMPACT_TURN_ANGLE;
 						}
-						//pSelfVeh->m_vOrientation[PITCH] = AngleNormalize180(pSelfVeh->m_vOrientation[PITCH]+pitchTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
-						pSelfVeh->m_vFullAngleVelocity[PITCH] = AngleNormalize180(pSelfVeh->m_vOrientation[PITCH]+pitchTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
+						// The fighter code treats m_vFullAngleVelocity as an *angular velocity* that is
+						// integrated into m_vOrientation each frame (and then decays).  The old code
+						// accidentally stored an *angle* in this field (orientation + delta), which
+						// can create massive instantaneous pitch impulses and cause fighters to
+						// "somersault" when touching down or lifting off.
+						{
+							float impulse = (pitchTurnStrength / turnDivider) * 10.0f;
+							pSelfVeh->m_vFullAngleVelocity[PITCH] += impulse;
+							if (pSelfVeh->m_vFullAngleVelocity[PITCH] > 360.0f) {
+								pSelfVeh->m_vFullAngleVelocity[PITCH] = 360.0f;
+							} else if (pSelfVeh->m_vFullAngleVelocity[PITCH] < -360.0f) {
+								pSelfVeh->m_vFullAngleVelocity[PITCH] = -360.0f;
+							}
+						}
 					}
 					//now do yaw
 					if ( !bounceDir[0] 
@@ -332,8 +344,15 @@ void PM_VehicleImpact(bgEntity_t *pEnt, trace_t *trace)
 						{
 							yawTurnStrength = -MAX_IMPACT_TURN_ANGLE;
 						}
-						//pSelfVeh->m_vOrientation[ROLL] = AngleNormalize180(pSelfVeh->m_vOrientation[ROLL]-yawTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
-						pSelfVeh->m_vFullAngleVelocity[ROLL] = AngleNormalize180(pSelfVeh->m_vOrientation[ROLL]-yawTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
+						{
+							float impulse = (-yawTurnStrength / turnDivider) * 10.0f;
+							pSelfVeh->m_vFullAngleVelocity[ROLL] += impulse;
+							if (pSelfVeh->m_vFullAngleVelocity[ROLL] > 360.0f) {
+								pSelfVeh->m_vFullAngleVelocity[ROLL] = 360.0f;
+							} else if (pSelfVeh->m_vFullAngleVelocity[ROLL] < -360.0f) {
+								pSelfVeh->m_vFullAngleVelocity[ROLL] = -360.0f;
+							}
+						}
 					}
 					/*
 					PM_SetPMViewAngle(pm->ps, pSelfVeh->m_vOrientation, &pSelfVeh->m_ucmd);
@@ -397,8 +416,15 @@ void PM_VehicleImpact(bgEntity_t *pEnt, trace_t *trace)
 							{
 								pitchTurnStrength = -MAX_IMPACT_TURN_ANGLE;
 							}
-							//hitEnt->m_pVehicle->m_vOrientation[PITCH] = AngleNormalize180(hitEnt->m_pVehicle->m_vOrientation[PITCH]+pitchTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
-							hitEnt->m_pVehicle->m_vFullAngleVelocity[PITCH] = AngleNormalize180(hitEnt->m_pVehicle->m_vOrientation[PITCH]+pitchTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
+							{
+								float impulse = (pitchTurnStrength / turnDivider) * 10.0f;
+								hitEnt->m_pVehicle->m_vFullAngleVelocity[PITCH] += impulse;
+								if (hitEnt->m_pVehicle->m_vFullAngleVelocity[PITCH] > 360.0f) {
+									hitEnt->m_pVehicle->m_vFullAngleVelocity[PITCH] = 360.0f;
+								} else if (hitEnt->m_pVehicle->m_vFullAngleVelocity[PITCH] < -360.0f) {
+									hitEnt->m_pVehicle->m_vFullAngleVelocity[PITCH] = -360.0f;
+								}
+							}
 						}
 						//now do yaw
 						if ( !bounceDir[0] 
@@ -416,8 +442,15 @@ void PM_VehicleImpact(bgEntity_t *pEnt, trace_t *trace)
 							{
 								yawTurnStrength = -MAX_IMPACT_TURN_ANGLE;
 							}
-							//hitEnt->m_pVehicle->m_vOrientation[ROLL] = AngleNormalize180(hitEnt->m_pVehicle->m_vOrientation[ROLL]-yawTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
-							hitEnt->m_pVehicle->m_vFullAngleVelocity[ROLL] = AngleNormalize180(hitEnt->m_pVehicle->m_vOrientation[ROLL]-yawTurnStrength/turnDivider*pSelfVeh->m_fTimeModifier);
+							{
+								float impulse = (-yawTurnStrength / turnDivider) * 10.0f;
+								hitEnt->m_pVehicle->m_vFullAngleVelocity[ROLL] += impulse;
+								if (hitEnt->m_pVehicle->m_vFullAngleVelocity[ROLL] > 360.0f) {
+									hitEnt->m_pVehicle->m_vFullAngleVelocity[ROLL] = 360.0f;
+								} else if (hitEnt->m_pVehicle->m_vFullAngleVelocity[ROLL] < -360.0f) {
+									hitEnt->m_pVehicle->m_vFullAngleVelocity[ROLL] = -360.0f;
+								}
+							}
 						}
 						//NOTE: will these angle changes stick or will they be stomped 
 						//		when the vehicle goes through its own update and re-grabs 

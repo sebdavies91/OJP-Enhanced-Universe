@@ -83,7 +83,7 @@ Squad Teams (Empire, Rebellion, Mercenaries, Confederacy, Republic, Mandalorian,
 
 Vehicles:
 
-Vehicle Mount (74-Z, Tauntaun, Swoop-MP, AT-ST, Landspeeder, Rancor, AT-AT, Snowspeeder, Skiff, TIE Fighter, X-Wing, TIE Interceptor, TIE Bomber, Y-Wing, A-Wing, T-4A, YT-1300, Ravensclaw, Stap, Swoop, Eopie, AAT, AT-PT, Bantha, Hailfire, AT-TE, N-1, Vulture, ARC-170, Tri-Fighter, Hyena, V-Wing, Delta-7, STHPD, LAAT, Firespray-31N).
+Vehicle Mount (74-Z, Tauntaun, Swoop-MP, AT-ST, Landspeeder, Rancor, AT-AT, Snowspeeder, Skiff, TIE Fighter, X-Wing, TIE Interceptor, TIE Bomber, Y-Wing, A-Wing, T-4A, YT-1300, Firespray-31, Stap, Eopie, FC-20, AAT, AT-PT, Bantha, Hailfire, AT-TE, N-1, Vulture, ARC-170, Tri-Fighter, 24SB, LAAT, V-Wing, STHPD, Ravensclaw, NHS).
 
 Bots:
 

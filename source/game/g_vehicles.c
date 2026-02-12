@@ -2488,6 +2488,7 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 {
 	gentity_t *parent;
 	gentity_t *rider;
+	qboolean usePressed;
 
 	if ( pVeh->m_iBoarding != 0 && pVeh->m_iDieTime==0)
 		return true;
@@ -2504,8 +2505,16 @@ static bool UpdateRider( Vehicle_t *pVeh, bgEntity_t *pRider, usercmd_t *pUmcd )
 		rider->client->ps.rocketTargetTime = parent->client->ps.rocketTargetTime;
 	}
 #endif
-	// Regular exit.
-	if ( pUmcd->buttons & BUTTON_USE && pVeh->m_pVehicleInfo->type!=VH_SPEEDER)
+	// Regular exit (edge-triggered). Some animal mounts have very short boarding times; if the
+	// rider is still holding +use when boarding completes, the continuous BUTTON_USE would
+	// immediately eject them. Require a fresh press to dismount.
+	usePressed = (pUmcd->buttons & BUTTON_USE) ? qtrue : qfalse;
+	if ( rider && rider->client )
+	{
+		usePressed = ( (pUmcd->buttons & BUTTON_USE) && !(rider->client->oldbuttons & BUTTON_USE) ) ? qtrue : qfalse;
+	}
+
+	if ( usePressed && pVeh->m_pVehicleInfo->type!=VH_SPEEDER )
 	{
 		if ( pVeh->m_pVehicleInfo->type == VH_WALKER )
 		{//just get the fuck out

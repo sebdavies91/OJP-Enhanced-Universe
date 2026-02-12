@@ -3661,7 +3661,7 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_LIGHTVEHICLEA] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "swoop_mp", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "swoop", va("player%iVehicleMount", ent->s.number), qtrue );
 		}	
 	else if(ent->client->skillLevel[SK_MEDIUMVEHICLEA] == FORCE_LEVEL_1)
 		{
@@ -3724,7 +3724,7 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_TRANSPORTSHIPA] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "ravensclawvm", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "slave1_jango", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_LIGHTVEHICLEB] == FORCE_LEVEL_1)
 		{
@@ -3732,11 +3732,11 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_LIGHTVEHICLEB] == FORCE_LEVEL_2)
 		{
-		VehicleMount = NPC_SpawnType( ent, "swoop", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "eopie", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_LIGHTVEHICLEB] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "eopie", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "maulspeeder", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_MEDIUMVEHICLEB] == FORCE_LEVEL_1)
 		{
@@ -3748,7 +3748,7 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_MEDIUMVEHICLEB] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "bantha", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "Bantha", va("player%iVehicleMount", ent->s.number), qtrue );
 		}		
 	else if(ent->client->skillLevel[SK_HEAVYVEHICLEB] == FORCE_LEVEL_1)
 		{
@@ -3769,7 +3769,7 @@ void ItemUse_VehicleMount(gentity_t *ent)
 
 	else if(ent->client->skillLevel[SK_FIGHTERSHIPB] == FORCE_LEVEL_1)
 		{
-		VehicleMount = NPC_SpawnType( ent, "droidfighter", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "droidfighter2", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_FIGHTERSHIPB] == FORCE_LEVEL_2)
 		{
@@ -3781,15 +3781,15 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_BOMBERSHIPB] == FORCE_LEVEL_1)
 		{
-		VehicleMount = NPC_SpawnType( ent, "droid_starfighter", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "grievous", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_BOMBERSHIPB] == FORCE_LEVEL_2)
 		{
-		VehicleMount = NPC_SpawnType( ent, "v-wing", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "gunshipx", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_BOMBERSHIPB] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "JediStarFighter", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "v-wing", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_TRANSPORTSHIPB] == FORCE_LEVEL_1)
 		{
@@ -3797,11 +3797,11 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_TRANSPORTSHIPB] == FORCE_LEVEL_2)
 		{
-		VehicleMount = NPC_SpawnType( ent, "gunshipx", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "ravensclawvm", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 	else if(ent->client->skillLevel[SK_TRANSPORTSHIPB] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "slave1_jango", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "nh", va("player%iVehicleMount", ent->s.number), qtrue );
 		}		
 	else
 		{

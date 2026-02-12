@@ -203,7 +203,7 @@
 			name					setsk_LIGHTVEHICLEA
 			group					gunpowers
 			style					0	
-			text					"74-Z / Tauntaun / Swoop-MP:"
+			text					"74-Z / Tauntaun / Swoop:"
 			rect					180 105 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -236,7 +236,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Aratech 74-Z Speeder Bike / Hoth Tauntaun / Zephyr Swoop-MP Bike"
+			descText				"Aratech 74-Z Speeder Bike / Hoth Tauntaun / Zephyr Swoop Speeder Bike"
 			visible					1 
 			action 
 			{ 
@@ -458,7 +458,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Sienar TIE Bomber / Koensayr BLT Y-Wing Bomber / Kuat A-Wing"
+			descText				"Sienar TIE Bomber / Koensayr BLT Y-Wing Bomber / Kuat A-Wing Fighter"
 			visible					1 
 			action 
 			{ 
@@ -481,7 +481,7 @@
 			name					setsk_TRANSPORTSHIPA
 			group					gunpowers
 			style					0	
-			text					"T-4A / YT-1300 / Ravensclaw:"
+			text					"T-4A / YT-1300 / Firespray-31:"
 			rect					180 180 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -514,7 +514,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Sienar Laambda T-4A Shuttle / Corellian YT-1300 Freighter / Koensayr Ravensclaw Courier"
+			descText				"Sienar Laambda T-4A Shuttle / Corellian YT-1300 Freighter / Kuat Firespray-31N Patrol"
 			visible					1 
 			action 
 			{ 
@@ -539,7 +539,7 @@
 			name					setsk_LIGHTVEHICLEB
 			group					gunpowers
 			style					0	
-			text					"STAP / Swoop / Eopie:"
+			text					"STAP / Eopie / FC-20:"
 			rect					430 105 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -572,7 +572,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baktoid STAP Speeder Bike / Zephyr Swoop Bike / Naboo Eopie"
+			descText				"Baktoid STAP Speeder Bike / Naboo Eopie / Razalon FC-20 Speeder Bike"
 			visible					1 
 			action 
 			{ 
@@ -761,7 +761,7 @@
 			name					setsk_BOMBERSHIPB
 			group					gunpowers
 			style					0	
-			text					"Hyena / V-Wing / Delta-7:"
+			text					"24SB / LAAT / V-Wing:"
 			rect					430 165 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -794,7 +794,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Baktoid Hyena Bomber / Walex Blissex V-Wing Fighter / Walex Blissex Delta-7 Fighter"
+			descText				"Belbullab 24SB Bomber / Rothana LAAT Gunship / Walex Blissex V-Wing Fighter"
 			visible					1 
 			action 
 			{ 
@@ -817,7 +817,7 @@
 			name					setsk_TRANSPORTSHIPB
 			group					gunpowers
 			style					0	
-			text					"STHPD / LAAT / Firespray-31:"
+			text					"STHPD / Ravensclaw / NHS:"
 			rect					430 180 110 15
 			textalign				ITEM_ALIGN_RIGHT												
 			textalignx				0
@@ -850,7 +850,7 @@
 			backcolor				0 0 0 0
 			border					0
 			bordercolor				0 0 0 0
-			descText				"Haor Chall STHPD Shuttle / Rothana LAAT Gunship / Kuat Firespray-31N Patrol"
+			descText				"Haor Chall STHPD Shuttle / Koensayr Ravensclaw Courier / Mandal Motors NHS Shuttle"
 			visible					1 
 			action 
 			{ 
