@@ -62,6 +62,18 @@
 
 #define sqrtf sqrt
 #define Q_flrand flrand
+// Local-only latches used by FighterNPC.c to prevent wing/gear/sound thrash.
+// These use bits outside the stock vehFlags_t range (see bg_vehicles.h).
+#ifndef VEH_LANDCFG
+#define VEH_LANDCFG      0x00000800
+#endif
+#ifndef VEH_TAKEOFF_SND
+#define VEH_TAKEOFF_SND  0x00001000
+#endif
+#ifndef VEH_LAND_SND
+#define VEH_LAND_SND     0x00002000
+#endif
+
 
 #define MOD_EXPLOSIVE MOD_SUICIDE
 #else
@@ -76,12 +88,6 @@ extern vec3_t playerMaxs;
 extern cvar_t	*g_speederControlScheme;
 extern void ChangeWeapon( gentity_t *ent, int newWeapon );
 extern void PM_SetAnim(int setAnimParts,int anim,int setAnimFlags, int blendTime);
-
-// Local-only latch used by FighterNPC.c to prevent wing/gear thrash during landing.
-// Uses a bit outside the stock vehFlags_t range.
-#ifndef VEH_LANDCFG
-#define VEH_LANDCFG 0x00000800
-#endif
 
 extern int PM_AnimLength( int index, animNumber_t anim );
 extern void G_VehicleTrace( trace_t *results, const vec3_t start, const vec3_t tMins, const vec3_t tMaxs, const vec3_t end, int passEntityNum, int contentmask );
@@ -454,6 +460,13 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 
 	isLandingOrLaunching = (FighterIsLanding( pVeh, parentPS )||FighterIsLaunching( pVeh, parentPS ));
 
+	// Clear one-shot takeoff sound latch when not actively pressing up.
+	if ( pVeh->m_ucmd.upmove <= 0 )
+	{
+		pVeh->m_ulFlags &= ~VEH_TAKEOFF_SND;
+	}
+
+
 	// If we are hitting the ground, just allow the fighter to go up and down.
 	if ( isLandingOrLaunching//going slow enough to start landing
 		&& (pVeh->m_ucmd.forwardmove<=0||pVeh->m_LandTrace.fraction<=FIGHTER_MIN_TAKEOFF_FRACTION) )//not trying to accelerate away already (or: you are trying to, but not high enough off the ground yet)
@@ -463,9 +476,11 @@ static void ProcessMoveCommands( Vehicle_t *pVeh )
 		if ( pVeh->m_ucmd.upmove > 0 )
 		{
 #ifdef _JK2MP
-			if ( parentPS->velocity[2] <= 0 
-				&& pVeh->m_pVehicleInfo->soundTakeOff )
+			if ( parentPS->velocity[2] <= 0
+				&& pVeh->m_pVehicleInfo->soundTakeOff
+				&& !( pVeh->m_ulFlags & VEH_TAKEOFF_SND ) )
 			{//taking off for the first time
+				pVeh->m_ulFlags |= VEH_TAKEOFF_SND;
 #ifdef QAGAME//MP GAME-side
 				G_EntitySound( ((gentity_t *)(pVeh->m_pParentEntity)), CHAN_AUTO, pVeh->m_pVehicleInfo->soundTakeOff );
 #endif
@@ -1901,6 +1916,7 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 	int Anim = -1; 
 	int iFlags = SETANIM_FLAG_NORMAL, iBlend = 300;
 	qboolean isLanding = qfalse, isLanded = qfalse, isLaunching = qfalse;
+	qboolean wingsAnimMissing = qfalse;
 #ifdef _JK2MP
 	playerState_t *parentPS = pVeh->m_pParentEntity->playerState;
 #else
@@ -1915,6 +1931,20 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 	int curTime = pm->cmd.serverTime;
 #endif
 
+	// Detect fighters/models that don't define BOTH_WINGS_OPEN/CLOSE in animation.cfg.
+	// Many OJP/OJP-EU fighter models (e.g. v-wing, slave1-beta) only provide BOTH_GEARS_OPEN/CLOSE.
+	// In that case we drive "wing" transitions by using the gear anims as the closest available fallback.
+#ifdef _JK2MP
+	{
+		const animation_t *anims = bgAllAnims[pVeh->m_pParentEntity->localAnimIndex].anims;
+		if ( anims[BOTH_WINGS_OPEN].numFrames <= 0 && anims[BOTH_WINGS_CLOSE].numFrames <= 0 )
+		{
+			wingsAnimMissing = qtrue;
+		}
+	}
+#endif
+
+
 	if ( parentPS->hyperSpaceTime
 		&& curTime - parentPS->hyperSpaceTime < HYPERSPACE_TIME )
 	{//Going to Hyperspace
@@ -1922,7 +1952,15 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 		if ( pVeh->m_ulFlags & VEH_WINGSOPEN )
 		{
 			pVeh->m_ulFlags &= ~VEH_WINGSOPEN;
-			Anim = BOTH_WINGS_CLOSE;
+			if ( wingsAnimMissing )
+			{
+				pVeh->m_ulFlags |= VEH_GEARSOPEN;
+				Anim = BOTH_GEARS_OPEN;
+			}
+			else
+			{
+				Anim = BOTH_WINGS_CLOSE;
+			}
 		}
 	}
 	else
@@ -1944,14 +1982,45 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 		if ( isLanding || isLanded )
 		{
 			pVeh->m_ulFlags |= VEH_LANDING;
+			pVeh->m_ulFlags &= ~VEH_TAKEOFF_SND;
+			pVeh->m_ulFlags &= ~VEH_LAND_SND;
 		}
-		else if ( ( pVeh->m_ulFlags & VEH_LANDING )
-			&& isLaunching
-			&& parentPS->velocity[2] > 0.0f
-			&& pVeh->m_LandTrace.fraction >= FIGHTER_MIN_TAKEOFF_FRACTION )
+		else if ( pVeh->m_ulFlags & VEH_LANDING )
 		{
-			pVeh->m_ulFlags &= ~VEH_LANDING;
-			pVeh->m_ulFlags &= ~VEH_LANDCFG;
+			// NOTE: FighterIsLaunching() requires FighterOverValidLandingSurface(), which
+			// in turn requires m_LandTrace.fraction < 1.0f. On some takeoffs (especially
+			// vertical takeoff or "jump then release jump and fly forward") the trace can
+			// snap to 1.0f or we can exceed the FighterIsLaunching() speed gate before we
+			// reach the "flight mode" height. If we key off FighterIsLaunching(), some
+			// craft (e.g. V-wing / Slave I) can remain stuck in landing configuration.
+			//
+			// Clear landing mode once we're clearly off the ground AND there is pilot
+			// intent or real motion away from the ground. Do NOT require holding JUMP.
+			const float takeoffSpeed = ( pVeh->m_pVehicleInfo->speedMax * 0.25f < 200.0f )
+				? 200.0f
+				: pVeh->m_pVehicleInfo->speedMax * 0.25f;
+
+			const qboolean offGroundEnough =
+				( pVeh->m_LandTrace.fraction >= FIGHTER_MIN_TAKEOFF_FRACTION ) ||
+				( pVeh->m_LandTrace.fraction >= 1.0f ); // trace lost / no ground
+
+			if ( offGroundEnough )
+			{
+				const qboolean hasPilotIntent =
+					( pVeh->m_ucmd.upmove > 0 ) ||
+					( pVeh->m_ucmd.forwardmove > 0 );
+
+				const qboolean hasRealMotion =
+					( parentPS->velocity[2] > 0.0f ) ||
+					( VectorLength( parentPS->velocity ) > takeoffSpeed );
+
+				if ( hasPilotIntent || hasRealMotion )
+				{
+					pVeh->m_ulFlags &= ~VEH_LANDING;
+					pVeh->m_ulFlags &= ~VEH_LANDCFG;
+					pVeh->m_ulFlags &= ~VEH_LAND_SND;
+				}
+			}
 		}
 
 		//-----------------------------------------------------------------------------
@@ -1981,13 +2050,22 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 				if ( pVeh->m_ulFlags & VEH_WINGSOPEN )
 				{
 					pVeh->m_ulFlags &= ~VEH_WINGSOPEN;
-					Anim = BOTH_WINGS_CLOSE;
+					if ( wingsAnimMissing )
+					{
+						pVeh->m_ulFlags |= VEH_GEARSOPEN;
+						Anim = BOTH_GEARS_OPEN;
+					}
+					else
+					{
+						Anim = BOTH_WINGS_CLOSE;
+					}
 				}
 				else if ( !( pVeh->m_ulFlags & VEH_GEARSOPEN ) )
 				{
 #ifdef _JK2MP
-					if ( pVeh->m_pVehicleInfo->soundLand )
+					if ( pVeh->m_pVehicleInfo->soundLand && !( pVeh->m_ulFlags & VEH_LAND_SND ) )
 					{//just landed?
+						pVeh->m_ulFlags |= VEH_LAND_SND;
 #ifdef QAGAME//MP GAME-side
 						G_EntitySound( ((gentity_t *)(pVeh->m_pParentEntity)), CHAN_AUTO, pVeh->m_pVehicleInfo->soundLand );
 #elif CGAME//MP CGAME-side
@@ -2011,7 +2089,15 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 				else if ( !( pVeh->m_ulFlags & VEH_WINGSOPEN ) )
 				{
 					pVeh->m_ulFlags |= VEH_WINGSOPEN;
-					Anim = BOTH_WINGS_OPEN;
+					if ( wingsAnimMissing )
+					{
+						pVeh->m_ulFlags &= ~VEH_GEARSOPEN;
+						Anim = BOTH_GEARS_CLOSE;
+					}
+					else
+					{
+						Anim = BOTH_WINGS_OPEN;
+					}
 				}
 			}
 		}
@@ -2021,8 +2107,16 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 			if ( !( pVeh->m_ulFlags & VEH_WINGSOPEN ) )
 			{
 				pVeh->m_ulFlags |= VEH_WINGSOPEN;
+				pVeh->m_ulFlags &= ~VEH_LAND_SND;
 				pVeh->m_ulFlags &= ~VEH_GEARSOPEN;
-				Anim = BOTH_WINGS_OPEN;
+				if ( wingsAnimMissing )
+				{
+					Anim = BOTH_GEARS_CLOSE;
+				}
+				else
+				{
+					Anim = BOTH_WINGS_OPEN;
+				}
 			}
 			else if ( pVeh->m_ulFlags & VEH_GEARSOPEN )
 			{
