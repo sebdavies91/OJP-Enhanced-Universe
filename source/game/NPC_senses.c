@@ -3,6 +3,7 @@
 
 #include "b_local.h"
 
+
 extern int eventClearTime;
 /*
 qboolean G_ClearLineOfSight(const vec3_t point1, const vec3_t point2, int ignore, int clipmask)
@@ -646,7 +647,7 @@ qboolean G_RememberAlertEvent( gentity_t *self, int alertIndex )
 	//--------------------------------------------------------------------------------------
 	IsDangerous = (at->level >= AEL_DANGER);
 	IsFromNPC	= (at->owner && at->owner->client);
-	IsFromEnemy = (IsFromNPC && at->owner->client->playerTeam!=self->client->playerTeam);
+	IsFromEnemy = ( IsFromNPC && G_ValidEnemy( at->owner, self ) );
 
 	//[RAFIXME] - impliment SP nav code.
 	/*
@@ -809,7 +810,7 @@ qboolean G_CheckForDanger( gentity_t *self, int alertEvent )
 
 	if ( level.alertEvents[alertEvent].level >= AEL_DANGER )
 	{//run away!
-		if ( !level.alertEvents[alertEvent].owner || !level.alertEvents[alertEvent].owner->client || (level.alertEvents[alertEvent].owner!=self&&level.alertEvents[alertEvent].owner->client->playerTeam!=self->client->playerTeam) )
+		if ( !level.alertEvents[alertEvent].owner || !level.alertEvents[alertEvent].owner->client || ( level.alertEvents[alertEvent].owner != self && G_ValidEnemy( level.alertEvents[alertEvent].owner, self ) ) )
 		{
 			if ( self->NPC )
 			{

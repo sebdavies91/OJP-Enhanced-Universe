@@ -3,6 +3,7 @@
 //
 // cg_players.c -- handle the media and animation for player entities
 #include "cg_local.h"
+#include <stdint.h>
 #include "../ghoul2/g2.h"
 #include "../game/bg_saga.h"
 
@@ -1003,6 +1004,18 @@ trybaseskel:
             Q_strncpyz( as_filename, SkelName, sizeof(as_filename) );
 
             triedbaseskelevents = qtrue;
+
+	            // We already allocated a large temporary buffer (text) via BG_TempAlloc.
+	            // If we fall back to the base skeleton events file, we MUST release the
+	            // previous temp allocation before jumping back, otherwise repeated
+	            // fallbacks leak temp-pool space and eventually hit:
+	            //   BG_TempAlloc: buffer exceeded head
+	            if (text)
+	            {
+	                BG_TempFree(160000);
+	                text = NULL;
+	            }
+
             goto trybaseskel;
         }
         else
@@ -10655,6 +10668,19 @@ void CG_CreateSaberMarks( vec3_t start, vec3_t end, vec3_t normal )
 	}
 }
 
+
+static qboolean CG_PtrLooksPoisonedLocal(const void *p)
+{
+	uintptr_t v = (uintptr_t)p;
+	if (!v) return qtrue;
+	if (v < 0x10000) return qtrue;
+	if (v == 0xFEEEFEEE) return qtrue;
+	if (v == 0xDDDDDDDD) return qtrue;
+	if (v == 0xCCCCCCCC) return qtrue;
+	if (v == 0xCDCDCDCD) return qtrue;
+	return qfalse;
+}
+
 qboolean CG_G2TraceCollide(trace_t* tr, vec3_t const mins, vec3_t const maxs, const vec3_t lastValidStart, const vec3_t lastValidEnd)
 {
 	G2Trace_t		G2Trace;
@@ -10689,6 +10715,25 @@ qboolean CG_G2TraceCollide(trace_t* tr, vec3_t const mins, vec3_t const maxs, co
 		tN++;
 	}
 	g2Hit = &cg_entities[tr->entityNum];
+
+	// Only attempt Ghoul2 collision on stable entity types with valid Ghoul2 instances.
+	if (g2Hit) {
+		switch (g2Hit->currentState.eType) {
+		case ET_PLAYER:
+		case ET_NPC:
+		case ET_BODY:
+			break;
+		default:
+			return qfalse;
+		}
+		if (CG_PtrLooksPoisonedLocal(g2Hit->ghoul2)) {
+			return qfalse;
+		}
+		// If the Ghoul2 handle exists but has no models, CollisionDetect can crash inside the engine.
+		if (g2Hit->ghoul2 && !trap_G2_HaveWeGhoul2Models(g2Hit->ghoul2)) {
+			return qfalse;
+		}
+	}
 
 	if (g2Hit && g2Hit->ghoul2)
 	{
@@ -10735,11 +10780,25 @@ qboolean CG_G2TraceCollide(trace_t* tr, vec3_t const mins, vec3_t const maxs, co
 			return qfalse;
 		}
 
+		/* Defensive: skip Ghoul2 collision for entities without valid G2, and for vehicles (use bbox/trace path). */
+		if (!g2Hit->ghoul2) {
+			return qfalse;
+		}
+		if (g2Hit->currentState.eType == ET_NPC && g2Hit->currentState.NPC_class == CLASS_VEHICLE) {
+			return qfalse;
+		}
+
 		// Copy into locals to ensure we never pass transient pointers
 		vec3_t safeStart, safeEnd, safeScale;
 		safeStart[0] = lastValidStart[0]; safeStart[1] = lastValidStart[1]; safeStart[2] = lastValidStart[2];
 		safeEnd[0] = lastValidEnd[0]; safeEnd[1] = lastValidEnd[1]; safeEnd[2] = lastValidEnd[2];
 		safeScale[0] = scalePtr[0]; safeScale[1] = scalePtr[1]; safeScale[2] = scalePtr[2];
+
+		// Re-check before calling into the engine (defensive against mid-frame invalidation).
+		if (!g2Hit->ghoul2 || CG_PtrLooksPoisonedLocal(g2Hit->ghoul2)) {
+			return qfalse;
+		}
+
 
 		if (cg_optvehtrace.integer &&
 			g2Hit->currentState.eType == ET_NPC &&
@@ -10828,16 +10887,19 @@ void CG_AddGhoul2Mark(int shader, float size, vec3_t start, vec3_t end, int entn
 	if (!ghoul2 || !scale || !start || !end || !entposition)
 		return;
 
-	// Validate ghoul2 instance to avoid passing a stale/NULL instance to the engine
-	if (!trap_G2_HaveWeGhoul2Models(ghoul2))
+	if (entnum < 0 || entnum >= MAX_GENTITIES)
 		return;
-	
-	// Do a cheap early-out *before* allocating
+
+	if (CG_PtrLooksPoisonedLocal(ghoul2))
+		return;
+
+	if (cg_entities[entnum].ghoul2 != ghoul2)
+		return;
+
 	VectorSubtract(end, start, rayDir);
 	if (VectorNormalize(rayDir) < 0.1f)
 		return;
 
-	// Allocate via engine allocator so the data survives beyond this stack frame
 	trap_TrueMalloc((void**)&goreSkin, sizeof(*goreSkin));
 	if (!goreSkin)
 	{
@@ -10849,14 +10911,13 @@ void CG_AddGhoul2Mark(int shader, float size, vec3_t start, vec3_t end, int entn
 	VectorCopy(rayDir, goreSkin->rayDirection);
 
 	if (trap_G2API_GetNumGoreMarks(ghoul2, 0) >= cg_ghoul2Marks.integer)
-	{ // you've got too many marks already
-		// If engine expects ownership, you may need to trap_TrueFree(goreSkin) here.
-		// But avoid freeing if engine expects to keep pointer.
+	{
+		trap_TrueFree((void**)&goreSkin);
 		return;
 	}
 
-	goreSkin->growDuration = -1; // default expandy time
-	goreSkin->goreScaleStartFraction = 1.0f; // default start scale
+	goreSkin->growDuration = -1;
+	goreSkin->goreScaleStartFraction = 1.0f;
 	goreSkin->frontFaces = qtrue;
 	goreSkin->backFaces = qtrue;
 	goreSkin->lifeTime = lifeTime;
@@ -10869,7 +10930,6 @@ void CG_AddGhoul2Mark(int shader, float size, vec3_t start, vec3_t end, int entn
 	goreSkin->theta = flrand(0.0f, 6.28f);
 	goreSkin->shader = shader;
 
-	// Ensure a valid scale vector
 	if (!scale[0] && !scale[1] && !scale[2])
 	{
 		VectorSet(goreSkin->scale, 1.0f, 1.0f, 1.0f);
@@ -10884,19 +10944,20 @@ void CG_AddGhoul2Mark(int shader, float size, vec3_t start, vec3_t end, int entn
 	VectorSubtract(end, start, goreSkin->rayDirection);
 	if (VectorNormalize(goreSkin->rayDirection) < .1f)
 	{
-		// If we bail out we should free if engine doesn't take ownership, but most engines expect async ownership - avoid freeing here.
+		trap_TrueFree((void**)&goreSkin);
 		return;
 	}
 
 	VectorCopy(entposition, goreSkin->position);
-	// angle array was zeros via memset; set yaw explicitly
 	goreSkin->angles[YAW] = entangle;
 
-	// Call the syscall with a pointer that remains valid after this function returns.
-	trap_G2API_AddSkinGore(ghoul2, goreSkin);
+	if (cg_entities[entnum].ghoul2 != ghoul2)
+	{
+		trap_TrueFree((void**)&goreSkin);
+		return;
+	}
 
-	// NOTE: Do NOT free goreSkin here. The engine likely keeps the pointer or will free it.
-	// If you find engine docs showing caller must free, call: trap_TrueFree((void**)&goreSkin);
+	trap_G2API_AddSkinGore(ghoul2, goreSkin);
 }
 
 void CG_SaberCompWork(vec3_t start, vec3_t end, centity_t *owner, int saberNum, int bladeNum)
@@ -14431,6 +14492,141 @@ static int CG_VehicleAddExhaustBolt( void *ghoul2, int modelIndex, int exhaustNu
     return -1;
 }
 
+// Some mods/servers do not send "$vehName" as the model configstring for vehicle NPCs.
+// In those cases the client never creates cent->m_pVehicle, which causes *all* vehicle FX
+// (exhaust, trails, etc) to be skipped. Create a best-effort clientside vehicle object
+// by inferring the vehicle type from the model name.
+static void CG_EnsureVehicleClientObject( centity_t *cent )
+{
+	const char *cModelName;
+	char modelName[MAX_QPATH];
+	char *star;
+	const char *vehType = NULL;
+	int iVehIndex = VEHICLE_NONE;
+	int i;
+
+	if ( !cent || cent->m_pVehicle )
+	{
+		return;
+	}
+	if ( cent->currentState.eType != ET_NPC || cent->currentState.NPC_class != CLASS_VEHICLE )
+	{
+		return;
+	}
+
+	cModelName = CG_ConfigString( CS_MODELS + cent->currentState.modelindex );
+	if ( !cModelName || !cModelName[0] )
+	{
+		return;
+	}
+
+	Q_strncpyz( modelName, cModelName, sizeof( modelName ) );
+
+	// Strip appended skin if present ("...*skin").
+	star = strchr( modelName, '*' );
+	if ( star )
+	{
+		*star = '\0';
+	}
+
+	if ( modelName[0] == '$' )
+	{
+		vehType = &modelName[1];
+		iVehIndex = BG_VehicleGetIndex( vehType );
+	}
+	else
+	{
+		// Try to infer the vehicle from the model path. Common case: "models/players/<veh>/model.glm".
+		const char *players = strstr( modelName, "models/players/" );
+		if ( players )
+		{
+			const char *folder = players + strlen( "models/players/" );
+			const char *slash = strchr( folder, '/' );
+			static char folderName[MAX_QPATH];
+			if ( slash && slash > folder )
+			{
+				size_t n = (size_t)(slash - folder);
+				if ( n >= sizeof( folderName ) )
+				{
+					n = sizeof( folderName ) - 1;
+				}
+				memcpy( folderName, folder, n );
+				folderName[n] = '\0';
+				vehType = folderName;
+				iVehIndex = BG_VehicleGetIndex( vehType );
+			}
+		}
+
+		// If BG_VehicleGetIndex failed (or model path isn't in that format), brute-force match.
+		if ( iVehIndex == VEHICLE_NONE )
+		{
+			for ( i = 0; i < MAX_VEHICLES; i++ )
+			{
+				if ( g_vehicleInfo[i].model && g_vehicleInfo[i].model[0] )
+				{
+					// Match either exact string or a substring (folder name).
+					if ( !Q_stricmp( g_vehicleInfo[i].model, modelName ) || strstr( modelName, g_vehicleInfo[i].model ) )
+					{
+						iVehIndex = i;
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	if ( iVehIndex < 0 || iVehIndex >= MAX_VEHICLES )
+	{
+		return;
+	}
+	if ( g_vehicleInfo[iVehIndex].type <= VH_NONE || g_vehicleInfo[iVehIndex].type >= VH_NUM_VEHICLES )
+	{
+		return;
+	}
+
+	// Create the vehicle object clientside.
+	switch ( g_vehicleInfo[iVehIndex].type )
+	{
+		case VH_ANIMAL:
+			G_CreateAnimalNPC( &cent->m_pVehicle, g_vehicleInfo[iVehIndex].name );
+			break;
+		case VH_SPEEDER:
+			G_CreateSpeederNPC( &cent->m_pVehicle, g_vehicleInfo[iVehIndex].name );
+			break;
+		case VH_FIGHTER:
+			G_CreateFighterNPC( &cent->m_pVehicle, g_vehicleInfo[iVehIndex].name );
+			break;
+		case VH_WALKER:
+			G_CreateWalkerNPC( &cent->m_pVehicle, g_vehicleInfo[iVehIndex].name );
+			break;
+		default:
+			break;
+	}
+
+	if ( !cent->m_pVehicle )
+	{
+		return;
+	}
+
+	cent->m_pVehicle->m_pParentEntity = (bgEntity_t *)cent;
+
+	// Try to hook up orientation (used by some prediction hacks). Safe if cgSendPS entry exists.
+	if ( cgSendPS[cent->currentState.number] )
+	{
+		cent->m_pVehicle->m_vOrientation = &cgSendPS[cent->currentState.number]->vehOrientation[0];
+	}
+
+	// Ensure exhaust bolts are set up if we already have a ghoul2 instance.
+	for ( i = 0; i < MAX_VEHICLE_EXHAUSTS; i++ )
+	{
+		cent->m_pVehicle->m_iExhaustTag[i] = -1;
+		if ( cent->ghoul2 )
+		{
+			cent->m_pVehicle->m_iExhaustTag[i] = CG_VehicleAddExhaustBolt( cent->ghoul2, 0, i + 1 );
+		}
+	}
+}
+
 #define	FLYBYSOUNDTIME 2000
 int	cg_lastHyperSpaceEffectTime = 0;
 CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
@@ -14438,10 +14634,18 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 	Vehicle_t *pVehNPC;
 
 	if (cent->currentState.eType != ET_NPC ||
-		cent->currentState.NPC_class != CLASS_VEHICLE ||
-		!cent->m_pVehicle)
+		cent->currentState.NPC_class != CLASS_VEHICLE)
 	{
 		return;
+	}
+
+	if ( !cent->m_pVehicle )
+	{
+		CG_EnsureVehicleClientObject( cent );
+		if ( !cent->m_pVehicle )
+		{
+			return;
+		}
 	}
 
 	pVehNPC = cent->m_pVehicle;
@@ -14558,10 +14762,14 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 		{//until we attach it, we need to debounce this
 			vec3_t	fwd, rt, up;
 			vec3_t	flat;
+			float	vehSpeed;
 			float nextFXDelay = 50;
 			VectorSet(flat, 0, cent->lerpAngles[1], cent->lerpAngles[2]);
 			AngleVectors( flat, fwd, rt, up );
-			if ( cent->currentState.speed > 0 )
+			// entityState_t::speed is frequently 0 for vehicle NPCs in MP (TR_INTERPOLATE).
+			// Use a client-side estimate so exhaust/trail FX don't get suppressed.
+			vehSpeed = CG_VehicleSpeedEstimate( cent );
+			if ( vehSpeed > 1.0f )
 			{//FIXME: only do this when accelerator is being pressed! (must have a driver?)
 				vec3_t	org;
 				qboolean doExhaust = qfalse;

@@ -1,6 +1,7 @@
 #include "b_local.h"
 #include "g_nav.h"
 #include "anims.h"
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 //#include "g_navigator.h"
 
 extern qboolean BG_SabersOff( playerState_t *ps );
@@ -13,7 +14,7 @@ extern void NPC_TempLookTarget( gentity_t *self, int lookEntNum, int minLookTime
 extern qboolean G_ExpandPointToBBox( vec3_t point, const vec3_t mins, const vec3_t maxs, int ignore, int clipmask );
 extern void NPC_AimAdjust( int change );
 extern qboolean FlyingCreature( gentity_t *ent );
-extern qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
+
 
 // Grenadier-only short sidestep timers (keeps changes local to this AI).
 #define GRENA_SIDESTEP_MIN_MS	200
@@ -188,7 +189,7 @@ static qboolean Grenadier_Move( void )
 			Grenadier_HoldPosition();
 			return qfalse;
 		}
-		if ( info.blocker->client && OnSameTeam( NPC, info.blocker ) && TIMER_Done( NPC, "grSideStepL" ) && TIMER_Done( NPC, "grSideStepR" ) )
+		if ( info.blocker->client && !G_ValidEnemy( NPC, info.blocker ) && TIMER_Done( NPC, "grSideStepL" ) && TIMER_Done( NPC, "grSideStepR" ) )
 		{
 			vec3_t toBlocker, right;
 			float d;
@@ -309,7 +310,7 @@ void NPC_BSGrenadier_Patrol( void )
 						if ( level.alertEvents[alertEvent].owner && 
 							level.alertEvents[alertEvent].owner->client && 
 							level.alertEvents[alertEvent].owner->health >= 0 &&
-							level.alertEvents[alertEvent].owner->client->playerTeam == NPC->client->enemyTeam )
+							G_ValidEnemy( NPC, level.alertEvents[alertEvent].owner ) )
 						{//an enemy
 							//racc - an enemy was discovered.
 							G_SetEnemy( NPC, level.alertEvents[alertEvent].owner );
@@ -660,7 +661,7 @@ void NPC_BSGrenadier_Attack( void )
 			int hit = NPC_ShotEntity( NPC->enemy, NULL );
 			gentity_t *hitEnt = &g_entities[hit];
 			if ( hit == NPC->enemy->s.number 
-				|| ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->enemyTeam ) )
+				|| ( hitEnt && hitEnt->client && G_ValidEnemy( NPC, hitEnt ) ) )
 			{//racc - have someone in our sights.
 				float enemyHorzDist;
 

@@ -81,7 +81,7 @@ void NPC_Blocked( gentity_t *self, gentity_t *blocker )
 	}
 
 	//If this is one of our enemies, then just attack him
-	if ( blocker->client && ( blocker->client->playerTeam == self->client->enemyTeam ) )
+	if ( blocker->client && G_ValidEnemy( self, blocker ) )
 	{
 		G_SetEnemy( self, blocker );
 		return;
@@ -90,7 +90,7 @@ void NPC_Blocked( gentity_t *self, gentity_t *blocker )
 	//Debug_Printf( debugNPCAI, DEBUG_LEVEL_WARNING, "%s: Excuse me, %s %s!\n", self->targetname, blocker->classname, blocker->targetname );
 	
 	//If we're being blocked by the player, say something to them
-	if (blocker->client &&  blocker->s.number == 0  &&   blocker->client->playerTeam == self->client->playerTeam   )
+	if ( blocker->client && blocker->s.number == 0 && OnSameTeam( self, blocker ) )
 	{
 		//guys in formation are not trying to get to a critical point, 
 		//don't make them yell at the player (unless they have an enemy and

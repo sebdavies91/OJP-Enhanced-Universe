@@ -698,7 +698,7 @@ clientkilled:
 			break;
 		case MOD_ION_EXPLOSION:
 		case MOD_ION_EXPLOSION_SPLASH:		
-			message = "KILLED_DEMP2";
+			message = "KILLED_ION_EXPLOSION";
 			vehMessage = qtrue;
 			break;
 		case MOD_SONIC:
@@ -4217,17 +4217,20 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		//determine gender
 		if(es->trickedentindex == CHAN_VOICE || es->trickedentindex == CHAN_VOICE_GLOBAL)
 		{
-			int gender;
+			int gender = GENDER_MALE;
 			
-			if(es->clientNum < MAX_CLIENTS && cg_entities[es->clientNum].currentValid)
+			if(es->clientNum >= 0 && es->clientNum < MAX_CLIENTS && cg_entities[es->clientNum].currentValid)
 			{//already a player
 				gender = cgs.clientinfo[es->clientNum].gender;
 			}
-			else if(cg_entities[es->clientNum].currentState.eType == ET_NPC)
+			else if(es->clientNum >= 0 && es->clientNum < MAX_GENTITIES &&
+				cg_entities[es->clientNum].currentValid &&
+				cg_entities[es->clientNum].currentState.eType == ET_NPC &&
+				cg_entities[es->clientNum].npcClient)
 			{//NPC
 				gender = cg_entities[es->clientNum].npcClient->gender;
 			}
-			else
+			else if(cg.numScores > 0 && cg.scores[0].client >= 0 && cg.scores[0].client < MAX_CLIENTS)
 			{//use the highest scorer's gender
 				gender = cgs.clientinfo[cg.scores[0].client].gender;
 			}
@@ -4258,10 +4261,12 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 					//find the filename
 					fileName = Q_strrchr( r, '/' );
-					Q_strncpyz( nameSlash, fileName, sizeof(nameSlash) );
-
-					trap_S_StartSound (NULL, es->clientNum, es->trickedentindex, CG_CustomSound( es->clientNum, soundName ) );
-					break;
+					if(nameSlash && fileName)
+					{
+						Q_strncpyz( nameSlash, fileName, sizeof(soundName) - (nameSlash - soundName) );
+						trap_S_StartSound (NULL, es->clientNum, es->trickedentindex, CG_CustomSound( es->clientNum, soundName ) );
+						break;
+					}
 				}
 			}
 		}
@@ -4417,7 +4422,22 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			int victim;
 			DEBUGNAME("EV_BURNED");
 			ByteToDir( es->eventParm, dir );
-			victim = (es->eType == ET_EVENTS && es->owner) ? es->owner : es->number;
+			victim = es->number;
+			if ( es->eType > ET_EVENTS )
+			{
+				if ( es->owner != ENTITYNUM_NONE )
+				{
+					victim = es->owner;
+				}
+				else if ( es->otherEntityNum != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum;
+				}
+				else if ( es->otherEntityNum2 != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum2;
+				}
+			}
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
 			FX_Burned(position, dir);
 			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.incinerationSound );
@@ -4431,7 +4451,22 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			int victim;
 			DEBUGNAME("EV_FROZEN");
 			ByteToDir( es->eventParm, dir );
-			victim = (es->eType == ET_EVENTS && es->owner) ? es->owner : es->number;
+			victim = es->number;
+			if ( es->eType > ET_EVENTS )
+			{
+				if ( es->owner != ENTITYNUM_NONE )
+				{
+					victim = es->owner;
+				}
+				else if ( es->otherEntityNum != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum;
+				}
+				else if ( es->otherEntityNum2 != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum2;
+				}
+			}
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
 			FX_Frozen(position, dir);
 			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.cryoSound );
@@ -4445,7 +4480,22 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			int victim;
 			DEBUGNAME("EV_SHOCKED");
 			ByteToDir( es->eventParm, dir );
-			victim = (es->eType == ET_EVENTS && es->owner) ? es->owner : es->number;
+			victim = es->number;
+			if ( es->eType > ET_EVENTS )
+			{
+				if ( es->owner != ENTITYNUM_NONE )
+				{
+					victim = es->owner;
+				}
+				else if ( es->otherEntityNum != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum;
+				}
+				else if ( es->otherEntityNum2 != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum2;
+				}
+			}
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
 			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.crackleSound );
 			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
@@ -4454,17 +4504,57 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			break;	
 
 	case EV_SOUNDED:
-		DEBUGNAME("EV_SOUNDED");
-		ByteToDir( es->eventParm, dir );
-		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].itemPowerType = 3;
+		{
+			int victim;
+			DEBUGNAME("EV_SOUNDED");
+			ByteToDir( es->eventParm, dir );
+			victim = es->number;
+			if ( es->eType > ET_EVENTS )
+			{
+				if ( es->owner != ENTITYNUM_NONE )
+				{
+					victim = es->owner;
+				}
+				else if ( es->otherEntityNum != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum;
+				}
+				else if ( es->otherEntityNum2 != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum2;
+				}
+			}
+			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
+			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
+			cg_entities[victim].itemPowerType = 3;
+		}
 		break;	
 	
 	case EV_FLASHED:
-		DEBUGNAME("EV_FLASHED");
-		ByteToDir( es->eventParm, dir );
-		cg_entities[es->owner].itemPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].itemPowerType = 4;
+		{
+			int victim;
+			DEBUGNAME("EV_FLASHED");
+			ByteToDir( es->eventParm, dir );
+			victim = es->number;
+			if ( es->eType > ET_EVENTS )
+			{
+				if ( es->owner != ENTITYNUM_NONE )
+				{
+					victim = es->owner;
+				}
+				else if ( es->otherEntityNum != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum;
+				}
+				else if ( es->otherEntityNum2 != ENTITYNUM_NONE )
+				{
+					victim = es->otherEntityNum2;
+				}
+			}
+			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
+			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
+			cg_entities[victim].itemPowerType = 4;
+		}
 		break;	
 		
 	case EV_GIB_PLAYER:

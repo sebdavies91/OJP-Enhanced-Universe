@@ -1992,6 +1992,56 @@ static int UI_TeamIndexFromName(const char *name) {
 
 }
 
+// Map the (non-contiguous) UI_BLUETEAM#/UI_REDTEAM# ownerDraw IDs to a 1-based
+// team member slot index.
+//
+// Historically the UI used a few separate numeric ranges for these ownerDraw
+// IDs (1-5, 6-8, etc). This helper keeps that legacy layout while allowing us
+// to extend the list without relying on brittle arithmetic hacks.
+static int UI_TeamMemberSlotFromOwnerDraw(int ownerDraw, qboolean blue) {
+	if (blue) {
+		switch (ownerDraw) {
+			case UI_BLUETEAM1:  return 1;
+			case UI_BLUETEAM2:  return 2;
+			case UI_BLUETEAM3:  return 3;
+			case UI_BLUETEAM4:  return 4;
+			case UI_BLUETEAM5:  return 5;
+			case UI_BLUETEAM6:  return 6;
+			case UI_BLUETEAM7:  return 7;
+			case UI_BLUETEAM8:  return 8;
+			case UI_BLUETEAM9:  return 9;
+			case UI_BLUETEAM10: return 10;
+			case UI_BLUETEAM11: return 11;
+			case UI_BLUETEAM12: return 12;
+			case UI_BLUETEAM13: return 13;
+			case UI_BLUETEAM14: return 14;
+			case UI_BLUETEAM15: return 15;
+			case UI_BLUETEAM16: return 16;
+			default: return 0;
+		}
+	} else {
+		switch (ownerDraw) {
+			case UI_REDTEAM1:  return 1;
+			case UI_REDTEAM2:  return 2;
+			case UI_REDTEAM3:  return 3;
+			case UI_REDTEAM4:  return 4;
+			case UI_REDTEAM5:  return 5;
+			case UI_REDTEAM6:  return 6;
+			case UI_REDTEAM7:  return 7;
+			case UI_REDTEAM8:  return 8;
+			case UI_REDTEAM9:  return 9;
+			case UI_REDTEAM10: return 10;
+			case UI_REDTEAM11: return 11;
+			case UI_REDTEAM12: return 12;
+			case UI_REDTEAM13: return 13;
+			case UI_REDTEAM14: return 14;
+			case UI_REDTEAM15: return 15;
+			case UI_REDTEAM16: return 16;
+			default: return 0;
+		}
+	}
+}
+
 static void UI_DrawClanLogo(rectDef_t *rect, float scale, vec4_t color) {
   int i;
   i = UI_TeamIndexFromName(UI_Cvar_VariableString("ui_teamName"));
@@ -2394,61 +2444,26 @@ static void UI_DrawTeamMember(rectDef_t *rect, float scale, vec4_t color, qboole
 	// 2..NumCharacters - Bot
 	int value = trap_Cvar_VariableValue(va(blue ? "ui_blueteam%i" : "ui_redteam%i", num));
 	const char *text;
-	int maxcl = trap_Cvar_VariableValue( "sv_maxClients" );
 	vec4_t finalColor;
-	int numval = num;
-
-	numval *= 2;
-
-	if (blue)
-	{
-		numval -= 1;
-	}
 
 	finalColor[0] = color[0];
 	finalColor[1] = color[1];
 	finalColor[2] = color[2];
 	finalColor[3] = color[3];
 
-	if (numval > maxcl)
-	{
-		finalColor[0] *= 0.5;
-		finalColor[1] *= 0.5;
-		finalColor[2] *= 0.5;
-
-		value = -1;
-	}
-
-	//[UITweaks]
-	//allow players to use the addbots menu for the bots.
-	/*
-	if (uiInfo.gameTypes[ui_netGameType.integer].gtEnum == GT_SIEGE)
-	{
-		if (value > 1 )
-		{
-			value = 1;
-		}
-	}
-	*/
-	//[/UITweaks]
-
+	// Do not gray out team slots based on the old alternating client-index
+	// formula (blue=1,3,5... red=2,4,6...). That logic was fine for the
+	// vanilla 16-total layout but breaks once the pregame team list is
+	// extended, causing higher slots to look closed or behave inconsistently.
 	if (value <= 1) {
-		if (value == -1)
-		{
-			//text = "Closed";
-			text = UI_GetStringEdString("MENUS", "CLOSED");
-		}
-		else
-		{
-			//text = "Human";
-			text = UI_GetStringEdString("MENUS", "HUMAN");
-		}
+		text = UI_GetStringEdString("MENUS", "HUMAN");
 	} else {
 		value -= 2;
-		if (value >= UI_GetNumBots()) {
-			value = 1;
+		if (value < 0 || value >= UI_GetNumBots()) {
+			text = UI_GetStringEdString("MENUS", "HUMAN");
+		} else {
+			text = UI_GetBotNameByNumber(value);
 		}
-		text = UI_GetBotNameByNumber(value);
 	}
 
   Text_Paint(rect->x, rect->y, scale, finalColor, text, 0, 0, textStyle, iMenuFont);
@@ -3257,23 +3272,23 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 			    s = va("%s: %s",  (char *)UI_GetStringEdString("MENUS", "TEAM_RED"), uiInfo.teamList[i].teamName);
 			  }
       break;
-    case UI_BLUETEAM1:
-		case UI_BLUETEAM2:
-		case UI_BLUETEAM3:
-		case UI_BLUETEAM4:
-		case UI_BLUETEAM5:
-		case UI_BLUETEAM6:
-		case UI_BLUETEAM7:
-		case UI_BLUETEAM8:
-			if (ownerDraw <= UI_BLUETEAM5)
-			{
-			  iUse = ownerDraw-UI_BLUETEAM1 + 1;
-			}
-			else
-			{
-			  iUse = ownerDraw-274; //unpleasent hack because I don't want to move up all the UI_BLAHTEAM# defines
-			}
-
+	case UI_BLUETEAM1:
+	case UI_BLUETEAM2:
+	case UI_BLUETEAM3:
+	case UI_BLUETEAM4:
+	case UI_BLUETEAM5:
+	case UI_BLUETEAM6:
+	case UI_BLUETEAM7:
+	case UI_BLUETEAM8:
+	case UI_BLUETEAM9:
+	case UI_BLUETEAM10:
+	case UI_BLUETEAM11:
+	case UI_BLUETEAM12:
+	case UI_BLUETEAM13:
+	case UI_BLUETEAM14:
+	case UI_BLUETEAM15:
+	case UI_BLUETEAM16:
+			iUse = UI_TeamMemberSlotFromOwnerDraw(ownerDraw, qtrue);
 			value = trap_Cvar_VariableValue(va("ui_blueteam%i", iUse));
 			if (value <= 1) {
 				text = "Human";
@@ -3286,23 +3301,23 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 			}
 			s = va("%i. %s", iUse, text);
       break;
-    case UI_REDTEAM1:
-		case UI_REDTEAM2:
-		case UI_REDTEAM3:
-		case UI_REDTEAM4:
-		case UI_REDTEAM5:
-		case UI_REDTEAM6:
-		case UI_REDTEAM7:
-		case UI_REDTEAM8:
-			if (ownerDraw <= UI_REDTEAM5)
-			{
-			  iUse = ownerDraw-UI_REDTEAM1 + 1;
-			}
-			else
-			{
-			  iUse = ownerDraw-277; //unpleasent hack because I don't want to move up all the UI_BLAHTEAM# defines
-			}
-
+	case UI_REDTEAM1:
+	case UI_REDTEAM2:
+	case UI_REDTEAM3:
+	case UI_REDTEAM4:
+	case UI_REDTEAM5:
+	case UI_REDTEAM6:
+	case UI_REDTEAM7:
+	case UI_REDTEAM8:
+	case UI_REDTEAM9:
+	case UI_REDTEAM10:
+	case UI_REDTEAM11:
+	case UI_REDTEAM12:
+	case UI_REDTEAM13:
+	case UI_REDTEAM14:
+	case UI_REDTEAM15:
+	case UI_REDTEAM16:
+			iUse = UI_TeamMemberSlotFromOwnerDraw(ownerDraw, qfalse);
 			value = trap_Cvar_VariableValue(va("ui_redteam%i", iUse));
 			if (value <= 1) {
 				text = "Human";
@@ -3783,40 +3798,42 @@ static void UI_OwnerDraw(float x, float y, float w, float h, float text_x, float
     case UI_REDTEAMNAME:
       UI_DrawTeamName(&rect, scale, color, qfalse, textStyle, iMenuFont);
       break;
-    case UI_BLUETEAM1:
-		case UI_BLUETEAM2:
-		case UI_BLUETEAM3:
-		case UI_BLUETEAM4:
-		case UI_BLUETEAM5:
-		case UI_BLUETEAM6:
-		case UI_BLUETEAM7:
-		case UI_BLUETEAM8:
-	if (ownerDraw <= UI_BLUETEAM5)
-	{
-	  iUse = ownerDraw-UI_BLUETEAM1 + 1;
-	}
-	else
-	{
-	  iUse = ownerDraw-274; //unpleasent hack because I don't want to move up all the UI_BLAHTEAM# defines
-	}
+	case UI_BLUETEAM1:
+	case UI_BLUETEAM2:
+	case UI_BLUETEAM3:
+	case UI_BLUETEAM4:
+	case UI_BLUETEAM5:
+	case UI_BLUETEAM6:
+	case UI_BLUETEAM7:
+	case UI_BLUETEAM8:
+	case UI_BLUETEAM9:
+	case UI_BLUETEAM10:
+	case UI_BLUETEAM11:
+	case UI_BLUETEAM12:
+	case UI_BLUETEAM13:
+	case UI_BLUETEAM14:
+	case UI_BLUETEAM15:
+	case UI_BLUETEAM16:
+		iUse = UI_TeamMemberSlotFromOwnerDraw(ownerDraw, qtrue);
       UI_DrawTeamMember(&rect, scale, color, qtrue, iUse, textStyle, iMenuFont);
       break;
-    case UI_REDTEAM1:
-		case UI_REDTEAM2:
-		case UI_REDTEAM3:
-		case UI_REDTEAM4:
-		case UI_REDTEAM5:
-		case UI_REDTEAM6:
-		case UI_REDTEAM7:
-		case UI_REDTEAM8:
-	if (ownerDraw <= UI_REDTEAM5)
-	{
-	  iUse = ownerDraw-UI_REDTEAM1 + 1;
-	}
-	else
-	{
-	  iUse = ownerDraw-277; //unpleasent hack because I don't want to move up all the UI_BLAHTEAM# defines
-	}
+	case UI_REDTEAM1:
+	case UI_REDTEAM2:
+	case UI_REDTEAM3:
+	case UI_REDTEAM4:
+	case UI_REDTEAM5:
+	case UI_REDTEAM6:
+	case UI_REDTEAM7:
+	case UI_REDTEAM8:
+	case UI_REDTEAM9:
+	case UI_REDTEAM10:
+	case UI_REDTEAM11:
+	case UI_REDTEAM12:
+	case UI_REDTEAM13:
+	case UI_REDTEAM14:
+	case UI_REDTEAM15:
+	case UI_REDTEAM16:
+		iUse = UI_TeamMemberSlotFromOwnerDraw(ownerDraw, qfalse);
       UI_DrawTeamMember(&rect, scale, color, qfalse, iUse, textStyle, iMenuFont);
       break;
 		case UI_NETSOURCE:
@@ -4621,20 +4638,6 @@ static qboolean UI_TeamMember_HandleKey(int flags, float *special, int key, qboo
 		// 2..NumCharacters - Bot
 		char *cvar = va(blue ? "ui_blueteam%i" : "ui_redteam%i", num);
 		int value = trap_Cvar_VariableValue(cvar);
-		int maxcl = trap_Cvar_VariableValue( "sv_maxClients" );
-		int numval = num;
-
-		numval *= 2;
-
-		if (blue)
-		{
-			numval -= 1;
-		}
-
-		if (numval > maxcl)
-		{
-			return qfalse;
-		}
 
 		if (value < 1)
 		{
@@ -4647,19 +4650,11 @@ static qboolean UI_TeamMember_HandleKey(int flags, float *special, int key, qboo
 			value++;
 		}
 
-		/*if (ui_actualNetGameType.integer >= GT_TEAM) {
-			if (value >= uiInfo.characterCount + 2) {
-				value = 0;
-			} else if (value < 0) {
-				value = uiInfo.characterCount + 2 - 1;
-			}
-		} else {*/
-			if (value >= UI_GetNumBots() + 2) {
-				value = 1;
-			} else if (value < 1) {
-				value = UI_GetNumBots() + 2 - 1;
-			}
-		//}
+		if (value >= UI_GetNumBots() + 2) {
+			value = 1;
+		} else if (value < 1) {
+			value = UI_GetNumBots() + 2 - 1;
+		}
 
 		trap_Cvar_Set(cvar, va("%i", value));
     return qtrue;
@@ -4974,41 +4969,42 @@ static qboolean UI_OwnerDrawHandleKey(int ownerDraw, int flags, float *special, 
     case UI_REDTEAMNAME:
       return UI_TeamName_HandleKey(flags, special, key, qfalse);
       break;
-    case UI_BLUETEAM1:
-		case UI_BLUETEAM2:
-		case UI_BLUETEAM3:
-		case UI_BLUETEAM4:
-		case UI_BLUETEAM5:
-		case UI_BLUETEAM6:
-		case UI_BLUETEAM7:
-		case UI_BLUETEAM8:
-	if (ownerDraw <= UI_BLUETEAM5)
-	{
-	  iUse = ownerDraw-UI_BLUETEAM1 + 1;
-	}
-	else
-	{
-	  iUse = ownerDraw-274; //unpleasent hack because I don't want to move up all the UI_BLAHTEAM# defines
-	}
-
+	case UI_BLUETEAM1:
+	case UI_BLUETEAM2:
+	case UI_BLUETEAM3:
+	case UI_BLUETEAM4:
+	case UI_BLUETEAM5:
+	case UI_BLUETEAM6:
+	case UI_BLUETEAM7:
+	case UI_BLUETEAM8:
+	case UI_BLUETEAM9:
+	case UI_BLUETEAM10:
+	case UI_BLUETEAM11:
+	case UI_BLUETEAM12:
+	case UI_BLUETEAM13:
+	case UI_BLUETEAM14:
+	case UI_BLUETEAM15:
+	case UI_BLUETEAM16:
+		iUse = UI_TeamMemberSlotFromOwnerDraw(ownerDraw, qtrue);
       UI_TeamMember_HandleKey(flags, special, key, qtrue, iUse);
       break;
-    case UI_REDTEAM1:
-		case UI_REDTEAM2:
-		case UI_REDTEAM3:
-		case UI_REDTEAM4:
-		case UI_REDTEAM5:
-		case UI_REDTEAM6:
-		case UI_REDTEAM7:
-		case UI_REDTEAM8:
-	if (ownerDraw <= UI_REDTEAM5)
-	{
-	  iUse = ownerDraw-UI_REDTEAM1 + 1;
-	}
-	else
-	{
-	  iUse = ownerDraw-277; //unpleasent hack because I don't want to move up all the UI_BLAHTEAM# defines
-	}
+	case UI_REDTEAM1:
+	case UI_REDTEAM2:
+	case UI_REDTEAM3:
+	case UI_REDTEAM4:
+	case UI_REDTEAM5:
+	case UI_REDTEAM6:
+	case UI_REDTEAM7:
+	case UI_REDTEAM8:
+	case UI_REDTEAM9:
+	case UI_REDTEAM10:
+	case UI_REDTEAM11:
+	case UI_REDTEAM12:
+	case UI_REDTEAM13:
+	case UI_REDTEAM14:
+	case UI_REDTEAM15:
+	case UI_REDTEAM16:
+		iUse = UI_TeamMemberSlotFromOwnerDraw(ownerDraw, qfalse);
       UI_TeamMember_HandleKey(flags, special, key, qfalse, iUse);
       break;
 		case UI_NETSOURCE:
@@ -6521,6 +6517,9 @@ static void UI_RunMenuScript(char **args)
 		if (Q_stricmp(name, "StartServer") == 0) 
 		{//racc - UI script for starting game.
 			int i, added = 0;
+			int requestedBots = 0;
+			int requiredClients = 0;
+			int maxcl = 0;
 			float skill;
 			int warmupTime = 0;
 			int doWarmup = 0;
@@ -6546,6 +6545,51 @@ static void UI_RunMenuScript(char **args)
 			//[/OLDGAMETYPES]
 			//trap_Cvar_Set("g_redTeam", UI_Cvar_VariableString("ui_teamName"));
 			//trap_Cvar_Set("g_blueTeam", UI_Cvar_VariableString("ui_opponentName"));
+
+			// Count all requested pregame bots first and reserve enough client slots
+			// before the map/addbot commands are queued. When the pregame team list
+			// was extended beyond the vanilla 16-slot setup, the old logic would try
+			// to add bots against the current sv_maxClients and only bump the cvar
+			// after hitting the limit, which truncates or reshuffles the startup
+			// roster in GT_TEAM.
+			for (i = 0; i < PLAYERS_PER_TEAM; i++)
+			{
+				if (trap_Cvar_VariableValue(va("ui_blueteam%i", i+1)) > 1)
+				{
+					requestedBots++;
+				}
+				if (trap_Cvar_VariableValue(va("ui_redteam%i", i+1)) > 1)
+				{
+					requestedBots++;
+				}
+			}
+
+			requiredClients = requestedBots;
+			if (!ui_dedicated.integer)
+			{
+				requiredClients++; // reserve one slot for the local host
+			}
+			if (requiredClients < 2)
+			{
+				requiredClients = 2;
+			}
+			if (requiredClients > MAX_CLIENTS)
+			{
+				requiredClients = MAX_CLIENTS;
+			}
+			if (trap_Cvar_VariableValue("sv_maxClients") < requiredClients)
+			{
+				trap_Cvar_Set("sv_maxClients", va("%i", requiredClients));
+			}
+
+			/*
+			Use the computed value for this launch. sv_maxClients is latched, so
+			reading it back immediately can still return the previous map's value,
+			which truncates the preloaded team-bot roster even though the new map
+			has been asked to start with a higher client count.
+			*/
+			maxcl = requiredClients;
+
 			trap_Cmd_ExecuteText( EXEC_APPEND, va( "wait ; wait ; map %s\n", uiInfo.mapList[ui_currentNetMap.integer].mapLoadName ) );
 			skill = trap_Cvar_VariableValue( "g_spSkill" );
 
@@ -6573,51 +6617,51 @@ static void UI_RunMenuScript(char **args)
 				trap_Cvar_Set("timelimit", "0");
 			}
 
-			for (i = 0; i < PLAYERS_PER_TEAM; i++) 
 			{
-				int bot = trap_Cvar_VariableValue( va("ui_blueteam%i", i+1));
-				int maxcl = trap_Cvar_VariableValue( "sv_maxClients" );
+				int botCapacity = maxcl;
+				int delay = 500;
+				const int delayStep = 500;
 
-				if (bot > 1) 
+				if (!ui_dedicated.integer && botCapacity > 0)
 				{
-					int numval = i+1;
+					botCapacity--; // keep one slot for the host
+				}
 
-					numval *= 2;
+				for (i = 0; i < PLAYERS_PER_TEAM; i++) 
+				{
+					int bot = trap_Cvar_VariableValue( va("ui_blueteam%i", i+1));
+					const char *botName;
 
-					numval -= 1;
-
-					if (numval <= maxcl)
+					if (bot > 1 && added < botCapacity) 
 					{
+						botName = UI_GetBotNameByNumber(bot-2);
 						if (ui_actualNetGameType.integer >= GT_TEAM) {
-							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f %s\n", UI_GetBotNameByNumber(bot-2), skill, "Blue");
+							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f %s %i \"%s\"\n", botName, skill, "Blue", delay, botName);
 						} else {
-							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f \n", UI_GetBotNameByNumber(bot-2), skill);
+							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f %s %i \"%s\"\n", botName, skill, "", delay, botName);
 						}
 						trap_Cmd_ExecuteText( EXEC_APPEND, buff );
 						added++;
+						delay += delayStep;
 					}
-				}
-				bot = trap_Cvar_VariableValue( va("ui_redteam%i", i+1));
-				if (bot > 1) {
-					int numval = i+1;
 
-					numval *= 2;
-
-					if (numval <= maxcl)
-					{
+					bot = trap_Cvar_VariableValue( va("ui_redteam%i", i+1));
+					if (bot > 1 && added < botCapacity) {
+						botName = UI_GetBotNameByNumber(bot-2);
 						if (ui_actualNetGameType.integer >= GT_TEAM) {
-							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f %s\n", UI_GetBotNameByNumber(bot-2), skill, "Red");
+							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f %s %i \"%s\"\n", botName, skill, "Red", delay, botName);
 						} else {
-							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f \n", UI_GetBotNameByNumber(bot-2), skill);
+							Com_sprintf( buff, sizeof(buff), "addbot \"%s\" %f %s %i \"%s\"\n", botName, skill, "", delay, botName);
 						}
 						trap_Cmd_ExecuteText( EXEC_APPEND, buff );
 						added++;
+						delay += delayStep;
 					}
-				}
-				if (added >= maxcl)
-				{ //this means the client filled up all their slots in the UI with bots. So stretch out an extra slot for them, and then stop adding bots.
-					trap_Cvar_Set("sv_maxClients", va("%i", added+1));
-					break;
+
+					if (added >= botCapacity)
+					{
+						break;
+					}
 				}
 			}
 		} else if (Q_stricmp(name, "updateSPMenu") == 0) {
@@ -7335,7 +7379,7 @@ static void UI_RunMenuScript(char **args)
                 //hmm, I guess I'll set bot_minplayers to 0 here too. -rww
 				trap_Cvar_Set("bot_minplayers", "0");
 
-				for (i=1;i<9;i++)
+				for (i=1;i<=PLAYERS_PER_TEAM;i++)
 				{
 					blueValue = trap_Cvar_VariableValue(va("ui_blueteam%i",i ));
 					if (blueValue>1)
@@ -11743,6 +11787,14 @@ vmCvar_t	ui_redteam5;
 vmCvar_t	ui_redteam6;
 vmCvar_t	ui_redteam7;
 vmCvar_t	ui_redteam8;
+vmCvar_t	ui_redteam9;
+vmCvar_t	ui_redteam10;
+vmCvar_t	ui_redteam11;
+vmCvar_t	ui_redteam12;
+vmCvar_t	ui_redteam13;
+vmCvar_t	ui_redteam14;
+vmCvar_t	ui_redteam15;
+vmCvar_t	ui_redteam16;
 vmCvar_t	ui_blueteam;
 vmCvar_t	ui_blueteam1;
 vmCvar_t	ui_blueteam2;
@@ -11752,6 +11804,14 @@ vmCvar_t	ui_blueteam5;
 vmCvar_t	ui_blueteam6;
 vmCvar_t	ui_blueteam7;
 vmCvar_t	ui_blueteam8;
+vmCvar_t	ui_blueteam9;
+vmCvar_t	ui_blueteam10;
+vmCvar_t	ui_blueteam11;
+vmCvar_t	ui_blueteam12;
+vmCvar_t	ui_blueteam13;
+vmCvar_t	ui_blueteam14;
+vmCvar_t	ui_blueteam15;
+vmCvar_t	ui_blueteam16;
 vmCvar_t	ui_teamName;
 vmCvar_t	ui_dedicated;
 vmCvar_t	ui_gameType;
@@ -11888,6 +11948,14 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_redteam6, "ui_redteam6", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_redteam7, "ui_redteam7", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_redteam8, "ui_redteam8", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam9, "ui_redteam9", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam10, "ui_redteam10", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam11, "ui_redteam11", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam12, "ui_redteam12", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam13, "ui_redteam13", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam14, "ui_redteam14", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam15, "ui_redteam15", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_redteam16, "ui_redteam16", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_blueteam1, "ui_blueteam1", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_blueteam2, "ui_blueteam2", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_blueteam3, "ui_blueteam3", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
@@ -11896,6 +11964,14 @@ static cvarTable_t		cvarTable[] = {
 	{ &ui_blueteam6, "ui_blueteam6", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_blueteam7, "ui_blueteam7", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_blueteam8, "ui_blueteam8", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam9, "ui_blueteam9", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam10, "ui_blueteam10", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam11, "ui_blueteam11", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam12, "ui_blueteam12", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam13, "ui_blueteam13", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam14, "ui_blueteam14", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam15, "ui_blueteam15", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
+	{ &ui_blueteam16, "ui_blueteam16", "1", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_netSource, "ui_netSource", "0", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_menuFiles, "ui_menuFilesMP", "ui/jampmenus.txt", CVAR_ARCHIVE|CVAR_INTERNAL },
 	{ &ui_currentMap, "ui_currentMap", "0", CVAR_ARCHIVE|CVAR_INTERNAL },

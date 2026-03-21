@@ -525,6 +525,22 @@ void G_SetClientSound( gentity_t *ent ) {
 	{
 		return;	// fixin' base bugs --eez
 	}	
+
+	// Preserve vehicle engine looping sounds.
+	//
+	// Vehicles (especially fighters) can be implemented as client entities. The vehicle
+	// code sets loopSound when a pilot boards, but this function runs every frame and
+	// would otherwise clear ps.loopSound back to 0, resulting in silent vehicle engines.
+	if ( ent->m_pVehicle && ent->m_pVehicle->m_pVehicleInfo
+		&& ent->m_pVehicle->m_pVehicleInfo->soundLoop
+		&& ent->m_pVehicle->m_pPilot )
+	{
+		ent->client->ps.loopSound = ent->m_pVehicle->m_pVehicleInfo->soundLoop;
+		ent->s.loopSound = ent->client->ps.loopSound;
+		ent->s.loopIsSoundset = qfalse;
+		return;
+	}
+
 	if (ent->client && ent->client->isHacking)
 	{ //loop hacking sound
 		ent->client->ps.loopSound = level.snd_hack;

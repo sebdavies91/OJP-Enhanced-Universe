@@ -27,6 +27,7 @@ static int Turret_ParseTeamString( const char *teamStr )
 #include "q_shared.h"
 
 void G_SetEnemy( gentity_t *self, gentity_t *enemy );
+qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 qboolean turret_base_spawn_top( gentity_t *base );
 void ObjectDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath );
 
@@ -464,25 +465,9 @@ static qboolean turret_find_enemies( gentity_t *self )
 		{
 			continue;
 		}
-		if ( self->alliedTeam )
+		if ( !G_ValidEnemy( self, target ) )
 		{
-			// In SP/CoOp, NPCs are usually TEAM_FREE in sess, but have a meaningful playerTeam (NPCTEAM_*).
-			// In MP team modes, use sess.sessionTeam.
-			if ( target->client )
-			{
-				int targTeam = ( (g_gametype.integer == GT_SINGLE_PLAYER) || target->client->sess.sessionTeam == TEAM_FREE )
-					? target->client->playerTeam
-					: target->client->sess.sessionTeam;
-				if ( targTeam == self->alliedTeam )
-				{
-					// Friendly, don't shoot.
-					continue;
-				}
-			}
-			else if ( target->teamnodmg == self->alliedTeam )
-			{
-				continue;
-			}
+			continue;
 		}
 
 		if ( !trap_InPVS( org2, target->r.currentOrigin ))

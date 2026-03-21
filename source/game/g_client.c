@@ -5726,15 +5726,25 @@ void ClientSpawn(gentity_t *ent) {
 	}
 	else 
 	{
-		if (client->sess.sessionTeam == TEAM_RED)
+		switch ( client->sess.sessionTeam )
 		{
+		default:
+		case TEAM_FREE:
+			client->playerTeam = ent->s.teamowner = NPCTEAM_FREE;
+			client->enemyTeam  = NPCTEAM_FREE;
+			break;
+		case TEAM_RED:
 			client->playerTeam = ent->s.teamowner = NPCTEAM_ENEMY;
-			client->enemyTeam = NPCTEAM_PLAYER;
-		}
-		else
-		{
+			client->enemyTeam  = NPCTEAM_PLAYER;
+			break;
+		case TEAM_BLUE:
 			client->playerTeam = ent->s.teamowner = NPCTEAM_PLAYER;
-			client->enemyTeam = NPCTEAM_ENEMY;
+			client->enemyTeam  = NPCTEAM_ENEMY;
+			break;
+		case TEAM_SPECTATOR:
+			client->playerTeam = ent->s.teamowner = NPCTEAM_NEUTRAL;
+			client->enemyTeam  = NPCTEAM_NEUTRAL;
+			break;
 		}
 	}
 

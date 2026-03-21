@@ -1,6 +1,7 @@
 #include "b_local.h"
 #include "g_nav.h"
 #include "anims.h"
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
 extern void G_SoundOnEnt(gentity_t* ent, int channel, const char* soundPath);
@@ -224,7 +225,7 @@ void NPC_BSSniper_Patrol( void )
 						if ( level.alertEvents[alertEvent].owner && 
 							level.alertEvents[alertEvent].owner->client && 
 							level.alertEvents[alertEvent].owner->health >= 0 &&
-							level.alertEvents[alertEvent].owner->client->playerTeam == NPC->client->enemyTeam )
+							G_ValidEnemy( NPC, level.alertEvents[alertEvent].owner ) )
 						{//an enemy
 							G_SetEnemy( NPC, level.alertEvents[alertEvent].owner );
 							//NPCInfo->enemyLastSeenTime = level.time;
@@ -512,7 +513,7 @@ qboolean Sniper_EvaluateShot( int hit )
 
 	hitEnt = &g_entities[hit];
 	if ( hit == NPC->enemy->s.number 
-		|| ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->enemyTeam )
+		|| ( hitEnt && hitEnt->client && G_ValidEnemy( NPC, hitEnt ) )
 		|| ( hitEnt && hitEnt->takedamage && ((hitEnt->r.svFlags&SVF_GLASS_BRUSH)||hitEnt->health < 40||NPC->s.weapon == WP_EMPLACED_GUN) )
 		|| ( hitEnt && (hitEnt->r.svFlags&SVF_GLASS_BRUSH)) )
 	{//can hit enemy or will hit glass, so shoot anyway

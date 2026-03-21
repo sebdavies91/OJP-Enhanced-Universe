@@ -95,7 +95,7 @@ void NPC_BSAdvanceFight (void)
 					trap_Trace ( &tr, muzzle, NULL, NULL, enemy_org, NPC->s.number, MASK_SHOT );
 					traceEnt = &g_entities[tr.entityNum];
 					if( traceEnt != NPC->enemy &&
-						(!traceEnt || !traceEnt->client || !NPC->client->enemyTeam || NPC->client->enemyTeam != traceEnt->client->playerTeam) )
+						(!traceEnt || !traceEnt->client || !G_ValidEnemy( NPC, traceEnt )) )
 					{//no, so shoot for the head
 						attack_scale *= 0.75;
 						trap_Trace ( &tr, muzzle, NULL, NULL, enemy_head, NPC->s.number, MASK_SHOT );
@@ -104,22 +104,16 @@ void NPC_BSAdvanceFight (void)
 
 					VectorCopy( tr.endpos, hitspot );
 
-					if( traceEnt == NPC->enemy || (traceEnt->client && NPC->client->enemyTeam && NPC->client->enemyTeam == traceEnt->client->playerTeam) )
+					if( traceEnt == NPC->enemy || (traceEnt->client && G_ValidEnemy( NPC, traceEnt )) )
 					{
 						dead_on = qtrue;
 					}
 					else
 					{
 						attack_scale *= 0.5;
-						if(NPC->client->playerTeam)
-						{
-							if(traceEnt && traceEnt->client && traceEnt->client->playerTeam)
-							{
-								if(NPC->client->playerTeam == traceEnt->client->playerTeam)
-								{//Don't shoot our own team
-									attack_ok = qfalse;
-								}
-							}
+						if ( traceEnt && traceEnt->client && !G_ValidEnemy( NPC, traceEnt ) )
+						{//Don't shoot allies or neutrals
+							attack_ok = qfalse;
 						}
 					}
 				}

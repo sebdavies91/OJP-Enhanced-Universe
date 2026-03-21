@@ -2,6 +2,7 @@
 #include "b_local.h"
 #include "g_nav.h"
 void Seeker_Strafe( void );
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 
 #define VELOCITY_DECAY		0.7f
 
@@ -46,7 +47,7 @@ void NPC_Seeker_Pain(gentity_t *self, gentity_t *attacker, int damage)
 	//if we die, remove the control from our owner
 	if(self->health < 0 && self->originalactivator && self->originalactivator->client){
 		self->originalactivator->client->remote = NULL;
-		self->originalactivator->client->ps.stats[STAT_HOLDABLE_ITEMS] &= ~(1 << HI_SEEKER);
+		self->originalactivator->client->ps.stats[STAT_HOLDABLE_ITEMS] &= ~(1 << HI_SEEKER);																					  
 	}
 	//[/SeekerItemNpc]
 
@@ -404,7 +405,7 @@ qboolean Seeker_Fire( void )
 
 	missile->classname = "bryar_proj";
 	missile->s.weapon = WP_BRYAR_PISTOL;
-
+	missile->s.eFlags |= EF_WP_OPTION_4;
 	missile->damage = 40;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 
@@ -454,7 +455,7 @@ qboolean Seeker_Fire( void )
 
 	missile->classname = "bryar_proj";
 	missile->s.weapon = WP_BRYAR_PISTOL;
-
+	missile->s.eFlags |= EF_WP_OPTION_4;
 	missile->damage = 40;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_SEEKER;
@@ -522,54 +523,68 @@ void Seeker_Ranged( qboolean visible, qboolean advance )
 
 //------------------------------------
 
-void Seeker_Attack( void )
+void Seeker_Attack(void)
 {
 	float		distance;
 	qboolean	visible;
 	qboolean	advance;
+	gentity_t* enemy = NPC->enemy;
+
+	// Defensive validation: avoid dereferencing a corrupted/dangling pointer.
+	// Check for NULL first, then ensure the pointer lies within the g_entities array
+	// so we don't dereference an arbitrary address (which caused the crash).
+	if (!enemy) {
+		return;
+	}
+	if (enemy < g_entities || enemy >= (g_entities + level.num_entities)) {
+		// pointer is out of expected range; clear it and bail
+		NPC->enemy = NULL;
+		return;
+	}
+	// Now it's safe to check entity fields
+	if (!enemy->inuse || enemy->health <= 0 || !enemy->client) {
+		NPC->enemy = NULL;
+		return;
+	}
 
 	// Always keep a good height off the ground
 	Seeker_MaintainHeight();
 
 	// Rate our distance to the target, and our visibilty
-	distance	= DistanceHorizontalSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin );	
-	visible		= NPC_ClearLOS4( NPC->enemy );
-	advance		= (qboolean)(distance > MIN_DISTANCE_SQR);
+	distance = DistanceHorizontalSquared(NPC->r.currentOrigin, enemy->r.currentOrigin);
+	visible = NPC_ClearLOS4(enemy);
+	advance = (qboolean)(distance > MIN_DISTANCE_SQR);
 
-	//[SeekerItemNpc]
-	//dont shoot at dead people
-	if(!NPC->enemy->inuse || NPC->enemy->health <= 0){
+	// don't shoot at dead people (extra protection)
+	if (!enemy->inuse || enemy->health <= 0) {
 		NPC->enemy = NULL;
 		return;
 	}
-	//[/SeekerItemNpc]
 
-	if ( NPC->client->NPC_class == CLASS_BOBAFETT )
+	if (NPC->client->NPC_class == CLASS_BOBAFETT)
 	{
-		advance = (qboolean)(distance>(200.0f*200.0f));
+		advance = (qboolean)(distance > (200.0f * 200.0f));
 	}
 
 	// If we cannot see our target, move to see it
-	if ( visible == qfalse )
+	if (visible == qfalse)
 	{
-		if ( NPCInfo->scriptFlags & SCF_CHASE_ENEMIES )
+		if (NPCInfo->scriptFlags & SCF_CHASE_ENEMIES)
 		{
-			Seeker_Hunt( visible, advance );
+			Seeker_Hunt(visible, advance);
 			return;
 		}
-		//[SeekerItemNpc]
-		else{
-			//we cant chase them?  then return to the follow target
+		else
+		{
+			// we can't chase them? then return to the follow target
 			NPC->enemy = NULL;
-			if(NPC->client->leader)
+			if (NPC->client->leader)
 				NPCInfo->goalEntity = NPC->client->leader;
 			return;
-		}	
-		//[/SeekerItemNpc]
-
+		}
 	}
 
-	Seeker_Ranged( visible, advance );
+	Seeker_Ranged(visible, advance);
 }
 
 //------------------------------------
@@ -621,15 +636,15 @@ void Seeker_FindEnemy( void )
 		}
 
 		//[SeekerItemNpc]
-		if(OnSameTeam(NPC->originalactivator, ent))
-		{//our owner is on the same team as this entity, don't target them.
+		// Centralize hostility through G_ValidEnemy so seekers obey the same
+		// NPC-vs-bot/NPC-vs-NPC rules, plus originalactivator exceptions.
+		if ( !G_ValidEnemy( NPC, ent ) )
+		{
 			continue;
 		}
-
 		//dont attack our owner
 		if(NPC->originalactivator == ent)
 			continue;
-
 		if(ent->s.NPC_class == CLASS_VEHICLE)
 			continue;
 		//[/SeekerItemNpc]
@@ -1044,19 +1059,13 @@ void NPC_BSSeeker_Default( void )
 			{
 				avoidEnemy = qtrue;
 			}
-			else if ( owner->client && NPC->enemy->client
-				&& NPC->enemy->client->sess.sessionTeam == owner->client->sess.sessionTeam )
+			else if ( owner->client && !G_ValidEnemy( owner, NPC->enemy ) )
 			{
 				avoidEnemy = qtrue;
 			}
 			else if ( NPC->enemy->originalactivator )
 			{
 				if ( NPC->enemy->originalactivator == owner )
-				{
-					avoidEnemy = qtrue;
-				}
-				else if ( owner->client && NPC->enemy->originalactivator->client
-					&& NPC->enemy->originalactivator->client->sess.sessionTeam == owner->client->sess.sessionTeam )
 				{
 					avoidEnemy = qtrue;
 				}
@@ -1070,13 +1079,11 @@ void NPC_BSSeeker_Default( void )
 			}
 			//[/SeekerItemNpc]
 			//[/CoOp]
+			Seeker_Attack();
 		}
 		else
 		{
 			Seeker_Attack();
-			if ( NPC->client->NPC_class == CLASS_BOBAFETT )
-			{
-			}
 			//[SeekerItemNpc]
 			//still follow our target, be it a targeted enemy or our owner, but only if we aren't allowed to hunt down enemies.
 			if ( NPCInfo->scriptFlags & SCF_CHASE_ENEMIES )

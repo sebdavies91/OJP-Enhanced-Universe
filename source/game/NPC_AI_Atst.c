@@ -334,7 +334,6 @@ ATST_Hunt
 void ATST_Hunt( qboolean visible, qboolean advance )
 {
 	// Minimal, MP-safe hunt: use standard nav movement only.
-	// (Avoid NAV_GetLastMove/OnSameTeam differences across codebases.)
 	navInfo_t info;
 	int blockedFor;
 	if ( NPCInfo->goalEntity == NULL )

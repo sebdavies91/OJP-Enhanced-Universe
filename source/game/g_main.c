@@ -4376,6 +4376,10 @@ void G_RunFrame( int levelTime ) {
 	}
 	//[/ROQFILES]
 
+	// Reclaim any leaked BG_TempAlloc scratch memory once per frame.
+	// This prevents long-running MP sessions (many map loads/matches) from
+	// eventually crashing due to temp allocator tail drift.
+
 	if (g_gametype.integer == GT_SIEGE &&
 		g_siegeRespawn.integer &&
 		g_siegeRespawnCheck < level.time)

@@ -479,7 +479,7 @@ static qboolean ST_ShouldHoldForSpacing( void )
 		{
 			continue;
 		}
-		if ( !OnSameTeam( ally, NPC ) )
+		if ( G_ValidEnemy( ally, NPC ) )
 		{
 			continue;
 		}
@@ -560,7 +560,7 @@ static qboolean ST_Move( void )
 					ST_HoldPosition();
 				}
 				//If we bumped a friendly, try a short sidestep instead of giving up immediately.
-				else if ( NPC->client && info.blocker->client && OnSameTeam( info.blocker, NPC )
+				else if ( NPC->client && info.blocker->client && !G_ValidEnemy( info.blocker, NPC )
 					&& TIMER_Done( NPC, "collideStrafe" ) )
 				{
 					vec3_t toBlocker, fwd, right;
@@ -1046,7 +1046,7 @@ qboolean NPC_CheckEnemiesInSpotlight( void )
 		if(!enemy->inuse)
 			continue;
 
-		if ( enemy && enemy->client && NPC_ValidEnemy( enemy ) && enemy->client->playerTeam == NPC->client->enemyTeam )
+		if ( enemy && enemy->client && NPC_ValidEnemy( enemy ) && G_ValidEnemy(enemy, NPC))
 		{//valid ent & client, valid enemy, on the target team
 			//check to see if they're in my FOV
 			if ( InFOV3( enemy->r.currentOrigin, NPC->client->renderInfo.eyePoint, NPC->client->renderInfo.eyeAngles, NPCInfo->stats.hfov, NPCInfo->stats.vfov ) )
@@ -1489,7 +1489,7 @@ void NPC_BSST_Patrol( void )
 			{//hit something
 				//try cheap check first
 				gentity_t *enemy = &g_entities[trace.entityNum];
-				if ( enemy && enemy->client && NPC_ValidEnemy( enemy ) && enemy->client->playerTeam == NPC->client->enemyTeam )
+				if ( enemy && enemy->client && NPC_ValidEnemy( enemy ) && G_ValidEnemy(enemy, NPC))
 				{//racc - found someone.
 					G_SetEnemy( NPC, enemy );
 					TIMER_Set( NPC, "attackDelay", Q_irand( 500, 2500 ) );
@@ -2565,8 +2565,8 @@ void ST_Commander( void )
 					if ( ent->s.weapon == WP_THERMAL )
 					{//a thermal
 						//RAFIXME - impliment has_bounced flag?
-						if (!ent->parent || !OnSameTeam(ent->parent, NPC))
-						//if ( ent->has_bounced && (!ent->owner || !OnSameTeam(ent->owner, NPC)))
+						if (!ent->parent || G_ValidEnemy(ent->parent, NPC))
+						//if ( ent->has_bounced && (!ent->owner || G_ValidEnemy(ent->owner, NPC)))
 						{//bounced and an enemy thermal
 							ST_Speech( NPC, SPEECH_COVER, 0 );//FIXME: flee sound?
 							NPC_StartFlee(NPC->enemy, ent->r.currentOrigin, AEL_DANGER_GREAT, 1000, 2000);
@@ -3433,7 +3433,7 @@ void NPC_BSST_Attack( void )
 				gentity_t *hitEnt = &g_entities[hit];
 
 				if ( hit == NPC->enemy->s.number 
-					|| ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->enemyTeam )
+					|| ( hitEnt && hitEnt->client && G_ValidEnemy( NPC, hitEnt ) )
 					|| ( hitEnt && hitEnt->takedamage && ((hitEnt->r.svFlags&SVF_GLASS_BRUSH)||hitEnt->health < 40||NPC->s.weapon == WP_EMPLACED_GUN) ) )
 				{//can hit enemy or enemy ally or will hit glass or other minor breakable (or in emplaced gun), so shoot anyway
 					AI_GroupUpdateClearShotTime( NPCInfo->group );
@@ -3445,7 +3445,7 @@ void NPC_BSST_Attack( void )
 				{//Hmm, have to get around this bastard
 					NPC_AimAdjust( 1 );//adjust aim better longer we can see enemy
 					ST_ResolveBlockedShot( hit );
-					if ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->playerTeam )
+					if ( hitEnt && hitEnt->client && !G_ValidEnemy( NPC, hitEnt ) )
 					{//would hit an ally, don't fire!!!
 						hitAlly = qtrue;
 					}

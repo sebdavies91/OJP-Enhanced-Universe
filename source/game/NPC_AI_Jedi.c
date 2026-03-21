@@ -1,6 +1,7 @@
 //[SPPortComplete]
 #include "b_local.h"
 #include "g_nav.h"
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 #include "anims.h"
 #include "w_saber.h"
 
@@ -1435,7 +1436,7 @@ void Boba_FireDecide( void )
 					gentity_t *hitEnt = &g_entities[hit];
 
 					if ( hit == NPC->enemy->s.number 
-						|| ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->enemyTeam )
+						|| ( hitEnt && hitEnt->client && G_ValidEnemy( NPC, hitEnt ) )
 						|| ( hitEnt && hitEnt->takedamage && ((hitEnt->r.svFlags&SVF_GLASS_BRUSH)||hitEnt->health < 40||NPC->s.weapon == WP_EMPLACED_GUN) ) )
 					{//can hit enemy or enemy ally or will hit glass or other minor breakable (or in emplaced gun), so shoot anyway
 						enemyCS = qtrue;
@@ -1445,7 +1446,7 @@ void Boba_FireDecide( void )
 					else
 					{//Hmm, have to get around this bastard
 						//NPC_AimAdjust( 1 );//adjust aim better longer we can see enemy
-						if ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->playerTeam )
+						if ( hitEnt && hitEnt->client && !G_ValidEnemy( NPC, hitEnt ) )
 						{//would hit an ally, don't fire!!!
 							hitAlly = qtrue;
 						}
@@ -5938,7 +5939,7 @@ gentity_t *Jedi_FindEnemyInCone( gentity_t *self, gentity_t *fallback, float min
 		{//not a client - FIXME: what about turrets?
 			continue;
 		}
-		if ( check->client->playerTeam != self->client->enemyTeam )
+		if ( !G_ValidEnemy( self, check ) )
 		{//not an enemy - FIXME: what about turrets?
 			continue;
 		}
@@ -8054,7 +8055,7 @@ void NPC_Jedi_Pain(gentity_t *self, gentity_t *attacker, int damage)
 		//check special defenses
 	if ( other 
 		&& other->client 
-		&& !OnSameTeam( self, other ))
+		&& G_ValidEnemy( self, other ))
 	{//hit by a client
 		//FIXME: delay this until *after* the pain anim?
 		if ( mod == MOD_FORCE_DARK )
@@ -8932,7 +8933,7 @@ static void Jedi_Attack( void )
 	if (NPC->enemy && NPC->enemy->NPC
 		&& NPC->enemy->NPC->charmedTime > level.time )
 	{//my enemy was charmed
-		if ( OnSameTeam( NPC, NPC->enemy ) )
+		if ( !G_ValidEnemy( NPC, NPC->enemy ) )
 		{//has been charmed to be on my team
 			G_ClearEnemy( NPC );
 		}
@@ -8941,8 +8942,7 @@ static void Jedi_Attack( void )
 		&& NPC->client->enemyTeam == NPCTEAM_PLAYER
 		&& NPC->enemy
 		&& NPC->enemy->client
-		&& NPC->enemy->client->playerTeam != NPC->client->enemyTeam 
-		&& OnSameTeam( NPC, NPC->enemy ) 
+		&& !G_ValidEnemy( NPC, NPC->enemy ) 
 		&& !(NPC->NPC->aiFlags&NPCAI_LOCKEDENEMY) )
 	{//an evil jedi somehow got another evil NPC as an enemy, they were probably charmed and it's run out now
 		if ( !NPC_ValidEnemy( NPC->enemy ) )

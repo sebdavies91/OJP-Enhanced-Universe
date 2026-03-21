@@ -1,6 +1,7 @@
 #include "b_local.h"
 #include "g_nav.h"
 #include "anims.h"
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 #include "w_saber.h"
 
 extern void G_AddVoiceEvent( gentity_t *self, int event, int speakDebounceTime );
@@ -914,7 +915,7 @@ void NPC_BSGM_Attack( void )
 				int hit = NPC_ShotEntity( NPC->enemy, impactPos4 );
 				gentity_t *hitEnt = &g_entities[hit];
 				if ( hit == NPC->enemy->s.number 
-					|| ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->enemyTeam )
+					|| ( hitEnt && hitEnt->client && G_ValidEnemy( NPC, hitEnt ) )
 					|| ( hitEnt && hitEnt->takedamage ) )
 				{//can hit enemy or will hit glass or other breakable, so shoot anyway
 					enemyCS4 = qtrue;
@@ -924,7 +925,7 @@ void NPC_BSGM_Attack( void )
 				else
 				{//Hmm, have to get around this bastard
 					NPC_AimAdjust( 1 );//adjust aim better longer we can see enemy
-					if ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->playerTeam )
+					if ( hitEnt && hitEnt->client && !G_ValidEnemy( NPC, hitEnt ) )
 					{//would hit an ally, don't fire!!!
 						hitAlly4 = qtrue;
 					}
@@ -976,7 +977,7 @@ void NPC_BSGM_Attack( void )
 		hit = NPC_ShotEntity( NPC->enemy, impactPos4 );
 		hitEnt = &g_entities[hit];
 		if ( hit == NPC->enemy->s.number 
-			|| ( hitEnt && hitEnt->client && hitEnt->client->playerTeam == NPC->client->enemyTeam )
+			|| ( hitEnt && hitEnt->client && G_ValidEnemy( NPC, hitEnt ) )
 			|| ( hitEnt && hitEnt->takedamage ) )
 		{//can hit enemy or will hit glass or other breakable, so shoot anyway
 			enemyCS4 = qtrue;

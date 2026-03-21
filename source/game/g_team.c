@@ -191,190 +191,123 @@ OnSameTeam
 extern qboolean G_CheckVehicleNPCTeamDamage( gentity_t *ent );
 //[/Asteroids]
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
-	if ( !(ent1 && ent1->client) || !(ent2 && ent2->client) ) {
-		return qfalse;
-	}
+	int sideA = -1;
+	int sideB = -1;
 
-	if(ent1 && ent1->client->corruptedTime > level.time)
+	if ( ent1 && ent1->m_pVehicle )
 	{
-		if ( ent1->corruptionactivator)
-		{	
-		if (ent2->corruptionactivator)
+		if ( ent1->m_pVehicle->m_pPilot )
 		{
-		if (ent2->corruptionactivator == ent1->corruptionactivator)
-			{
-			return qtrue;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && ent2->corruptionactivator->client->sess.sessionTeam == ent1->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent2->corruptionactivator->client->sess.duelTeam == ent1->corruptionactivator->client->sess.duelTeam) )
-			{
-			return qtrue;
-			}
+			ent1 = (gentity_t *)ent1->m_pVehicle->m_pPilot;
 		}
-		else
+		else if ( ent1->client && ent1->client->NPC_class == CLASS_VEHICLE )
 		{
-		if ( ent1->corruptionactivator == ent2)
-			{
-			return qtrue;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && ent2->client->sess.sessionTeam == ent1->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent2->client->sess.duelTeam == ent1->corruptionactivator->client->sess.duelTeam) )
-			{
-			return qtrue;
-			}
-		}
 			return qfalse;
 		}
 	}
-	if(ent2 && ent2->client->corruptedTime > level.time)
+	if ( ent2 && ent2->m_pVehicle )
 	{
-		if ( ent2->corruptionactivator)
+		if ( ent2->m_pVehicle->m_pPilot )
 		{
-		if (ent1->corruptionactivator)
-		{
-		if (ent1->corruptionactivator == ent2->corruptionactivator)
-			{
-			return qtrue;
-			}
-//		if ((g_gametype.integer >= GT_SINGLE_PLAYER && ent1->corruptionactivator->client->sess.sessionTeam == ent2->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent1->corruptionactivator->client->sess.duelTeam == ent2->corruptionactivator->client->sess.duelTeam) )
-//			{
-//			return qtrue;
-//			}
+			ent2 = (gentity_t *)ent2->m_pVehicle->m_pPilot;
 		}
-		else
+		else if ( ent2->client && ent2->client->NPC_class == CLASS_VEHICLE )
 		{
-		if ( ent2->corruptionactivator == ent1)
-			{
-			return qtrue;
-			}
-//		if ((g_gametype.integer >= GT_SINGLE_PLAYER && ent1->client->sess.sessionTeam == ent2->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && ent1->client->sess.duelTeam == ent2->corruptionactivator->client->sess.duelTeam) )
-//			{
-//			return qtrue;
-//			}
-		}
-			return qfalse;	
+			return qfalse;
 		}
 	}
 
-
-	if (g_gametype.integer == GT_POWERDUEL)
+	if ( !(ent1 && ent1->client) || !(ent2 && ent2->client) )
 	{
-		if (ent1->client->sess.duelTeam == ent2->client->sess.duelTeam)
-		{
-			return qtrue;
-		}
-
 		return qfalse;
 	}
 
-	//[CoOp]
-	//this is really old q3 code.  not needed
-	/*
-	if (g_gametype.integer == GT_SINGLE_PLAYER)
-	{
-		qboolean ent1IsBot = qfalse;
-		qboolean ent2IsBot = qfalse;
-
-		if (ent1->r.svFlags & SVF_BOT)
-		{
-			ent1IsBot = qtrue;
-		}
-		if (ent2->r.svFlags & SVF_BOT)
-		{
-			ent2IsBot = qtrue;
-		}
-
-		if ((ent1IsBot && ent2IsBot) || (!ent1IsBot && !ent2IsBot))
-		{
-			return qtrue;
-		}
-		return qfalse;
-	}
-	*/
-	//[/CoOp]
-
-	//[CoOp]
-		if ( g_gametype.integer < GT_SINGLE_PLAYER ) {
-	//if ( g_gametype.integer < GT_TEAM ) {
-	//[/CoOp]
-		return qfalse;
-			   
-	}
-				
-
-
-	//Can't be on the same team
-	if ( ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam ) {
-		return qtrue;
-	}
-	
-
-				
-	
-	if (ent1->s.eType == ET_NPC &&
-		ent1->s.NPC_class == CLASS_VEHICLE &&
-		ent1->client &&
-		ent1->client->sess.sessionTeam != TEAM_FREE &&
-		ent2->client &&
-		ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam)
-	{
-		return qtrue;
-	}
-	if (ent2->s.eType == ET_NPC &&
-		ent2->s.NPC_class == CLASS_VEHICLE &&
-		ent2->client &&
-		ent2->client->sess.sessionTeam != TEAM_FREE &&
-		ent1->client &&
-		ent2->client->sess.sessionTeam == ent1->client->sess.sessionTeam)
+	if ( ent1 == ent2 )
 	{
 		return qtrue;
 	}
 
-
-
-	if (ent1->client->sess.sessionTeam == TEAM_FREE &&
-		ent2->client->sess.sessionTeam == TEAM_FREE &&
-		ent1->s.eType == ET_NPC &&
-		ent2->s.eType == ET_NPC)
-	{ //NPCs don't do normal team rules
+	if ( ent1->client->sess.sessionTeam == TEAM_SPECTATOR || ent1->client->playerTeam == NPCTEAM_NEUTRAL )
+	{
+		return qfalse;
+	}
+	if ( ent2->client->sess.sessionTeam == TEAM_SPECTATOR || ent2->client->playerTeam == NPCTEAM_NEUTRAL )
+	{
 		return qfalse;
 	}
 
-
-
-
-
-
-
-
-	//[CoOp]
-	//racc - NPCs and players CAN be on the same team!
-	/* basejka code.
-	if (ent1->s.eType == ET_NPC && ent2->s.eType == ET_PLAYER)
+	if ( ( ent1->client->NPC_class == CLASS_SEEKER || ent1->client->NPC_class == CLASS_SQUADTEAM )
+		&& ent1->originalactivator && ent1->originalactivator->client )
 	{
-		//[Asteroids]
-		if ( G_CheckVehicleNPCTeamDamage( ent1 ) )
-		{//hit an NPC that is in a vehicle - a droid?
-			if ( ent1->client->sess.sessionTeam == ent2->client->sess.sessionTeam 
-				|| ent1->teamnodmg == ent2->client->sess.sessionTeam ) 
-			{
-				return qtrue;
-			}
+		ent1 = ent1->originalactivator;
+	}
+	if ( ( ent2->client->NPC_class == CLASS_SEEKER || ent2->client->NPC_class == CLASS_SQUADTEAM )
+		&& ent2->originalactivator && ent2->originalactivator->client )
+	{
+		ent2 = ent2->originalactivator;
+	}
+
+	if ( ent1 == ent2 )
+	{
+		return qtrue;
+	}
+
+	if ( g_gametype.integer == GT_POWERDUEL )
+	{
+		if ( ent1->client->sess.duelTeam == ent2->client->sess.duelTeam )
+		{
+			return qtrue;
 		}
-		//[/Asteroids]
 		return qfalse;
 	}
-	else if (ent1->s.eType == ET_PLAYER && ent2->s.eType == ET_NPC)
+
+	if ( ent1->client->sess.sessionTeam == TEAM_BLUE || ent1->client->playerTeam == NPCTEAM_PLAYER || ent1->client->sess.duelTeam == DUELTEAM_DOUBLE || ent1->client->sess.sessionTeam == SIEGETEAM_TEAM2)
+	{
+		sideA = TEAM_BLUE;
+	}
+	else if ( ent1->client->sess.sessionTeam == TEAM_RED || ent1->client->playerTeam == NPCTEAM_ENEMY || ent1->client->sess.duelTeam == DUELTEAM_LONE || ent1->client->sess.sessionTeam == SIEGETEAM_TEAM1)
+	{
+		sideA = TEAM_RED;
+	}
+	else if ( ent1->client->sess.sessionTeam == TEAM_FREE || (ent1->NPC && ent1->client->playerTeam == NPCTEAM_FREE) || ent1->client->sess.duelTeam == DUELTEAM_FREE)
+	{
+		sideA = TEAM_FREE;
+	}
+
+
+	if ( ent2->client->sess.sessionTeam == TEAM_BLUE || ent2->client->playerTeam == NPCTEAM_PLAYER || ent2->client->sess.duelTeam == DUELTEAM_DOUBLE || ent2->client->sess.sessionTeam == SIEGETEAM_TEAM2)
+	{
+		sideB = TEAM_BLUE;
+	}
+	else if ( ent2->client->sess.sessionTeam == TEAM_RED || ent2->client->playerTeam == NPCTEAM_ENEMY || ent2->client->sess.duelTeam == DUELTEAM_LONE || ent2->client->sess.sessionTeam == SIEGETEAM_TEAM1)
+	{
+		sideB = TEAM_RED;
+	}
+	else if ( ent2->client->sess.sessionTeam == TEAM_FREE || (ent2->NPC && ent2->client->playerTeam == NPCTEAM_FREE) || ent2->client->sess.duelTeam == DUELTEAM_FREE)
+	{
+		sideB = TEAM_FREE;
+	}
+
+
+	if ( sideA == -1 || sideB == -1 )
 	{
 		return qfalse;
 	}
-	*/
-	//[/CoOp]
 
-	//[SeekerItemNpc]
-			
+	if ( sideA == TEAM_FREE || sideB == TEAM_FREE )
+	{
+		return qfalse;
+	}
+	else if ( sideA == sideB )
+	{
+		return qtrue;
+	}
+	else
+	{
+		return qfalse;
+	}
 
-	return qfalse;
 }
-
 
 static char ctfFlagStatusRemap[] = { '0', '1', '*', '*', '2' };
 
@@ -1022,6 +955,127 @@ Team_GetLocation
 Report a location for the player. Uses placed nearby target_location entities
 ============
 */
+static int G_CombatFactionTag( gentity_t *ent )
+{
+	if ( !ent )
+		return -1;
+
+	// Vehicles should always inherit their pilot's combat identity.
+	// Important: some vehicle entities may still have a client struct in MP,
+	// so this must happen before any client-based logic.
+	if ( ent->m_pVehicle && ent->m_pVehicle->m_pPilot )
+	{
+		gentity_t *pilotEnt = (gentity_t *)ent->m_pVehicle->m_pPilot;
+		if ( pilotEnt && pilotEnt->client )
+		{
+			return G_CombatFactionTag( pilotEnt );
+		}
+	}
+
+	// Vehicles and other client-less combatants: try to resolve to their pilot/owner.
+	// This is critical for AI target selection (bots/NPCs attacking piloted vehicles).
+	if ( !ent->client )
+	{
+		// Some vehicle/remote entities don't expose m_pPilot but do set ownerNum.
+		if ( ent->r.ownerNum >= 0 && ent->r.ownerNum < MAX_CLIENTS )
+		{
+			gentity_t *owner = &g_entities[ent->r.ownerNum];
+			if ( owner && owner->client )
+			{
+				return G_CombatFactionTag( owner );
+			}
+		}
+
+		// Some scripted/placed entities use alliedTeam to indicate who "owns" them.
+		// If it's set, map the TEAM_* value to an NPCTEAM bucket.
+		if ( ent->alliedTeam )
+		{
+			switch ( ent->alliedTeam )
+			{
+			case TEAM_BLUE: return 10000 + (int)NPCTEAM_PLAYER;
+			case TEAM_RED:  return 10000 + (int)NPCTEAM_ENEMY;
+			case TEAM_FREE: return ent->s.number; // FFA-style unique faction
+			default:
+				break;
+			}
+		}
+
+		return -1;
+	}
+
+	// Spectators / neutral never participate in combat target selection
+	if ( ent->client->ps.pm_type == PM_SPECTATOR || ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+		return -2;
+
+	{
+		npcteam_t t = NPCTEAM_FREE;
+
+		if ( ent->s.eType == ET_NPC )
+		{
+			t = ent->client->playerTeam;
+		}
+		else
+		{
+			switch ( ent->client->sess.sessionTeam )
+			{
+			case TEAM_RED: t = NPCTEAM_ENEMY; break;
+			case TEAM_BLUE: t = NPCTEAM_PLAYER; break;
+			case TEAM_SPECTATOR: t = NPCTEAM_NEUTRAL; break;
+			case TEAM_FREE: default: t = NPCTEAM_FREE; break;
+			}
+		}
+
+		if ( t == NPCTEAM_NEUTRAL )
+			return -2;
+
+		// FFA semantics: TEAM_FREE / NPCTEAM_FREE are NOT one big allied bucket.
+		// Each client is its own faction; owned followers share their owner's faction.
+		if ( t == NPCTEAM_FREE )
+		{
+			// Player-owned followers (squadteam, remote, seekers, etc.) should belong to their activator.
+			// In team modes this means inheriting the owner's team bucket; in FFA it means inheriting
+			// the owner's unique faction.
+			if ( ent->originalactivator && ent->originalactivator->client )
+			{
+				return G_CombatFactionTag( ent->originalactivator );
+			}
+			return ent->s.number;
+		}
+
+		// Team modes: collapse into stable buckets
+		return 10000 + (int)t;
+	}
+}
+
+qboolean G_CombatAllied( gentity_t *ent1, gentity_t *ent2 )
+{
+	int a = G_CombatFactionTag( ent1 );
+	int b = G_CombatFactionTag( ent2 );
+
+	// Neutral/spectator never fights and is never a target.
+	// Treat as allied so both bots and NPCs ignore them consistently.
+	if ( a == -2 || b == -2 )
+		return qtrue;
+
+	if ( a < 0 || b < 0 )
+		return qfalse;
+	return ( a == b );
+}
+
+qboolean G_CombatEnemy( gentity_t *ent1, gentity_t *ent2 )
+{
+	int a = G_CombatFactionTag( ent1 );
+	int b = G_CombatFactionTag( ent2 );
+
+	// Neutral/spectator never fights.
+	if ( a == -2 || b == -2 )
+		return qfalse;
+
+	if ( a < 0 || b < 0 )
+		return qfalse;
+	return ( a != b );
+}
+
 qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
 {
 	gentity_t *best;

@@ -8,6 +8,100 @@
 extern void BG_EnsureVehWeaponAssetsLoaded( int weaponIndex );
 
 extern vec4_t	bluehudtint;
+
+// ------------------------------------------------------------
+// Dual view-weapon recoil sync helpers
+// ------------------------------------------------------------
+// We keep the dual-fire viewmodel recoil state entirely in cgame (static arrays)
+// so it stays synchronized to EV_FIRE_WEAPON events (which are driven by
+// fireTime/altFireTime in game), without requiring changes to centity_t.
+static int s_dualMuzzleFlashTime[MAX_GENTITIES][2]; // [entnum][0]=right, [entnum][1]=left
+static byte s_dualFireSide[MAX_GENTITIES];          // toggles 0/1 for alternating
+static int s_dualAltMuzzleFlashTime[MAX_GENTITIES][2]; // per-hand alt-fire muzzle flash timing
+
+static int CG_GetWeaponOptionIndex( int eFlags )
+{
+	// option 1: no flags
+	// option 2: EF_WP_OPTION_2
+	// option 3: EF_WP_OPTION_3
+	// option 4: EF_WP_OPTION_4
+	// option 5: EF_WP_OPTION_2 | EF_WP_OPTION_3
+	// option 6: EF_WP_OPTION_2 | EF_WP_OPTION_4
+	const qboolean o2 = (eFlags & EF_WP_OPTION_2) ? qtrue : qfalse;
+	const qboolean o3 = (eFlags & EF_WP_OPTION_3) ? qtrue : qfalse;
+	const qboolean o4 = (eFlags & EF_WP_OPTION_4) ? qtrue : qfalse;
+
+	if (!o2 && !o3 && !o4) {
+		return 1;
+	}
+	if ( o2 && !o3 && !o4) {
+		return 2;
+	}
+	if (!o2 &&  o3 && !o4) {
+		return 3;
+	}
+	if (!o2 && !o3 &&  o4) {
+		return 4;
+	}
+	if ( o2 &&  o3 && !o4) {
+		return 5;
+	}
+	if ( o2 && !o3 &&  o4) {
+		return 6;
+	}
+
+	// Any other combination (shouldn't happen with your option scheme)
+	return 1;
+}
+
+static qboolean CG_DualAltFiresBoth( const centity_t *cent )
+{
+	const entityState_t *ent = &cent->currentState;
+	const int opt = CG_GetWeaponOptionIndex( ent->eFlags );
+
+	// Patterns provided by user:
+	// WP_BRYAR_PISTOL / WP_BRYAR_OLD
+	//   opt 1,2,6: alt fires both
+	//   opt 3,4,5: alt alternates
+	if ( ent->weapon == WP_BRYAR_PISTOL || ent->weapon == WP_BRYAR_OLD )
+	{
+		return (opt == 1 || opt == 2 || opt == 6) ? qtrue : qfalse;
+	}
+
+	// WP_STUN_BATON: no options (and we don't force "both" on alt unless game actually does)
+	return qfalse;
+}
+
+static int CG_DualViewWeaponRecoilFrame( const playerState_t *ps, const centity_t *cent, qboolean leftHand )
+{
+	// Only used as a fallback when the torso anim doesn't map to weapon frames.
+	// Keep it tight and predictable: 6-frame bump over ~60ms after the firing event.
+	const int entnum = cent->currentState.number;
+	const int side = leftHand ? 1 : 0;
+	const int t = s_dualMuzzleFlashTime[entnum][side];
+	if ( t <= 0 )
+	{
+		return 0;
+	}
+	// Guard against time going backwards (demo rewind etc)
+	if ( cg.time < t )
+	{
+		return 0;
+	}
+	{
+		int dt = cg.time - t;
+		if ( dt >= 0 && dt < 60 )
+		{
+			int f = 1 + (dt / 10);
+			if ( f > 6 )
+			{
+				f = 6;
+			}
+			return f;
+		}
+	}
+	return 0;
+}
 extern vec4_t	redhudtint;
 extern float	*hudTintColor;
 
@@ -2010,10 +2104,28 @@ Ghoul2 Insert End
 			BG_GiveMeVectorFromMatrix(&boltMatrix, POSITIVE_X, flashdir);
 		}
 
-		if ( (cent->currentState.eFlags & EF_ALT_FIRING && cg.predictedPlayerState.weapon != WP_BOWCASTER) &&
+		// Determine whether this flash is alt-fire. For remote players, rely on EF_ALT_FIRING.
+		// For the local player (especially duals), EF_ALT_FIRING can be a frame late; use the
+		// actual fire event timing we captured in CG_FireWeapon for perfect sync.
+		qboolean isAltFlash = (cent->currentState.eFlags & EF_ALT_FIRING) ? qtrue : qfalse;
+		if ( ps && cent->currentState.number == ps->clientNum && (ps->eFlags & EF_DUAL_WEAPONS) )
+		{
+			const int entnum = cent->currentState.number;
+			const int handIdx = leftweap ? 1 : 0; // 0=right, 1=left
+			if ( cg.time - s_dualAltMuzzleFlashTime[entnum][handIdx] <= MUZZLE_FLASH_TIME + 10 )
+			{
+				isAltFlash = qtrue;
+			}
+			else if ( cg.time - s_dualMuzzleFlashTime[entnum][handIdx] <= MUZZLE_FLASH_TIME + 10 )
+			{
+				isAltFlash = qfalse;
+			}
+		}
+
+		if ( isAltFlash && cg.predictedPlayerState.weapon != WP_BOWCASTER &&
 			cg.time - cent->muzzleFlashTime <= MUZZLE_FLASH_TIME + 10 )
 		{	// Handle muzzle flashes
-			if ( cent->currentState.eFlags & EF_ALT_FIRING )
+			if ( isAltFlash )
 			{	// Check the alt firing first.
 
 					if (cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4  )
@@ -2338,9 +2450,24 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 		// Handle the fringe situation where oldframe is invalid
 		if ( hand.frame == -1 )
 		{
-			hand.frame = 0;
-			hand.oldframe = 0;
-			hand.backlerp = 0;
+			// If dual weapons are using a static "both hands" torso anim (e.g. BOTH_FORCE_2HANDEDLIGHTNING_HOLD)
+			// there may be no anim->weapon-frame mapping, which makes the 1st person viewmodel look frozen.
+			// Drive view-weapon recoil frames from the actual firing events (kept per-hand in cent).
+			if ( (ps->eFlags & EF_DUAL_WEAPONS) &&
+				 cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD &&
+				 (ps->weapon == WP_BRYAR_PISTOL || ps->weapon == WP_BRYAR_OLD || ps->weapon == WP_STUN_BATON) )
+			{
+				int f = CG_DualViewWeaponRecoilFrame( ps, cent, qfalse );
+				hand.frame = f;
+				hand.oldframe = f;
+				hand.backlerp = 0;
+			}
+			else
+			{
+				hand.frame = 0;
+				hand.oldframe = 0;
+				hand.backlerp = 0;
+			}
 		}
 		else if ( hand.oldframe == -1 )
 		{
@@ -2395,9 +2522,21 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         		// Handle the fringe situation where oldframe is invalid
         		if ( hand.frame == -1 )
         		{
-        			hand.frame = 0;
-        			hand.oldframe = 0;
-        			hand.backlerp = 0;
+				if ( (ps->eFlags & EF_DUAL_WEAPONS) &&
+					 cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD &&
+					 (ps->weapon == WP_BRYAR_PISTOL || ps->weapon == WP_BRYAR_OLD || ps->weapon == WP_STUN_BATON) )
+				{
+					int f = CG_DualViewWeaponRecoilFrame( ps, cent, qtrue );
+					hand.frame = f;
+					hand.oldframe = f;
+					hand.backlerp = 0;
+				}
+				else
+				{
+					hand.frame = 0;
+					hand.oldframe = 0;
+					hand.backlerp = 0;
+				}
         		}
         		else if ( hand.oldframe == -1 )
         		{
@@ -2451,9 +2590,21 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         		// Handle the fringe situation where oldframe is invalid
         		if ( hand.frame == -1 )
         		{
-        			hand.frame = 0;
-        			hand.oldframe = 0;
-        			hand.backlerp = 0;
+				if ( (ps->eFlags & EF_DUAL_WEAPONS) &&
+					 cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD &&
+					 (ps->weapon == WP_BRYAR_PISTOL || ps->weapon == WP_BRYAR_OLD || ps->weapon == WP_STUN_BATON) )
+				{
+					int f = CG_DualViewWeaponRecoilFrame( ps, cent, qtrue );
+					hand.frame = f;
+					hand.oldframe = f;
+					hand.backlerp = 0;
+				}
+				else
+				{
+					hand.frame = 0;
+					hand.oldframe = 0;
+					hand.backlerp = 0;
+				}
         		}
         		else if ( hand.oldframe == -1 )
         		{
@@ -2507,9 +2658,21 @@ void CG_AddViewWeapon( playerState_t *ps ) {
         		// Handle the fringe situation where oldframe is invalid
         		if ( hand.frame == -1 )
         		{
-        			hand.frame = 0;
-        			hand.oldframe = 0;
-        			hand.backlerp = 0;
+				if ( (ps->eFlags & EF_DUAL_WEAPONS) &&
+					 cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD &&
+					 (ps->weapon == WP_BRYAR_PISTOL || ps->weapon == WP_BRYAR_OLD || ps->weapon == WP_STUN_BATON) )
+				{
+					int f = CG_DualViewWeaponRecoilFrame( ps, cent, qtrue );
+					hand.frame = f;
+					hand.oldframe = f;
+					hand.backlerp = 0;
+				}
+				else
+				{
+					hand.frame = 0;
+					hand.oldframe = 0;
+					hand.backlerp = 0;
+				}
         		}
         		else if ( hand.oldframe == -1 )
         		{
@@ -3674,6 +3837,46 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 	// mark the entity as muzzle flashing, so when it is added it will
 	// append the flash to the weapon model
 	cent->muzzleFlashTime = cg.time;
+
+	// If this is the local player and they are using dual weapons, keep per-hand
+	// timestamps so the 1st-person viewmodels can recoil in sync with actual firing
+	// (events are driven by fireTime/altFireTime in game).
+	if ( cg.predictedPlayerState.clientNum == cent->currentState.number &&
+		 (ent->eFlags & EF_DUAL_WEAPONS) )
+	{
+		qboolean firesBoth = qfalse;
+		const int entnum = cent->currentState.number;
+
+		if ( altFire )
+		{
+			firesBoth = CG_DualAltFiresBoth( cent );
+		}
+
+		if ( firesBoth )
+		{
+			s_dualMuzzleFlashTime[entnum][0] = cg.time;
+			s_dualMuzzleFlashTime[entnum][1] = cg.time;
+			if ( altFire ) {
+				s_dualAltMuzzleFlashTime[entnum][0] = cg.time;
+				s_dualAltMuzzleFlashTime[entnum][1] = cg.time;
+			}
+		}
+		else
+		{
+			// Alternate each firing event.
+			// IMPORTANT: side 0 must correspond to the *right-hand* viewweapon draw
+			// (CG_AddPlayerWeapon(..., leftweap=qfalse)), and side 1 to the left-hand.
+			// We stamp the current side first, then toggle for the next event.
+			{
+				const int side = (s_dualFireSide[entnum] & 1);
+				s_dualMuzzleFlashTime[entnum][ side ] = cg.time;
+					if ( altFire ) {
+						s_dualAltMuzzleFlashTime[entnum][ side ] = cg.time;
+					}
+					s_dualFireSide[entnum] ^= 1;
+			}
+		}
+	}
 
 	if (cg.predictedPlayerState.clientNum == cent->currentState.number)
 	{/*

@@ -42,6 +42,149 @@ qboolean AllForceDisabled(int force);
 //[/MOREFORCEOPTIONS]
 
 
+static gentity_t *G_CreateStatusEffectEvent( gentity_t *targ, int event, const vec3_t dir );
+static void G_RefreshBurnEffect( gentity_t *targ, const vec3_t dir, int burnTime );
+static void G_RefreshToxicEffect( gentity_t *targ, int toxicTime );
+static void G_RefreshFrozenEffect( gentity_t *targ, const vec3_t dir, int freezeTime );
+static void G_RefreshShockedEffect( gentity_t *targ, const vec3_t dir, int shockTime );
+static void G_RefreshSoundedEffect( gentity_t *targ, const vec3_t dir, int soundTime );
+static void G_RefreshFlashedEffect( gentity_t *targ, const vec3_t dir, int flashTime );
+
+
+static gentity_t *G_CreateStatusEffectEvent( gentity_t *targ, int event, const vec3_t dir )
+{
+	gentity_t *tent;
+	vec3_t dirCopy;
+
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return NULL;
+	}
+
+	if ( dir )
+	{
+		VectorCopy( dir, dirCopy );
+	}
+	else
+	{
+		VectorSet( dirCopy, 0.0f, 0.0f, 1.0f );
+	}
+
+	tent = G_TempEntity( targ->r.currentOrigin, event );
+	tent->s.owner = targ->s.number;
+	tent->s.otherEntityNum = targ->s.number;
+	tent->s.otherEntityNum2 = targ->s.number;
+	tent->s.eventParm = DirToByte( dirCopy );
+	return tent;
+}
+
+static void G_RefreshBurnEffect( gentity_t *targ, const vec3_t dir, int burnTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_BURNED, dir );
+	targ->client->burnTime = level.time + burnTime;
+}
+
+static void G_RefreshToxicEffect( gentity_t *targ, int toxicTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	targ->client->toxicTime = level.time + toxicTime;
+	G_EntitySound( targ, CHAN_VOICE, G_SoundIndex( va( "*choke%d.wav", Q_irand( 1, 3 ) ) ) );
+	targ->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
+	targ->client->ps.forceHandExtendTime = level.time + toxicTime/3;
+}
+
+static void G_RefreshFrozenEffect( gentity_t *targ, const vec3_t dir, int freezeTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_FROZEN, dir );
+	targ->client->freezeTime = level.time + freezeTime;
+	targ->client->ps.userInt1 |= LOCK_MOVERIGHT;
+	targ->client->ps.userInt1 |= LOCK_MOVELEFT;
+	targ->client->ps.userInt1 |= LOCK_MOVEFORWARD;
+	targ->client->ps.userInt1 |= LOCK_MOVEBACK;
+	targ->client->ps.userInt1 |= LOCK_MOVEUP;
+	targ->client->ps.userInt1 |= LOCK_MOVEDOWN;
+	targ->client->ps.userInt1 |= LOCK_UP;
+	targ->client->ps.userInt1 |= LOCK_DOWN;
+	targ->client->ps.userInt1 |= LOCK_RIGHT;
+	targ->client->ps.userInt1 |= LOCK_LEFT;
+	targ->client->viewLockTime = level.time + freezeTime/3;
+	targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + freezeTime/3;
+	targ->client->ps.saberMove = LS_READY;
+	targ->client->ps.saberBlocked = BLOCKED_NONE;
+	if ( targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_4 )
+	{
+		G_SetAnim( targ, NULL, SETANIM_BOTH, WeaponReadyAnim11[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3 );
+	}
+	else if ( targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_3 )
+	{
+		G_SetAnim( targ, NULL, SETANIM_BOTH, WeaponReadyAnim9[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3 );
+	}
+	else if ( targ->client->ps.eFlags & EF_WP_OPTION_4 )
+	{
+		G_SetAnim( targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3 );
+	}
+	else if ( targ->client->ps.eFlags & EF_WP_OPTION_3 )
+	{
+		G_SetAnim( targ, NULL, SETANIM_BOTH, WeaponReadyAnim5[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3 );
+	}
+	else if ( targ->client->ps.eFlags & EF_WP_OPTION_2 )
+	{
+		G_SetAnim( targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3 );
+	}
+	else
+	{
+		G_SetAnim( targ, NULL, SETANIM_BOTH, WeaponReadyAnim[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3 );
+	}
+}
+
+static void G_RefreshShockedEffect( gentity_t *targ, const vec3_t dir, int shockTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_SHOCKED, dir );
+	targ->client->shockTime = level.time + shockTime;
+	targ->client->ps.electrifyTime = level.time + shockTime;
+}
+
+static void G_RefreshSoundedEffect( gentity_t *targ, const vec3_t dir, int soundTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_SOUNDED, dir );
+	targ->client->sonicTime = level.time + soundTime;
+}
+
+static void G_RefreshFlashedEffect( gentity_t *targ, const vec3_t dir, int flashTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_FLASHED, dir );
+	targ->client->flashTime = level.time + flashTime;
+}
+
 //======================================================================
 #define MAX_MEDPACK_HEAL_AMOUNT		10
 #define MAX_SHIELDBOOSTER_REPAIR_AMOUNT		10
@@ -654,8 +797,12 @@ static qboolean pas_find_enemies( gentity_t *self )
 		{
 			continue;
 		}
-		if ( self->alliedTeam && target->client->sess.sessionTeam == self->alliedTeam )
-		{ 
+		if ( !self->originalactivator || !self->originalactivator->inuse )
+		{
+			continue;
+		}
+		if ( !G_ValidEnemy( self->originalactivator, target ) )
+		{
 			continue;
 		}
 		if (self->genericValue3 == target->s.number)
@@ -1199,6 +1346,7 @@ void ItemUse_Sentry2( gentity_t *ent )
 	sentry->genericValue8 = level.time;
 
 	sentry->alliedTeam = ent->client->sess.sessionTeam;
+	sentry->originalactivator = ent;
 
 	//[SentryGun]
 	//not used anymore since we allow multiple sentry guns now.
@@ -1296,13 +1444,31 @@ void ItemUse_Seeker(gentity_t *ent)
 			//instead of exploding in the air... OR: let it sit there as a seeker item?  conserve its ammo to use the same amount for
 			//the next person who uses it?
 
-			
+		
 			//dont chance enemies unless we were specificly told to
 			remote->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
 
-			// Keep follower team alignment consistent with the owning player across all gametypes.
-			remote->client->playerTeam = ent->client->playerTeam;
-			remote->client->enemyTeam  = ent->client->enemyTeam;
+			{
+				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
+				{
+					remote->client->playerTeam = NPCTEAM_PLAYER;
+					remote->client->enemyTeam = NPCTEAM_ENEMY;
+				}
+				else if ( ent->client->sess.sessionTeam == TEAM_RED )
+				{
+					remote->client->playerTeam = NPCTEAM_ENEMY;
+					remote->client->enemyTeam = NPCTEAM_PLAYER;
+				}
+				//else
+				//{
+				//	remote->client->playerTeam = NPCTEAM_NEUTRAL;
+				//}
+			}
+			//this stops it moving and it just sits there, I need to check why
+			//else
+			//{
+			//	remote->client->playerTeam = NPCTEAM_NEUTRAL;
+			//}
 		}	
 	}
 	else
@@ -1800,8 +1966,7 @@ void Flamethrower_Fire( gentity_t *self )
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-						G_AddEvent(traceEnt, EV_BURNED, DirToByte(dir));
-							traceEnt->client->burnTime = level.time + BURN_TIME;
+						G_RefreshBurnEffect(traceEnt, dir, BURN_TIME);
 					}
 
 				}
@@ -1999,16 +2164,11 @@ void Dioxisthrower_Fire( gentity_t *self )
 						}
 					}
 					//[ForceSys]
-					//don't do the electrical effect unless we didn't block with the saber.
+					//don't do the toxic effect unless we didn't block with the saber.
 					if (traceEnt->client->toxicTime < (level.time + TOXIC_TIME/2) &&  damage)
-					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
-					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-					traceEnt->client->toxicTime = level.time + TOXIC_TIME;
-					G_EntitySound(traceEnt, CHAN_VOICE, G_SoundIndex(va("*choke%d.wav", Q_irand(1, 3))));
-
-					traceEnt->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
-					traceEnt->client->ps.forceHandExtendTime = level.time + TOXIC_TIME/3;
+					{
+						G_RefreshToxicEffect(traceEnt, TOXIC_TIME);
 					}		
 	
 		
@@ -2213,47 +2373,7 @@ void Icethrower_Fire( gentity_t *self )
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-					G_AddEvent(traceEnt, EV_FROZEN, DirToByte(dir));
-					traceEnt->client->freezeTime = level.time + FREEZE_TIME;
-					traceEnt->client->ps.userInt1 |= LOCK_MOVERIGHT;
-					traceEnt->client->ps.userInt1 |= LOCK_MOVELEFT;
-					traceEnt->client->ps.userInt1 |= LOCK_MOVEFORWARD;
-					traceEnt->client->ps.userInt1 |= LOCK_MOVEBACK;
-					traceEnt->client->ps.userInt1 |= LOCK_MOVEUP;
-					traceEnt->client->ps.userInt1 |= LOCK_MOVEDOWN;
-					traceEnt->client->ps.userInt1 |= LOCK_UP;
-					traceEnt->client->ps.userInt1 |= LOCK_DOWN;
-					traceEnt->client->ps.userInt1 |= LOCK_RIGHT;
-					traceEnt->client->ps.userInt1 |= LOCK_LEFT;		
-					traceEnt->client->viewLockTime = level.time + FREEZE_TIME/3;
-					traceEnt->client->ps.legsTimer = traceEnt->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
-					traceEnt->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
-					traceEnt->client->ps.saberBlocked = BLOCKED_NONE;
-
-					if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2 && traceEnt->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim11[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2 && traceEnt->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim9[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim7[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim5[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (traceEnt->client->ps.eFlags & EF_WP_OPTION_2)
-					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim3[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else
-					{
-					G_SetAnim(traceEnt, NULL, SETANIM_BOTH, WeaponReadyAnim[traceEnt->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}	
+					G_RefreshFrozenEffect( traceEnt, dir, FREEZE_TIME );
 
 					}
 
@@ -2498,8 +2618,7 @@ void Electroshocker_Fire( gentity_t *self )
 					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
 					//[/ForceSys]
 					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-						G_AddEvent(traceEnt, EV_SHOCKED, DirToByte(dir));
-						traceEnt->client->shockTime = level.time + SHOCK_TIME;
+						G_RefreshShockedEffect(traceEnt, dir, SHOCK_TIME);
 					}	
 					if ( traceEnt->client->ps.powerups[PW_CLOAKED] )
 					{//disable cloak temporarily
@@ -3223,8 +3342,22 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			SquadTeam3->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
 
 			// Keep follower team alignment consistent with the owning player across all gametypes.
-			SquadTeam3->client->playerTeam = ent->client->playerTeam;
-			SquadTeam3->client->enemyTeam  = ent->client->enemyTeam;
+			{
+				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
+				{
+					SquadTeam3->client->playerTeam = NPCTEAM_PLAYER;
+					SquadTeam3->client->enemyTeam = NPCTEAM_ENEMY;
+				}
+				else if ( ent->client->sess.sessionTeam == TEAM_RED )
+				{
+					SquadTeam3->client->playerTeam = NPCTEAM_ENEMY;
+					SquadTeam3->client->enemyTeam = NPCTEAM_PLAYER;
+				}
+				//else
+				//{
+				//	remote->client->playerTeam = NPCTEAM_NEUTRAL;
+				//}
+			}
 			//this stops it moving and it just sits there, I need to check why
 			//else
 			//{
@@ -3396,8 +3529,16 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 			SquadTeam2->NPC->scriptFlags &= ~SCF_CHASE_ENEMIES;
 
 			// Keep follower team alignment consistent with the owning player across all gametypes.
-			SquadTeam2->client->playerTeam = ent->client->playerTeam;
-			SquadTeam2->client->enemyTeam  = ent->client->enemyTeam;
+				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
+				{
+					SquadTeam2->client->playerTeam = NPCTEAM_PLAYER;
+					SquadTeam2->client->enemyTeam = NPCTEAM_ENEMY;
+				}
+				else if ( ent->client->sess.sessionTeam == TEAM_RED )
+				{
+					SquadTeam2->client->playerTeam = NPCTEAM_ENEMY;
+					SquadTeam2->client->enemyTeam = NPCTEAM_PLAYER;
+				}
 			//this stops it moving and it just sits there, I need to check why
 			//else
 			//{
@@ -3566,8 +3707,16 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 
 
 			// Keep follower team alignment consistent with the owning player across all gametypes.
-			SquadTeam->client->playerTeam = ent->client->playerTeam;
-			SquadTeam->client->enemyTeam  = ent->client->enemyTeam;
+				if ( ent->client->sess.sessionTeam == TEAM_BLUE )
+				{
+					SquadTeam->client->playerTeam = NPCTEAM_PLAYER;
+					SquadTeam->client->enemyTeam = NPCTEAM_ENEMY;
+				}
+				else if ( ent->client->sess.sessionTeam == TEAM_RED )
+				{
+					SquadTeam->client->playerTeam = NPCTEAM_ENEMY;
+					SquadTeam->client->enemyTeam = NPCTEAM_PLAYER;
+				}
 			//this stops it moving and it just sits there, I need to check why
 			//else
 			//{

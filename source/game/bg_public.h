@@ -1985,6 +1985,18 @@ void *BG_Alloc ( int size );
 void *BG_AllocUnaligned ( int size );
 void *BG_TempAlloc( int size );
 void BG_TempFree( int size );
+
+// Resets ONLY the temp allocator (tail) without touching BG_Alloc (head).
+//
+// Why this exists:
+// Some legacy code paths use BG_TempAlloc as a scratch buffer but forget to
+// pair it with BG_TempFree on every exit path. That causes the temp "tail"
+// to ratchet downward over time (especially across long MP sessions with many
+// map changes), eventually colliding with the BG_Alloc "head" and crashing.
+//
+// This function provides a safe reclaim point for truly-temporary allocations.
+// It must ONLY be called at a point where no BG_TempAlloc pointers are expected
+// to remain valid (e.g. once per frame, before any temp allocations occur).
 char *BG_StringAlloc ( const char *source );
 qboolean BG_OutOfMemory ( void );
 

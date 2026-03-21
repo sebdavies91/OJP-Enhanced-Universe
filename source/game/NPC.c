@@ -38,6 +38,29 @@ gentity_t		*NPC;
 gNPC_t			*NPCInfo;
 gclient_t		*client;
 usercmd_t		ucmd;
+
+// Allow NPCs to think/fight while piloting vehicles (but not as passive passengers).
+static qboolean NPC_IsVehiclePilot( const gentity_t *self )
+{
+	int vehNum;
+	gentity_t *veh;
+	if (!self || !self->client)
+	{
+		return qfalse;
+	}
+	vehNum = self->s.m_iVehicleNum;
+	if (vehNum <= 0 || vehNum >= MAX_GENTITIES)
+	{
+		return qfalse;
+	}
+	veh = &g_entities[vehNum];
+	if (!veh->inuse || !veh->m_pVehicle)
+	{
+		return qfalse;
+	}
+	return (veh->m_pVehicle->m_pPilot == (bgEntity_t *)self) ? qtrue : qfalse;
+}
+
 visibility_t	enemyVisibility;
 	
 //[CoOp]
@@ -289,7 +312,7 @@ void NPC_RemoveBody( gentity_t *self )
 		///	if ( self->client->playerTeam == TEAM_SCAVENGERS || self->client->playerTeam == TEAM_KLINGON 
 		//		|| self->client->playerTeam == TEAM_HIROGEN || self->client->playerTeam == TEAM_MALON )
 			// should I check NPC_class here instead of TEAM ? - dmv
-			if( self->client->playerTeam == NPCTEAM_ENEMY || self->client->NPC_class == CLASS_PROTOCOL )
+			//if( self->client->playerTeam == NPCTEAM_ENEMY || self->client->NPC_class == CLASS_PROTOCOL )
 			{
 				self->nextthink = level.time + FRAMETIME; // try back in a second
 
@@ -2085,66 +2108,39 @@ extern void NPC_BSCivilian_Default( int bState );
 extern qboolean Jedi_CultistDestroyer( gentity_t *self );												 
 void NPC_RunBehavior( int team, int bState )
 {
-	qboolean dontSetAim = qfalse;
+	(void)team; // intentionally unused
 
-	//[CoOp] SP Code
-	/* not in SP code
-	if (NPC->s.NPC_class == CLASS_VEHICLE &&
-		NPC->m_pVehicle)
-	{ //vehicles don't do AI!
-		return;
-	}
-	*/
-	//[/CoOp]
-	if(NPC->originalactivator && NPC->originalactivator->client && NPC->originalactivator->client->remote != NPC )
+	/* pet / owner validity */
+	if ( NPC->originalactivator
+		&& NPC->originalactivator->client )
 	{
-		
-	if(NPC->client->NPC_class == CLASS_SEEKER || NPC->client->NPC_class == CLASS_SQUADTEAM)
-	{
-		// owner died
-		if( NPC->originalactivator->health <= 0 )
+		if ( NPC->client->NPC_class == CLASS_SEEKER
+			|| NPC->client->NPC_class == CLASS_SQUADTEAM )
 		{
-			//have us fall down and explode.
-			G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
-			return;
-		}
-		// owner spectating
-		else if( NPC->originalactivator->client->sess.sessionTeam == TEAM_SPECTATOR )
-		{
-			//have us fall down and explode.
-			G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
-			return;
-		}
-		// round ended / intermission coming or active
-		else if( level.intermissionQueued || level.intermissiontime )
-		{
-			// During active intermission, damage->die can early-out; just remove the pet safely.
-			if ( level.intermissiontime )
-			{
-				G_FreeEntity( NPC );
-			}
-			else
-			{
-				G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
-			}
-			return;
-		}
-		// owner changed teams (only reliable for squadteam; seeker doesn't always set playerTeam)
-		else if ( NPC->client->NPC_class == CLASS_SQUADTEAM )
-		{
-
-			if ( (NPC->originalactivator->client->sess.sessionTeam == TEAM_BLUE && NPC->client->playerTeam != NPCTEAM_PLAYER) ||
-				 (NPC->originalactivator->client->sess.sessionTeam == TEAM_RED  && NPC->client->playerTeam != NPCTEAM_ENEMY) )
+			if ( NPC->originalactivator->health <= 0 )
 			{
 				G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
 				return;
 			}
+			else if ( NPC->originalactivator->client->sess.sessionTeam == TEAM_SPECTATOR )
+			{
+				G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
+				return;
+			}
+			else if ( level.intermissionQueued || level.intermissiontime )
+			{
+				if ( level.intermissiontime )
+				{
+					G_FreeEntity( NPC );
+				}
+				else
+				{
+					G_Damage( NPC, NPC, NPC, NULL, NULL, 999, 0, MOD_COLLISION );
+				}
+				return;
+			}
 		}
-	}	
-
 	}
-
-	
 	
 	if ( bState == BS_CINEMATIC )
 	{
@@ -2186,7 +2182,7 @@ void NPC_RunBehavior( int team, int bState )
 	else if ( Jedi_CultistDestroyer( NPC ) )
 	{
 		NPC_BSJedi_Default();
-		dontSetAim = qtrue;
+
 	}
 	else if ( NPC->client->NPC_class == CLASS_SABER_DROID )
 	{//saber droid
@@ -2196,24 +2192,24 @@ void NPC_RunBehavior( int team, int bState )
 	else if ( NPC->client->ps.weapon == WP_SABER )
 	{//jedi
 		NPC_BehaviorSet_Jedi( bState );
-		dontSetAim = qtrue;
+
 	}
 	//[CoOp] SP Code
 	else if ( NPC->client->NPC_class == CLASS_REBORN && NPC->client->ps.weapon == WP_MELEE )
 	{//force-only reborn
 		NPC_BehaviorSet_Jedi( bState );
-		dontSetAim = qtrue;
+
 	}
 	else if ( NPC->client->NPC_class == CLASS_BOBAFETT )
 	{
 		NPC_BehaviorSet_BobaFett( bState );
-		dontSetAim = qtrue;
+
 	}
 	// RAFIXME - impliment 
 	else if ( NPC->client->NPC_class == CLASS_ROCKETTROOPER )
 	{
 		NPC_BehaviorSet_RocketTrooper( bState );
-		dontSetAim = qtrue;
+
 	}
 	
 	else if ( NPC->client->NPC_class == CLASS_RANCOR )
@@ -2255,7 +2251,10 @@ void NPC_RunBehavior( int team, int bState )
 		NPC_BehaviorSet_Stormtrooper( bState );
 		G_CheckCharmed( NPC );
 	}
-
+	else if ( NPC->client->NPC_class == CLASS_SEEKER )
+			{
+				NPC_BehaviorSet_Seeker(bState);
+			}
 	/* old code
 	else if ( NPC->client->NPC_class == CLASS_RANCOR )
 	{//rancor
@@ -2450,11 +2449,6 @@ void NPC_RunBehavior( int team, int bState )
 			break;
 
 		default:
-			if ( NPC->client->NPC_class == CLASS_SEEKER )
-			{
-				NPC_BehaviorSet_Seeker(bState);
-			}
-			else
 			{
 				if ( NPCInfo->charmedTime > level.time )
 				{
@@ -2469,7 +2463,7 @@ void NPC_RunBehavior( int team, int bState )
 				G_CheckCharmed( NPC );
 				//NPC_CheckCharmed();
 				//[/CoOp]
-				dontSetAim = qtrue;
+
 			}
 			break;
 		}
@@ -3173,8 +3167,8 @@ void NPC_Think ( gentity_t *self)//, int msec )
 		G_DroidSounds( self );
 	}
 
-	if ( NPCInfo->nextBStateThink <= level.time 
-		&& !NPC->s.m_iVehicleNum )//NPCs sitting in Vehicles do NOTHING
+	if ( NPCInfo->nextBStateThink <= level.time
+		&& ( !NPC->s.m_iVehicleNum || NPC_IsVehiclePilot(NPC) ) )//NPCs in vehicles think only if they are the pilot
 	{
 #if	AI_TIMERS
 		int	startTime = GetTime(0);

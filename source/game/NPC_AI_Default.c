@@ -1,6 +1,7 @@
 #include "b_local.h"
 #include "g_nav.h"
 #include "../icarus/Q3_Interface.h"
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 
 //#include "anims.h"
 //extern int PM_AnimLength( int index, animNumber_t anim );
@@ -756,7 +757,7 @@ void NPC_BSDefault( void )
 			{//heard/saw something
 				if ( level.alertEvents[alertEvent].level >= AEL_DISCOVERED && (NPCInfo->scriptFlags&SCF_LOOK_FOR_ENEMIES) )
 				{//was a big event
-					if ( level.alertEvents[alertEvent].owner && level.alertEvents[alertEvent].owner->client && level.alertEvents[alertEvent].owner->health >= 0 && level.alertEvents[alertEvent].owner->client->playerTeam == NPC->client->enemyTeam )
+					if ( level.alertEvents[alertEvent].owner && level.alertEvents[alertEvent].owner->client && level.alertEvents[alertEvent].owner->health >= 0 && !G_ValidEnemy( NPC, level.alertEvents[alertEvent].owner ) )
 					{//an enemy
 						G_SetEnemy( NPC, level.alertEvents[alertEvent].owner );
 					}

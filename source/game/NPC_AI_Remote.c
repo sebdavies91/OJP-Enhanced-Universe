@@ -263,7 +263,7 @@ void Remote_Fire (void)
 
 	missile->classname = "bryar_proj";
 	missile->s.weapon = WP_BRYAR_PISTOL;
-
+	missile->s.eFlags |= EF_WP_OPTION_4;
 	missile->damage = 40;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	//RAFIXME - impliment this MOD?

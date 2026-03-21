@@ -413,6 +413,10 @@ typedef struct centity_s {
 	qboolean		currentValid;	// true if cg.frame holds this entity
 
 	int				muzzleFlashTime;	// move to playerEntity?
+	// Dual view-weapon sync: per-hand timestamps for viewmodel recoil when the
+	// third-person torso anim is a static "dual hold" that doesn't map to weapon frames.
+	int             dualMuzzleFlashTime[2]; // [0]=right, [1]=left
+	int             dualFireSide;           // toggles 0/1 for alternating fire
 	int				previousEvent;
 //	int				teleportFlag;
 

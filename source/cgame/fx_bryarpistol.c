@@ -3,6 +3,27 @@
 #include "cg_local.h"
 #include "fx_local.h"
 
+static qboolean CG_ShouldRenderFarProjectileFX( const centity_t *cent )
+{
+	vec3_t toViewer;
+	float distSq;
+
+	VectorSubtract( cent->lerpOrigin, cg.refdef.vieworg, toViewer );
+	distSq = VectorLengthSquared( toViewer );
+
+	if ( distSq > (1600.0f * 1600.0f) )
+	{
+		return ( ((cg.clientFrame + cent->currentState.number) & 3) == 0 );
+	}
+
+	if ( distSq > (900.0f * 900.0f) )
+	{
+		return ( ((cg.clientFrame + cent->currentState.number) & 1) == 0 );
+	}
+
+	return qtrue;
+}
+
 /*
 -------------------------
 
@@ -20,6 +41,11 @@ void FX_BryarProjectileThink(  centity_t *cent, const struct weaponInfo_s *weapo
 	{
 		forward[2] = 1.0f;
 	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
 	
 
 	trap_FX_PlayEffectID( cgs.effects.orangeShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -32,6 +58,11 @@ void FX_BryarProjectileThink2(  centity_t *cent, const struct weaponInfo_s *weap
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 	
 
@@ -46,6 +77,11 @@ void FX_BryarProjectileThink3(  centity_t *cent, const struct weaponInfo_s *weap
 	{
 		forward[2] = 1.0f;
 	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
 	
 
 	trap_FX_PlayEffectID( cgs.effects.blueShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -58,6 +94,11 @@ void FX_BryarProjectileThink4(  centity_t *cent, const struct weaponInfo_s *weap
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 	
 
@@ -72,6 +113,11 @@ void FX_BryarProjectileThink5(  centity_t *cent, const struct weaponInfo_s *weap
 	{
 		forward[2] = 1.0f;
 	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
 	
 
 	trap_FX_PlayEffectID( cgs.effects.purpleShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -84,6 +130,11 @@ void FX_BryarProjectileThink6(  centity_t *cent, const struct weaponInfo_s *weap
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 	
 
@@ -132,6 +183,11 @@ void FX_BryarAltProjectileThink(  centity_t *cent, const struct weaponInfo_s *we
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	// see if we have some sort of extra charge going on
 	for (t = 1; t < cent->currentState.generic1; t++ )
 	{
@@ -156,6 +212,11 @@ void FX_BryarAltProjectileThink2(  centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	// see if we have some sort of extra charge going on
@@ -184,6 +245,11 @@ void FX_BryarAltProjectileThink3(  centity_t *cent, const struct weaponInfo_s *w
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	// see if we have some sort of extra charge going on
 	for (t = 1; t < cent->currentState.generic1; t++ )
 	{
@@ -208,6 +274,11 @@ void FX_BryarAltProjectileThink4(  centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	// see if we have some sort of extra charge going on
@@ -236,6 +307,11 @@ void FX_BryarAltProjectileThink5(  centity_t *cent, const struct weaponInfo_s *w
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	// see if we have some sort of extra charge going on
 	for (t = 1; t < cent->currentState.generic1; t++ )
 	{
@@ -260,6 +336,11 @@ void FX_BryarAltProjectileThink6(  centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	// see if we have some sort of extra charge going on
@@ -321,6 +402,11 @@ void FX_BryarOldProjectileThink(  centity_t *cent, const struct weaponInfo_s *we
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.greenShotEffect, cent->lerpOrigin, forward, -1, -1 );
 	
 
@@ -332,6 +418,11 @@ void FX_BryarOldProjectileThink2(  centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.orangeShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -347,6 +438,11 @@ void FX_BryarOldProjectileThink3(  centity_t *cent, const struct weaponInfo_s *w
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.redShotEffect, cent->lerpOrigin, forward, -1, -1 );
 
 
@@ -358,6 +454,11 @@ void FX_BryarOldProjectileThink4(  centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.redShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -373,6 +474,11 @@ void FX_BryarOldProjectileThink5(  centity_t *cent, const struct weaponInfo_s *w
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.whiteShotEffect, cent->lerpOrigin, forward, -1, -1 );
 
 
@@ -384,6 +490,11 @@ void FX_BryarOldProjectileThink6(  centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.orangeShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -433,6 +544,11 @@ void FX_BryarOldAltProjectileThink(  centity_t *cent, const struct weaponInfo_s 
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	// see if we have some sort of extra charge going on
 	for (t = 1; t < cent->currentState.generic1; t++ )
 	{
@@ -458,6 +574,11 @@ void FX_BryarOldAltProjectileThink2(  centity_t *cent, const struct weaponInfo_s
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	// see if we have some sort of extra charge going on
@@ -486,6 +607,11 @@ void FX_BryarOldAltProjectileThink3(  centity_t *cent, const struct weaponInfo_s
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	// see if we have some sort of extra charge going on
 	for (t = 1; t < cent->currentState.generic1; t++ )
 	{
@@ -510,6 +636,11 @@ void FX_BryarOldAltProjectileThink4(  centity_t *cent, const struct weaponInfo_s
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	// see if we have some sort of extra charge going on
@@ -538,6 +669,11 @@ void FX_BryarOldAltProjectileThink5(  centity_t *cent, const struct weaponInfo_s
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	// see if we have some sort of extra charge going on
 	for (t = 1; t < cent->currentState.generic1; t++ )
 	{
@@ -562,6 +698,11 @@ void FX_BryarOldAltProjectileThink6(  centity_t *cent, const struct weaponInfo_s
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	// see if we have some sort of extra charge going on
@@ -616,6 +757,11 @@ void FX_TurretProjectileThink(  centity_t *cent, const struct weaponInfo_s *weap
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.turretShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -717,6 +863,11 @@ void FX_ConcussionProjectileThink(  centity_t *cent, const struct weaponInfo_s *
 	{
 		forward[2] = 1.0f;
 	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
 	
 
 	trap_FX_PlayEffectID( cgs.effects.concussionShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -730,6 +881,11 @@ void FX_ConcussionProjectileThink2(  centity_t *cent, const struct weaponInfo_s 
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 	
 
@@ -745,6 +901,11 @@ void FX_ConcussionProjectileThink3(  centity_t *cent, const struct weaponInfo_s 
 	{
 		forward[2] = 1.0f;
 	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
 	
 
 	trap_FX_PlayEffectID( cgs.effects.concussionShotEffect3, cent->lerpOrigin, forward, -1, -1 );
@@ -758,6 +919,11 @@ void FX_ConcussionProjectileThink4(  centity_t *cent, const struct weaponInfo_s 
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 	
 
@@ -773,6 +939,11 @@ void FX_ConcussionProjectileThink5(  centity_t *cent, const struct weaponInfo_s 
 	{
 		forward[2] = 1.0f;
 	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
 	
 
 	trap_FX_PlayEffectID( cgs.effects.orangeShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -786,6 +957,11 @@ void FX_ConcussionProjectileThink6(  centity_t *cent, const struct weaponInfo_s 
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 	
 
@@ -853,6 +1029,11 @@ void FX_DestructionProjectileThink(  centity_t *cent, const struct weaponInfo_s 
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.concussionShotEffect2, cent->lerpOrigin, forward, -1, -1 );

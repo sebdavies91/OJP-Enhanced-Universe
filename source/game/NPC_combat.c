@@ -109,15 +109,15 @@ qboolean G_TeamEnemy( gentity_t *self )
 			continue;
 		}
 
-		if (ent && self && ent->client && self->client && ent->client->playerTeam != self->client->playerTeam )
+		if ( ent->client && self->client && G_ValidEnemy( self, ent ) )
 		{//ent is not on my team
 			continue;
 		}
 
 		if ( ent->enemy )
 		{//they have an enemy
-			if (ent && self && ent->client && self->client &&( !ent->enemy->client || ent->enemy->client->playerTeam != self->client->playerTeam ))
-			{//the ent's enemy is either a normal ent or is a player/NPC that is not on my team
+			if ( G_ValidEnemy( self, ent->enemy ) )
+			{//their enemy is a valid enemy to us too
 				return qtrue;
 			}
 		}
@@ -489,7 +489,7 @@ void G_SetEnemy( gentity_t *self, gentity_t *enemy )
 //		enemy->client->playerTeam = TEAM_PLAYER;
 //	}
 	
-	if ( self->client && self->NPC && enemy->client && enemy->client->playerTeam == self->client->playerTeam )
+	if ( self->client && self->NPC && enemy->client && !G_ValidEnemy( self, enemy ) )
 	{//Probably a damn script!
 		//racc - attacking ally.
 		if ( self->NPC->charmedTime > level.time )
@@ -1535,7 +1535,7 @@ qboolean CanShoot ( gentity_t *ent, gentity_t *shooter )
 	}
 
 	// don't deliberately shoot a teammate
-	if ( traceEnt->client && ( traceEnt->client->playerTeam == shooter->client->playerTeam ) ) 
+	if ( traceEnt->client && !G_ValidEnemy( traceEnt, shooter ) ) 
 	{
 		return qfalse;
 	}
@@ -1737,6 +1737,11 @@ float NPC_MaxDistSquaredForWeapon (void)
 //This replaces ValidEnemy.
 qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 {
+	int selfSide = -1;
+	int enemySide = -1;
+	gentity_t *selfOwner = NULL;
+	gentity_t *enemyOwner = NULL;
+
 	//Must be a valid pointer
 	if ( enemy == NULL )
 		return qfalse;
@@ -1744,25 +1749,6 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	//Must not be me
 	if ( enemy == self )
 		return qfalse;
-	
-	//Must not be me
-	if ( enemy->client && enemy->client->ps.powerups[PW_CLOAKED] )
-			{	
-				if(!(enemy->client->ps.eFlags & EF_FIRING) && !(enemy->client->ps.eFlags & EF_ALT_FIRING))
-				{
-				return qfalse;
-				}
-			}	
-
-
-	//Must not be me
-	if ( enemy->client && (self->client->blindingTime > level.time || self->client->flashTime > level.time))
-			{					
-				if(!(enemy->client->ps.eFlags & EF_FIRING) && !(enemy->client->ps.eFlags & EF_ALT_FIRING))
-				{
-				return qfalse;
-				}
-			}
 
 	//Must not be deleted
 	if ( enemy->inuse == qfalse )
@@ -1775,258 +1761,183 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	//In case they're in notarget mode
 	if ( enemy->flags & FL_NOTARGET )
 		return qfalse;
-
-	// Player-owned followers (seeker/squadteam/etc): when we have an owning leader, obey the leader's team rules
-	// for player targets (FFA: anyone except owner, team modes: only the other team).
-	if ( self && self->client && enemy->client && enemy->s.number < level.maxclients )
+	
+	// Treat vehicles as their pilot for hostility checks.
+	if ( self && self->m_pVehicle )
 	{
-		gentity_t *owner = NULL;
-
-		if ( self->client->leader && self->client->leader->client
-			&& self->r.ownerNum == self->client->leader->s.number )
+		if ( self->m_pVehicle->m_pPilot )
 		{
-			owner = self->client->leader;
+			self = (gentity_t *)self->m_pVehicle->m_pPilot;
 		}
-		else if ( self->originalactivator && self->originalactivator->client
-			&& self->r.ownerNum == self->originalactivator->s.number )
-		{
-			owner = self->originalactivator;
-		}
-
-		if ( owner )
-		{
-			if ( enemy == owner )
-			{
-				return qfalse;
-			}
-
-			// OnSameTeam() returns false in non-team gametypes, so this becomes "anyone except the owner".
-			if ( !OnSameTeam( owner, enemy ) )
-			{
-				return qtrue;
-			}
-			return qfalse;
-		}
-	}
-	
-	
-	
-	if(self->NPC && enemy->client && self->NPC->charmedTime > level.time)
-	{
-		if ( self->corruptionactivator)
-		{
-		if (enemy->corruptionactivator)
-		{
-		if (enemy->corruptionactivator == self->corruptionactivator)
-			{
-			return qfalse;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && enemy->corruptionactivator->client->sess.sessionTeam == self->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->corruptionactivator->client->sess.duelTeam == self->corruptionactivator->client->sess.duelTeam) )
-			{
-			return qfalse;
-			}
-		}
-		else
-		{
-		if ( self->corruptionactivator == enemy)
-			{
-			return qfalse;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && enemy->client->sess.sessionTeam == self->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->client->sess.duelTeam == self->corruptionactivator->client->sess.duelTeam) )
-			{
-			return qfalse;
-			}
-		}
-			return qtrue;
-		}
-
-	}
-	if(enemy->NPC && self->client && enemy->NPC->charmedTime > level.time)
-	{
-		if ( enemy->corruptionactivator)
-		{
-		if (self->corruptionactivator)
-		{
-		if (self->corruptionactivator == enemy->corruptionactivator)
-			{
-			return qfalse;
-			}
-//		if ((g_gametype.integer >= GT_SINGLE_PLAYER && self->corruptionactivator->client->sess.sessionTeam == enemy->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->corruptionactivator->client->sess.duelTeam == enemy->corruptionactivator->client->sess.duelTeam) )
-//			{
-//			return qfalse;
-//			}
-		}
-		else
-		{
-		if ( enemy->corruptionactivator == self)
-			{
-			return qfalse;
-			}
-//		if ((g_gametype.integer >= GT_SINGLE_PLAYER && self->client->sess.sessionTeam == enemy->corruptionactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->client->sess.duelTeam == enemy->corruptionactivator->client->sess.duelTeam) )
-//			{
-//			return qfalse;
-//			}
-		}
-			return qtrue;
-		}
-	
-
-		
-	}
-
-	
-	
-	if(self->client && enemy->client && (self->client->NPC_class == CLASS_SEEKER || self->client->NPC_class == CLASS_SQUADTEAM))
-	{
-		if ( self->originalactivator)
-		{					
-		if (enemy->originalactivator)
-		{
-		if (enemy->originalactivator == self->originalactivator)
-			{
-			return qfalse;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && enemy->originalactivator->client->sess.sessionTeam == self->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->originalactivator->client->sess.duelTeam == self->originalactivator->client->sess.duelTeam))
-			{
-			return qfalse;
-			}
-		}
-		else
-		{
-		if ( self->originalactivator == enemy)
-			{
-			return qfalse;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && enemy->client->sess.sessionTeam == self->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && enemy->client->sess.duelTeam == self->originalactivator->client->sess.duelTeam) )
-			{
-			return qfalse;
-			}
-		}
-			return qtrue;
-		}
-	
-	}
-	
-	if( self->client && enemy->client && (enemy->client->NPC_class == CLASS_SEEKER || enemy->client->NPC_class == CLASS_SQUADTEAM))
-	{
-		if ( enemy->originalactivator)
-		{	
-		if (self->originalactivator)
-		{
-		if (self->originalactivator == enemy->originalactivator)
-			{
-			return qfalse;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && self->originalactivator->client->sess.sessionTeam == enemy->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->originalactivator->client->sess.duelTeam == enemy->originalactivator->client->sess.duelTeam) )
-			{
-			return qfalse;
-			}
-		}
-		else	
-		{
-		if ( enemy->originalactivator == self)
-			{
-			return qfalse;
-			}
-		if ((g_gametype.integer >= GT_SINGLE_PLAYER && self->client->sess.sessionTeam == enemy->originalactivator->client->sess.sessionTeam) || (g_gametype.integer == GT_POWERDUEL && self->client->sess.duelTeam == enemy->originalactivator->client->sess.duelTeam) )
-			{
-			return qfalse;
-			}
-		}
-			return qtrue;	
-		}
-
-	}
-	//[/SeekerItemNpc]
-
-	//Must be an NPC
-	if ( enemy->client == NULL )
-	{
-		//	if ( ent->svFlags&SVF_NONNPC_ENEMY )
-		if (enemy->s.eType != ET_NPC)
-		{//still potentially valid
-			if (self->client && enemy->alliedTeam == self->client->playerTeam )
-			{
-				return qfalse;
-			}
-			else
-			{
-				return qtrue;
-			}
-		}
-		else
+		else if ( self->client && self->client->NPC_class == CLASS_VEHICLE )
 		{
 			return qfalse;
 		}
 	}
+	if ( enemy && enemy->m_pVehicle )
+	{
+		if ( !enemy->m_pVehicle->m_pPilot )
+		{
+			return qfalse;
+		}
+		enemy = (gentity_t *)enemy->m_pVehicle->m_pPilot;
+	}
 
-	else if ( enemy->client && enemy->client->sess.sessionTeam == TEAM_SPECTATOR )
-	{//don't go after spectators
+	if ( self && enemy == self )
 		return qfalse;
-	}
-		else if ( enemy->client->tempSpectate >= level.time )
-	{//don't go after spectators
+
+	if ( !self || !self->client || !enemy->client )
+	{
 		return qfalse;
 	}
 
-	//[SeekerItemNpc] dont attack our leader
-
-
-				int entTeam = NPCTEAM_FREE;
-				if ( enemy->client )
-				{
-					if ( enemy->client->sess.sessionTeam == TEAM_BLUE )
-					{
-						entTeam = NPCTEAM_PLAYER;
-					}
-					else if ( enemy->client->sess.sessionTeam == TEAM_RED )
-					{
-						entTeam = NPCTEAM_ENEMY;
-					}
-
-				}
-				if (self->client && entTeam == self->client->playerTeam)
-				{
-					if ( entTeam != self->client->enemyTeam )
-					{
-						return qfalse;
-					}
-				}
-				if( entTeam == NPCTEAM_FREE
-					|| (self->client && self->client->enemyTeam == NPCTEAM_FREE)
-					|| (self->client && entTeam == self->client->enemyTeam ))
-				{
-					if (self->client && entTeam != self->client->playerTeam )
-					{
-						return qtrue;
-					}
-				}
-	//Can't be on the same team
-	if (self->client && enemy->client->playerTeam == self->client->playerTeam)
-			{
-			return qfalse;
-			}
-	if ( enemy->client->playerTeam == NPCTEAM_FREE && enemy->s.number < level.maxclients )
-	{//An evil player, everyone attacks him
-		return qtrue;
+	// Seeker/squadteam obey their originalactivator for allegiance.
+	if ( ( self->client->NPC_class == CLASS_SEEKER || self->client->NPC_class == CLASS_SQUADTEAM )
+		&& self->originalactivator && self->originalactivator->client )
+	{
+		selfOwner = self->originalactivator;
+	}
+	if ( ( enemy->client->NPC_class == CLASS_SEEKER || enemy->client->NPC_class == CLASS_SQUADTEAM )
+		&& enemy->originalactivator && enemy->originalactivator->client )
+	{
+		enemyOwner = enemy->originalactivator;
 	}
 
-	if (self->client &&( enemy->client->playerTeam == self->client->enemyTeam //simplest case: they're on my enemy team
-		|| (self->client->enemyTeam == NPCTEAM_FREE && enemy->client->NPC_class != self->client->NPC_class )//I get mad at anyone and this guy isn't the same class as me
-		|| (enemy->client->NPC_class == CLASS_WAMPA && enemy->enemy )//a rampaging wampa
-		|| (enemy->client->NPC_class == CLASS_RANCOR && enemy->enemy )//a rampaging rancor
-		|| (enemy->client->playerTeam == NPCTEAM_FREE && enemy->client->enemyTeam == NPCTEAM_FREE && enemy->enemy && enemy->enemy->client && (enemy->enemy->client->playerTeam == self->client->playerTeam||(enemy->enemy->client->playerTeam != NPCTEAM_ENEMY&&self->client->playerTeam==NPCTEAM_PLAYER))) //enemy is a rampaging non-aligned creature who is attacking someone on our team or a non-enemy (this last condition is used only if we're a good guy - in effect, we protect the innocent)
-		))
+	if ( selfOwner )
+	{
+		self = selfOwner;
+	}
+	if ( enemyOwner )
+	{
+		enemy = enemyOwner;
+	}
+
+	if ( enemy == self )
+		return qfalse;
+
+	// Neutral/spectator never fights.
+	if ( self->client->sess.sessionTeam == TEAM_SPECTATOR || self->client->playerTeam == NPCTEAM_NEUTRAL )
+		return qfalse;
+	if ( enemy->client->sess.sessionTeam == TEAM_SPECTATOR || enemy->client->playerTeam == NPCTEAM_NEUTRAL )
+		return qfalse;
+
+	if ( enemy->client->ps.powerups[PW_CLOAKED] )
+	{
+		if ( !(enemy->client->ps.eFlags & EF_FIRING) && !(enemy->client->ps.eFlags & EF_ALT_FIRING) )
+		{
+			return qfalse;
+		}
+	}
+
+	if ( self->client && enemy->client
+		&& (self->client->blindingTime > level.time || self->client->flashTime > level.time) )
+	{
+		if ( !(enemy->client->ps.eFlags & EF_FIRING) && !(enemy->client->ps.eFlags & EF_ALT_FIRING) )
+		{
+			return qfalse;
+		}
+	}
+
+	if ( self->NPC && enemy->client && self->NPC->charmedTime > level.time )
+	{
+		if ( self->corruptionactivator )
+		{
+			if ( enemy->corruptionactivator )
+			{
+				if ( enemy->corruptionactivator == self->corruptionactivator )
+				{
+					return qfalse;
+				}
+			}
+			else if ( self->corruptionactivator == enemy )
+			{
+				return qfalse;
+			}
+			return qtrue;
+		}
+	}
+	if ( enemy->NPC && self->client && enemy->NPC->charmedTime > level.time )
+	{
+		if ( enemy->corruptionactivator )
+		{
+			if ( self->corruptionactivator )
+			{
+				if ( self->corruptionactivator == enemy->corruptionactivator )
+				{
+					return qfalse;
+				}
+			}
+			else if ( enemy->corruptionactivator == self )
+			{
+				return qfalse;
+			}
+			return qtrue;
+		}
+	}
+
+	// Map both directions into the same combat sides.
+	if ( self->client->sess.sessionTeam == TEAM_BLUE || self->client->playerTeam == NPCTEAM_PLAYER || self->client->sess.duelTeam == DUELTEAM_DOUBLE )
+	{
+		selfSide = NPCTEAM_PLAYER;
+	}
+	else if ( self->client->sess.sessionTeam == TEAM_RED || self->client->playerTeam == NPCTEAM_ENEMY || self->client->sess.duelTeam == DUELTEAM_LONE )
+	{
+		selfSide = NPCTEAM_ENEMY;
+	}
+	else if ( self->client->sess.sessionTeam == TEAM_FREE || (self->NPC && self->client->playerTeam == NPCTEAM_FREE) || self->client->sess.duelTeam == DUELTEAM_FREE)
+	{
+		selfSide = NPCTEAM_FREE;
+	}
+
+
+	if ( enemy->client->sess.sessionTeam == TEAM_BLUE || enemy->client->playerTeam == NPCTEAM_PLAYER || enemy->client->sess.duelTeam == DUELTEAM_DOUBLE )
+	{
+		enemySide = NPCTEAM_PLAYER;
+	}
+	else if ( enemy->client->sess.sessionTeam == TEAM_RED || enemy->client->playerTeam == NPCTEAM_ENEMY || enemy->client->sess.duelTeam == DUELTEAM_LONE )
+	{
+		enemySide = NPCTEAM_ENEMY;
+	}
+	else if ( enemy->client->sess.sessionTeam == TEAM_FREE || (enemy->NPC && enemy->client->playerTeam == NPCTEAM_FREE) || enemy->client->sess.duelTeam == DUELTEAM_FREE )
+	{
+		enemySide = NPCTEAM_FREE;
+	}
+
+
+	if ( selfSide == -1 || enemySide == -1 )
+	{
+		return qfalse;
+	}
+
+	// TEAM_FREE / NPCTEAM_FREE attacks everyone except exact originalactivator/owner.
+	if ( selfSide == NPCTEAM_FREE || enemySide == NPCTEAM_FREE )
+	{
+		if ( selfOwner && selfOwner == enemy )
+		{
+			return qfalse;
+		}
+		if ( enemyOwner && enemyOwner == self )
+		{
+			return qfalse;
+		}
+		if ( self->originalactivator && self->originalactivator == enemy )
+		{
+			return qfalse;
+		}
+		if ( enemy->originalactivator && enemy->originalactivator == self )
+		{
+			return qfalse;
+		}
+		return qtrue;
+	}
+	else if ( selfSide == enemySide )
+	{
+		return qfalse;
+	}
+	else
 	{
 		return qtrue;
-	}		
-
-
-	
-
-		
-	//all other cases = false?
-	return qfalse;
+	}
 }
 
 qboolean NPC_ValidEnemy( gentity_t *ent )
@@ -2483,8 +2394,7 @@ gentity_t *NPC_PickAlly ( qboolean facingEachOther, float range, qboolean ignore
 		{
 			if ( ally->health > 0 )
 			{
-				if ( ally->client && NPC->client && ( ally->client->playerTeam == NPC->client->playerTeam ||
-					 NPC->client->playerTeam == NPCTEAM_ENEMY ) )// && ally->client->playerTeam == TEAM_DISGUISE ) ) )
+				if ( ally->client && NPC->client && !G_ValidEnemy( ally, NPC ) )
 				{//if on same team or if player is disguised as your team
 					if ( ignoreGroup )
 					{//racc - ignore our group leader and the allies we are leading. 
@@ -2780,15 +2690,30 @@ gentity_t *NPC_CheckEnemy( qboolean findNew, qboolean tooFarOk, qboolean setEnem
 		{//racc - NPCTEAM_FREE players don't do this.
 //			assert( NPC->client->playerTeam != NPC->enemy->client->playerTeam);
 			//[CoOp]
-			if( NPC->client->playerTeam != NPC->enemy->client->playerTeam 
+			int enemySide = -1;
+
+			if ( NPC->enemy->client->sess.sessionTeam == TEAM_BLUE || NPC->enemy->client->playerTeam == NPCTEAM_PLAYER )
+			{
+				enemySide = NPCTEAM_PLAYER;
+			}
+			else if ( NPC->enemy->client->sess.sessionTeam == TEAM_RED || NPC->enemy->client->playerTeam == NPCTEAM_ENEMY )
+			{
+				enemySide = NPCTEAM_ENEMY;
+			}
+			else if ( NPC->enemy->client->sess.sessionTeam == TEAM_FREE || NPC->enemy->client->playerTeam == NPCTEAM_FREE )
+			{
+				enemySide = NPCTEAM_FREE;
+			}
+
+			if( enemySide != -1
+				&& NPC->client->playerTeam != enemySide 
 				&& NPC->client->enemyTeam != NPCTEAM_FREE 
-				&& NPC->client->enemyTeam != NPC->enemy->client->playerTeam )
-			//if( NPC->client->playerTeam != NPC->enemy->client->playerTeam )
+				&& NPC->client->enemyTeam != enemySide )
 			//[/CoOp]
 			{//racc - We're not attacking an ally, this isn't a NPCTEAM_FREE enemy,
 				//and our enemy is on a team other than our normal enemyTeam.
 				//As such, switch our enemyTeam.
-				NPC->client->enemyTeam = NPC->enemy->client->playerTeam;
+				NPC->client->enemyTeam = enemySide;
 			}
 		}
 	}
@@ -3077,7 +3002,7 @@ qboolean NPC_CheckCanAttack (float attack_scale, qboolean stationary)
 
 			VectorCopy( tr.endpos, hitspot );
 
-			if( traceEnt == NPC->enemy || (traceEnt->client && NPC->client->enemyTeam && NPC->client->enemyTeam == traceEnt->client->playerTeam) )
+			if( traceEnt == NPC->enemy || (traceEnt->client && G_ValidEnemy( NPC, traceEnt )) )
 			{
 				dead_on = qtrue;
 			}
@@ -3088,7 +3013,7 @@ qboolean NPC_CheckCanAttack (float attack_scale, qboolean stationary)
 				{
 					if(traceEnt && traceEnt->client && traceEnt->client->playerTeam)
 					{
-						if(NPC->client->playerTeam == traceEnt->client->playerTeam)
+						if ( !G_ValidEnemy( NPC, traceEnt ) )
 						{//Don't shoot our own team
 							attack_ok = qfalse;
 						}

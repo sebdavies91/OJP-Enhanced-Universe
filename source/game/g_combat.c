@@ -41,6 +41,140 @@ void G_DropKey( gentity_t *self )
 	self->message = NULL;
 }
 //[/CoOp]
+static gentity_t *G_CreateStatusEffectEvent( gentity_t *targ, int event, const vec3_t dir )
+{
+	gentity_t *tent;
+	vec3_t dirCopy;
+
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return NULL;
+	}
+
+	if ( dir )
+	{
+		VectorCopy( dir, dirCopy );
+	}
+	else
+	{
+		VectorSet( dirCopy, 0.0f, 0.0f, 1.0f );
+	}
+
+	tent = G_TempEntity( targ->r.currentOrigin, event );
+	tent->s.owner = targ->s.number;
+	tent->s.otherEntityNum = targ->s.number;
+	tent->s.otherEntityNum2 = targ->s.number;
+	tent->s.eventParm = DirToByte( dirCopy );
+	return tent;
+}
+
+static void G_RefreshBurnEffect( gentity_t *targ, const vec3_t dir, int burnTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_BURNED, dir );
+	targ->client->burnTime = level.time + burnTime;
+}
+
+static void G_RefreshToxicEffect( gentity_t *targ, int toxicTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	targ->client->toxicTime = level.time + toxicTime;
+	G_EntitySound( targ, CHAN_VOICE, G_SoundIndex( va("*choke%d.wav", Q_irand(1, 3)) ) );
+	targ->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
+	targ->client->ps.forceHandExtendTime = level.time + toxicTime/3;
+}
+
+static void G_RefreshFrozenEffect( gentity_t *targ, const vec3_t dir, int freezeTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_FROZEN, dir );
+	targ->client->freezeTime = level.time + freezeTime;
+	targ->client->ps.userInt1 |= LOCK_MOVERIGHT;
+	targ->client->ps.userInt1 |= LOCK_MOVELEFT;
+	targ->client->ps.userInt1 |= LOCK_MOVEFORWARD;
+	targ->client->ps.userInt1 |= LOCK_MOVEBACK;
+	targ->client->ps.userInt1 |= LOCK_MOVEUP;
+	targ->client->ps.userInt1 |= LOCK_MOVEDOWN;
+	targ->client->ps.userInt1 |= LOCK_UP;
+	targ->client->ps.userInt1 |= LOCK_DOWN;
+	targ->client->ps.userInt1 |= LOCK_RIGHT;
+	targ->client->ps.userInt1 |= LOCK_LEFT;
+	targ->client->viewLockTime = level.time + freezeTime/3;
+	targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + freezeTime/3;
+	targ->client->ps.saberMove = LS_READY;
+	targ->client->ps.saberBlocked = BLOCKED_NONE;
+	if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_4)
+	{
+		G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim11[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3);
+	}
+	else if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_3)
+	{
+		G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim9[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3);
+	}
+	else if (targ->client->ps.eFlags & EF_WP_OPTION_4)
+	{
+		G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3);
+	}
+	else if (targ->client->ps.eFlags & EF_WP_OPTION_3)
+	{
+		G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim5[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3);
+	}
+	else if (targ->client->ps.eFlags & EF_WP_OPTION_2)
+	{
+		G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3);
+	}
+	else
+	{
+		G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, freezeTime/3);
+	}
+}
+
+static void G_RefreshShockedEffect( gentity_t *targ, const vec3_t dir, int shockTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_SHOCKED, dir );
+	targ->client->shockTime = level.time + shockTime;
+	targ->client->ps.electrifyTime = level.time + shockTime;
+}
+
+static void G_RefreshSoundedEffect( gentity_t *targ, const vec3_t dir, int soundTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_SOUNDED, dir );
+	targ->client->sonicTime = level.time + soundTime;
+}
+
+static void G_RefreshFlashedEffect( gentity_t *targ, const vec3_t dir, int flashTime )
+{
+	if ( !targ || !targ->inuse || !targ->client )
+	{
+		return;
+	}
+
+	G_CreateStatusEffectEvent( targ, EV_FLASHED, dir );
+	targ->client->flashTime = level.time + flashTime;
+}
+
 void ObjectDie (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int meansOfDeath )
 {
 	if(self->target)
@@ -5913,7 +6047,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			if(targ->client->ps.userInt3 & (1 << FLAG_RAGE2))
 			{
-			damage *= 2/3;
+			damage = damage * 2 / 3;
 			}
 			else
 			{
@@ -5929,37 +6063,37 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 			else
 			{
-			damage *= 3/2;				
+			damage = damage * 3 / 2;				
 			}
 		}
 
 
 		if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_3))
 		{
-			damage *= 5/10;
+			damage = damage * 5 / 10;
 		}
 		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_2))
 		{
-			damage *= 7/10;
+			damage = damage * 7 / 10;
 		}
 		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_1))
 		{
-			damage *= 9/10;
+			damage = damage * 9 / 10;
 		}		
 		
 		
 		
 		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_3))
 		{
-			damage *= 10/5;				
+			damage = damage * 10 / 5;				
 		}
 		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_2))
 		{
-			damage *= 10/7;				
+			damage = damage * 10 / 7;				
 		}
 		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_1))
 		{
-			damage *= 10/9;				
+			damage = damage * 10 / 9;				
 		}
 
 		
@@ -5973,15 +6107,16 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 	}
-
+	
+	
+	
 	if (mod == MOD_FLAME && targ && targ->inuse && targ->client)
 	{
 		int	BURN_TIME = 2500;	
 		if ( targ->client->burnTime  < (level.time + BURN_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-				G_AddEvent(targ, EV_BURNED, DirToByte(dir));
-				targ->client->burnTime = level.time + BURN_TIME;
+				G_RefreshBurnEffect( targ, dir, BURN_TIME );
 			}
 		}
 	}
@@ -5991,11 +6126,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->toxicTime  < (level.time + TOXIC_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-			//only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-			targ->client->toxicTime = level.time + TOXIC_TIME;
-			G_EntitySound(targ, CHAN_VOICE, G_SoundIndex(va("*choke%d.wav", Q_irand(1, 3))));
-			targ->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
-			targ->client->ps.forceHandExtendTime = level.time + TOXIC_TIME/3;
+			G_RefreshToxicEffect( targ, TOXIC_TIME );
 			}
 		}
 	}	
@@ -6005,46 +6136,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->freezeTime  < (level.time + FREEZE_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-					G_AddEvent(targ, EV_FROZEN, DirToByte(dir));
-					targ->client->freezeTime = level.time + FREEZE_TIME;
-					targ->client->ps.userInt1 |= LOCK_MOVERIGHT;
-					targ->client->ps.userInt1 |= LOCK_MOVELEFT;
-					targ->client->ps.userInt1 |= LOCK_MOVEFORWARD;
-					targ->client->ps.userInt1 |= LOCK_MOVEBACK;
-					targ->client->ps.userInt1 |= LOCK_MOVEUP;
-					targ->client->ps.userInt1 |= LOCK_MOVEDOWN;
-					targ->client->ps.userInt1 |= LOCK_UP;
-					targ->client->ps.userInt1 |= LOCK_DOWN;
-					targ->client->ps.userInt1 |= LOCK_RIGHT;
-					targ->client->ps.userInt1 |= LOCK_LEFT;	
-					targ->client->viewLockTime = level.time + FREEZE_TIME/3;
-					targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
-					targ->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
-					targ->client->ps.saberBlocked = BLOCKED_NONE;
-					if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim11[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim9[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim5[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_2)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}	
+					G_RefreshFrozenEffect( targ, dir, FREEZE_TIME );
 
 
 			}
@@ -6078,8 +6170,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->burnTime  < (level.time + BURN_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-				G_AddEvent(targ, EV_BURNED, DirToByte(dir));
-				targ->client->burnTime = level.time + BURN_TIME;
+				G_RefreshBurnEffect( targ, dir, BURN_TIME );
 			}
 		}
 	}
@@ -6089,11 +6180,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->toxicTime  < (level.time + TOXIC_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-			//only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-			targ->client->toxicTime = level.time + TOXIC_TIME;
-			G_EntitySound(targ, CHAN_VOICE, G_SoundIndex(va("*choke%d.wav", Q_irand(1, 3))));
-			targ->client->ps.forceHandExtend = HANDEXTEND_CHOKE;
-			targ->client->ps.forceHandExtendTime = level.time + TOXIC_TIME/3;
+			G_RefreshToxicEffect( targ, TOXIC_TIME );
 			}
 		}
 	}
@@ -6103,46 +6190,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->freezeTime  < (level.time + FREEZE_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-					G_AddEvent(targ, EV_FROZEN, DirToByte(dir));
-					targ->client->freezeTime = level.time + FREEZE_TIME;
-					targ->client->ps.userInt1 |= LOCK_MOVERIGHT;
-					targ->client->ps.userInt1 |= LOCK_MOVELEFT;
-					targ->client->ps.userInt1 |= LOCK_MOVEFORWARD;
-					targ->client->ps.userInt1 |= LOCK_MOVEBACK;
-					targ->client->ps.userInt1 |= LOCK_MOVEUP;
-					targ->client->ps.userInt1 |= LOCK_MOVEDOWN;
-					targ->client->ps.userInt1 |= LOCK_UP;
-					targ->client->ps.userInt1 |= LOCK_DOWN;
-					targ->client->ps.userInt1 |= LOCK_RIGHT;
-					targ->client->ps.userInt1 |= LOCK_LEFT;	
-					targ->client->viewLockTime = level.time + FREEZE_TIME/3;
-					targ->client->ps.legsTimer = targ->client->ps.torsoTimer = level.time + FREEZE_TIME/3;
-					targ->client->ps.saberMove = LS_READY;//don't finish whatever saber anim you may have been in
-					targ->client->ps.saberBlocked = BLOCKED_NONE;
-					if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim11[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_2 && targ->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim9[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_4)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim7[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_3)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim5[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else if (targ->client->ps.eFlags & EF_WP_OPTION_2)
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim3[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}
-					else
-					{
-					G_SetAnim(targ, NULL, SETANIM_BOTH, WeaponReadyAnim[targ->client->ps.weapon], SETANIM_FLAG_OVERRIDE | SETANIM_FLAG_HOLD, FREEZE_TIME/3);
-					}	
+					G_RefreshFrozenEffect( targ, dir, FREEZE_TIME );
 			}
 		}
 	}
@@ -6172,11 +6220,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		if ( targ->client->flashTime  < (level.time + FLASH_TIME/2) )
 		{//electrocution effect
 			{//don't do this to fighters
-					gentity_t	*tent;
-					tent = G_TempEntity(targ->r.currentOrigin, EV_FLASHED);
-					tent->s.eventParm = DirToByte(dir);
-					tent->s.owner = targ->s.number;
-					targ->client->flashTime = level.time + FLASH_TIME;
+					G_RefreshFlashedEffect( targ, dir, FLASH_TIME );
 			}
 		}
 	}	
@@ -6228,8 +6272,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			BG_ReduceMishapLevel(&targ->client->ps);
 		}
 
-		targ->client->ps.electrifyTime = level.time + Q_irand( 300, 800 );
-		return;
+		int	SHOCK_TIME = 2500;	
+		if ( targ->client->shockTime  < (level.time + SHOCK_TIME/2) )
+		{//electrocution effect
+			{//don't do this to fighters
+				G_RefreshShockedEffect(targ, dir, SHOCK_TIME);
+			}
+		}
+	
 	}
 	//[/BryarSecondary]
 
@@ -6366,7 +6416,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			if(targ->client->ps.userInt3 & (1 << FLAG_RAGE2))
 			{
-			damage *= 2/3;
+			damage = damage * 2 / 3;
 			}
 			else
 			{
@@ -6382,7 +6432,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 			else
 			{
-			damage *= 3/2;				
+			damage = damage * 3 / 2;				
 			}
 		}
 
@@ -7313,14 +7363,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			}
 		}
 		if (targ->client && targ->s.number < MAX_CLIENTS &&
-			(mod == MOD_FLAME))
+			(mod == MOD_FLAME || mod == MOD_FLAME_EXPLOSION || mod == MOD_FLAME_EXPLOSION_SPLASH))
 		{ //uh.. shock them or something. what the hell, I don't know.
             if (targ->client->ps.weaponTime <= 0)
 			{ //yeah, we were supposed to be beta a week ago, I don't feel like
 				//breaking the game so I'm gonna be safe and only do this only
 				//if your weapon is not busy
 				targ->client->ps.weaponTime = 2500;
-				targ->client->burnTime = level.time + 2500;
+				G_RefreshBurnEffect( targ, dir, 2500 );
 				if (targ->client->ps.weaponstate == WEAPON_CHARGING ||
 					targ->client->ps.weaponstate == WEAPON_CHARGING_ALT)
 				{
@@ -7336,7 +7386,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				//breaking the game so I'm gonna be safe and only do this only
 				//if your weapon is not busy
 				targ->client->ps.weaponTime = 2500;
-				targ->client->toxicTime = level.time + 2500;
+				G_RefreshToxicEffect( targ, 2500 );
 				if (targ->client->ps.weaponstate == WEAPON_CHARGING ||
 					targ->client->ps.weaponstate == WEAPON_CHARGING_ALT)
 				{
@@ -7352,7 +7402,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 				//breaking the game so I'm gonna be safe and only do this only
 				//if your weapon is not busy
 				targ->client->ps.weaponTime = 2500;
-				targ->client->freezeTime = level.time + 2500;
+				G_RefreshFrozenEffect( targ, dir, 2500 );
 				if (targ->client->ps.weaponstate == WEAPON_CHARGING ||
 					targ->client->ps.weaponstate == WEAPON_CHARGING_ALT)
 				{

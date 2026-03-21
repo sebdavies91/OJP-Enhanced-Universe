@@ -1718,6 +1718,13 @@ int SkillLevelForWeap(gentity_t *ent,int weap);
 // g_team.c
 //
 qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 );
+qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
+// Symmetric bot<->NPC ally/enemy classification for MP.
+// - TEAM_SPECTATOR / NPCTEAM_NEUTRAL never fights
+// - TEAM_RED <-> NPCTEAM_ENEMY, TEAM_BLUE <-> NPCTEAM_PLAYER
+// - TEAM_FREE / NPCTEAM_FREE behaves like FFA: everyone hostile except owner/follower grouping (CLASS_SQUADTEAM-style)
+qboolean G_CombatAllied( gentity_t *ent1, gentity_t *ent2 );
+qboolean G_CombatEnemy( gentity_t *ent1, gentity_t *ent2 );
 void Team_CheckDroppedItem( gentity_t *dropped );
 
 //

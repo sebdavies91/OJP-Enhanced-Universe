@@ -1,6 +1,7 @@
 #include "b_local.h"
 
 // These define the working combat range for these suckers
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 #define MIN_DISTANCE		54
 #define MIN_DISTANCE_SQR	( MIN_DISTANCE * MIN_DISTANCE )
 
@@ -93,7 +94,7 @@ void MineMonster_Patrol( void )
 			continue;
 		}
 		// Respect team filtering if this NPC uses it.
-		if ( NPC->client && NPC->client->enemyTeam != -1 && player->client->playerTeam != NPC->client->enemyTeam )
+		if ( NPC->client && NPC->client->enemyTeam != -1 && !G_ValidEnemy( NPC, player ) )
 		{
 			continue;
 		}

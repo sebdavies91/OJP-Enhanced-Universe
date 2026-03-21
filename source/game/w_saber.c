@@ -2965,6 +2965,14 @@ GAME_INLINE qboolean G_G2TraceCollide(trace_t* tr, vec3_t lastValidStart, vec3_t
 			return qfalse;
 		}
 
+		/* Defensive: skip Ghoul2 collision for entities without valid G2, and for vehicles (use bbox/trace path). */
+		if (!g2Hit->ghoul2) {
+			return qfalse;
+		}
+		if (g2Hit->s.eType == ET_NPC && g2Hit->s.NPC_class == CLASS_VEHICLE) {
+			return qfalse;
+		}
+
 		// copy the start/end/scale to locals
 		vec3_t safeStart, safeEnd, safeScale;
 		safeStart[0] = lastValidStart[0]; safeStart[1] = lastValidStart[1]; safeStart[2] = lastValidStart[2];

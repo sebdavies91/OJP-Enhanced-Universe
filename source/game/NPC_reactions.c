@@ -1,5 +1,8 @@
 //NPC_reactions.cpp
 #include "b_local.h"
+
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
+
 #include "anims.h"
 #include "w_saber.h"
 
@@ -392,7 +395,7 @@ void NPC_Pain(gentity_t *self, gentity_t *attacker, int damage)
 
 	if ( self->client->playerTeam 
 		&& other->client 
-		&& otherTeam == self->client->playerTeam 
+		&& !G_ValidEnemy( self, other )
 	/*	&& (!player->client->ps.viewEntity || other->s.number != player->client->ps.viewEntity)*/) 
 	//rwwFIXMEFIXME: Will need modification when player controllable npcs are done
 	{//hit by a teammate
@@ -675,7 +678,7 @@ void NPC_Touch(gentity_t *self, gentity_t *other, trace_t *trace)
 		{
 			if ( self->client->enemyTeam )
 			{//See if we bumped into an enemy
-				if ( other->client->playerTeam == self->client->enemyTeam )
+				if ( G_ValidEnemy( self, other ) )
 				{//bumped into an enemy
 					if( NPCInfo->behaviorState != BS_HUNT_AND_KILL && !NPCInfo->tempBehavior )
 					{//MCG - Begin: checking specific BS mode here, this is bad, a HACK

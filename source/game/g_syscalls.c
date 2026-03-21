@@ -1318,6 +1318,15 @@ void trap_G2API_CollisionDetect (
 {
 	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
 	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+	CollisionRecord_t dummy;
+	if (!collRecMap) { memset(&dummy, 0, sizeof(dummy)); collRecMap = &dummy; }
+	if (!ghoul2 || !angles || !position || !rayStart || !rayEnd) { return; }
+	if (entNum < 0 || entNum >= MAX_GENTITIES) { return; }
+	{
+		gentity_t *ent = &g_entities[entNum];
+		if (!ent || !ent->ghoul2 || ghoul2 != ent->ghoul2) { return; }
+		if (!trap_G2_HaveWeGhoul2Models(ghoul2)) { return; }
+	}
 
 	syscall(G_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum,
 		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
@@ -1340,6 +1349,15 @@ void trap_G2API_CollisionDetectCache (
 {
 	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
 	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+	CollisionRecord_t dummy;
+	if (!collRecMap) { memset(&dummy, 0, sizeof(dummy)); collRecMap = &dummy; }
+	if (!ghoul2 || !angles || !position || !rayStart || !rayEnd) { return; }
+	if (entNum < 0 || entNum >= MAX_GENTITIES) { return; }
+	{
+		gentity_t *ent = &g_entities[entNum];
+		if (!ent || !ent->ghoul2 || ghoul2 != ent->ghoul2) { return; }
+		if (!trap_G2_HaveWeGhoul2Models(ghoul2)) { return; }
+	}
 
 	syscall(G_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum,
 		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));

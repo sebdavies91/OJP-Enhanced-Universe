@@ -157,6 +157,7 @@ void trap_CM_BoxTrace(trace_t* results,
 	clipHandle_t model, int brushmask)
 {
 	trace_t dummy;
+	vec3_t s, e, mi, ma;
 
 	// Engine writes into *results*. Never pass NULL.
 	if (!results) {
@@ -165,7 +166,18 @@ void trap_CM_BoxTrace(trace_t* results,
 			warned = qtrue;
 			trap_Print("^3WARNING:^7 trap_CM_BoxTrace called with NULL results\n");
 		}
+		memset(&dummy, 0, sizeof(dummy));
 		results = &dummy;
+	}
+
+	// start/end should never be NULL; if they are, skip safely.
+	if (!start || !end) {
+		static qboolean warnedSE = qfalse;
+		if (!warnedSE) {
+			warnedSE = qtrue;
+			trap_Print("^3WARNING:^7 trap_CM_BoxTrace called with NULL start/end\n");
+		}
+		return;
 	}
 
 	// Many callsites use NULL mins/maxs to mean "point trace".
@@ -173,7 +185,13 @@ void trap_CM_BoxTrace(trace_t* results,
 	if (!mins) mins = vec3_origin;
 	if (!maxs) maxs = vec3_origin;
 
-	syscall(CG_CM_BOXTRACE, results, start, end, mins, maxs, model, brushmask);
+	// Copy vectors to stable storage before handing them to the engine.
+	VectorCopy(start, s);
+	VectorCopy(end,   e);
+	VectorCopy(mins,  mi);
+	VectorCopy(maxs,  ma);
+
+	syscall(CG_CM_BOXTRACE, results, s, e, mi, ma, model, brushmask);
 }
 
 
@@ -354,10 +372,6 @@ void trap_R_ClearDecals ( void )
 }
 
 void	trap_R_AddRefEntityToScene( const refEntity_t *re ) {
-	// Guard against NULL and obviously invalid pointers.
-	// A common crash pattern is passing an uninitialized pointer (e.g. 0x50) which will
-	// then be dereferenced by the renderer. Catching these here avoids hard crashes and
-	// produces a single warning to help locate the offender.
 	if ( !re )
 	{
 		static qboolean warnedNull = qfalse;
@@ -370,8 +384,6 @@ void	trap_R_AddRefEntityToScene( const refEntity_t *re ) {
 		return;
 	}
 
-	// Low-address pointers are never valid user-space addresses for refEntity_t.
-	// This catches junk pointers like 0x50 or 0xCCCCCCCC early.
 	if ( (uintptr_t)re < 0x10000 )
 	{
 		static qboolean warnedBad = qfalse;
@@ -380,6 +392,30 @@ void	trap_R_AddRefEntityToScene( const refEntity_t *re ) {
 			warnedBad = qtrue;
 			Com_Printf( S_COLOR_YELLOW
 				"WARNING: trap_R_AddRefEntityToScene called with invalid refEntity ptr %p\n", re );
+		}
+		return;
+	}
+
+	if ( re->reType < RT_MODEL || re->reType >= RT_MAX_REF_ENTITY_TYPE )
+	{
+		static qboolean warnedType = qfalse;
+		if ( !warnedType )
+		{
+			warnedType = qtrue;
+			Com_Printf( S_COLOR_YELLOW
+				"WARNING: trap_R_AddRefEntityToScene called with bad reType %d\n", re->reType );
+		}
+		return;
+	}
+
+	if ( ( re->reType == RT_MODEL || re->reType == RT_ENT_CHAIN ) && !re->hModel && !re->ghoul2 )
+	{
+		static qboolean warnedModel = qfalse;
+		if ( !warnedModel )
+		{
+			warnedModel = qtrue;
+			Com_Printf( S_COLOR_YELLOW
+				"WARNING: trap_R_AddRefEntityToScene called with model entity missing hModel/ghoul2\n" );
 		}
 		return;
 	}
@@ -902,6 +938,7 @@ void trap_G2API_CollisionDetect(
 			warned = qtrue;
 			trap_Print("^3WARNING:^7 G2API_CollisionDetect called with NULL collRecMap\n");
 		}
+		memset(&dummy, 0, sizeof(dummy));
 		collRecMap = &dummy;
 	}
 
@@ -913,6 +950,28 @@ void trap_G2API_CollisionDetect(
 			trap_Print("^3WARNING:^7 G2API_CollisionDetect called with invalid args (null ptr)\n");
 		}
 		return;
+	}
+	if (entNum < 0 || entNum >= MAX_GENTITIES) {
+		static qboolean warned3 = qfalse;
+		if (!warned3) {
+			warned3 = qtrue;
+			trap_Print(va("^3WARNING:^7 G2API_CollisionDetect bad entNum %d\n", entNum));
+		}
+		return;
+	}
+
+	// Defensive: ensure the ghoul2 pointer matches the entity's current ghoul2.
+	// We have seen rare crashes when callers pass a stale/non-NULL ghoul2 pointer.
+	// In that case, skip safely instead of letting the engine dereference garbage.
+	{
+		centity_t *cent = &cg_entities[entNum];
+		if (!cent || !cent->ghoul2 || ghoul2 != cent->ghoul2) {
+			return;
+		}
+		// Extra belt-and-suspenders: if the engine reports no models, don't call detect.
+		if (!trap_G2_HaveWeGhoul2Models(ghoul2)) {
+			return;
+		}
 	}
 
 	syscall(CG_G2_COLLISIONDETECT, collRecMap, ghoul2, angles, position, frameNumber, entNum,
@@ -937,6 +996,15 @@ void trap_G2API_CollisionDetectCache(
 {
 	static const vec3_t defaultScale = { 1.0f, 1.0f, 1.0f };
 	const vec_t* scalePtr = scale ? (const vec_t*)scale : (const vec_t*)defaultScale;
+	CollisionRecord_t dummy;
+	if (!collRecMap) { memset(&dummy, 0, sizeof(dummy)); collRecMap = &dummy; }
+	if (!ghoul2 || !angles || !position || !rayStart || !rayEnd) { return; }
+	if (entNum < 0 || entNum >= MAX_GENTITIES) { return; }
+	{
+		centity_t *cent = &cg_entities[entNum];
+		if (!cent || !cent->ghoul2 || ghoul2 != cent->ghoul2) { return; }
+		if (!trap_G2_HaveWeGhoul2Models(ghoul2)) { return; }
+	}
 
 	syscall(CG_G2_COLLISIONDETECTCACHE, collRecMap, ghoul2, angles, position, frameNumber, entNum,
 		rayStart, rayEnd, scalePtr, traceFlags, useLod, PASSFLOAT(fRadius));
@@ -1014,14 +1082,7 @@ int trap_G2API_GetNumGoreMarks(void *ghlInfo, int modelIndex)
 
 void trap_G2API_AddSkinGore(void* ghlInfo, SSkinGoreData* gore)
 {
-	// Engine will dereference both pointers. Never call with NULL.
 	if (!ghlInfo || !gore) {
-		return;
-	}
-
-	// If the ghoul2 instance is stale/freed, calling into the engine can crash.
-	// This syscall exists in cgame traps and is cheap.
-	if (!trap_G2_HaveWeGhoul2Models(ghlInfo)) {
 		return;
 	}
 

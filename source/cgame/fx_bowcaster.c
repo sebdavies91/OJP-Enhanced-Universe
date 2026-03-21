@@ -2,6 +2,27 @@
 
 #include "cg_local.h"
 
+static qboolean CG_ShouldRenderFarProjectileFX( const centity_t *cent )
+{
+	vec3_t toViewer;
+	float distSq;
+
+	VectorSubtract( cent->lerpOrigin, cg.refdef.vieworg, toViewer );
+	distSq = VectorLengthSquared( toViewer );
+
+	if ( distSq > (1600.0f * 1600.0f) )
+	{
+		return ( ((cg.clientFrame + cent->currentState.number) & 3) == 0 );
+	}
+
+	if ( distSq > (900.0f * 900.0f) )
+	{
+		return ( ((cg.clientFrame + cent->currentState.number) & 1) == 0 );
+	}
+
+	return qtrue;
+}
+
 /*
 ---------------------------
 FX_BowcasterProjectileThink
@@ -17,6 +38,11 @@ void FX_BowcasterProjectileThink( centity_t *cent, const struct weaponInfo_s *we
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.greenShotEffect, cent->lerpOrigin, forward, -1, -1 );
 	
 
@@ -28,6 +54,11 @@ void FX_BowcasterProjectileThink2( centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.redShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -43,6 +74,11 @@ void FX_BowcasterProjectileThink3( centity_t *cent, const struct weaponInfo_s *w
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.blueShotEffect, cent->lerpOrigin, forward, -1, -1 );
 
 
@@ -54,6 +90,11 @@ void FX_BowcasterProjectileThink4( centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.yellowShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -69,6 +110,11 @@ void FX_BowcasterProjectileThink5( centity_t *cent, const struct weaponInfo_s *w
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.purpleShotEffect, cent->lerpOrigin, forward, -1, -1 );
 	
 
@@ -80,6 +126,11 @@ void FX_BowcasterProjectileThink6( centity_t *cent, const struct weaponInfo_s *w
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.orangeShotEffect, cent->lerpOrigin, forward, -1, -1 );
@@ -123,6 +174,11 @@ void FX_BowcasterAltProjectileThink( centity_t *cent, const struct weaponInfo_s 
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 
 	trap_FX_PlayEffectID( cgs.effects.greenShotEffect, cent->lerpOrigin, forward, -1, -1 );
 	
@@ -134,6 +190,11 @@ void FX_BowcasterAltProjectileThink2( centity_t *cent, const struct weaponInfo_s
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 
@@ -149,6 +210,11 @@ void FX_BowcasterAltProjectileThink3( centity_t *cent, const struct weaponInfo_s
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 
 	trap_FX_PlayEffectID( cgs.effects.blueShotEffect, cent->lerpOrigin, forward, -1, -1 );
 
@@ -160,6 +226,11 @@ void FX_BowcasterAltProjectileThink4( centity_t *cent, const struct weaponInfo_s
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 
@@ -175,6 +246,11 @@ void FX_BowcasterAltProjectileThink5( centity_t *cent, const struct weaponInfo_s
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 
 	trap_FX_PlayEffectID( cgs.effects.purpleShotEffect, cent->lerpOrigin, forward, -1, -1 );
 
@@ -186,6 +262,11 @@ void FX_BowcasterAltProjectileThink6( centity_t *cent, const struct weaponInfo_s
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 

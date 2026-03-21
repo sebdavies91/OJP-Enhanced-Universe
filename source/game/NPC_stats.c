@@ -2852,15 +2852,17 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 					SkipRestOfLine( &p );
 					continue;
 				}
-				//FIXME: need to precache the fx, too?  (in above func)
-				//cap
-				if ( n > 5 )
+				// Skill levels are treated like FORCE_LEVEL_* throughout the codebase.
+				// NPC configs sometimes use higher values (e.g. 5) to mean "max";
+				// clamp them to FORCE_LEVEL_3 so the NPC actually gets "max" behavior
+				// in all comparisons (== FORCE_LEVEL_3, < FORCE_LEVEL_2, etc.).
+				if ( n > FORCE_LEVEL_3 )
 				{
-					n = 5;
+					n = FORCE_LEVEL_3;
 				}
-				else if ( n < 0 )
+				else if ( n < FORCE_LEVEL_0 )
 				{
-					n = 0;
+					n = FORCE_LEVEL_0;
 				}
 				NPC->client->skillLevel[sk] = n;
 				continue;

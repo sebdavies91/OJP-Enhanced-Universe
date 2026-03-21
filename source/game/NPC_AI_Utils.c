@@ -10,6 +10,7 @@
 #define	DEFAULT_RADIUS		45
 
 extern vmCvar_t		d_noGroupAI;
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 qboolean AI_ValidateGroupMember( AIGroupInfo_t *group, gentity_t *member );
 
 extern void G_TestLine(vec3_t start, vec3_t end, int color, int time);
@@ -1057,7 +1058,7 @@ qboolean AI_CheckEnemyCollision( gentity_t *ent, qboolean takeEnemy )
 	//See if we've hit something
 	if ( ( info.blocker ) && ( info.blocker != ent->enemy ) )
 	{
-		if ( ( info.blocker->client ) && ( info.blocker->client->playerTeam == ent->client->enemyTeam ) )
+		if ( info.blocker->client && G_ValidEnemy( ent, info.blocker ) )
 		{
 			if ( takeEnemy )
 				G_SetEnemy( ent, info.blocker );
@@ -1229,6 +1230,99 @@ gentity_t *AI_DistributeAttack( gentity_t *attacker, gentity_t *enemy, npcteam_t
 
 
 //[CoOp]
+
+static int NPC_CombatSideForEnt( gentity_t *ent )
+{
+	if ( !ent )
+	{
+		return -1;
+	}
+
+	if ( !ent->client && ent->m_pVehicle )
+	{
+		if ( ent->m_pVehicle->m_pPilot )
+		{
+			ent = (gentity_t *)ent->m_pVehicle->m_pPilot;
+		}
+		else
+		{
+			return -1;
+		}
+	}
+
+	if ( ent->m_pVehicle )
+	{
+		if ( ent->m_pVehicle->m_pPilot )
+		{
+			ent = (gentity_t *)ent->m_pVehicle->m_pPilot;
+		}
+		else if ( ent->client && ent->client->NPC_class == CLASS_VEHICLE )
+		{
+			return -1;
+		}
+	}
+
+	if ( !ent->client )
+	{
+		return -1;
+	}
+
+	if ( ( ent->client->NPC_class == CLASS_SEEKER || ent->client->NPC_class == CLASS_SQUADTEAM )
+		&& ent->originalactivator && ent->originalactivator->client )
+	{
+		ent = ent->originalactivator;
+	}
+
+	if ( ent->client->sess.sessionTeam == TEAM_SPECTATOR || ent->client->playerTeam == NPCTEAM_NEUTRAL )
+	{
+		return -1;
+	}
+	if ( ent->client->sess.sessionTeam == TEAM_BLUE || ent->client->playerTeam == NPCTEAM_PLAYER )
+	{
+		return NPCTEAM_PLAYER;
+	}
+	if ( ent->client->sess.sessionTeam == TEAM_RED || ent->client->playerTeam == NPCTEAM_ENEMY )
+	{
+		return NPCTEAM_ENEMY;
+	}
+	if ( ent->NPC && ent->client->playerTeam == NPCTEAM_FREE )
+	{
+		return NPCTEAM_FREE;
+	}
+	if ( ent->client->sess.sessionTeam == TEAM_FREE )
+	{
+		if ( g_gametype.integer == GT_SINGLE_PLAYER )
+		{
+			return NPCTEAM_PLAYER;
+		}
+		return NPCTEAM_FREE;
+	}
+	return -1;
+}
+
+static qboolean NPC_MatchesRequestedEnemyTeam( gentity_t *player, int enemyTeam )
+{
+	int side;
+
+	if ( enemyTeam == -1 )
+	{
+		return qtrue;
+	}
+
+	side = NPC_CombatSideForEnt( player );
+	if ( side == -1 )
+	{
+		return qfalse;
+	}
+
+	if ( side == NPCTEAM_FREE )
+	{
+		return qtrue;
+	}
+
+	return ( side == enemyTeam );
+}
+
 gentity_t *FindClosestPlayer(vec3_t position, int enemyTeam)
 {//Return the closest live player to position that is on this team.
 	gentity_t *player;
@@ -1246,8 +1340,8 @@ gentity_t *FindClosestPlayer(vec3_t position, int enemyTeam)
 			continue;
 		}
 
-		if(enemyTeam != -1 && player->client->playerTeam != enemyTeam)
-		{//this player isn't on the team I hate.
+		if ( !NPC_MatchesRequestedEnemyTeam( player, enemyTeam ) )
+		{
 			continue;
 		}
 
@@ -1285,8 +1379,8 @@ float DistancetoClosestPlayer(vec3_t position, int enemyTeam)
 			continue;
 		}
 
-		if(enemyTeam != -1 && player->client->playerTeam != enemyTeam)
-		{//this player isn't on the team I hate.
+		if ( !NPC_MatchesRequestedEnemyTeam( player, enemyTeam ) )
+		{
 			continue;
 		}
 
@@ -1322,8 +1416,8 @@ qboolean InPlayersFOV(vec3_t position, int enemyTeam, int hFOV,
 			continue;
 		}
 
-		if(enemyTeam != -1 && player->client->playerTeam != enemyTeam)
-		{//this player isn't on the team I hate.
+		if ( !NPC_MatchesRequestedEnemyTeam( player, enemyTeam ) )
+		{
 			continue;
 		}
 

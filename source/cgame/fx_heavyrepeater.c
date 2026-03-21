@@ -2,6 +2,27 @@
 
 #include "cg_local.h"
 
+static qboolean CG_ShouldRenderFarProjectileFX( const centity_t *cent )
+{
+	vec3_t toViewer;
+	float distSq;
+
+	VectorSubtract( cent->lerpOrigin, cg.refdef.vieworg, toViewer );
+	distSq = VectorLengthSquared( toViewer );
+
+	if ( distSq > (1600.0f * 1600.0f) )
+	{
+		return ( ((cg.clientFrame + cent->currentState.number) & 3) == 0 );
+	}
+
+	if ( distSq > (900.0f * 900.0f) )
+	{
+		return ( ((cg.clientFrame + cent->currentState.number) & 1) == 0 );
+	}
+
+	return qtrue;
+}
+
 /*
 ---------------------------
 FX_RepeaterProjectileThink
@@ -17,6 +38,11 @@ void FX_RepeaterProjectileThink( centity_t *cent, const struct weaponInfo_s *wea
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect, cent->lerpOrigin, forward, -1, -1 );
 	
 	
@@ -28,6 +54,11 @@ void FX_RepeaterProjectileThink2( centity_t *cent, const struct weaponInfo_s *we
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect2, cent->lerpOrigin, forward, -1, -1 );
@@ -43,6 +74,11 @@ void FX_RepeaterProjectileThink3( centity_t *cent, const struct weaponInfo_s *we
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect3, cent->lerpOrigin, forward, -1, -1 );		
 
 	
@@ -54,6 +90,11 @@ void FX_RepeaterProjectileThink4( centity_t *cent, const struct weaponInfo_s *we
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect4, cent->lerpOrigin, forward, -1, -1 );
@@ -69,6 +110,11 @@ void FX_RepeaterProjectileThink5( centity_t *cent, const struct weaponInfo_s *we
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect5, cent->lerpOrigin, forward, -1, -1 );
 
 	
@@ -80,6 +126,11 @@ void FX_RepeaterProjectileThink6( centity_t *cent, const struct weaponInfo_s *we
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	trap_FX_PlayEffectID( cgs.effects.repeaterProjectileEffect6, cent->lerpOrigin, forward, -1, -1 );
@@ -191,6 +242,11 @@ void FX_RepeaterAltProjectileThink( centity_t *cent, const struct weaponInfo_s *
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	if (cg_repeaterOrb.integer)
 	{
 		CG_DistortionOrb(cent);
@@ -207,6 +263,11 @@ void FX_RepeaterAltProjectileThink2( centity_t *cent, const struct weaponInfo_s 
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	if (cg_repeaterOrb.integer)
@@ -227,6 +288,11 @@ void FX_RepeaterAltProjectileThink3( centity_t *cent, const struct weaponInfo_s 
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	if (cg_repeaterOrb.integer)
 	{
 		CG_DistortionOrb(cent);
@@ -243,6 +309,11 @@ void FX_RepeaterAltProjectileThink4( centity_t *cent, const struct weaponInfo_s 
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	if (cg_repeaterOrb.integer)
@@ -263,6 +334,11 @@ void FX_RepeaterAltProjectileThink5( centity_t *cent, const struct weaponInfo_s 
 		forward[2] = 1.0f;
 	}
 
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
+	}
+
 	if (cg_repeaterOrb.integer)
 	{
 		CG_DistortionOrb(cent);
@@ -279,6 +355,11 @@ void FX_RepeaterAltProjectileThink6( centity_t *cent, const struct weaponInfo_s 
 	if ( VectorNormalize2( cent->currentState.pos.trDelta, forward ) == 0.0f )
 	{
 		forward[2] = 1.0f;
+	}
+
+	if ( !CG_ShouldRenderFarProjectileFX( cent ) )
+	{
+		return;
 	}
 
 	if (cg_repeaterOrb.integer)

@@ -29,11 +29,11 @@
 	menuDef  
 	{
 		name					"advancedcreateserver"
-		fullScreen				MENU_FALSE				
-		rect					40 50 560 380						// Size and position of the menu
+		fullScreen				MENU_TRUE				
+		rect					0 0 640 480						// Size and position of the menu
 		visible					MENU_FALSE							// Visible on open
 		focusColor				1 1 1 1							// Focus color for text and items
-		descX					320
+		descX					360
 		descY					426
 		descScale				1
 		descColor				1 .682 0 .8
@@ -62,11 +62,10 @@
 			name				setup_background
 			group				none
 			style				WINDOW_STYLE_FILLED
-			rect				0 0 560 420	
-			backcolor			0 0 .4 .95
+			rect				0 0 640 480	
+			backcolor			0 0 0 1
 			forecolor			1 1 1 1
-			border				1
-			bordercolor			0 0 .6 1
+			border			0
 			visible				1
 			decoration
 		}
@@ -76,11 +75,11 @@
 			name					frame_pic
 			group					none
 			style					WINDOW_STYLE_SHADER
-			rect					0 0 560 380
+			rect					20 0 560 380
 			background				"gfx/menus/menu_box_ingame"
 			forecolor				1 1 1 1
 			decoration
-			visible				1 
+			visible			0 
 			appearance_slot			1
 		}*/
 
@@ -95,8 +94,7 @@
 			style				WINDOW_STYLE_SHADER
 			background			"gfx/menus/menu_blendbox"
 			text				@MENUS_SERVER_RULES
-      			rect				115 5 330 16
-			font				3
+      			rect				155 5 330 16			font				3
 			textscale			0.7
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			165
@@ -117,8 +115,7 @@
 			name				rules_title
 			group				none
 			text				@MENUS_COMBAT_RULES
-      			rect				5 35 280 20
-			font				3
+      			rect				45 35 280 20			font				3
 			textscale			0.8
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			140
@@ -136,8 +133,7 @@
 		{
 			name				settingsButton5
 			style				WINDOW_STYLE_SHADER
-			rect 				5 55 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 55 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -160,7 +156,7 @@
 				@OJP_MENUS_DISABLEFORCEPOWERS_NEUTRALSONLY	16353
 				
 			}
-			rect				5 55 280 20 
+			rect				25 55 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -197,7 +193,7 @@
 				"1" ;
 				"2" 
 			}     
-			rect				5 55 280 20 
+			rect				25 55 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -243,7 +239,7 @@
 				@MENUS_NO	1 
 				@MENUS_LIMITED	2 
 			}
-			rect				5 55 280 20 
+			rect				25 55 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -276,8 +272,7 @@
 		{
 			name				settingsButton2
 			style				WINDOW_STYLE_SHADER
-			rect 				5 75 280 20 
-			background			"gfx/menus/menu_blendbox"
+			rect 				45 75 280 20 			background			"gfx/menus/menu_blendbox"
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -301,7 +296,7 @@
 				@OJP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672
 				
 			}  
-			rect				5 75 280 20 
+			rect				25 75 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -346,7 +341,7 @@
 				@OJP_MENUS_WEAPONDISABLE_SABERSMELEE		524275
 				@OJP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672		
 			}
-			rect				5 75 280 20 
+			rect				25 75 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -384,8 +379,7 @@
 			text				@MENUS_LIGHTSABER_ONLY
 			descText			@MENUS_SABER_ONLY_INFO
 			cvar				"g_weaponDisable"
-			rect				5 75 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 75 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -421,8 +415,7 @@
 			text				@MENUS_LIGHTSABER_ONLY
 			descText			@MENUS_SABER_ONLY_INFO
 			cvar				"g_duelWeaponDisable"
-			rect				5 75 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 75 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -462,8 +455,7 @@
 		{
 			name				settingsButton4
 			style				WINDOW_STYLE_SHADER
-			rect 				5 95 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 95 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -487,7 +479,7 @@
 				@OJP_MENUS_ITEMDISABLE_NOVEHICLES	266665
 				
 			}
-			rect				5 95 280 20 
+			rect				25 95 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -517,8 +509,7 @@
 		{
 			name				settingsButton7
 			style				WINDOW_STYLE_SHADER
-			rect 				5 115 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 115 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -532,8 +523,7 @@
 			text				@MENUS_SABERLOCKING
 			descText			@MENUS_SABERLOCKING_DESC
 			cvar				"g_saberLocking"
-			rect				5 115 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 115 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -560,8 +550,7 @@
 		{
 			name				settingsButton3
 			style				WINDOW_STYLE_SHADER
-			rect 				5 135 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 135 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible			0
 			decoration
@@ -588,7 +577,7 @@
 			//	"3"
 			//[/OLDGAMETYPES]
 			}     
-			rect				5 135 280 20 
+			rect				25 135 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -618,8 +607,7 @@
 		{
 			name				settingsButton1
 			style				WINDOW_STYLE_SHADER
-			rect 				5 155 280 20 
-			background			"gfx/menus/menu_blendbox"	
+			rect 				45 155 280 20 			background			"gfx/menus/menu_blendbox"	
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -646,7 +634,7 @@
 			//	"3" ;
 			//[/OLDGAMETYPES]
 			}     
-			rect				5 155 280 20 
+			rect				25 155 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -678,8 +666,7 @@
 			name				rules_title
 			group				none
 			text				@MENUS_ADV_GAME_RULES
-      			rect				5 205 280 20
-			font				3
+      			rect				45 205 280 20			font				3
 			textscale			0.8
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			140
@@ -696,8 +683,7 @@
 		{
 			name				settingsButton8
 			style				WINDOW_STYLE_SHADER
-			rect 				5 225 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 225 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -711,8 +697,7 @@
 			text				@MENUS_AUTO_JOIN
 			descText			@MENUS_SET_TO_ON_TO_HAVE_PLAYERS
 			cvar				"g_teamautojoin"
-			rect				5 225 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 225 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -742,8 +727,7 @@
 		{
 			name				settingsButton9
 			style				WINDOW_STYLE_SHADER
-			rect 				5 245 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 245 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -753,8 +737,7 @@
 		{
 			name				settingsButton10
 			style				WINDOW_STYLE_SHADER
-			rect 				5 265 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 265 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -768,8 +751,7 @@
 			text				@MENUS_DO_WARMUP
 			descText			@MENUS_ENABLES_A_COUNTDOWN_BEFORE
 			cvar				"g_doWarmup"
-			rect				5 245 280 20
-			cvarFloatList		
+			rect				45 245 280 20			cvarFloatList		
 			{ 
 				@MENUS_NO	 		0
 				@MENUS_YES			1
@@ -806,8 +788,7 @@
 			cvar				"g_warmup"
 			maxChars			3
 			maxPaintChars			3
-			rect				5 265 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 265 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -841,8 +822,7 @@
 			text				@MENUS2_MINXP
 			cvar				"g_minexplevel" 
 			cvarTest			"ui_netGameType"
-			rect				5 285 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 285 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -861,8 +841,7 @@
 			text				@MENUS2_MAXXP
 			cvar				"g_maxexplevel" 
 			cvarTest			"ui_netGameType"
-			rect				5 305 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 305 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -905,8 +884,7 @@
 			text				@MENUS2_RESPAWNTIMER
 			cvar				"ojp_ffarespawntimer" 
 			cvarTest			"ui_netGameType"
-			rect				5 325 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				45 325 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -926,8 +904,7 @@
 		{
 			name				settingsButton11
 			style				WINDOW_STYLE_SHADER
-			rect 				5 345 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				45 345 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			decoration
 			visible				0
@@ -953,7 +930,7 @@
 			//	"5"
 			//[/OLDGAMETYPES]
 			}     
-			rect				5 345 280 20 
+			rect				25 345 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -986,8 +963,7 @@
 			name				rules_title
 			group				none
 			text				@MENUS_SERVER_RULES
-      			rect				285 35 280 20
-			font				3
+      			rect				325 35 280 20			font				3
 			textscale			0.8
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			140
@@ -1004,8 +980,7 @@
 		{
 			name				settingsButton12
 			style				WINDOW_STYLE_SHADER
-			rect 				285 55 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				325 55 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1018,8 +993,7 @@
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_AUTO_MAP_CYCLE
 			cvar				"g_autoMapCycle"
-			rect				285 55 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 55 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1048,8 +1022,7 @@
 		{
 			name				settingsButton13
 			style				WINDOW_STYLE_SHADER
-			rect 				285 75 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				325 75 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			decoration
 			visible				0
@@ -1062,8 +1035,7 @@
 			type				ITEM_TYPE_YESNO
 			text				@MENUS_ENABLE_VOTING
 			cvar				"g_allowvote"
-			rect				285 75 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 75 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1092,8 +1064,7 @@
 		{
 			name				settingsButton14
 			style				WINDOW_STYLE_SHADER
-			rect 				285 95 280 20 
-			background			"gfx/menus/menu_blendbox"			
+			rect 				325 95 280 20 			background			"gfx/menus/menu_blendbox"			
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1112,7 +1083,7 @@
 			{ 
 				@MENUS_NO 0 @MENUS_LAN 1 @MENUS_INTERNET 2 
 			}
-			rect				285 95 280 20 
+			rect				305 95 280 20 
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
@@ -1142,8 +1113,7 @@
 		{
 			name				settingsButton15
 			style				WINDOW_STYLE_SHADER
-			rect 				285 115 280 20 
-			background			"gfx/menus/menu_blendbox"		
+			rect 				325 115 280 20 			background			"gfx/menus/menu_blendbox"		
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1156,8 +1126,7 @@
 			type 				4
 			text				@MENUS_PASSWORD_1
 			cvar				"g_password"
-			rect				285 115 280 20 
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 115 280 20 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1191,8 +1160,7 @@
 			name				rules_title
 			group				none
 			text				@MENUS_CONNECTION_RULES
-      			rect				285 205 280 20
-			font				3
+      			rect				325 205 280 20			font				3
 			textscale			0.8
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			140
@@ -1210,8 +1178,7 @@
 		{
 			name				settingsButton16
 			style				WINDOW_STYLE_SHADER
-			rect 				285 225 280 20 
-			background			"gfx/menus/menu_blendbox"		
+			rect 				325 225 280 20 			background			"gfx/menus/menu_blendbox"		
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1225,8 +1192,7 @@
 			text				@MENUS_PURE_SERVER
 			descText			@MENUS_CLIENT_MUST_HAVE_EXACT
 			cvar				"sv_pure"
-			rect				285 225 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 225 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1255,8 +1221,7 @@
 		{
 			name				settingsButton17
 			style				WINDOW_STYLE_SHADER
-			rect 				285 245 280 20 
-			background			"gfx/menus/menu_blendbox"		
+			rect 				325 245 280 20 			background			"gfx/menus/menu_blendbox"		
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1270,8 +1235,7 @@
 			text				@MENUS_AUTO_DOWNLOAD
 			descText			@MENUS_CLIENTS_CAN_DOWNLOAD
 			cvar				"sv_allowdownload"
-			rect				285 245 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 245 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1299,8 +1263,7 @@
 		{
 			name				settingsButton18
 			style				WINDOW_STYLE_SHADER
-			rect 				285 265 280 20 
-			background			"gfx/menus/menu_blendbox"		
+			rect 				325 265 280 20 			background			"gfx/menus/menu_blendbox"		
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1315,8 +1278,7 @@
 			text				@MENUS_MINIMUM_PING
 			descText			@MENUS_FASTEST_CLIENT_ALLOWED
 			cvar				"sv_minping"
-			rect				285 265 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 265 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1344,8 +1306,7 @@
 		{
 			name				settingsButton19
 			style				WINDOW_STYLE_SHADER
-			rect 				285 285 280 20 
-			background			"gfx/menus/menu_blendbox"		
+			rect 				325 285 280 20 			background			"gfx/menus/menu_blendbox"		
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1360,8 +1321,7 @@
 			text				@MENUS_MAXIMUM_PING
 			descText			@MENUS_SLOWEST_CLIENT_ALLOWED
 			cvar				"sv_maxping"
-			rect				285 285 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 285 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1389,8 +1349,7 @@
 		{
 			name				settingsButton20
 			style				WINDOW_STYLE_SHADER
-			rect 				285 305 280 20 
-			background			"gfx/menus/menu_blendbox"		
+			rect 				325 305 280 20 			background			"gfx/menus/menu_blendbox"		
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1404,8 +1363,7 @@
 			text				@MENUS_MAX_RATE
 			descText			@MENUS_DATA_TRANSFER_RATE_TO
 			cvar				"sv_maxrate"
-			rect				285 305 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 305 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1433,8 +1391,7 @@
 		{
 			name				settingsButton21
 			style				WINDOW_STYLE_SHADER
-			rect 				285 325 280 20 
-			background			"gfx/menus/menu_blendbox"		
+			rect 				325 325 280 20 			background			"gfx/menus/menu_blendbox"		
 			forecolor			1 1 1 1
 			visible				0
 			decoration
@@ -1449,8 +1406,7 @@
 			descText			@MENUS_MINIMUM_TIME_ALLOWED
 			cvar				"sv_reconnectlimit"
 			maxchars			4
-			rect				285 325 280 20
-			textalign			ITEM_ALIGN_RIGHT
+			rect				325 325 280 20			textalign			ITEM_ALIGN_RIGHT
 			textalignx			165
 			textaligny			0
 			font				4
@@ -1482,8 +1438,7 @@
 			name					doneButton
 			group					none
 			style					WINDOW_STYLE_SHADER
-			rect					200 352 160 30
-			background				"gfx/menus/menu_buttonback"			// Frame around button
+			rect					240 405 160 30			background				"gfx/menus/menu_buttonback"			// Frame around button
 			forecolor				1 1 1 1
 			decoration
 			visible				0
@@ -1498,8 +1453,7 @@
 			font					3
 			textscale				1
 			style					WINDOW_STYLE_EMPTY
-			rect					200 352 160 30
-			textalignx				80						// Center
+			rect					240 405 160 30			textalignx				80						// Center
 			textaligny				0
 			textalign				ITEM_ALIGN_CENTER
 			forecolor			1 .682 0 1

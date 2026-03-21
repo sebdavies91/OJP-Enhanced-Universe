@@ -1182,7 +1182,7 @@ qboolean NPC_ValidEnemy( gentity_t *ent )
 		}
 	}
 	//Can't be on the same team
-	if ( ent->client->playerTeam == NPC->client->playerTeam )
+	if ( !G_ValidEnemy( ent, NPC ) )
 		return qfalse;
 
 	//if haven't seen him in a while, give up
@@ -1361,7 +1361,7 @@ gentity_t *NPC_PickEnemyExt( qboolean checkAlerts )
 					return event->owner;
 
 				//If it's on our team, then take its enemy as well
-				if ( ( event->owner->client ) && ( event->owner->client->playerTeam == NPC->client->playerTeam ) )
+				if ( event->owner->client && !G_ValidEnemy( event->owner, NPC ) )
 				//racc - communicate enemies with allies if our allies are making a lot of noise.				
 					return event->owner->enemy;
 			}

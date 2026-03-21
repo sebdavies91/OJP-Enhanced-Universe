@@ -1969,6 +1969,32 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 		isLanded    = FighterIsLanded( pVeh, parentPS );
 		isLaunching = FighterIsLaunching( pVeh, parentPS );
 
+		//-------------------------------------------------------------------------
+		// Empty fighters should not instantly "snap" their wings/gears just because
+		// the pilot pressed +use to eject.
+		//
+		// On the server, Update()/Animate() run before UpdateRider(). When a pilot
+		// hits +use to dismount, this AnimateVehicle() call still runs that frame,
+		// then the rider is ejected afterwards. On the next frame the fighter has
+		// no pilot and historically many craft immediately entered landing config
+		// (wing/gear transitions) even while clearly airborne.
+		//
+		// Result: a visible wings fold/unfold "blip" right as you exit.
+		//
+		// Fix: if there's no pilot and we're not actually near/at the ground, keep
+		// the current configuration and don't drive wing/gear transitions.
+		//-------------------------------------------------------------------------
+		if ( !pVeh->m_pPilot )
+		{
+			// Consider "near ground" only when the land trace reports we're close.
+			// If trace is lost (fraction==1.0) or we're well above ground, don't
+			// force landing/takeoff state changes.
+			if ( !isLanded && pVeh->m_LandTrace.fraction >= 0.5f )
+			{
+				return;
+			}
+		}
+
 		//-----------------------------------------------------------------------------
 		// Landing/takeoff state latching
 		//

@@ -2529,6 +2529,9 @@ extern qboolean InCinematic;
 extern int CinematicNum;
 //[/ROQFILES]
 void CG_DrawActiveFrame( int serverTime, stereoFrame_t stereoView, qboolean demoPlayback ) {
+	// Reclaim any leaked BG_TempAlloc scratch memory once per frame.
+	// This prevents long-running MP sessions from eventually crashing due to
+	// temp allocator tail drift.
 	//[CoOp]
 	//moved down and changed to qboolean.
 	//int		inwater;

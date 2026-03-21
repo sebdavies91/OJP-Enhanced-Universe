@@ -2831,6 +2831,67 @@ Update 64 12/02/2026 (Fixes and changes)
 
 
 
+Update 65 21/03/2026 (Many fixes and changes)
+
+1) Removed many bugs that caused crashes in both singleplayer and multiplayer, especially in matches with many bots, NPCS, effects or special entities.
+
+2) Improved the stability of the mod during longer matches by cleaning temporary memory better and preventing several causes of random crashes.
+
+3) Improved the dual pistols and other dual weapons in first person with better muzzleflash and recoil synchronization for each hand.
+
+4) Fixed some cases where the alt fire muzzleflash of dual weapons could appear one step late for the player.
+
+5) Improved the seeker droid behavior by controlling its activator better and improving ally/enemy conditions in all gametypes.
+
+6) Improved the squad team behavior by controlling its activator better and improving ally/enemy conditions in all gametypes.
+
+7) Improved sentry and support entity behavior in all gametypes with better enemy detection and more consistent team logic.
+
+8) Improved bot and NPC enemy detection in general by using better ally/enemy checks in free for all, team games and mixed situations.
+
+9) Improved vehicles so they inherit the proper ally/enemy side from the pilot more correctly.
+
+10) Improved NPC behavior while using vehicles so actual pilots can keep thinking and fighting correctly.
+
+11) Fixed several NPC related bugs and crashes caused by invalid enemies, invalid owners or broken entity references.
+
+12) Improved the general gameplay stability of seeker droids, squad teams, sentries and pilot controlled vehicles.
+
+13) Reorganised the burn, toxic, frozen, shocked, sounded and flashed effects to refresh better and behave more consistently.
+
+14) Improved the reliability of several status effects on players, bots and NPCS so these are applied more safely.
+
+15) Improved obituary and death event handling with safer attacker and victim detection in several special cases.
+
+16) Fixed the ion explosion obituary message.
+
+17) Improved some weapon effects for blasters, bowcasters, bryar pistols and heavy repeaters.
+
+18) Reduced unnecessary distant projectile effects in several weapons helping performance during heavy battles.
+
+19) Improved some first person weapon visual behavior so firing feels more consistent.
+
+20) Improved the add bot / create server menu flow by adding a specific Bots menu.
+
+21) Added a dedicated botscreateserver menu for easier multiplayer setup.
+
+22) Improved the multiplayer menus organisation through a cleaner jampmenus menu flow.
+
+23) Improved the red and blue team player setup menus now supporting up to 16 slots instead of only 8.
+
+24) Improved menu visuals in several setup and create server menus.
+
+25) Removed duplicated old menu and string source files that were still present in the old source archive.
+
+26) Mildly improved bot navigation behavior depending on the selected bot type.
+
+27) Improved some bot movement decisions such as route commitment, progress checking and avoidance behavior.
+
+28) Overall this update focuses mainly on stability, menu improvements, better ally/enemy conditions, improved vehicle and NPC behavior, and smoother weapon and effect handling.
+
+
+
+
 PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
 
 
