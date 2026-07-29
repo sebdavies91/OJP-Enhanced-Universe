@@ -1,6 +1,7 @@
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
+#include <stdint.h>
 
 // this file is only included when building a dll
 // g_syscalls.asm is included instead when building a qvm
@@ -547,8 +548,62 @@ int trap_Nav_GetBestNodeAltRoute2( int startID, int endID, int rejectID ) //reje
 	return syscall(G_NAV_GETBESTNODEALT2, startID, endID, rejectID);
 }
 	
+static qboolean G_SyscallNavEntIsValid( const gentity_t *ent )
+{
+	uintptr_t p;
+	uintptr_t base;
+	uintptr_t end;
+	int index;
+
+	if ( !ent )
+	{
+		return qfalse;
+	}
+
+	p = (uintptr_t)ent;
+	base = (uintptr_t)g_entities;
+	end = (uintptr_t)( g_entities + MAX_GENTITIES );
+
+	if ( p < base || p >= end )
+	{
+		return qfalse;
+	}
+
+	if ( ( p - base ) % sizeof( gentity_t ) )
+	{
+		return qfalse;
+	}
+
+	index = (int)( ( p - base ) / sizeof( gentity_t ) );
+	ent = &g_entities[index];
+
+	if ( !ent->inuse )
+	{
+		return qfalse;
+	}
+
+	// Catch stale/corrupt pointers into the entity array before the engine nav code dereferences them.
+	if ( ent->s.number != index )
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
 int trap_Nav_GetBestPathBetweenEnts( gentity_t *ent, gentity_t *goal, int flags )
 {
+	if ( !G_SyscallNavEntIsValid( ent ) || !G_SyscallNavEntIsValid( goal ) )
+	{
+		static qboolean warned = qfalse;
+		if ( !warned )
+		{
+			warned = qtrue;
+			trap_Printf( "^3WARNING:^7 trap_Nav_GetBestPathBetweenEnts called with invalid/stale entity pointer\n" );
+		}
+		return -1; // NODE_NONE; keep the engine syscall from dereferencing stale pointers.
+	}
+
 	return syscall(G_NAV_GETBESTPATHBETWEENENTS, ent, goal, flags);
 }
 

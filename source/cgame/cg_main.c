@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_main.c -- initialization and primary entry point for cgame
 #include "cg_local.h"
@@ -895,7 +895,7 @@ vmCvar_t 	cg_scorePlum;
 vmCvar_t 	cg_smoothClients;
 vmCvar_t 	cg_smoothCamera;
 //[MELEE]
-vmCvar_t	ojp_sabermelee;
+vmCvar_t	obp_sabermelee;
 //[/MELEE]
 
 vmCvar_t	pmove_fixed;
@@ -943,7 +943,7 @@ vmCvar_t	rgb_saber1;
 vmCvar_t	rgb_saber2;
 vmCvar_t	rgb_script1;
 vmCvar_t	rgb_script2;
-vmCvar_t	ojp_teamrgbsabers;
+vmCvar_t	obp_teamrgbsabers;
 //[/RGBSabers]
 
 //[SFXSabers]
@@ -955,15 +955,15 @@ vmCvar_t		cg_MovieSaberType;
 //[/Movie Sabers]
 
 //[ClientPlugInDetect]
-vmCvar_t	ojp_clientplugin;
+vmCvar_t	obp_clientplugin;
 //[/ClientPlugInDetect]
 
 //[VisualWeapons]
-vmCvar_t	ojp_holsteredweapons;
-vmCvar_t	ojp_holsterdebug;
-vmCvar_t	ojp_holsterdebug_boneindex;
-vmCvar_t	ojp_holsterdebug_posoffset;
-vmCvar_t	ojp_holsterdebug_angoffset;
+vmCvar_t	obp_holsteredweapons;
+vmCvar_t	obp_holsterdebug;
+vmCvar_t	obp_holsterdebug_boneindex;
+vmCvar_t	obp_holsterdebug_posoffset;
+vmCvar_t	obp_holsterdebug_angoffset;
 //[/VisualWeapons]
 
 typedef struct {
@@ -1146,7 +1146,7 @@ static cvarTable_t cvarTable[] = { // bk001129
 
 
 	//[MELEE]
-	{ &ojp_sabermelee, "ojp_sabermelee", "0",  CVAR_ARCHIVE},
+	{ &obp_sabermelee, "obp_sabermelee", "0",  CVAR_ARCHIVE},
 	//[/MELEE]
 
 	{ &cg_cameraMode, "com_cameraMode", "0", CVAR_CHEAT},
@@ -1184,7 +1184,7 @@ Ghoul2 Insert End
 	//	0 = All sabers are based on team color
 	//	1 = Player's saber is custom color, everyone else has team colors
 	//	2 = Everyone has custom colors.
-	{ &ojp_teamrgbsabers,	"ojp_teamrgbsabers", "2", CVAR_ARCHIVE },
+	{ &obp_teamrgbsabers,	"obp_teamrgbsabers", "2", CVAR_ARCHIVE },
 //[/RGBSabers]
         
 //[SFXSabers]
@@ -1196,9 +1196,9 @@ Ghoul2 Insert End
 //[/Movie Sabers]
 
 	//[ClientPlugInDetect]
-	//this cvar is a dummy cvar used to determine if the client has the OJP client plug in or not.
-	//This value needs to be the same as CURRENT_OJPENHANCED_CLIENTVERSION!!!!
-	{ &ojp_clientplugin, "ojp_clientplugin", CURRENT_OJPENHANCED_CLIENTVERSION, CVAR_USERINFO | CVAR_ROM },
+	//this cvar is a dummy cvar used to determine if the client has the OBP client plug in or not.
+	//This value needs to be the same as CURRENT_OPENBATTLEFRONTPROJECT_CLIENTVERSION!!!!
+	{ &obp_clientplugin, "obp_clientplugin", CURRENT_OPENBATTLEFRONTPROJECT_CLIENTVERSION, CVAR_USERINFO | CVAR_ROM },
 	//[/ClientPlugInDetect]
 
 	//[VisualWeapons]
@@ -1206,7 +1206,7 @@ Ghoul2 Insert End
 	//0 - Off
 	//1 - Only show on your player
 	//2 - Show on all players
-	{ &ojp_holsteredweapons, "ojp_holsteredweapons", "0", CVAR_ARCHIVE },
+	{ &obp_holsteredweapons, "obp_holsteredweapons", "0", CVAR_ARCHIVE },
 
 	//Controls the debugging of the holster system.  Value sets which type of holstered weapon is being debugged.
 	//	1 = HLR_SINGLESABER_1,	//first single saber
@@ -1225,7 +1225,7 @@ Ghoul2 Insert End
 	//	14 = HLR_REPEATER,		//repeater
 	//	15 = HLR_FLECHETTE,		//flechette
 	//	16 = HLR_DISRUPTOR,		//disruptor
-	{ &ojp_holsterdebug, "ojp_holsterdebug", "0", 0 },
+	{ &obp_holsterdebug, "obp_holsterdebug", "0", 0 },
 
 	//controls which bone that the current debug holsterType is based off of.
 	//  0 = HOLSTER_NONE,
@@ -1233,13 +1233,13 @@ Ghoul2 Insert End
 	//  2 = HOLSTER_LOWERBACK,
 	//  3 = HOLSTER_LEFTHIP,
 	//  4 = HOLSTER_RIGHTHIP,
-	{ &ojp_holsterdebug_boneindex, "ojp_holsterdebug_boneindex", "0", 0 },
+	{ &obp_holsterdebug_boneindex, "obp_holsterdebug_boneindex", "0", 0 },
 
 	//controls the positional offset for the current debug holsterType
-	{ &ojp_holsterdebug_posoffset, "ojp_holsterdebug_posoffset", "0.0 0.0 0.0", 0 },
+	{ &obp_holsterdebug_posoffset, "obp_holsterdebug_posoffset", "0.0 0.0 0.0", 0 },
 
 	//controls the angular offset for the current debug holsterType
-	{ &ojp_holsterdebug_angoffset, "ojp_holsterdebug_angoffset", "0.0 0.0 0.0", 0 },
+	{ &obp_holsterdebug_angoffset, "obp_holsterdebug_angoffset", "0.0 0.0 0.0", 0 },
 	//[/VisualWeapons]
 
 
@@ -1556,6 +1556,108 @@ static void CG_RegisterItemSounds( int itemNum ) {
 	}
 }
 
+/*
+=================
+CG_AS_SoundSetExists
+
+The ambient soundset parser drops the client if a configstring names a set that
+is not present in sound/sound.txt.  This happens on some JK2 single-player maps
+when they are loaded through JA/MP assets: the BSP entity lump can reference a
+JK2-only ambient set, but the active JA asset set does not define it.
+
+Filter those names before sending them to trap_AS_ParseSets().  Missing ambient
+sets should be silent, not fatal; doors/movers/local speakers using missing sets
+will simply not play those optional sounds.
+=================
+*/
+static qboolean CG_AS_SoundSetExists( const char *name )
+{
+	static char		*soundText = NULL;
+	static int		soundTextLoaded = 0;
+	fileHandle_t	f;
+	int				len;
+	const char		*p;
+	char			*token;
+
+	if ( !name || !name[0] )
+	{
+		return qfalse;
+	}
+
+	if ( !soundTextLoaded )
+	{
+		soundTextLoaded = 1;
+
+		len = trap_FS_FOpenFile( "sound/sound.txt", &f, FS_READ );
+		if ( !f || len <= 0 )
+		{
+			if ( f )
+			{
+				trap_FS_FCloseFile( f );
+			}
+
+			// If the file cannot be inspected, keep the original behavior rather
+			// than accidentally disabling all ambient sets.
+			return qtrue;
+		}
+
+		soundText = (char *)BG_Alloc( len + 1 );
+		if ( !soundText )
+		{
+			trap_FS_FCloseFile( f );
+			return qtrue;
+		}
+
+		trap_FS_Read( soundText, len, f );
+		soundText[len] = '\0';
+		trap_FS_FCloseFile( f );
+	}
+
+	if ( !soundText )
+	{
+		return qtrue;
+	}
+
+	p = soundText;
+	while ( 1 )
+	{
+		token = COM_ParseExt( &p, qtrue );
+		if ( !token || !token[0] )
+		{
+			break;
+		}
+
+		if ( !Q_stricmp( token, "generalSet" ) ||
+			 !Q_stricmp( token, "localSet" ) ||
+			 !Q_stricmp( token, "bmodelSet" ) )
+		{
+			token = COM_ParseExt( &p, qtrue );
+			if ( token && token[0] && !Q_stricmp( token, name ) )
+			{
+				return qtrue;
+			}
+		}
+	}
+
+	return qfalse;
+}
+
+static void CG_AS_AddPrecacheEntryChecked( const char *name )
+{
+	if ( !name || !name[0] )
+	{
+		return;
+	}
+
+	if ( !CG_AS_SoundSetExists( name ) )
+	{
+		trap_Print( va( S_COLOR_YELLOW "WARNING: skipping missing ambient soundSet '%s'\n", name ) );
+		return;
+	}
+
+	trap_AS_AddPrecacheEntry( name );
+}
+
 static void CG_AS_Register(void)
 {
 	const char *soundName;
@@ -1582,12 +1684,12 @@ static void CG_AS_Register(void)
 			break;
 		}
 
-		trap_AS_AddPrecacheEntry(soundName);
+		CG_AS_AddPrecacheEntryChecked(soundName);
 	}
 	soundName = CG_ConfigString( CS_GLOBAL_AMBIENT_SET );
 	if (soundName && soundName[0] && Q_stricmp(soundName, "default"))
 	{ //global soundset
-		trap_AS_AddPrecacheEntry(soundName);
+		CG_AS_AddPrecacheEntryChecked(soundName);
 	}
 #endif
 
@@ -2365,13 +2467,16 @@ static void CG_RegisterGraphics( void ) {
 	//[/Icethrower]	
 	//[Electroshocker]
 	cgs.effects.electroshocker = trap_FX_RegisterEffect( "effects/officer/elctr.efx" );
+	cgs.effects.electroshockerWide = trap_FX_RegisterEffect( "effects/officer/elctrwide.efx" );
 	//[/Electroshocker]		
 	//[Lasersupport]
 	cgs.effects.lasersupport = trap_FX_RegisterEffect( "effects/officer/lsr.efx" );
+	cgs.effects.lasersupportWide = trap_FX_RegisterEffect( "effects/officer/lsrwide.efx" );
 	//[/Lasersupport]	
-	//[Electroshocker]
+	//[Orbitalstrike]
 	cgs.effects.orbitalstrike = trap_FX_RegisterEffect( "effects/officer/orbtl.efx" );
-	//[/Electroshocker]	
+	cgs.effects.orbitalstrikeWide = trap_FX_RegisterEffect( "effects/officer/orbtlwide.efx" );
+	//[/Orbitalstrike]	
 	
 	cgs.effects.forceDrain		= trap_FX_RegisterEffect( "effects/mp/drain.efx" );
 	cgs.effects.forceDrainWide	= trap_FX_RegisterEffect( "effects/mp/drainwide.efx" );
@@ -2384,10 +2489,15 @@ static void CG_RegisterGraphics( void ) {
 
 	cgs.effects.forceHealed	= trap_FX_RegisterEffect( "effects/force/heal2.efx" );
 	cgs.effects.forceRegenerated	= trap_FX_RegisterEffect( "effects/force/heal3.efx");
-	cgs.effects.forceExplode		= trap_FX_RegisterEffect( "effects/force/shockwave" );
+	cgs.effects.forceExplode		= trap_FX_RegisterEffect( "effects/force/shockwave.efx" );
+	cgs.effects.forcePushBlur	= trap_FX_RegisterEffect( "effects/force/pushblur.efx" );
+	cgs.effects.forceConfusion	= trap_FX_RegisterEffect( "effects/force/confusion.efx" );
+	cgs.effects.forceCorruption	= trap_FX_RegisterEffect( "effects/force/corruption.efx" );
 	cgs.effects.forceDeathfield	= trap_FX_RegisterEffect( "effects/mp/deathfield");
 	cgs.effects.forceDeathsight	= trap_FX_RegisterEffect( "effects/mp/deathsight");		
 	cgs.effects.forceDestruction		= trap_FX_RegisterEffect( "effects/force/destruction.efx" );
+	cgs.effects.forceDestructionShot	= trap_FX_RegisterEffect( "effects/destruction/shot.efx" );
+	cgs.effects.forceDestructionExplosion = trap_FX_RegisterEffect( "effects/destruction/explosion.efx" );
 	cgs.effects.forceBlinding		= trap_FX_RegisterEffect( "effects/force/blinding.efx" );
 
 	
@@ -2591,7 +2701,9 @@ static void CG_RegisterGraphics( void ) {
 
 	if (cgs.gametype == GT_POWERDUEL || cg_buildScript.integer)
 	{
-		cgs.media.powerDuelAllyShader = trap_R_RegisterShader("gfx/mp/pduel_icon_double");//trap_R_RegisterShader("gfx/mp/pduel_gameicon_ally");
+		cgs.media.powerDuelLoneShader = trap_R_RegisterShader("gfx/mp/pduel_icon_lone");
+		cgs.media.powerDuelDoubleShader = trap_R_RegisterShader("gfx/mp/pduel_icon_double");
+		cgs.media.powerDuelAllyShader = cgs.media.powerDuelDoubleShader;//trap_R_RegisterShader("gfx/mp/pduel_gameicon_ally");
 	}
 
 	cgs.media.heartShader			= trap_R_RegisterShaderNoMip( "ui/assets/statusbar/selectedhealth.tga" );
@@ -3007,11 +3119,11 @@ CG_ConfigString
 =================
 */
 const char *CG_ConfigString( int index ) {
-																			   
-	if ( index < 0 || index >= MAX_CONFIGSTRINGS ) {
+	if ( (unsigned)index >= MAX_CONFIGSTRINGS ) {
 		CG_Error( "CG_ConfigString: bad index: %i", index );
-
+		return "";
 	}
+
 	return cgs.gameState.stringData + cgs.gameState.stringOffsets[ index ];
 }
 
@@ -3898,6 +4010,12 @@ typedef struct cgSpawnEnt_s
 	vec3_t		mins;
 	vec3_t		maxs;
 	char		*model;
+	//[CoOpTextureFix]
+	// SP misc_model_static entities commonly use a skin key to remap model
+	// surfaces. MP ignored it here, which can make some SP-map static models
+	// show missing/default textures.
+	char		*skin;
+	//[/CoOpTextureFix]
 	float		zoffset;
 	int			onlyFogHere;
 	float		fogstart;
@@ -3916,6 +4034,9 @@ BG_field_t cg_spawnFields[] =
 	{"modelscale", CGFOFS(fScale), F_FLOAT},
 	{"modelscale_vec", CGFOFS(scale), F_VECTOR},
 	{"model", CGFOFS(model), F_LSTRING},
+	//[CoOpTextureFix]
+	{"skin", CGFOFS(skin), F_LSTRING},
+	//[/CoOpTextureFix]
 	{"mins", CGFOFS(mins), F_VECTOR},
 	{"maxs", CGFOFS(maxs), F_VECTOR},
 	{"zoffset", CGFOFS(zoffset), F_FLOAT},
@@ -4000,6 +4121,12 @@ void CG_CreateModelFromSpawnEnt(cgSpawnEnt_t *ent)
 	memset(RefEnt, 0, sizeof(refEntity_t));
 	RefEnt->reType = RT_MODEL;
 	RefEnt->hModel = modelIndex;
+	//[CoOpTextureFix]
+	if (ent->skin && ent->skin[0])
+	{
+		RefEnt->customSkin = trap_R_RegisterSkin(ent->skin);
+	}
+	//[/CoOpTextureFix]
 	RefEnt->frame = 0;
 	trap_R_ModelBounds(modelIndex, mins, maxs);
 	VectorCopy(ent->scale, RefEnt->modelScale);
@@ -4459,6 +4586,25 @@ Ghoul2 Insert End
 				cgs.media.weaponIcons5_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_gauntlet_na.tga");
 				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sbdarm.tga");
 				cgs.media.weaponIcons6_NA[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_sbdarm_na.tga");
+				}
+				else if ( i == WP_SABER )
+				{
+				/*
+					Saber icons are not weapon option variants.  They represent
+					the active saber type: single, dual, or staff.  Keep them
+					registered separately so the weapon-select HUD can choose
+					the right icon from playerState saber style data.
+				*/
+				cgs.media.weaponIcons2[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_duallightsaber");
+				cgs.media.weaponIcons2_NA[i] = cgs.media.weaponIcons2[i];
+				cgs.media.weaponIcons3[i] = trap_R_RegisterShaderNoMip("gfx/hud/w_icon_saberstaff");
+				cgs.media.weaponIcons3_NA[i] = cgs.media.weaponIcons3[i];
+				cgs.media.weaponIcons4[i] = trap_R_RegisterShaderNoMip(item->icon);
+				cgs.media.weaponIcons4_NA[i] = cgs.media.weaponIcons4[i];
+				cgs.media.weaponIcons5[i] = trap_R_RegisterShaderNoMip(item->icon);
+				cgs.media.weaponIcons5_NA[i] = cgs.media.weaponIcons5[i];
+				cgs.media.weaponIcons6[i] = trap_R_RegisterShaderNoMip(item->icon);
+				cgs.media.weaponIcons6_NA[i] = cgs.media.weaponIcons6[i];
 				}
 				else
 				{

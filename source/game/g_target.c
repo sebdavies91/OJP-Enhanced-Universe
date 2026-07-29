@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
 
@@ -10,13 +10,43 @@ Gives the activator all the items pointed to.
 void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 	gentity_t	*t;
 	trace_t		trace;
+	qboolean	preserveProfileLoadout = qfalse;
+	int		savedWeapons = 0;
+	int		savedWeapon = WP_NONE;
+	int		savedEFlags = 0;
+	int		savedEFlags2 = 0;
+	int		savedAmmo[MAX_WEAPONS];
+	forcedata_t	savedForce;
+	int		savedSkill[NUM_SKILLS];
+	int		savedSaberLevel = 0;
+	int		savedSaberCycleQueue = 0;
+	saberInfo_t	savedSaber[MAX_SABERS];
 
-	if ( !activator->client ) {
+	if ( !activator || !activator->client ) {
 		return;
 	}
 
 	if ( !ent->target ) {
 		return;
+	}
+
+	// Some SP spawn scripts use target_give to force Kyle/Jaden weapons/ammo.
+	// In GT_SINGLE_PLAYER/OBP profile mode, keep the real player's menu loadout.
+	if ( !activator->NPC &&
+		( ( g_gametype.integer == GT_SINGLE_PLAYER && activator->s.number == 0 ) ||
+		  ( G_UsingSPMapProgression() && activator->s.number >= 0 && activator->s.number < level.maxclients ) ) )
+	{
+		preserveProfileLoadout = qtrue;
+		savedWeapons = activator->client->ps.stats[STAT_WEAPONS];
+		savedWeapon = activator->client->ps.weapon;
+		savedEFlags = activator->client->ps.eFlags;
+		savedEFlags2 = activator->client->ps.eFlags2;
+		memcpy( savedAmmo, activator->client->ps.ammo, sizeof( savedAmmo ) );
+		memcpy( &savedForce, &activator->client->ps.fd, sizeof( savedForce ) );
+		memcpy( savedSkill, activator->client->skillLevel, sizeof( savedSkill ) );
+		savedSaberLevel = activator->client->sess.saberLevel;
+		savedSaberCycleQueue = activator->client->saberCycleQueue;
+		memcpy( savedSaber, activator->client->saber, sizeof( savedSaber ) );
 	}
 
 	memset( &trace, 0, sizeof( trace ) );
@@ -30,6 +60,39 @@ void Use_Target_Give( gentity_t *ent, gentity_t *other, gentity_t *activator ) {
 		// make sure it isn't going to respawn or show any events
 		t->nextthink = 0;
 		trap_UnlinkEntity( t );
+	}
+
+	if ( preserveProfileLoadout )
+	{
+		activator->client->ps.stats[STAT_WEAPONS] = savedWeapons;
+		activator->client->ps.eFlags = savedEFlags;
+		activator->client->ps.eFlags2 = savedEFlags2;
+		memcpy( activator->client->ps.ammo, savedAmmo, sizeof( activator->client->ps.ammo ) );
+		memcpy( &activator->client->ps.fd, &savedForce, sizeof( activator->client->ps.fd ) );
+		memcpy( activator->client->skillLevel, savedSkill, sizeof( activator->client->skillLevel ) );
+		activator->client->sess.saberLevel = savedSaberLevel;
+		activator->client->saberCycleQueue = savedSaberCycleQueue;
+		memcpy( activator->client->saber, savedSaber, sizeof( activator->client->saber ) );
+
+		if ( savedWeapon > WP_NONE && savedWeapon < WP_NUM_WEAPONS &&
+			( activator->client->ps.stats[STAT_WEAPONS] & ( 1 << savedWeapon ) ) )
+		{
+			activator->client->ps.weapon = savedWeapon;
+		}
+		else if ( activator->client->ps.stats[STAT_WEAPONS] & ( 1 << WP_SABER ) )
+		{
+			activator->client->ps.weapon = WP_SABER;
+		}
+		else if ( activator->client->ps.stats[STAT_WEAPONS] & ( 1 << WP_BRYAR_PISTOL ) )
+		{
+			activator->client->ps.weapon = WP_BRYAR_PISTOL;
+		}
+		else
+		{
+			activator->client->ps.weapon = WP_MELEE;
+		}
+
+		activator->client->ps.fd.saberAnimLevel = activator->client->ps.fd.saberDrawAnimLevel = activator->client->sess.saberLevel;
 	}
 }
 
@@ -268,12 +331,31 @@ void Use_Target_Speaker (gentity_t *ent, gentity_t *other, gentity_t *activator)
 		}
 		else
 		{
-			ent->s.loopSound = ent->noise_index;	// start it
-			ent->s.loopIsSoundset = qfalse;
+			if (ent->s.soundSetIndex)
+			{
+				//[CoOpSoundFix]
+				// SP maps often use soundSet speakers for ambient loops.
+				// loopSound stores the BMS_* slot when loopIsSoundset is true.
+				ent->s.loopSound = BMS_MID;
+				ent->s.loopIsSoundset = qtrue;
+				//[/CoOpSoundFix]
+			}
+			else
+			{
+				ent->s.loopSound = ent->noise_index;	// start it
+				ent->s.loopIsSoundset = qfalse;
+			}
 			ent->s.trickedentindex = 0;
 		}
 	}else {	// normal sound
-		if ( ent->spawnflags & 8 ) {
+		if (ent->s.soundSetIndex)
+		{
+			//[CoOpSoundFix]
+			// Non-looping soundSet speaker: play the start/one-shot sound from the set.
+			G_AddEvent( ent, EV_BMODEL_SOUND, BMS_START );
+			//[/CoOpSoundFix]
+		}
+		else if ( ent->spawnflags & 8 ) {
 			G_AddEvent( activator, EV_GENERAL_SOUND, ent->noise_index );
 		} else if (ent->spawnflags & 4) {
 			G_AddEvent( ent, EV_GLOBAL_SOUND, ent->noise_index );
@@ -290,16 +372,17 @@ void SP_target_speaker( gentity_t *ent ) {
 	G_SpawnFloat( "wait", "0", &ent->wait );
 	G_SpawnFloat( "random", "0", &ent->random );
 
-	if ( G_SpawnString ( "soundSet", "", &s ) )
+	if ( G_SpawnString ( "soundSet", "", &s ) && s && s[0] )
 	{	// this is a sound set
+		//[CoOpSoundFix]
+		// Do not return early here. SP maps can use target_speaker soundSets
+		// as toggleable/looping speakers, so they still need eType, wait/random,
+		// use, broadcast and loop setup just like normal noise speakers.
 		ent->s.soundSetIndex = G_SoundSetIndex(s);
-		ent->s.eFlags = EF_PERMANENT;
-		VectorCopy( ent->s.origin, ent->s.pos.trBase );
-		trap_LinkEntity (ent);
-		return;
+		ent->noise_index = 0;
+		//[/CoOpSoundFix]
 	}
-
-	if ( !G_SpawnString( "noise", "NOSOUND", &s ) ) {
+	else if ( !G_SpawnString( "noise", "NOSOUND", &s ) ) {
 		G_Error( "target_speaker without a noise key at %s", vtos( ent->s.origin ) );
 	}
 
@@ -309,12 +392,15 @@ void SP_target_speaker( gentity_t *ent ) {
 		ent->spawnflags |= 8;
 	}
 
-	Q_strncpyz( buffer, s, sizeof(buffer) );
-
-	ent->noise_index = G_SoundIndex(buffer);
+	if (!ent->s.soundSetIndex)
+	{
+		Q_strncpyz( buffer, s, sizeof(buffer) );
+		ent->noise_index = G_SoundIndex(buffer);
+	}
 
 	// a repeating speaker can be done completely client side
 	ent->s.eType = ET_SPEAKER;
+	ent->s.eFlags |= EF_PERMANENT;
 	ent->s.eventParm = ent->noise_index;
 	ent->s.frame = ent->wait * 10;
 	ent->s.clientNum = ent->random * 10;
@@ -322,8 +408,16 @@ void SP_target_speaker( gentity_t *ent ) {
 
 	// check for prestarted looping sound
 	if ( ent->spawnflags & 1 ) {
-		ent->s.loopSound = ent->noise_index;
-		ent->s.loopIsSoundset = qfalse;
+		if (ent->s.soundSetIndex)
+		{
+			ent->s.loopSound = BMS_MID;
+			ent->s.loopIsSoundset = qtrue;
+		}
+		else
+		{
+			ent->s.loopSound = ent->noise_index;
+			ent->s.loopIsSoundset = qfalse;
+		}
 	}
 
 	ent->use = Use_Target_Speaker;
@@ -999,6 +1093,7 @@ void target_level_change_use(gentity_t *self, gentity_t *other, gentity_t *activ
 */
 void SP_target_level_change( gentity_t *self )
 {
+	level.spMapProgression = qtrue;
 	char *s;
 	vmCvar_t		mapname;
 	
@@ -1244,12 +1339,10 @@ void Use_Autosave( gentity_t *ent, gentity_t *other, gentity_t *activator )
 		
 			if(SPSpawnpointCheck(spawnloc))
 			{//teleport them
-				int flags;
-
-				//flip the teleport flag so this dude doesn't client lerp
-				flags = player->client->ps.eFlags & (EF_TELEPORT_BIT );
-				flags ^= EF_TELEPORT_BIT;
-				player->client->ps.eFlags = flags;
+				// Flip the teleport flag so this dude doesn't client lerp.
+				// Preserve all other ps.eFlags; checkpoint/autosave events must
+				// not erase EF_WP_OPTION_* or the weapon appears as its base variant.
+				player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 
 				//set origin
 				G_SetOrigin(player, spawnloc);
@@ -1297,5 +1390,32 @@ void SP_target_autosave(gentity_t *self)
 
 
 
+
+static void target_gravity_change_use( gentity_t *self, gentity_t *other, gentity_t *activator )
+{
+	int i;
+	int gravity = 800;
+
+	G_SpawnInt( "gravity", "800", &gravity );
+	trap_Cvar_Set( "g_gravity", va("%i", gravity) );
+
+	for ( i = 0; i < level.maxclients; i++ )
+	{
+		if ( g_entities[i].inuse && g_entities[i].client )
+		{
+			g_entities[i].client->ps.gravity = gravity;
+		}
+	}
+
+	if ( self->target )
+	{
+		G_UseTargets( self, activator );
+	}
+}
+
+void SP_target_gravity_change( gentity_t *self )
+{
+	self->use = target_gravity_change_use;
+}
 
 

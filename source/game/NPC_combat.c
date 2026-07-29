@@ -81,7 +81,7 @@ qboolean G_TeamEnemy( gentity_t *self )
 	int	i;
 	gentity_t	*ent;
 
-	if ( !self->client || self->client->playerTeam == NPCTEAM_FREE )
+	if ( !self || !self->client || self->client->playerTeam == NPCTEAM_FREE )
 	{
 		return qfalse;
 	}
@@ -1769,7 +1769,7 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 		{
 			self = (gentity_t *)self->m_pVehicle->m_pPilot;
 		}
-		else if ( self->client && self->client->NPC_class == CLASS_VEHICLE )
+		else
 		{
 			return qfalse;
 		}
@@ -1884,7 +1884,7 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	{
 		selfSide = NPCTEAM_ENEMY;
 	}
-	else if ( self->client->sess.sessionTeam == TEAM_FREE || (self->NPC && self->client->playerTeam == NPCTEAM_FREE) || self->client->sess.duelTeam == DUELTEAM_FREE)
+	else if ( self->client->sess.sessionTeam == TEAM_FREE || self->client->playerTeam == NPCTEAM_FREE || self->client->sess.duelTeam == DUELTEAM_FREE)
 	{
 		selfSide = NPCTEAM_FREE;
 	}
@@ -1898,7 +1898,7 @@ qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy )
 	{
 		enemySide = NPCTEAM_ENEMY;
 	}
-	else if ( enemy->client->sess.sessionTeam == TEAM_FREE || (enemy->NPC && enemy->client->playerTeam == NPCTEAM_FREE) || enemy->client->sess.duelTeam == DUELTEAM_FREE )
+	else if ( enemy->client->sess.sessionTeam == TEAM_FREE || enemy->client->playerTeam == NPCTEAM_FREE || enemy->client->sess.duelTeam == DUELTEAM_FREE )
 	{
 		enemySide = NPCTEAM_FREE;
 	}

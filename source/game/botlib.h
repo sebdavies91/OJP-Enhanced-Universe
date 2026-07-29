@@ -84,6 +84,7 @@ struct weaponinfo_s;
 // New: bot flag for thermal snap-throw
 #define ACTION_THERMALTHROW      0x1000000
 #define ACTION_GRAPPLE           0x2000000  // pick a free bit
+#define ACTION_BACKPACKROCKET    0x4000000  // crouch + normal use for backpack rocket
 /*
 #define ACTION_AFFIRMATIVE		0x0100000
 #define ACTION_NEGATIVE			0x0200000

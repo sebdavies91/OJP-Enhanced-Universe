@@ -1,4 +1,4 @@
-//[NewMenus]
+﻿//[NewMenus]
 {
 	menuDef 
 	{
@@ -445,8 +445,8 @@
 		{
 			name				rgbsetupbutton
 			group				none
-			text				"@OJP_MENUS_RGBSABERS_SETUP"
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_DESC"
+			text				"@OBP_MENUS_RGBSABERS_SETUP"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_DESC"
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				350 65 160 24
@@ -492,7 +492,7 @@
 			name				rgbsetupapply
 			group				rgboptions
 			text				"@MENUS_APPLY"
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_APPLY_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_APPLY_DESC"
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				290 200 50 24
@@ -552,7 +552,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_RED1"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_RED1"
 			action
 			{ 
 				play			"sound/interface/button1.wav" ; 
@@ -579,7 +579,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_RED1_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_RED1_DESC"
 			visible 1 
 		}
 		
@@ -600,7 +600,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN1"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN1"
 			action
 			{ 
 				play			"sound/interface/button1.wav" ; 
@@ -627,7 +627,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_GREEN1_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_GREEN1_DESC"
 			visible 1 
 		}
 
@@ -648,7 +648,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE1"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE1"
 			action
 			{ 
 				play			"sound/interface/button1.wav" ; 
@@ -675,7 +675,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_BLUE1_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_BLUE1_DESC"
 			visible 1 
 		}
 		
@@ -700,7 +700,7 @@
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_RED2"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_RED2"
 			action
 			{ 
 				play			"sound/interface/button1.wav" ; 
@@ -727,7 +727,7 @@
 			backcolor 			0 0 0 0
 			border 				1
 			bordercolor 		0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_RED2_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_RED2_DESC"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			visible 1 
@@ -750,7 +750,7 @@
 			forecolor			1 1 1 1
 			visible				0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN2"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN2"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			action
@@ -779,7 +779,7 @@
 			backcolor 			0 0 0 0
 			border 				1
 			bordercolor 		0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_GREEN2_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_GREEN2_DESC"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			visible 1 
@@ -802,7 +802,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE2"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE2"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			action
@@ -831,7 +831,7 @@
 			backcolor 			0 0 0 0
 			border 				1
 			bordercolor 		0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_BLUE2_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_BLUE2_DESC"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			visible 1 
@@ -1167,7 +1167,7 @@
 			rect				440 80 24 24
 			background			"gfx/menus/saber_icon_pimp"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_PIMP_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_PIMP_DESC"
 			border				1
 			bordersize			1
 			bordercolor			0 0 0 1
@@ -1198,7 +1198,7 @@
 			rect				465 80 24 24
 			background			"gfx/menus/saber_icon_rgb"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_RGB_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_RGB_DESC"
 			border				1
 			bordersize			1
 			bordercolor			0 0 0 1
@@ -1566,7 +1566,7 @@
 			rect				440 140 24 24
 			background			"gfx/menus/saber_icon_pimp"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_PIMP_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_PIMP_DESC"
 			border				1
 			bordersize			1
 			bordercolor			0 0 0 1
@@ -1599,7 +1599,7 @@
 			rect				465 140 24 24
 			background			"gfx/menus/saber_icon_rgb"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_RGB_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_RGB_DESC"
 			border				1
 			bordersize			1
 			bordercolor			0 0 0 1

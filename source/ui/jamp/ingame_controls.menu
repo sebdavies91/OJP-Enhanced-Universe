@@ -1,4 +1,4 @@
-//[NewMenus]
+﻿//[NewMenus]
 //-----------------------------------------
 // SETUP MENU
 //-----------------------------------------
@@ -983,7 +983,7 @@
 			name				attacklook
 			group				attackcontrols
 			type				ITEM_TYPE_BIND
-			text				@OJP_MENUS_QUICK_PARRY_HOLDBUTTON
+			text				@OBP_MENUS_QUICK_PARRY_HOLDBUTTON
 			cvar				"+button14"
 			rect				220 215 300 20
 			textalign			ITEM_ALIGN_RIGHT
@@ -994,7 +994,7 @@
 			forecolor			.615 .615 .956 1
 			visible			0
 			// appearance_slot		6
-			descText			@OJP_MENUS_ALLOWS_FOR_QUICK_PARRY
+			descText			@OBP_MENUS_ALLOWS_FOR_QUICK_PARRY
 			action
 			{
 				play			"sound/interface/button1.wav" ; 
@@ -1552,7 +1552,7 @@ itemDef
 			group				weaponcontrols
 			type				ITEM_TYPE_BIND
 			text			
-@OJP_MENUS_THERMAL_DETONATOR_THROW
+@OBP_MENUS_THERMAL_DETONATOR_THROW
 			cvar				"+button13"
 			rect				220 335 300 20
 			textalign			ITEM_ALIGN_RIGHT
@@ -1563,7 +1563,7 @@ itemDef
 			forecolor			.615 .615 .956 1
 			visible				0
 			// appearance_slot		11
-			descText			@OJP_MENUS_THERMAL_DETONATOR_THROW_AVAILABLE
+			descText			@OBP_MENUS_THERMAL_DETONATOR_THROW_AVAILABLE
 			action
 			{
 				play			"sound/interface/button1.wav" ; 
@@ -1716,7 +1716,7 @@ itemDef
 			name				force4
 			group				forcecontrols
 			type				ITEM_TYPE_BIND
-			text				@OJP_MENUS_FORCE_SABERTHROW
+			text				@OBP_MENUS_FORCE_SABERTHROW
 			cvar				"+button12"
 			rect				220 155 300 20
 			textalign			ITEM_ALIGN_RIGHT
@@ -1726,7 +1726,7 @@ itemDef
 			textscale			1
 			forecolor			.615 .615 .956 1
 			visible				0
-			descText			@OJP_MENUS_USES_FORCE_SABERTHROW_ABILITY
+			descText			@OBP_MENUS_USES_FORCE_SABERTHROW_ABILITY
 
 			mouseenter 
 			{ 

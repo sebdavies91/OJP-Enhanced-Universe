@@ -77,7 +77,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="../../ojpenhanced/uix86.dll"
+				OutputFile="../../openbattlefrontproject/uix86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\ui.def"
@@ -177,7 +177,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="..\..\ojpenhanced\uix86.dll"
+				OutputFile="..\..\openbattlefrontproject\uix86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\ui.def"
@@ -278,7 +278,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="..\..\ojpenhanced\uix86.dll"
+				OutputFile="..\..\openbattlefrontproject\uix86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\ui.def"
@@ -378,7 +378,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="..\..\ojpenhanced\uix86.dll"
+				OutputFile="..\..\openbattlefrontproject\uix86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\ui.def"
@@ -552,7 +552,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\ojpenhanced\ui\jamp\menudef.h"
+				RelativePath="jamp\menudef.h"
 				>
 			</File>
 			<File

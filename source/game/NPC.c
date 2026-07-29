@@ -27,6 +27,7 @@ extern int BG_GetTime(void);
 //[CoOp]
 extern void G_CheckCharmed( gentity_t *self );
 extern qboolean Jedi_CultistDestroyer( gentity_t *self );
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 //[/CoOp]
 extern void NPC_BSGM_Default( void );
 extern qboolean Boba_Flying( gentity_t *self );
@@ -38,6 +39,25 @@ gentity_t		*NPC;
 gNPC_t			*NPCInfo;
 gclient_t		*client;
 usercmd_t		ucmd;
+
+// Random NPC thermal/backpack rocket use.  Keep this separate from bot AI;
+// NPCs drive the global ucmd directly instead of bot actionflags.
+#define NPC_THERMAL_DECIDE_INTERVAL          120
+#define NPC_THERMAL_USE_COOLDOWN            5000
+#define NPC_THERMAL_MIN_DIST                650.0f
+#define NPC_THERMAL_MAX_DIST               1200.0f
+#define NPC_THERMAL_RANDOM_CHANCE            120
+
+#define NPC_BACKPACKROCKET_DECIDE_INTERVAL   150
+#define NPC_BACKPACKROCKET_USE_COOLDOWN     6500
+#define NPC_BACKPACKROCKET_MIN_DIST         700.0f
+#define NPC_BACKPACKROCKET_MAX_DIST        2200.0f
+#define NPC_BACKPACKROCKET_RANDOM_CHANCE      80
+
+static int npcThermalUseCooldownUntil[MAX_GENTITIES];
+static int npcNextThermalDecision[MAX_GENTITIES];
+static int npcBackpackRocketUseCooldownUntil[MAX_GENTITIES];
+static int npcNextBackpackRocketDecision[MAX_GENTITIES];
 
 // Allow NPCs to think/fight while piloting vehicles (but not as passive passengers).
 static qboolean NPC_IsVehiclePilot( const gentity_t *self )
@@ -69,6 +89,8 @@ static bState_t G_CurrentBState( gNPC_t *gNPC );
 
 // Forward declarations for functions defined later in this file (C89-friendly).
 static void NPC_CheckInSolidFix( void );
+static void NPC_HandleThermal( void );
+static void NPC_HandleBackpackRocket( void );
 
 void pitch_roll_for_slope( gentity_t *forwhom, vec3_t pass_slope );
 extern void GM_Dying( gentity_t *self );
@@ -171,23 +193,77 @@ extern qboolean InPlayersFOV(vec3_t position, int enemyTeam, int hFOV,
 qboolean G_OkayToRemoveCorpse( gentity_t *self )
 {//racc - check to see if it's ok to remove this body.
 	//if we're still on a vehicle, we won't remove ourselves until we get ejected
-	if ( self->client && self->client->NPC_class != CLASS_VEHICLE && self->s.m_iVehicleNum != 0 )
+	if ( self->client && self->client->NPC_class != CLASS_VEHICLE )
 	{
-		Vehicle_t *pVeh = g_entities[self->s.m_iVehicleNum].m_pVehicle;
-		if ( pVeh )
+		int vehNum = self->s.m_iVehicleNum;
+		gentity_t *vehEnt = NULL;
+		Vehicle_t *pVeh = NULL;
+		qboolean stillInVehicle = qfalse;
+		int i;
+
+		if ( !vehNum && self->client->ps.m_iVehicleNum )
 		{
-			if ( !pVeh->m_pVehicleInfo->Eject( pVeh, pVeh->m_pPilot, qtrue ) )
-			//if ( !pVeh->m_pVehicleInfo->Eject( pVeh, self, qtrue ) ) SP version
-			{//dammit, still can't get off the vehicle...
-				return qfalse;
-			}
+			vehNum = self->client->ps.m_iVehicleNum;
 		}
-		else 
-		{//racc - this is bad.  We're on a vehicle, but the vehicle doesn't exist.
-			assert(0);
+
+		if ( vehNum )
+		{
+			if ( vehNum > 0 && vehNum < MAX_GENTITIES )
+			{
+				vehEnt = &g_entities[vehNum];
+				if ( vehEnt->inuse && vehEnt->client && vehEnt->m_pVehicle && vehEnt->m_pVehicle->m_pVehicleInfo )
+				{
+					pVeh = vehEnt->m_pVehicle;
+				}
+			}
+
+			if ( pVeh )
+			{
+				if ( pVeh->m_pPilot == (bgEntity_t *)self || pVeh->m_pOldPilot == (bgEntity_t *)self || pVeh->m_pDroidUnit == (bgEntity_t *)self )
+				{
+					stillInVehicle = qtrue;
+				}
+				else
+				{
+					for ( i = 0; i < pVeh->m_pVehicleInfo->maxPassengers; i++ )
+					{
+						if ( pVeh->m_ppPassengers[i] == (bgEntity_t *)self )
+						{
+							stillInVehicle = qtrue;
+							break;
+						}
+					}
+				}
+
+				if ( stillInVehicle )
+				{
+					if ( !pVeh->m_pVehicleInfo->Eject( pVeh, (bgEntity_t *)self, qtrue ) )
+					{//dammit, still can't get off the vehicle...
+						return qfalse;
+					}
+				}
+				else
+				{
+					// Stale vehicle reference: the corpse is no longer registered as a rider.
+					self->s.m_iVehicleNum = 0;
+					self->client->ps.m_iVehicleNum = 0;
+					self->r.ownerNum = ENTITYNUM_NONE;
+					self->s.owner = ENTITYNUM_NONE;
+				}
+			}
+			else
+			{//racc - this is bad.  We're on a vehicle, but the vehicle doesn't exist.
+				// Do not assert here: vehicle alt-fire/explosion cleanup can leave a dead
+				// rider with a stale vehicle number after the vehicle entity has already
+				// been freed.  Clear the stale link and allow normal corpse cleanup.
 #ifndef FINAL_BUILD
-			Com_Printf(S_COLOR_RED"ERROR: Dead pilot's vehicle removed while corpse was riding it (pilot: %s)???\n",self->targetname);
+				Com_Printf(S_COLOR_YELLOW"WARNING: Dead pilot's vehicle was already removed while corpse was riding it (pilot: %s, vehNum: %i). Clearing stale vehicle link.\n", self->targetname ? self->targetname : "<unnamed>", vehNum);
 #endif
+				self->s.m_iVehicleNum = 0;
+				self->client->ps.m_iVehicleNum = 0;
+				self->r.ownerNum = ENTITYNUM_NONE;
+				self->s.owner = ENTITYNUM_NONE;
+			}
 		}
 	}
 
@@ -986,6 +1062,213 @@ void NPC_ShowDebugInfo (void)
 
 extern qboolean InPlayersPVS(vec3_t point);
 //[/CoOp]
+
+static qboolean NPC_AIUseClearForwardTrace( float dist )
+{
+	vec3_t startW, endW, fwdW;
+	trace_t trW;
+
+	if (!NPC || !NPC->client)
+	{
+		return qfalse;
+	}
+
+	VectorCopy(NPC->r.currentOrigin, startW);
+	startW[2] += NPC->client->ps.viewheight;
+
+	AngleVectors(NPC->client->ps.viewangles, fwdW, NULL, NULL);
+	VectorMA(startW, dist, fwdW, endW);
+	trap_Trace(&trW, startW, NULL, NULL, endW, NPC->s.number, MASK_SOLID);
+
+	return (trW.fraction >= 1.0f) ? qtrue : qfalse;
+}
+
+static qboolean NPC_AIUseHasValidEnemyInRange( float minDist, float maxDist, float *outDist )
+{
+	vec3_t toEnemy;
+	float dist;
+
+	if (!NPC || !NPC->client || !NPC->enemy || !NPC->enemy->client || NPC->enemy->health <= 0)
+	{
+		return qfalse;
+	}
+
+	if (NPC->enemy->flags & FL_DONT_SHOOT)
+	{
+		return qfalse;
+	}
+
+	if (OnSameTeam(NPC, NPC->enemy))
+	{
+		return qfalse;
+	}
+
+	VectorSubtract(NPC->enemy->r.currentOrigin, NPC->r.currentOrigin, toEnemy);
+	dist = VectorLength(toEnemy);
+
+	if (outDist)
+	{
+		*outDist = dist;
+	}
+
+	if (dist < minDist || dist > maxDist)
+	{
+		return qfalse;
+	}
+
+	if (!NPC_ClearLOS4(NPC->enemy))
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+static void NPC_HandleThermal( void )
+{
+	int entNum;
+	int now;
+	float dist;
+	int chance;
+
+	if (!NPC || !NPC->client)
+	{
+		return;
+	}
+
+	entNum = NPC->s.number;
+	if (entNum < 0 || entNum >= MAX_GENTITIES)
+	{
+		return;
+	}
+
+	now = level.time;
+
+	if (NPC->client->skillLevel[SK_THERMAL] < FORCE_LEVEL_1)
+	{
+		return;
+	}
+	if (!(NPC->client->ps.stats[STAT_WEAPONS] & (1 << WP_THERMAL)))
+	{
+		return;
+	}
+	if (NPC->client->ps.ammo[AMMO_THERMAL] <= 0)
+	{
+		return;
+	}
+	if (NPC->client->ps.weaponTime > 0)
+	{
+		return;
+	}
+	if (npcThermalUseCooldownUntil[entNum] > now)
+	{
+		return;
+	}
+	if (npcNextThermalDecision[entNum] > now)
+	{
+		return;
+	}
+
+	npcNextThermalDecision[entNum] = now + NPC_THERMAL_DECIDE_INTERVAL;
+
+	if (!NPC_AIUseHasValidEnemyInRange(NPC_THERMAL_MIN_DIST, NPC_THERMAL_MAX_DIST, &dist))
+	{
+		return;
+	}
+	if (!NPC_AIUseClearForwardTrace(96.0f))
+	{
+		return;
+	}
+
+	chance = NPC_THERMAL_RANDOM_CHANCE;
+	if (dist < 800.0f)
+	{
+		chance += 50;
+	}
+
+	if (Q_irand(0, 1000) >= chance)
+	{
+		return;
+	}
+
+	npcThermalUseCooldownUntil[entNum] = now + NPC_THERMAL_USE_COOLDOWN;
+	ucmd.buttons |= BUTTON_THERMALTHROW;
+}
+
+static void NPC_HandleBackpackRocket( void )
+{
+	int entNum;
+	int now;
+	float dist;
+	int chance;
+
+	if (!NPC || !NPC->client)
+	{
+		return;
+	}
+
+	entNum = NPC->s.number;
+	if (entNum < 0 || entNum >= MAX_GENTITIES)
+	{
+		return;
+	}
+
+	now = level.time;
+
+	if (NPC->client->skillLevel[SK_BACKPACKROCKET] < FORCE_LEVEL_1)
+	{
+		return;
+	}
+	if (NPC->client->backpackrocketTime > now)
+	{
+		return;
+	}
+	if (NPC->client->ps.weaponTime > 0)
+	{
+		return;
+	}
+	if (npcBackpackRocketUseCooldownUntil[entNum] > now)
+	{
+		return;
+	}
+	if (npcNextBackpackRocketDecision[entNum] > now)
+	{
+		return;
+	}
+
+	npcNextBackpackRocketDecision[entNum] = now + NPC_BACKPACKROCKET_DECIDE_INTERVAL;
+
+	if (!NPC_AIUseHasValidEnemyInRange(NPC_BACKPACKROCKET_MIN_DIST, NPC_BACKPACKROCKET_MAX_DIST, &dist))
+	{
+		return;
+	}
+	if (!NPC_AIUseClearForwardTrace(96.0f))
+	{
+		return;
+	}
+
+	chance = NPC_BACKPACKROCKET_RANDOM_CHANCE;
+	if (dist > 1200.0f)
+	{
+		chance += 35;
+	}
+	if (NPC->client->skillLevel[SK_BACKPACKROCKET] >= FORCE_LEVEL_2)
+	{
+		chance += 25;
+	}
+
+	if (Q_irand(0, 1000) >= chance)
+	{
+		return;
+	}
+
+	npcBackpackRocketUseCooldownUntil[entNum] = now + NPC_BACKPACKROCKET_USE_COOLDOWN;
+
+	// Backpack rocket is triggered by crouch + normal use, matching player input.
+	ucmd.buttons |= BUTTON_USE;
+	ucmd.upmove = -127;
+}
+
 void NPC_ApplyScriptFlags (void)
 {//racc - apply the scriptflags assigned to this NPC
 	if ( NPCInfo->scriptFlags & SCF_CROUCHED )
@@ -1704,146 +1987,7 @@ void NPC_BehaviorSet_Jedi( int bState )
 		break;
 	}
 }
-void NPC_BehaviorSet_BobaFett( int bState )
-{
-	// SP intent: Boba has a dedicated flight "mode" and should keep hunting/orbiting while in the air.
-	// MP reality: we must drive that via ucmd after weapon logic so movement isn't stomped.
-
-	if ( !NPC || !NPC->client || !NPCInfo )
-	{
-		return;
-	}
-
-	// Aggressive enemy reacquire (RocketTrooper-style). Avoid "hover idle" when enemy pointer drops.
-	if ( !NPC->enemy )
-	{
-		NPC_CheckEnemyExt( qtrue );
-		if ( !NPC->enemy )
-		{
-			NPC->enemy = FindClosestPlayer( NPC->r.currentOrigin, NPC->client->enemyTeam );
-		}
-	}
-
-	// If we're not flying, use normal humanoid ground behavior.
-	if ( !Boba_Flying( NPC ) )
-	{
-		NPC_BSST_Default();
-
-		if ( NPC->enemy )
-		{
-			vec3_t flat;
-			VectorSubtract( NPC->enemy->r.currentOrigin, NPC->r.currentOrigin, flat );
-			flat[2] = 0.0f;
-			const float distSq2D = VectorLengthSquared( flat );
-
-			// SP-like: take off once engaged unless point-blank. Debounced.
-			// In SP, Boba will also jet to reposition even at relatively short range.
-			if ( TIMER_Done( NPC, "takeoffDebounce" )
-				&& ( distSq2D > ( 32.0f * 32.0f ) || Q_irand( 0, 3 ) == 0 ) )
-			{
-				Boba_FlyStart( NPC );
-				TIMER_Set( NPC, "takeoffDebounce", Q_irand( 2000, 3500 ) );
-			}
-
-			Boba_FireDecide();
-		}
-		G_CheckCharmed( NPC );
-		return;
-	}
-
-	// --- Flying behavior ---
-	if ( NPC->enemy )
-	{
-		Boba_FireDecide();
-	}
-
-	// Apply jetpack steering LAST (RocketTrooper pattern) so we don't hover-stall.
-	{
-		vec3_t toEnemy, flat;
-		float distSq2D = 0.0f;
-		float desiredZ = NPC->r.currentOrigin[2];
-
-		if ( NPC->enemy )
-		{
-			VectorSubtract( NPC->enemy->r.currentOrigin, NPC->r.currentOrigin, toEnemy );
-			VectorCopy( toEnemy, flat );
-			flat[2] = 0.0f;
-			distSq2D = VectorLengthSquared( flat );
-
-			NPC_FaceEnemy( qtrue );
-			NPC_UpdateAngles( qtrue, qtrue );
-
-			// Hover around enemy height (SP-like), with a small per-NPC wobble.
-			desiredZ = NPC->enemy->r.currentOrigin[2] + 96.0f + ( ( (NPC->s.number + (level.time / 1000)) & 1 ) ? 24.0f : -24.0f );
-		}
-		else
-		{
-			// No enemy: land after a short grace period (don't hover frozen).
-			const int t = TIMER_Get( NPC, "bobaNoEnemyLand" );
-			if ( t == -1 )
-			{
-				TIMER_Set( NPC, "bobaNoEnemyLand", 1200 );
-			}
-			else if ( t < level.time )
-			{
-				TIMER_Remove( NPC, "bobaNoEnemyLand" );
-				Boba_FlyStop( NPC );
-			}
-			ucmd.forwardmove = 0;
-			ucmd.rightmove = 0;
-			ucmd.upmove = 0;
-			G_CheckCharmed( NPC );
-			return;
-		}
-
-		// Cap altitude above ground to avoid flying off into the sky.
-		{
-			extern float G_GroundDistance( gentity_t *self );
-			const float groundDist = G_GroundDistance( NPC );
-			if ( groundDist > 520.0f )
-			{
-				ucmd.upmove = -127;
-			}
-			else
-			{
-				const float dz = desiredZ - NPC->r.currentOrigin[2];
-				if ( dz > 24.0f )
-					ucmd.upmove = 127;
-				else if ( dz < -24.0f )
-					ucmd.upmove = -127;
-				else
-					ucmd.upmove = 0;
-			}
-		}
-
-		// Timed strafe orbit.
-		ucmd.rightmove = ( ((level.time / 600) + NPC->s.number) & 1 ) ? 127 : -127;
-
-		// Horizontal pursuit band.
-		if ( distSq2D > ( 700.0f * 700.0f ) )
-			ucmd.forwardmove = 127;
-		else if ( distSq2D < ( 220.0f * 220.0f ) )
-			ucmd.forwardmove = -64;
-		else
-			ucmd.forwardmove = 80;
-
-		// Add mild ranged pressure like SP Boba: if we have bowcaster and target is visible, shoot in bursts.
-		if ( NPC->enemy
-			&& (NPC->client->ps.stats[STAT_WEAPONS] & (1 << WP_BOWCASTER))
-			&& NPC->client->ps.weapon == WP_BOWCASTER
-			&& NPC_ClearLOS4( NPC->enemy )
-			&& !(NPCInfo->aiFlags & NPCAI_FLAMETHROW) )
-		{
-			if ( ((level.time / 250) & 1) == 0 )
-			{
-				ucmd.buttons |= BUTTON_ATTACK;
-			}
-		}
-	}
-
-	G_CheckCharmed( NPC );
-}
-
+/* Boba Fett behavior lives in NPC_AI_BobaFett.c. */
 
 //[CoOp]  SP Code RAFIXME - impliment this function into the other files.
 qboolean G_JediInNormalAI( gentity_t *ent )
@@ -2711,6 +2855,8 @@ void NPC_ExecuteBState ( gentity_t *self)//, int msec )
 
 	NPC_CheckAttackHold();
 	NPC_ApplyScriptFlags();
+	NPC_HandleThermal();
+	NPC_HandleBackpackRocket();
 	
 	//[CoOp] SP Code
 	//doesn't actually do anything.

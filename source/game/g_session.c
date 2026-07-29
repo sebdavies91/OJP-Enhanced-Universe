@@ -25,6 +25,8 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	const char	*var;
 	int			i = 0;
 	char		siegeClass[64];
+	char		siegeClassTeam1[64];
+	char		siegeClassTeam2[64];
 	char		saberType[64];
 	char		saber2Type[64];
 
@@ -43,6 +45,36 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	if (!siegeClass[0])
 	{ //make sure there's at least something
 		Q_strncpyz(siegeClass, "none", sizeof(siegeClass));
+	}
+
+	Q_strncpyz(siegeClassTeam1, client->sess.siegeClassTeam1, sizeof(siegeClassTeam1));
+	i = 0;
+	while (siegeClassTeam1[i])
+	{
+		if (siegeClassTeam1[i] == ' ')
+		{
+			siegeClassTeam1[i] = 1;
+		}
+		i++;
+	}
+	if (!siegeClassTeam1[0])
+	{
+		Q_strncpyz(siegeClassTeam1, "none", sizeof(siegeClassTeam1));
+	}
+
+	Q_strncpyz(siegeClassTeam2, client->sess.siegeClassTeam2, sizeof(siegeClassTeam2));
+	i = 0;
+	while (siegeClassTeam2[i])
+	{
+		if (siegeClassTeam2[i] == ' ')
+		{
+			siegeClassTeam2[i] = 1;
+		}
+		i++;
+	}
+	if (!siegeClassTeam2[0])
+	{
+		Q_strncpyz(siegeClassTeam2, "none", sizeof(siegeClassTeam2));
 	}
 
 	//Do the same for the saber
@@ -73,7 +105,7 @@ void G_WriteClientSessionData( gclient_t *client ) {
 	}
 
 	//[ExpSys]
-	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %f",
+	s = va("%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %s %s %f",
 	//s = va("%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s",
 	//[/ExpSys]
 		client->sess.sessionTeam,
@@ -89,6 +121,8 @@ void G_WriteClientSessionData( gclient_t *client ) {
 		client->sess.duelTeam,
 		client->sess.siegeDesiredTeam,
 		siegeClass,
+		siegeClassTeam1,
+		siegeClassTeam2,
 		saberType,
 		//[ExpSys]
 		saber2Type,
@@ -122,34 +156,85 @@ void G_ReadSessionData(gclient_t* client) {
 	var = va("session%i", client - level.clients);
 	trap_Cvar_VariableStringBuffer(var, s, sizeof(s));
 
-	// Check the return value of sscanf
-	if (sscanf(s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %f",
-		&sessionTeam,                 // bk010221 - format
+	// Newer session data remembers the last valid Siege class per side.
+	// Fall back cleanly to the older 16-field format for existing configs.
+	if (sscanf(s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %s %s %f",
+		&sessionTeam,
 		&client->sess.spectatorTime,
-		&spectatorState,              // bk010221 - format
+		&spectatorState,
 		&client->sess.spectatorClient,
 		&client->sess.wins,
 		&client->sess.losses,
-		&teamLeader,                   // bk010221 - format
+		&teamLeader,
 		&client->sess.setForce,
 		&client->sess.saberLevel,
 		&client->sess.selectedFP,
 		&client->sess.duelTeam,
 		&client->sess.siegeDesiredTeam,
 		&client->sess.siegeClass[0],
+		&client->sess.siegeClassTeam1[0],
+		&client->sess.siegeClassTeam2[0],
 		&client->sess.saberType[0],
 		&client->sess.saber2Type[0],
 		&client->sess.skillPoints
-	) != 16) {  // Check if all 16 values were parsed
-		//G_Printf("Error: Failed to read session data for client %d.\n", client - level.clients);
-		//return;
+	) != 18)
+	{
+		client->sess.siegeClassTeam1[0] = '\0';
+		client->sess.siegeClassTeam2[0] = '\0';
+
+		if (sscanf(s, "%i %i %i %i %i %i %i %i %i %i %i %i %s %s %s %f",
+			&sessionTeam,
+			&client->sess.spectatorTime,
+			&spectatorState,
+			&client->sess.spectatorClient,
+			&client->sess.wins,
+			&client->sess.losses,
+			&teamLeader,
+			&client->sess.setForce,
+			&client->sess.saberLevel,
+			&client->sess.selectedFP,
+			&client->sess.duelTeam,
+			&client->sess.siegeDesiredTeam,
+			&client->sess.siegeClass[0],
+			&client->sess.saberType[0],
+			&client->sess.saber2Type[0],
+			&client->sess.skillPoints
+		) != 16)
+		{
+			client->sess.siegeClass[0] = '\0';
+			client->sess.saberType[0] = '\0';
+			client->sess.saber2Type[0] = '\0';
+		}
 	}
+
 
 	while (client->sess.siegeClass[i]) { // Convert back to spaces from unused chars
 		if (client->sess.siegeClass[i] == 1) {
 			client->sess.siegeClass[i] = ' ';
 		}
 		i++;
+	}
+
+	i = 0;
+	while (client->sess.siegeClassTeam1[i]) {
+		if (client->sess.siegeClassTeam1[i] == 1) {
+			client->sess.siegeClassTeam1[i] = ' ';
+		}
+		i++;
+	}
+	if (!Q_stricmp(client->sess.siegeClassTeam1, "none")) {
+		client->sess.siegeClassTeam1[0] = '\0';
+	}
+
+	i = 0;
+	while (client->sess.siegeClassTeam2[i]) {
+		if (client->sess.siegeClassTeam2[i] == 1) {
+			client->sess.siegeClassTeam2[i] = ' ';
+		}
+		i++;
+	}
+	if (!Q_stricmp(client->sess.siegeClassTeam2, "none")) {
+		client->sess.siegeClassTeam2[0] = '\0';
 	}
 
 	i = 0;
@@ -197,6 +282,8 @@ void G_InitSessionData(gclient_t* client, char* userinfo, qboolean isBot, qboole
 	sess = &client->sess;
 
 	client->sess.siegeDesiredTeam = TEAM_FREE;
+	client->sess.siegeClassTeam1[0] = '\0';
+	client->sess.siegeClassTeam2[0] = '\0';
 
 	// initial team determination
 	if (g_gametype.integer >= GT_SINGLE_PLAYER) {
@@ -234,7 +321,14 @@ void G_InitSessionData(gclient_t* client, char* userinfo, qboolean isBot, qboole
 			case GT_FFA:
 			case GT_HOLOCRON:
 			case GT_JEDIMASTER:
-				if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
+				// Match Duel/Power Duel startup behavior: when auto-join is
+				// disabled, human players should connect as free spectators and
+				// explicitly press Join Game before spawning.  Bots may still
+				// auto-fill the match.
+				if (!g_teamAutoJoin.integer && !isBot) {
+					sess->sessionTeam = TEAM_SPECTATOR;
+				}
+				else if (g_maxGameClients.integer > 0 && level.numNonSpectatorClients >= g_maxGameClients.integer) {
 					sess->sessionTeam = TEAM_SPECTATOR;
 				}
 				else {
@@ -242,7 +336,13 @@ void G_InitSessionData(gclient_t* client, char* userinfo, qboolean isBot, qboole
 				}
 				break;
 			case GT_DUEL:
-				if (level.numNonSpectatorClients >= 2) {
+				// Match the auto-join behavior used by other modes: when
+				// g_teamAutoJoin is disabled, human clients should enter as
+				// free spectators instead of being immediately queued/spawned.
+				if (!g_teamAutoJoin.integer && !isBot) {
+					sess->sessionTeam = TEAM_SPECTATOR;
+				}
+				else if (level.numNonSpectatorClients >= 2) {
 					sess->sessionTeam = TEAM_SPECTATOR;
 				}
 				else {

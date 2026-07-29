@@ -683,7 +683,7 @@ void NPC_BSST_Sleep( void )
 			//[CoOp]
 			//find closest live player to attack.
 			gentity_t * closestPlayer = FindClosestPlayer(NPC->client->ps.origin, NPC->client->enemyTeam);
-			if(closestPlayer)
+			if(closestPlayer && G_ValidEnemy( NPC, closestPlayer ))
 			//if ( &g_entities[0] && g_entities[0].health > 0 )
 			{
 				G_SetEnemy( NPC, closestPlayer );

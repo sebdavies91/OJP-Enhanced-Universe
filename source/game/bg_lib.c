@@ -238,17 +238,42 @@ int strcmp( const char *string1, const char *string2 ) {
 }
 
 
-char *strchr( const char *string, int c ) {
+#ifdef __cplusplus
+const char *strchr( const char *string, int c )
+#else
+char *strchr( const char *string, int c )
+#endif
+{
 	while ( *string ) {
 		if ( *string == c ) {
+#ifdef __cplusplus
+			return string;
+#else
 			return ( char * )string;
+#endif
 		}
 		string++;
 	}
+#ifdef __cplusplus
+	return (const char *)0;
+#else
 	return (char *)0;
+#endif
 }
 
-char *strstr( const char *string, const char *strCharSet ) {
+#ifdef __cplusplus
+char *strchr( char *string, int c )
+{
+	return (char *)strchr( (const char *)string, c );
+}
+#endif
+
+#ifdef __cplusplus
+const char *strstr( const char *string, const char *strCharSet )
+#else
+char *strstr( const char *string, const char *strCharSet )
+#endif
+{
 	while ( *string ) {
 		int		i;
 
@@ -258,12 +283,27 @@ char *strstr( const char *string, const char *strCharSet ) {
 			}
 		}
 		if ( !strCharSet[i] ) {
+#ifdef __cplusplus
+			return string;
+#else
 			return (char *)string;
+#endif
 		}
 		string++;
 	}
+#ifdef __cplusplus
+	return (const char *)0;
+#else
 	return (char *)0;
+#endif
 }
+
+#ifdef __cplusplus
+char *strstr( char *string, const char *strCharSet )
+{
+	return (char *)strstr( (const char *)string, strCharSet );
+}
+#endif
 #endif // bk001211
 
 // bk001120 - presumably needed for Mac

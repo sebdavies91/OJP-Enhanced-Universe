@@ -13,6 +13,7 @@
 
 void HolocronThink(gentity_t *ent);
 extern vmCvar_t g_MaxHolocronCarry;
+extern vmCvar_t g_holocronMaxHeld;
 
 /*QUAKED func_group (0 0 0) ?
 Used to group brushes together just for editor convenience.  They are turned into normal brushes by the utilities.
@@ -1170,6 +1171,152 @@ count	Set to type of holocron (based on force power value)
 	"models/chunks/rock/rock_big.md3"//FP_SABERTHROW
 };*/
 
+
+
+static const char *G_HolocronPowerName(int power)
+{
+	switch (power)
+	{
+	case FP_HEAL:			return "Heal";
+	case FP_LEVITATION:		return "Jump";
+	case FP_SPEED:			return "Speed";
+	case FP_PUSH:			return "Push";
+	case FP_PULL:			return "Pull";
+	case FP_TELEPATHY:		return "Mind Trick";
+	case FP_GRIP:			return "Grip";
+	case FP_LIGHTNING:		return "Lightning";
+	case FP_RAGE:			return "Rage";
+	case FP_PROTECT:		return "Protect";
+	case FP_ABSORB:			return "Absorb";
+	case FP_TEAM_HEAL:		return "Team Heal";
+	case FP_TEAM_FORCE:		return "Team Force";
+	case FP_DRAIN:			return "Drain";
+	case FP_SEE:			return "Sight";
+	case FP_SABER_OFFENSE:	return "Saber Attack";
+	case FP_SABER_DEFENSE:	return "Saber Defense";
+	case FP_SABERTHROW:		return "Saber Throw";
+	default:				return "Holocron";
+	}
+}
+
+static int G_HolocronHeldCount(const gclient_t *client)
+{
+	int i;
+	int count = 0;
+
+	if (!client)
+	{
+		return 0;
+	}
+
+	for (i = 0; i < NUM_FORCE_POWERS; i++)
+	{
+		if (client->ps.holocronsCarried[i])
+		{
+			count++;
+		}
+	}
+
+	return count;
+}
+
+static void G_HolocronSendHint(gentity_t *ent, const char *action, int power, qboolean includeHeld)
+{
+	int held;
+	int clientNum;
+
+	if (g_gametype.integer != GT_HOLOCRON || g_holocronHints.integer <= 0)
+	{
+		return;
+	}
+
+	if (!ent || !ent->client || ent->r.svFlags & SVF_BOT)
+	{
+		return;
+	}
+
+	if (ent->health < 1 || ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+	{
+		return;
+	}
+
+	clientNum = ent - g_entities;
+	held = G_HolocronHeldCount(ent->client);
+
+	if (includeHeld && g_holocronHints.integer >= 2 && ent->client->holocronHintDebounceTime < level.time)
+	{
+		ent->client->holocronHintDebounceTime = level.time + 15000;
+		trap_SendServerCommand(clientNum, va("cp \"%s: %s\nHeld: %i\n\"", action, G_HolocronPowerName(power), held));
+	}
+	else
+	{
+		trap_SendServerCommand(clientNum, va("cp \"%s: %s\n\"", action, G_HolocronPowerName(power)));
+	}
+}
+
+static int G_EffectiveMaxHolocrons(void)
+{
+	if (g_gametype.integer != GT_HOLOCRON)
+	{
+		return 0;
+	}
+
+	if (g_holocronMaxHeld.integer > 0)
+	{
+		return g_holocronMaxHeld.integer;
+	}
+
+	return g_MaxHolocronCarry.integer;
+}
+
+void G_DropHolocronFromClient(gentity_t *ent, qboolean randomDrop)
+{
+	int i;
+	int carriedCount = 0;
+	int selected = -1;
+	float oldestTime = 0;
+
+	if (g_gametype.integer != GT_HOLOCRON || !ent || !ent->client)
+	{
+		return;
+	}
+
+	for (i = 0; i < NUM_FORCE_POWERS; i++)
+	{
+		if (!ent->client->ps.holocronsCarried[i])
+		{
+			continue;
+		}
+
+		carriedCount++;
+
+		if (randomDrop)
+		{
+			// Reservoir selection keeps this fair without a temporary list.
+			if (Q_irand(1, carriedCount) == 1)
+			{
+				selected = i;
+			}
+		}
+		else if (selected == -1 || ent->client->ps.holocronsCarried[i] < oldestTime)
+		{
+			selected = i;
+			oldestTime = ent->client->ps.holocronsCarried[i];
+		}
+	}
+
+	if (selected < 0)
+	{
+		return;
+	}
+
+	// HolocronThink() sees this clear and pops the matching world holocron out
+	// of its current owner. This preserves the existing holocron drop/respawn path.
+	ent->client->ps.holocronsCarried[selected] = 0;
+	ent->client->ps.holocronBits &= ~(1 << selected);
+	G_HolocronSendHint(ent, "Dropped", selected, qtrue);
+}
+
 void HolocronRespawn(gentity_t *self)
 {
 	self->s.modelindex = (self->count - 128);
@@ -1267,9 +1414,11 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 		}
 	}
 
-	if (g_MaxHolocronCarry.integer && othercarrying >= g_MaxHolocronCarry.integer)
+	if (G_EffectiveMaxHolocrons() && othercarrying >= G_EffectiveMaxHolocrons())
 	{ //make the oldest holocron carried by the player pop out to make room for this one
 		other->client->ps.holocronsCarried[index_lowest] = 0;
+		other->client->ps.holocronBits &= ~(1 << index_lowest);
+		G_HolocronSendHint(other, "Dropped", index_lowest, qfalse);
 
 		/*
 		if (index_lowest == FP_SABER_OFFENSE && !HasSetSaberOnly())
@@ -1290,6 +1439,7 @@ void HolocronTouch(gentity_t *self, gentity_t *other, trace_t *trace)
 	G_AddEvent( other, EV_ITEM_PICKUP, self->s.number );
 
 	other->client->ps.holocronsCarried[self->count] = level.time;
+	G_HolocronSendHint(other, "Picked up", self->count, qtrue);
 	self->s.modelindex = 0;
 	self->enemy = other;
 
@@ -1401,6 +1551,67 @@ justthink:
 	{
 		G_RunObject(ent);
 	}
+}
+
+extern void SP_misc_turretG2( gentity_t *base );
+
+static void ion_cannon_think( gentity_t *self )
+{
+	if ( self->health > 0 && self->target2 && self->target2[0] )
+	{
+		G_UseTargets2( self, self->activator ? self->activator : self, self->target2 );
+	}
+
+	self->nextthink = level.time + self->wait;
+	if ( self->random > 0 )
+	{
+		self->nextthink += Q_irand( 0, self->random );
+	}
+}
+
+static void misc_ion_cannon_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod )
+{
+	self->health = 0;
+	self->takedamage = qfalse;
+	self->think = NULL;
+	self->nextthink = 0;
+
+	if ( self->target && self->target[0] )
+	{
+		self->activator = attacker;
+		G_UseTargets( self, attacker );
+	}
+}
+
+void SP_misc_ion_cannon( gentity_t *self )
+{
+	if ( !self->health )
+	{
+		self->health = 200;
+	}
+	if ( !self->wait )
+	{
+		self->wait = 5000;
+	}
+
+	self->takedamage = qtrue;
+	self->die = misc_ion_cannon_die;
+	self->clipmask = MASK_SHOT;
+	self->r.contents = CONTENTS_BODY;
+	VectorSet( self->r.mins, -32, -32, -32 );
+	VectorSet( self->r.maxs,  32,  32,  32 );
+	self->think = ion_cannon_think;
+	self->nextthink = level.time + self->wait;
+	if ( self->random > 0 )
+	{
+		self->nextthink += Q_irand( 0, self->random );
+	}
+	trap_LinkEntity( self );
+}
+
+void SP_misc_panel_turret( gentity_t *self )
+{
+	SP_misc_turretG2( self );
 }
 
 void SP_misc_holocron(gentity_t *ent)
@@ -4802,8 +5013,8 @@ extern void ICam_Pan( vec3_t dest, vec3_t panDirection, float duration );
 extern void ICam_Enable(void);
 void camera_use( gentity_t *self, gentity_t *other, gentity_t *activator )
 {
-	if ( !activator || !activator->client || activator->s.number )
-	{//really only usable by the player
+	if ( !activator || !activator->client || activator->s.number < 0 || activator->s.number >= MAX_CLIENTS )
+	{//really only usable by a real player client
 		return;
 	}
 	self->painDebounceTime = level.time + (self->wait*1000);//FRAMETIME*5;//don't check for player buttons for 500 ms
@@ -5099,12 +5310,21 @@ INACTIVE - Start off, has to be activated to be usable
 "target"	thing to use when successfully opened
 "target2"	thing to use when player uses the panel without the key
 */
-char KeyPool[10];	//key pool for security keys
 void panel_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 {
-	if(self->genericValue1 < level.time)
+	if (!self || !other || !other->client)
 	{
-		if(!strcmp(KeyPool, self->message))
+		return;
+	}
+
+	if (self->flags & FL_INACTIVE)
+	{
+		return;
+	}
+
+	if (self->genericValue1 < level.time)
+	{
+		if (self->message && !Q_stricmp(other->client->securityKey, self->message))
 		{//we have the key to this door.
 			//for now, just unlock when used
 			G_UseTargets2(self, other, self->target);
@@ -5112,6 +5332,10 @@ void panel_touch(gentity_t *self, gentity_t *other, trace_t *trace)
 		}
 		else
 		{//don't have the key.
+			if (self->target2)
+			{
+				G_UseTargets2(self, other, self->target2);
+			}
 			G_Sound(self, CHAN_AUTO, G_SoundIndex("sound/movers/sec_panel_fail.mp3"));
 		}
 
@@ -5160,8 +5384,13 @@ qboolean INV_GoodieKeyGive( gentity_t *target )
 }
 
 qboolean INV_SecurityKeyGive( gentity_t *target, const char *keyname )
-{//add this key to the key pool
-	Q_strncpyz(KeyPool, keyname, sizeof(KeyPool));
+{//add this key to the player's inventory
+	if ( !target || !target->client || !keyname )
+	{
+		return qfalse;
+	}
+
+	Q_strncpyz( target->client->securityKey, keyname, sizeof(target->client->securityKey) );
 	return qtrue;
 }
 

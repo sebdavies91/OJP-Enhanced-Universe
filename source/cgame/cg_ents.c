@@ -3,6 +3,37 @@
 // cg_ents.c -- present snapshot entities, happens every single frame
 
 #include "cg_local.h"
+
+static qboolean CG_BinocularThermalEntActive( void )
+{
+	if ( cg.predictedPlayerState.zoomMode == 3 && !cg.predictedPlayerState.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	if ( cg.snap && cg.snap->ps.zoomMode == 3 && !cg.snap->ps.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static qboolean CG_BinocularXRayEntActive( void )
+{
+	if ( cg.predictedPlayerState.zoomMode == 3 && cg.predictedPlayerState.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	if ( cg.snap && cg.snap->ps.zoomMode == 3 && cg.snap->ps.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
 /*
 Ghoul2 Insert Start
 */
@@ -1960,16 +1991,40 @@ Ghoul2 Insert End
 
 	//[Enhanced sight] - allows to see objects that the server sets as force_visible
 	if( ( cent->currentState.eFlags & EF_FORCE_VISIBLE ) &&
-		( cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE) ) )
+		(( cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE) ) ||
+		 CG_BinocularThermalEntActive() ||
+		 CG_BinocularXRayEntActive()) )
 	{
-		ent.shaderRGBA[0] = 0;
-		ent.shaderRGBA[1] = 0;
-		ent.shaderRGBA[2] = 255;
-		ent.renderfx |= RF_MINLIGHT | RF_NODEPTH;
+		qboolean binocularThermal = CG_BinocularThermalEntActive();
+		qboolean binocularXRay = CG_BinocularXRayEntActive();
+		qboolean forceSeeThroughWalls = (qboolean)((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) &&
+			cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_3);
 
-		//only level 2+ can see players through walls
-		if (cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_2)
-				ent.renderfx &= ~RF_NODEPTH;
+		if ( binocularXRay )
+		{
+			ent.shaderRGBA[0] = 195;
+			ent.shaderRGBA[1] = 70;
+			ent.shaderRGBA[2] = 255;
+		}
+		else if ( binocularThermal )
+		{
+			ent.shaderRGBA[0] = 255;
+			ent.shaderRGBA[1] = 105;
+			ent.shaderRGBA[2] = 20;
+		}
+		else
+		{
+			ent.shaderRGBA[0] = 0;
+			ent.shaderRGBA[1] = 0;
+			ent.shaderRGBA[2] = 255;
+		}
+
+		ent.renderfx |= RF_MINLIGHT;
+		ent.renderfx &= ~RF_NODEPTH;
+		if ( forceSeeThroughWalls || binocularXRay )
+		{
+			ent.renderfx |= RF_NODEPTH;
+		}
 
 		ent.renderfx &= ~RF_RGB_TINT;
 		ent.renderfx &= ~RF_FORCE_ENT_ALPHA;
@@ -2013,7 +2068,26 @@ static void CG_Speaker( centity_t *cent ) {
 		return;
 	}
 
-	trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm] );
+	if (cent->currentState.loopIsSoundset && cent->currentState.soundSetIndex)
+	{
+		const char *soundSet;
+		sfxHandle_t sfx = -1;
+
+		soundSet = CG_ConfigString( CS_AMBIENT_SET + cent->currentState.soundSetIndex );
+		if (soundSet && soundSet[0])
+		{
+			sfx = trap_AS_GetBModelSound(soundSet, 0);
+		}
+
+		if (sfx != -1)
+		{
+			trap_S_StartSound(NULL, cent->currentState.number, CHAN_ITEM, sfx);
+		}
+	}
+	else if (cent->currentState.eventParm > 0 && cgs.gameSounds[cent->currentState.eventParm])
+	{
+		trap_S_StartSound (NULL, cent->currentState.number, CHAN_ITEM, cgs.gameSounds[cent->currentState.eventParm] );
+	}
 
 	//	ent->s.frame = ent->wait * 10;
 	//	ent->s.clientNum = ent->random * 10;
@@ -2243,7 +2317,7 @@ Ghoul2 Insert End
 	// eccentricly
 	if (!(cent->currentState.eFlags & EF_DROPPEDWEAPON))
 	{
-		if ( item->giType == IT_WEAPON ) {
+		if ( item->giType == IT_WEAPON && item->giTag > WP_NONE && item->giTag < MAX_WEAPONS ) {
 			wi = &cg_weapons[item->giTag];
 			cent->lerpOrigin[0] -= 
 				wi->weaponMidpoint[0] * ent.axis[0][0] +
@@ -2263,7 +2337,10 @@ Ghoul2 Insert End
 	}
 	else
 	{
-		wi = &cg_weapons[item->giTag];
+		if ( item->giType == IT_WEAPON && item->giTag > WP_NONE && item->giTag < MAX_WEAPONS )
+		{
+			wi = &cg_weapons[item->giTag];
+		}
 
 		switch(item->giTag)
 		{
@@ -2607,8 +2684,8 @@ static void CG_Missile( centity_t *cent ) {
 	s1 = &cent->currentState;
 //	Com_Printf( "^3CL: %i\n", s1->otherEntityNum2 );
 //	Com_Printf( "^4CL-WP_name: %s\n", g_vehWeaponInfo[s1->otherEntityNum2].iShotFX );
-	if ( s1->weapon > WP_NUM_WEAPONS && s1->weapon != G2_MODEL_PART ) {
-		s1->weapon = 0;
+	if ( (s1->weapon <= WP_NONE || s1->weapon >= MAX_WEAPONS) && s1->weapon != G2_MODEL_PART ) {
+		s1->weapon = WP_NONE;
 	}
 
 	if (cent->ghoul2 && s1->weapon == G2_MODEL_PART)
@@ -2623,6 +2700,16 @@ static void CG_Missile( centity_t *cent ) {
 	if (cent->currentState.eFlags & EF_RADAROBJECT)
 	{
 		CG_AddRadarEnt(cent);
+	}
+
+	/* Force Destruction uses WP_STUN_BATON as its missile weapon in game code
+	 * so it can get custom hit effects without disturbing concussion rifle logic.
+	 * Give that missile its own red Force Destruction trail here; otherwise it
+	 * falls through the generic weapon trail path and does not use the red shot
+	 * effect registered in cg_main.c. */
+	if (s1->weapon == WP_STUN_BATON)
+	{
+		FX_DestructionProjectileThink( cent, weapon );
 	}
 
 	if (s1->weapon == WP_SABER)
@@ -3909,6 +3996,23 @@ Ghoul2 Insert End
 		CG_Speaker( cent );
 		break;
 	case ET_NPC: //An entity that wants to be able to use ghoul2 humanoid (and other) anims. Like a player, but not.
+		/*
+		Some legacy SP NPCs (notably the mouse droid) still come across as MD3 modelindex
+		entities instead of ghoul2 model paths. The ET_NPC path normally assumes ghoul2 and
+		will render nothing useful when there is no ghoul2 instance. Fall back to generic model
+		rendering for explicit MD3 model paths so these NPCs remain visible in MP.
+		*/
+		if ( !cent->currentState.modelGhoul2 && cent->currentState.modelindex > 0 )
+		{
+			const char *npcModelName = CG_ConfigString( CS_MODELS + cent->currentState.modelindex );
+
+			if ( npcModelName && npcModelName[0] && strstr( npcModelName, ".md3" ) )
+			{
+				CG_General( cent );
+				break;
+			}
+		}
+
 		CG_G2Animated( cent );
 		break;
 	case ET_TEAM:
@@ -3985,8 +4089,16 @@ void CG_AddPacketEntities( qboolean isPortal ) {
 	// generate and add the entity from the playerstate
 	ps = &cg.predictedPlayerState;
 
-	CG_CheckPlayerG2Weapons(ps, &cg_entities[cg.predictedPlayerState.clientNum]);
+	/*
+	 * Keep the predicted entityState in sync before refreshing the local G2
+	 * weapon attachment.  CG_G2WeaponInstance() selects EF_WP_OPTION_* model
+	 * variants from cent->currentState.eFlags, and Siege does not always have
+	 * enough clientinfo/skill data to recover the new variant before the entity
+	 * state is updated.  Updating first prevents one frame of the previous/base
+	 * weapon model while switching EF_WP_OPTION weapons.
+	 */
 	BG_PlayerStateToEntityState( ps, &cg_entities[cg.predictedPlayerState.clientNum].currentState, qfalse );
+	CG_CheckPlayerG2Weapons(ps, &cg_entities[cg.predictedPlayerState.clientNum]);
 	
 	if (cg.predictedPlayerState.m_iVehicleNum)
 	{ //add the vehicle I'm riding first

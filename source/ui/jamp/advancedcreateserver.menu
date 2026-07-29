@@ -1,4 +1,4 @@
-//----------------------------------------------------------------------------------------------
+﻿//----------------------------------------------------------------------------------------------
 //	MAIN MENU
 //----------------------------------------------------------------------------------------------
 //[OLDGAMETYPES]
@@ -149,15 +149,15 @@
 			name				options
 			group				grpOptions
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_DISABLEFORCEPOWERS
-			descText			@OJP_MENUS_DISABLEFORCEPOWERS_DESC
+			text				@OBP_MENUS_DISABLEFORCEPOWERS
+			descText			@OBP_MENUS_DISABLEFORCEPOWERS_DESC
 			cvar				"g_forcePowerDisable"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_DISABLEFORCEPOWERS_ALLON		0
-				@OJP_MENUS_DISABLEFORCEPOWERS_ALLOFF		262143
-				@OJP_MENUS_DISABLEFORCEPOWERS_JUMPONLY		262141
-				@OJP_MENUS_DISABLEFORCEPOWERS_NEUTRALSONLY	16353
+				@OBP_MENUS_DISABLEFORCEPOWERS_ALLON		0
+				@OBP_MENUS_DISABLEFORCEPOWERS_ALLOFF		262143
+				@OBP_MENUS_DISABLEFORCEPOWERS_JUMPONLY		262141
+				@OBP_MENUS_DISABLEFORCEPOWERS_NEUTRALSONLY	16353
 				
 			}
 			rect				5 55 280 20 
@@ -289,16 +289,16 @@
 			name				options
 			group				grpOptions
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_WEAPONDISABLE
-			descText			@OJP_MENUS_WEAPONDISABLE_DESC
+			text				@OBP_MENUS_WEAPONDISABLE
+			descText			@OBP_MENUS_WEAPONDISABLE_DESC
 			cvar				"g_weaponDisable"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_WEAPONDISABLE_ALLON	 		0		
-				@OJP_MENUS_WEAPONDISABLE_MELEEONLY		524283
-				@OJP_MENUS_WEAPONDISABLE_SABERSONLY		524279
-				@OJP_MENUS_WEAPONDISABLE_SABERSMELEE		524275
-				@OJP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672
+				@OBP_MENUS_WEAPONDISABLE_ALLON	 		0		
+				@OBP_MENUS_WEAPONDISABLE_MELEEONLY		524283
+				@OBP_MENUS_WEAPONDISABLE_SABERSONLY		524279
+				@OBP_MENUS_WEAPONDISABLE_SABERSMELEE		524275
+				@OBP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672
 				
 			}  
 			rect				5 75 280 20 
@@ -335,16 +335,16 @@
 			name				options
 			group				grpOptions
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_WEAPONDISABLE
-			descText			@OJP_MENUS_WEAPONDISABLE_DESC
+			text				@OBP_MENUS_WEAPONDISABLE
+			descText			@OBP_MENUS_WEAPONDISABLE_DESC
 			cvar				"g_duelWeaponDisable"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_WEAPONDISABLE_ALLON	 		0		
-				@OJP_MENUS_WEAPONDISABLE_MELEEONLY		524283
-				@OJP_MENUS_WEAPONDISABLE_SABERSONLY		524279
-				@OJP_MENUS_WEAPONDISABLE_SABERSMELEE		524275
-				@OJP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672		
+				@OBP_MENUS_WEAPONDISABLE_ALLON	 		0		
+				@OBP_MENUS_WEAPONDISABLE_MELEEONLY		524283
+				@OBP_MENUS_WEAPONDISABLE_SABERSONLY		524279
+				@OBP_MENUS_WEAPONDISABLE_SABERSMELEE		524275
+				@OBP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672		
 			}
 			rect				5 75 280 20 
 			textalign			ITEM_ALIGN_RIGHT
@@ -475,16 +475,16 @@
 			name				options
 			group				grpOptions
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_ITEMDISABLE
-			descText			@OJP_MENUS_ITEMDISABLE_DESC
+			text				@OBP_MENUS_ITEMDISABLE
+			descText			@OBP_MENUS_ITEMDISABLE_DESC
 			cvar				"g_itemDisable"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_ITEMDISABLE_ALLON		0
-				@OJP_MENUS_ITEMDISABLE_ALLOFF		177776
-				@OJP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKS		177777
-				@OJP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKSVEHICLES	266664
-				@OJP_MENUS_ITEMDISABLE_NOVEHICLES	266665
+				@OBP_MENUS_ITEMDISABLE_ALLON		0
+				@OBP_MENUS_ITEMDISABLE_ALLOFF		177776
+				@OBP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKS		177777
+				@OBP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKSVEHICLES	266664
+				@OBP_MENUS_ITEMDISABLE_NOVEHICLES	266665
 				
 			}
 			rect				5 95 280 20 
@@ -883,7 +883,7 @@
 //			group				grpsettings
 //			type				ITEM_TYPE_NUMERICFIELD
 //			text				@MENUS2_LIVES
-//			cvar				"ojp_lmslives" 
+//			cvar				"obp_lmslives" 
 //			cvarTest			"ui_netGameType"
 //			rect				5 305 280 20 
 //			textalign			ITEM_ALIGN_RIGHT
@@ -903,7 +903,7 @@
 			group				grpsettings
 			type				ITEM_TYPE_NUMERICFIELD
 			text				@MENUS2_RESPAWNTIMER
-			cvar				"ojp_ffarespawntimer" 
+			cvar				"obp_ffarespawntimer" 
 			cvarTest			"ui_netGameType"
 			rect				5 325 280 20 
 			textalign			ITEM_ALIGN_RIGHT

@@ -1,0 +1,174 @@
+//[NewMenus]
+// SERVER INFO MENU 
+{
+	menuDef 
+	{
+		name					"ingame_vote"
+		visible					0
+		fullscreen				0
+		outOfBoundsClick						// this closes the window if it gets a click out of the rectangle
+		rect					0 45 640 440
+		focusColor			0.82 0.84 0.88 1
+		style					1
+		border					1
+        descX						320
+		descY					421
+		descScale					1
+		descColor			0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER	
+
+	// Overall window backdrop
+		itemDef 
+		{
+			name				background_pic
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 3 639 437
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Vote"
+			rect				3 6 633 21
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			316
+			textaligny			-2
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
+			font				3
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			border				1
+			bordercolor			.33 .33 .33 1
+			visible				1
+			decoration
+		}
+
+
+		itemDef 
+		{
+			name				yes
+			text				@MENUS_YES
+			descText			@MENUS_YES
+			type				1
+			style				2	
+			rect				335 75 76 30   
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			38
+			textaligny			0     
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	335 75 76 30 ;
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				exec			"vote yes" ; 
+				uiScript		closeingame 
+			}
+			mouseEnter 
+			{ 
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}
+		}
+
+		itemDef 
+		{
+			name				no
+			text				@MENUS_NO
+			descText			@MENUS_NO
+			type				1
+			style				2	
+			rect				335 105 76 30   
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			38
+			textaligny			0     
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	335 105 76 30 ;
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				exec			"vote no" ; 
+				uiScript		closeingame 
+			}
+			mouseEnter 
+			{ 
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}
+		}
+	
+
+		// Shared hover glow for text buttons that use dynamic setitemrect.
+		itemDef
+		{
+			name				button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 0 0 0
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+}
+}
+//[/NewMenus]
+
+ 

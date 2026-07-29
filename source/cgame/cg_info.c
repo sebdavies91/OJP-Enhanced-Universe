@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_info.c -- display information while data is being loading
 
@@ -236,14 +236,14 @@ void CG_DrawInformation( void ) {
 	case GT_JEDIMASTER:
 			//[OLDGAMETYPES]
 			//s = CG_GetStringEdString("MENUS", "SAGA");//"Jedi Master";??
-			s = CG_GetStringEdString("OJP_MENUS", "JEDIMASTER");//"Jedi Master";??
+			s = CG_GetStringEdString("OBP_MENUS", "JEDIMASTER");//"Jedi Master";??
 			//[/OLDGAMETYPES]
 
 //		s = "Jedi Master";
 		break;
 	case GT_SINGLE_PLAYER:
 			//[CoOp]
-			s = CG_GetStringEdString("OJP_MENUS", "COOP");//"Cooperative";
+			s = CG_GetStringEdString("OBP_MENUS", "COOP");//"Cooperative";
 			//s = CG_GetStringEdString("MENUS", "SAGA");//"Team FFA";
 			//[/CoOp]
 

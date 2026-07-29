@@ -264,6 +264,110 @@ void AOTCTC_Holocron_Savepositions( void )
 	trap_FS_FCloseFile( f );
 }
 
+static int AOTCTC_SelectHolocronSpawnPoint( void )
+{
+	int i;
+	int j;
+	int best = -1;
+	float bestScore = -1.0f;
+	int unusedCount = 0;
+
+	if (number_of_holocronpositions <= 0)
+	{
+		return -1;
+	}
+
+	for (i = 0; i < number_of_holocronpositions; i++)
+	{
+		if (!holocrons[i].inuse)
+		{
+			unusedCount++;
+		}
+	}
+
+	if (!unusedCount)
+	{
+		return -1;
+	}
+
+	if (!g_holocronSpawnFairness.integer)
+	{
+		int choice = rand()%number_of_holocronpositions;
+		int safety = 0;
+
+		while (holocrons[choice].inuse && safety < number_of_holocronpositions)
+		{
+			choice = (choice + 1) % number_of_holocronpositions;
+			safety++;
+		}
+
+		return holocrons[choice].inuse ? -1 : choice;
+	}
+
+	// Prefer unused holocron points that are farthest from already chosen holocrons.
+	// This keeps initial GT_HOLOCRON layouts from clustering several powers together,
+	// while still falling back safely if the map has few available points.
+	for (i = 0; i < number_of_holocronpositions; i++)
+	{
+		float minDistSq = 999999999.0f;
+		qboolean hasUsedPoint = qfalse;
+
+		if (holocrons[i].inuse)
+		{
+			continue;
+		}
+
+		for (j = 0; j < number_of_holocronpositions; j++)
+		{
+			float distSq;
+
+			if (!holocrons[j].inuse)
+			{
+				continue;
+			}
+
+			hasUsedPoint = qtrue;
+			distSq = DistanceSquared(holocrons[i].origin, holocrons[j].origin);
+
+			if (distSq < minDistSq)
+			{
+				minDistSq = distSq;
+			}
+		}
+
+		if (!hasUsedPoint)
+		{
+			// First holocron: keep the original random feel.
+			if ((rand() % unusedCount) == 0)
+			{
+				best = i;
+			}
+			continue;
+		}
+
+		// Randomly break near-ties so the layout does not become identical every time.
+		if (minDistSq > bestScore || (minDistSq == bestScore && (rand() & 1)))
+		{
+			bestScore = minDistSq;
+			best = i;
+		}
+	}
+
+	if (best < 0)
+	{
+		// This only happens for the first holocron if the random tie path did not select one.
+		for (i = 0; i < number_of_holocronpositions; i++)
+		{
+			if (!holocrons[i].inuse)
+			{
+				return i;
+			}
+		}
+	}
+
+	return best;
+}
+
 //===========================================================================
 // Routine      : AOTCTC_Create_Holocron
 // Description  : Put a single holocron on the map...
@@ -316,11 +420,13 @@ void AOTCTC_Create_Holocrons( void )
 			continue;
 		}
 
-		choice = rand()%number_of_holocronpositions;
-		
-		// Find a point not in use already...
-		while (holocrons[choice].inuse)
-			choice = rand()%number_of_holocronpositions;
+		choice = AOTCTC_SelectHolocronSpawnPoint();
+
+		if (choice < 0)
+		{
+			type++;
+			continue;
+		}
 
 		AOTCTC_Create_Holocron( type, holocrons[choice].origin );
 

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug(Final)|Win32">
@@ -66,16 +66,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\../Release/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">.\../Final/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\../Debug/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">.\../Debug/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">jampgamex86</TargetName>
@@ -114,6 +114,7 @@
       <ObjectFileName>.\../Release/JK2game/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Release/JK2game/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
@@ -124,7 +125,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\jampgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\jampgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -166,6 +167,7 @@
       <ObjectFileName>.\../Final/JK2game/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Final/JK2game/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
     <ResourceCompile>
@@ -175,7 +177,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../ojpenhanced/jampgamex86.dll</OutputFile>
+      <OutputFile>../../openbattlefrontproject/jampgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>
@@ -214,8 +216,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2game/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <ResourceCompile>
@@ -229,9 +232,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>..\..\ojpenhanced\jampgamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>..\..\openbattlefrontproject\jampgamex86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>..\..\ojpenhanced\jampgamex86.map</MapFileName>
+      <MapFileName>..\..\openbattlefrontproject\jampgamex86.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x20000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -262,8 +265,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2game/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_Debug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -349,6 +353,7 @@
     <ClCompile Include="WalkerNPC.c" />
     <ClCompile Include="w_saber.c" />
     <ClCompile Include="NPC.c" />
+    <ClCompile Include="NPC_AI_BobaFett.c" />
     <ClCompile Include="NPC_AI_Animal.c" />
     <ClCompile Include="NPC_AI_AssassinDroid.c" />
     <ClCompile Include="NPC_AI_Atst.c" />

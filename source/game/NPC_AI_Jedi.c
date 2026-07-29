@@ -2279,6 +2279,112 @@ static void Jedi_Advance( void )
 extern qboolean WP_SaberCanTurnOffSomeBlades( saberInfo_t *saber );
 extern qboolean G_ValidSaberStyle(gentity_t *ent, int saberStyle);
 //[/StanceSelection]
+
+static int Jedi_ValidateSingleSaberStyle(gentity_t *self, int preferredStyle)
+{
+	int style;
+	int count;
+
+	if (!self || !self->client)
+	{
+		return SS_MEDIUM;
+	}
+
+	if (preferredStyle < SS_FAST || preferredStyle > SS_TAVION)
+	{
+		preferredStyle = SS_MEDIUM;
+	}
+
+	if (G_ValidSaberStyle(self, preferredStyle))
+	{
+		return preferredStyle;
+	}
+
+	style = preferredStyle;
+	for (count = SS_FAST; count <= SS_TAVION; count++)
+	{
+		style++;
+		if (style > SS_TAVION)
+		{
+			style = SS_FAST;
+		}
+
+		if (G_ValidSaberStyle(self, style))
+		{
+			return style;
+		}
+	}
+
+	return SS_MEDIUM;
+}
+
+static int Jedi_SelectAdaptiveSaberStyle(gentity_t *self, int preferredStyle)
+{
+	int targetStyle = preferredStyle;
+	float enemyDist = 9999.0f;
+	qboolean enemyInBigMove = qfalse;
+
+	if (!self || !self->client)
+	{
+		return SS_MEDIUM;
+	}
+
+	if (self->client->saberStyleBiasTime < level.time)
+	{
+		self->client->saberStyleBias = Q_irand(SS_FAST, SS_TAVION);
+		self->client->saberStyleBiasTime = level.time + Q_irand(7000, 16000);
+	}
+
+	if (targetStyle < SS_FAST || targetStyle > SS_TAVION)
+	{
+		targetStyle = self->client->saberStyleBias;
+	}
+
+	if (self->enemy)
+	{
+		vec3_t enemyDir;
+		VectorSubtract(self->enemy->r.currentOrigin, self->r.currentOrigin, enemyDir);
+		enemyDist = VectorLength(enemyDir);
+
+		if (self->enemy->client)
+		{
+			enemyInBigMove = (BG_SaberInKata(self->enemy->client->ps.saberMove)
+				|| BG_SaberInSpecial(self->enemy->client->ps.saberMove)
+				|| self->enemy->client->ps.saberMove == LS_SPINATTACK
+				|| self->enemy->client->ps.saberMove == LS_SPINATTACK_DUAL);
+		}
+	}
+
+	if (self->enemy && enemyInBigMove && enemyDist < 128.0f)
+	{
+		// TAVION/purple is MAKASHI: FAST/SORESU + MEDIUM/SHII-CHO hybrid, keep it in the close pressure bucket.
+		targetStyle = (self->client->saberStyleBias == SS_TAVION) ? SS_TAVION : SS_FAST;
+	}
+	else if (self->enemy && self->enemy->health > 175 && enemyDist > 96.0f)
+	{
+		// DESANN/green is JUYO: MEDIUM/SHII-CHO + STRONG/DJEM SO hybrid, prefer it for stronger ranged/punish choices.
+		targetStyle = (self->client->saberStyleBias == SS_DESANN) ? SS_DESANN : SS_STRONG;
+	}
+	else if (self->enemy && self->enemy->health < 55)
+	{
+		targetStyle = (self->client->saberStyleBias == SS_TAVION) ? SS_TAVION : SS_FAST;
+	}
+	else if (enemyDist < 70.0f)
+	{
+		targetStyle = (self->client->saberStyleBias == SS_TAVION) ? SS_TAVION : SS_FAST;
+	}
+	else if (self->client->ps.stats[STAT_DODGE] < 45)
+	{
+		targetStyle = (self->client->saberStyleBias == SS_DESANN || self->client->saberStyleBias == SS_TAVION) ? self->client->saberStyleBias : SS_MEDIUM;
+	}
+	else if (enemyDist > 140.0f)
+	{
+		targetStyle = (self->client->saberStyleBias == SS_DESANN) ? SS_DESANN : SS_STRONG;
+	}
+
+	return Jedi_ValidateSingleSaberStyle(self, targetStyle);
+}
+
 static void Jedi_AdjustSaberAnimLevel( gentity_t *self, int newLevel )
 {	
 	if ( !self || !self->client )
@@ -2333,26 +2439,7 @@ static void Jedi_AdjustSaberAnimLevel( gentity_t *self, int newLevel )
 	}
 	else
 	{
-		// Check for saber stance cooldown
-		if (self->client->saberStyleBiasTime < level.time)
-		{
-			int styleBias = Q_irand(1, 5); // 1=FAST, ..., 5=DESANN
-			int targetStance;
-
-			switch (styleBias)
-			{
-			case 5: targetStance = SS_DESANN; break;
-			case 4: targetStance = SS_TAVION; break;
-			case 3: targetStance = SS_STRONG; break;
-			case 2: targetStance = SS_MEDIUM; break;
-			default: targetStance = SS_FAST; break;
-			}
-
-			self->client->ps.fd.saberAnimLevel = targetStance;
-
-			// Set cooldown for next random change
-			self->client->saberStyleBiasTime = level.time + Q_irand(30000, 60000);
-		}
+		newLevel = Jedi_SelectAdaptiveSaberStyle(self, newLevel);
 	}
 	//[/StanceSelection]
 
@@ -2405,24 +2492,7 @@ static void Jedi_AdjustSaberAnimLevel( gentity_t *self, int newLevel )
 	}
 
 	//[StanceSelection]
-	//new validation technique.
-	if ( !G_ValidSaberStyle(self, newLevel) )
-	{//had an illegal style, revert to a valid one
-		int count;
-		for(count = SS_FAST; count < SS_STAFF; count++)
-		{
-			newLevel++;
-			if(newLevel > SS_STAFF)
-			{
-				newLevel = SS_FAST;
-			}
-
-			if(G_ValidSaberStyle(self, newLevel))
-			{
-				break;
-			}
-		}
-	}
+	newLevel = Jedi_ValidateSingleSaberStyle(self, newLevel);
 
 	//set stance
 	self->client->ps.fd.saberAnimLevel = newLevel;

@@ -987,16 +987,36 @@ int Menu_ItemsMatchingGroup(menuDef_t *menu, const char *name)
 	int i;
 	int count = 0;
 
+	if (!menu)
+	{
+		Com_Printf(S_COLOR_YELLOW "WARNING: Menu_ItemsMatchingGroup called with NULL menu\n");
+		return 0;
+	}
+
+	if (!name || !name[0])
+	{
+		Com_Printf(S_COLOR_YELLOW "WARNING: Menu_ItemsMatchingGroup called with NULL/empty name\n");
+		return 0;
+	}
+
 	for (i = 0; i < menu->itemCount; i++) 
 	{
-		if ((!menu->items[i]->window.name) && (!menu->items[i]->window.group))
+		itemDef_t *item = menu->items[i];
+
+		if (!item)
 		{
-			Com_Printf(S_COLOR_YELLOW"WARNING: item has neither name or group\n");
+			Com_Printf(S_COLOR_YELLOW "WARNING: Menu_ItemsMatchingGroup found NULL item\n");
 			continue;
 		}
 
-		if (Q_stricmp(menu->items[i]->window.name, name) == 0 || 
-			(menu->items[i]->window.group && Q_stricmp(menu->items[i]->window.group, name) == 0)) 
+		if ((!item->window.name) && (!item->window.group))
+		{
+			Com_Printf(S_COLOR_YELLOW "WARNING: item has neither name nor group\n");
+			continue;
+		}
+
+		if ((item->window.name && Q_stricmp(item->window.name, name) == 0) || 
+			(item->window.group && Q_stricmp(item->window.group, name) == 0)) 
 		{
 			count++;
 		} 
@@ -1008,10 +1028,29 @@ int Menu_ItemsMatchingGroup(menuDef_t *menu, const char *name)
 itemDef_t *Menu_GetMatchingItemByNumber(menuDef_t *menu, int index, const char *name) {
   int i;
   int count = 0;
+
+  if (!menu) {
+    Com_Printf(S_COLOR_YELLOW "WARNING: Menu_GetMatchingItemByNumber called with NULL menu\n");
+    return NULL;
+  }
+
+  if (!name || !name[0]) {
+    Com_Printf(S_COLOR_YELLOW "WARNING: Menu_GetMatchingItemByNumber called with NULL/empty name\n");
+    return NULL;
+  }
+
   for (i = 0; i < menu->itemCount; i++) {
-    if (Q_stricmp(menu->items[i]->window.name, name) == 0 || (menu->items[i]->window.group && Q_stricmp(menu->items[i]->window.group, name) == 0)) {
+    itemDef_t *item = menu->items[i];
+
+    if (!item) {
+      Com_Printf(S_COLOR_YELLOW "WARNING: Menu_GetMatchingItemByNumber found NULL item\n");
+      continue;
+    }
+
+    if ((item->window.name && Q_stricmp(item->window.name, name) == 0) ||
+        (item->window.group && Q_stricmp(item->window.group, name) == 0)) {
       if (count == index) {
-        return menu->items[i];
+        return item;
       }
       count++;
     } 

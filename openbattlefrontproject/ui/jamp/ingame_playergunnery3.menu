@@ -1,0 +1,1230 @@
+//[NewMenus]
+//-----------------------------------
+// Gunery Skills
+//-----------------------------------
+//
+// This menu works the same as the ingame_playergunnery3.menu.
+//
+
+{
+	menuDef 
+	{
+		name						"ingame_playergunnery3"
+		visible						1
+		fullscreen					0
+//		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
+		rect						120 45 570 400
+		focusColor			0.82 0.84 0.88 1
+		style						1
+		border						1
+		descX						320
+		descY					421
+		descScale					1
+		descColor			0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER		
+		onOpen  
+		{ 
+			uiScript setForce "none"
+		}
+		onClose 
+		{ 
+			uiScript setForce "none"
+		//	open			ingame_player 
+		}
+		onEsc
+		{
+			close ingame_playergunnery3 ;
+		}
+		
+//------------------------------------------------------------------------------------------------
+// Gunnery3
+//------------------------------------------------------------------------------------------------
+
+		// Gunnery3 Title
+		itemDef
+		{
+			name 				gunnery3title
+			style				WINDOW_STYLE_FILLED
+			text				"Choose your explosives"
+			rect			8 6 508 21
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			254
+			textaligny			-2
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
+			font				3
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+		}
+		
+		itemDef
+		{
+			name				descbackground
+			style				0
+			rect				5 390 520 20
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			visible				1
+		}
+		
+		// Force points remaining
+		itemDef 
+		{
+			name				siderank
+			group				"playersettingforcegroup"
+			style				WINDOW_STYLE_EMPTY	
+			text				@MENUS_POINTS_REMAINING
+			ownerdraw			UI_FORCE_POINTS
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+		
+		////////////////////////////////////////////////////////////////////////////////
+		// The Weapon Skills
+		////////////////////////////////////////////////////////////////////////////////
+		
+		// Force Ranks title	
+		
+		itemDef 
+		{
+			name				forceranktitle
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Grenades"
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}
+
+		
+		
+		// thermal title
+		itemDef 
+		{
+			name					setsk_thermal
+			group					gunpowers
+			style					0	
+			text					"Grenade:"
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_thermal_labelblink
+			group					gunpowers
+			style					0	
+			text					"Grenade:"
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// thermal assign
+		itemDef 
+		{
+			name					setsk_thermal
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_THERMALS
+			rect					80 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Grenade"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_thermal_blink
+				show			setsk_thermal_labelblink
+				setitemcolor		setsk_thermal	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_thermal_blink
+				hide			setsk_thermal_labelblink
+				setitemcolor		setsk_thermal	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_thermal_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_THERMALS
+			rect				80 90 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+			// thermalA title
+		itemDef 
+		{
+			name					setsk_thermalA
+			group					gunpowers
+			style					0	
+			text					"Thermal / Flame / Dioxis:"
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_thermalA_labelblink
+			group					gunpowers
+			style					0	
+			text					"Thermal / Flame / Dioxis:"
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+	
+		// thermalA assign
+		itemDef 
+		{
+			name					setsk_thermalA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_THERMALSA
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Merr Sonn Thermal Detonator / Czerka Flame Grenade / Baktoid Dioxis Grenade"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_thermalA_blink
+				show			setsk_thermalA_labelblink
+				setitemcolor		setsk_thermalA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_thermalA_blink
+				hide			setsk_thermalA_labelblink
+				setitemcolor		setsk_thermalA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_thermalA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_THERMALSA
+			rect				80 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+
+
+
+			// thermalB title
+		itemDef 
+		{
+			name					setsk_thermalB
+			group					gunpowers
+			style					0	
+			text					"Ion / Sonic / Flash:"
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_thermalB_labelblink
+			group					gunpowers
+			style					0	
+			text					"Ion / Sonic / Flash:"
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// thermalB assign
+		itemDef 
+		{
+			name					setsk_thermalB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_THERMALSB
+			rect					80 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Kirgo Ion Grenade / Geonosian Sonic Grenade / Stouker Flash Grenade"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_thermalB_blink
+				show			setsk_thermalB_labelblink
+				setitemcolor		setsk_thermalB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_thermalB_blink
+				hide			setsk_thermalB_labelblink
+				setitemcolor		setsk_thermalB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_thermalB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_THERMALSB
+			rect				80 120 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitleA
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Mines"
+			rect				430 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2A
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				380 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}		
+		// tripmine title
+		itemDef 
+		{
+			name					setsk_tripmine
+			group					gunpowers
+			style					0	
+			text					"Mine:"
+			rect					430 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_tripmine_labelblink
+			group					gunpowers
+			style					0	
+			text					"Mine:"
+			rect					430 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// tripmine assign
+		itemDef 
+		{
+			name					setsk_tripmine
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_TRIPMINE
+			rect					330 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Mine"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_tripmine_blink
+				show			setsk_tripmine_labelblink
+				setitemcolor		setsk_tripmine	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_tripmine_blink
+				hide			setsk_tripmine_labelblink
+				setitemcolor		setsk_tripmine	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_tripmine_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_TRIPMINE
+			rect				330 90 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+			// tripmineA title
+		itemDef 
+		{
+			name					setsk_tripmineA
+			group					gunpowers
+			style					0	
+			text					"Thermal / Flame / Dioxis:"
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_tripmineA_labelblink
+			group					gunpowers
+			style					0	
+			text					"Thermal / Flame / Dioxis:"
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+	
+		// tripmineA assign
+		itemDef 
+		{
+			name					setsk_tripmineA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_TRIPMINEA
+			rect					330 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Golan Arms Thermal Mine / Czerka Flame Mine / Baktoid Dioxis Mine"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_tripmineA_blink
+				show			setsk_tripmineA_labelblink
+				setitemcolor		setsk_tripmineA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_tripmineA_blink
+				hide			setsk_tripmineA_labelblink
+				setitemcolor		setsk_tripmineA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_tripmineA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_TRIPMINEA
+			rect				330 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+
+
+
+			// tripmineB title
+		itemDef 
+		{
+			name					setsk_tripmineB
+			group					gunpowers
+			style					0	
+			text					"Ion / Sonic / Flash:"
+			rect					430 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_tripmineB_labelblink
+			group					gunpowers
+			style					0	
+			text					"Ion / Sonic / Flash:"
+			rect					430 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// tripmineB assign
+		itemDef 
+		{
+			name					setsk_tripmineB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_TRIPMINEB
+			rect					330 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Kirgo Ion Mine / Geonosian Sonic Mine / Stouker Flash Mine"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_tripmineB_blink
+				show			setsk_tripmineB_labelblink
+				setitemcolor		setsk_tripmineB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_tripmineB_blink
+				hide			setsk_tripmineB_labelblink
+				setitemcolor		setsk_tripmineB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_tripmineB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_TRIPMINEB
+			rect				330 120 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+					
+		itemDef 
+		{
+			name				forceranktitleB
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Bombs"
+			rect				180 165 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2B
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 165 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}
+		// detpack title
+		itemDef 
+		{
+			name					setsk_detpack
+			group					gunpowers
+			style					0	
+			text					"Bomb:"
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_detpack_labelblink
+			group					gunpowers
+			style					0	
+			text					"Bomb:"
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// detpack assign
+		itemDef 
+		{
+			name					setsk_detpack
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_DETPACK
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+						forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Bomb"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_detpack_blink
+				show			setsk_detpack_labelblink
+				setitemcolor		setsk_detpack	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_detpack_blink
+				hide			setsk_detpack_labelblink
+				setitemcolor		setsk_detpack	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_detpack_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_DETPACK
+			rect				80 180 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+			
+			// detpackA title
+		itemDef 
+		{
+			name					setsk_detpackA
+			group					gunpowers
+			style					0	
+			text					"Thermal / Flame / Dioxis:"
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_detpackA_labelblink
+			group					gunpowers
+			style					0	
+			text					"Thermal / Flame / Dioxis:"
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+	
+		// detpackA assign
+		itemDef 
+		{
+			name					setsk_detpackA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_DETPACKA
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Merr Sonn Thermal Bomb / Czerka Flame Bomb / Baktoid Dioxis Bomb"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_detpackA_blink
+				show			setsk_detpackA_labelblink
+				setitemcolor		setsk_detpackA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_detpackA_blink
+				hide			setsk_detpackA_labelblink
+				setitemcolor		setsk_detpackA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_detpackA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_DETPACKA
+			rect				80 195 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+
+
+
+			// detpackB title
+		itemDef 
+		{
+			name					setsk_detpackB
+			group					gunpowers
+			style					0	
+			text					"Ion / Sonic / Flash:"
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_detpackB_labelblink
+			group					gunpowers
+			style					0	
+			text					"Ion / Sonic / Flash:"
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// detpackB assign
+		itemDef 
+		{
+			name					setsk_detpackB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_DETPACKB
+			rect					80 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Kirgo Ion Bomb / Geonosian Sonic Bomb / Stouker Flash Bomb"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_detpackB_blink
+				show			setsk_detpackB_labelblink
+				setitemcolor		setsk_detpackB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_detpackB_blink
+				hide			setsk_detpackB_labelblink
+				setitemcolor		setsk_detpackB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_detpackB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_DETPACKB
+			rect				80 210 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+
+		
+	}
+}
+//[/NewMenus]

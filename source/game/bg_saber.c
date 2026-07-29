@@ -1,4 +1,4 @@
-#include "q_shared.h"
+﻿#include "q_shared.h"
 #include "bg_public.h"
 #include "bg_local.h"
 #include "w_saber.h"
@@ -813,7 +813,7 @@ int saberMoveTransitionAngle[Q_NUM_QUADS][Q_NUM_QUADS] =
 };
 
 //[SaberSys]
-//racc - removing the attack chain (kata) stuff.  The OJP saber code now handles it.
+//racc - removing the attack chain (kata) stuff.  The OBP saber code now handles it.
 /*
 int PM_SaberAttackChainAngle( int move1, int move2 )
 {
@@ -3397,7 +3397,7 @@ qboolean PM_SaberThrowable( void )
 		}
 	}
 	//nope, can't throw it
-	return qtrue;
+	return qfalse;
 }
 //[/SaberSys]
 
@@ -4164,6 +4164,19 @@ void PM_WeaponLightsaber(void)
 		return;
 	}
 
+	//[OverheatSys]
+	// Stop new saber/melee attacks while fully overheated.  Existing recovery,
+	// parries and non-attack movement are left alone.
+	if ((pm->cmd.buttons & (BUTTON_ATTACK|BUTTON_ALT_ATTACK)) &&
+		pm->ps->stats[STAT_HEAT] >= HEAT_ATTACK_LOCKOUT)
+	{
+		PM_AddEvent( EV_NOAMMO );
+		pm->cmd.buttons &= ~(BUTTON_ATTACK|BUTTON_ALT_ATTACK);
+		pm->ps->weaponstate = WEAPON_READY;
+		return;
+	}
+	//[/OverheatSys]
+
 	/*
 
 	if (pm->ps->weaponstate == WEAPON_READY ||
@@ -4528,20 +4541,31 @@ weapChecks:
 			switch ( pm->ps->fd.saberAnimLevel )
 			{
 			case SS_FAST:
-			case SS_TAVION:
+				// SORESU: fast/light special choice.
 				PM_SetSaberMove( LS_A1_SPECIAL );
 				break;
+			case SS_TAVION:
+				// MAKASHI: 50% FAST/SORESU and 50% MEDIUM/SHII-CHO special flow.
+				PM_SetSaberMove( PM_irand_timesync( 0, 1 ) ? LS_A1_SPECIAL : LS_A2_SPECIAL );
+				break;
 			case SS_MEDIUM:
+				// SHII-CHO: balanced baseline special choice.
 				PM_SetSaberMove( LS_A2_SPECIAL );
 				break;
-			case SS_STRONG:
 			case SS_DESANN:
+				// JUYO: 50% MEDIUM/SHII-CHO and 50% STRONG/DJEM SO special flow.
+				PM_SetSaberMove( PM_irand_timesync( 0, 1 ) ? LS_A2_SPECIAL : LS_A3_SPECIAL );
+				break;
+			case SS_STRONG:
+				// DJEM SO: slow/heavy special choice.
 				PM_SetSaberMove( LS_A3_SPECIAL );
 				break;
 			case SS_DUAL:
+				// JAR_KAI: keep the dual-saber special and full dual-hit advantage.
 				PM_SetSaberMove( LS_DUAL_SPIN_PROTECT );//PM_CheckDualSpinProtect();
 				break;
 			case SS_STAFF:
+				// NIMAN: keep the staff special and full dual-hit advantage.
 				PM_SetSaberMove( LS_STAFF_SOULCAL );
 				break;
 			}
@@ -5138,16 +5162,13 @@ weapChecks:
 //Add Fatigue to a player
 void BG_AddFatigue( playerState_t * ps, int Fatigue)
 {
-	//For now, all saber attacks cost one FP.
-	if(ps->fd.forcePower > Fatigue)
-	{
-		ps->fd.forcePower -= Fatigue;
-	}
-	else
-	{//don't have enough so just completely drain FP then.
-		ps->fd.forcePower = 0;
-	}
-	
+	//[OverheatSys]
+	// Saber attack fatigue has been moved off Force and into the HEAT meter.
+	// Force is kept for actual Force powers; saber/weapon attack load is now
+	// represented by ps->stats[STAT_HEAT].
+	BG_AddHeat(ps, BG_HeatCostForSaberMove(ps, Fatigue));
+	//[/OverheatSys]
+
 	UpdateFatigueFlags(ps);
 }
 
@@ -5210,6 +5231,77 @@ void BG_SaberFatigue( playerState_t * ps, int newMove, int anim )
 //[SaberSys]
 void PM_SaberFakeFlagUpdate(playerState_t *ps, int newMove, int currentMove);
 //[/SaberSys]
+static int PM_SaberStyleAnimTimerScale( playerState_t *ps, int newMove )
+{
+	if ( !ps )
+	{
+		return 100;
+	}
+
+	if ( !BG_SaberInAttack( newMove ) && !PM_SaberInTransition( newMove ) )
+	{
+		return 100;
+	}
+
+	switch ( ps->fd.saberAnimLevel )
+	{
+	case SS_FAST:
+		return 88;   // SORESU: quick/light commitment; defense-oriented fast style.
+	case SS_TAVION:
+		return 94;   // MAKASHI: exact FAST/SORESU + MEDIUM/SHII-CHO hybrid timing.
+	case SS_MEDIUM:
+		return 100;  // SHII-CHO: balanced baseline.
+	case SS_DESANN:
+		return 108;  // JUYO: exact MEDIUM/SHII-CHO + STRONG/DJEM SO hybrid timing.
+	case SS_STRONG:
+		return 116;  // DJEM SO: slowest/heaviest standard attack commitment.
+	case SS_DUAL:
+		return 96;   // JAR_KAI: match NIMAN/staff timing while keeping full dual-hit pressure.
+	case SS_STAFF:
+		return 96;   // NIMAN: balanced staff flow; damage is not capped per blade.
+	default:
+		return 100;
+	}
+}
+
+static int PM_ScaleSaberTimer( int timer, int scale )
+{
+	if ( timer <= 0 || scale == 100 )
+	{
+		return timer;
+	}
+
+	timer = (timer * scale) / 100;
+	if ( timer < 1 )
+	{
+		timer = 1;
+	}
+
+	return timer;
+}
+
+static void PM_ApplySaberStyleAnimTiming( playerState_t *ps, int newMove, int parts )
+{
+	int scale = PM_SaberStyleAnimTimerScale( ps, newMove );
+
+	if ( !ps || scale == 100 )
+	{
+		return;
+	}
+
+	if ( parts != SETANIM_LEGS )
+	{
+		ps->torsoTimer = PM_ScaleSaberTimer( ps->torsoTimer, scale );
+	}
+
+	if ( parts != SETANIM_TORSO )
+	{
+		ps->legsTimer = PM_ScaleSaberTimer( ps->legsTimer, scale );
+	}
+
+	ps->weaponTime = PM_ScaleSaberTimer( ps->weaponTime, scale );
+}
+
 
 void PM_SetSaberMove(short newMove)
 {
@@ -5508,6 +5600,7 @@ void PM_SetSaberMove(short newMove)
 		}
 
 		PM_SetAnim(parts, anim, setflags, saberMoveData[newMove].blendTime);
+		PM_ApplySaberStyleAnimTiming( pm->ps, newMove, parts );
 		if (parts != SETANIM_LEGS &&
 			(pm->ps->legsAnim == BOTH_ARIAL_LEFT ||
 			pm->ps->legsAnim == BOTH_ARIAL_RIGHT))

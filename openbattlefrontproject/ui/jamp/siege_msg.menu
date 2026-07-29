@@ -1,0 +1,142 @@
+//-----------------------------------------------------------------
+// seige_msg.menu
+//
+// Popup menu that displays messages at the end of a siege game
+//
+//-----------------------------------------------------------------
+{
+\\ END OF GAME \\
+	menuDef 
+	{
+		name					"siege_popmenu"
+	   	visible					0
+	   	fullscreen				0
+	   	rect					158 80 320 320
+		focusColor			0.82 0.84 0.88 1
+		descX				320
+		descY					421
+		descScale			1
+		descColor				0.82 0.84 0.88 1
+		descAlignment			ITEM_ALIGN_CENTER
+
+	   	style					1
+	   	border					1
+		popup
+		onClose 
+		{ 
+		}
+		onOpen 
+		{ 
+		}
+		onESC 
+		{ 
+			close				siege_popmenu  
+			open				main 
+		}
+	
+		itemDef 
+		{
+			name				window
+			rect				10 15 300 320
+			style 				1
+			backcolor			.015 .015 .229 1
+			forecolor			0.82 0.84 0.88 1
+			border				1
+			bordercolor 0.38 0.41 0.46 1
+			bordersize			5
+			visible				1
+			decoration
+		}
+
+
+		itemDef 
+		{
+			name				siegeinfo
+			rect				0 50 320 20	
+			text				@MENUS_DATAPAD
+			textalign			1
+			textstyle			6
+			textscale			1
+			textalignx			160
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+		
+		itemDef 
+		{
+			name				siegeinfo
+			rect				60 80 200 270
+			type				ITEM_TYPE_TEXT
+			style				1
+			textstyle			3
+			autowrapped
+			cvar				"cg_siegeMessage"
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			100
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+//	BUTTON	//
+		itemDef 
+		{
+			name				button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				138 295 45 26
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef
+		{
+			name				exit_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				138 295 45 26
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				exit
+			group				grpControlbutton
+			text				@MENUS_OKAY
+			descText			@MENUS_OKAY_DESC
+			type				1
+			textscale			1
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				138 295 45 26
+			textalign			1
+			textalignx 			22
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			siege_popmenu  
+			}
+			mouseEnter 
+			{  
+				show			exit_glow 
+			}
+			mouseExit 
+			{ 
+				hide			exit_glow 
+			}	  	  
+		}
+	}
+}
+
+
+

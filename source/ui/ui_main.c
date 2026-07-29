@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 /*
 =======================================================================
@@ -51,7 +51,7 @@ uiRank_t uiRank[NUM_TOTAL_SKILLS] =
 	{3,UI_FORCE_RANK_BACTA,NUM_FORCE_POWERS+SK_BACTA,0,qfalse,0},
 	{3,UI_FORCE_RANK_FLAMETHROWER,NUM_FORCE_POWERS+SK_FLAMETHROWER,0,qfalse,0},
 	{3,UI_FORCE_RANK_BOWCASTER,NUM_FORCE_POWERS+SK_BOWCASTER,0,qfalse,0},
-	{1,UI_FORCE_RANK_FORCEFIELD,NUM_FORCE_POWERS+SK_FORCEFIELD,0,qfalse,0},
+	{3,UI_FORCE_RANK_FORCEFIELD,NUM_FORCE_POWERS+SK_FORCEFIELD,0,qfalse,0},
 	{3,UI_FORCE_RANK_CLOAK,NUM_FORCE_POWERS+SK_CLOAK,0,qfalse,0},
 	{3,UI_FORCE_RANK_SEEKER,NUM_FORCE_POWERS+SK_SEEKER,0,qfalse,0},
 	{3,UI_FORCE_RANK_SENTRY,NUM_FORCE_POWERS+SK_SENTRY,0,qfalse,0},
@@ -70,7 +70,7 @@ uiRank_t uiRank[NUM_TOTAL_SKILLS] =
 	{3,UI_FORCE_RANK_CONCUSSION,NUM_FORCE_POWERS+SK_CONCUSSION,0,qfalse,0},
 	{3,UI_FORCE_RANK_OLD,NUM_FORCE_POWERS+SK_OLD,0,qfalse,0},
 	{3,UI_FORCE_RANK_EWEB,NUM_FORCE_POWERS+SK_EWEB,0,qfalse,0},
-	{1,UI_FORCE_RANK_BINOCULARS,NUM_FORCE_POWERS+SK_BINOCULARS,0,qfalse,0},
+	{3,UI_FORCE_RANK_BINOCULARS,NUM_FORCE_POWERS+SK_BINOCULARS,0,qfalse,0},
 	{3,UI_FORCE_RANK_WRIST,NUM_FORCE_POWERS+SK_WRIST,0,qfalse,0},
 	{3,UI_FORCE_RANK_HEALTH,NUM_FORCE_POWERS+SK_HEALTH,0,qfalse,0},
 	{3,UI_FORCE_RANK_SHIELDS,NUM_FORCE_POWERS+SK_SHIELDS,0,qfalse,0},
@@ -82,7 +82,7 @@ uiRank_t uiRank[NUM_TOTAL_SKILLS] =
 	{3,UI_FORCE_RANK_SQUADTEAMA,NUM_FORCE_POWERS+SK_SQUADTEAMA,0,qfalse,0},
 	{3,UI_FORCE_RANK_SQUADTEAMB,NUM_FORCE_POWERS+SK_SQUADTEAMB,0,qfalse,0},
 	{3,UI_FORCE_RANK_SQUADTEAMC,NUM_FORCE_POWERS+SK_SQUADTEAMC,0,qfalse,0},
-	{1,UI_FORCE_RANK_VEHICLEMOUNT,NUM_FORCE_POWERS+SK_VEHICLEMOUNT,0,qfalse,0},
+	{3,UI_FORCE_RANK_VEHICLEMOUNT,NUM_FORCE_POWERS+SK_VEHICLEMOUNT,0,qfalse,0},
 	{3,UI_FORCE_RANK_LIGHTVEHICLEA,NUM_FORCE_POWERS+SK_LIGHTVEHICLEA,0,qfalse,0},
 	{3,UI_FORCE_RANK_MEDIUMVEHICLEA,NUM_FORCE_POWERS+SK_MEDIUMVEHICLEA,0,qfalse,0},
 	{3,UI_FORCE_RANK_HEAVYVEHICLEA,NUM_FORCE_POWERS+SK_HEAVYVEHICLEA,0,qfalse,0},
@@ -411,7 +411,7 @@ Q_EXPORT intptr_t vmMain( int command, int arg0, intptr_t arg1, intptr_t arg2, i
 	  case UI_INIT:
 		   
 		  //trap_Cvar_VariableStringBuffer("fs_basepath",buffer,sizeof(buffer));
-		  //system(va("%s\\ojpenhanced\\update.exe",buffer));//[AutoUpdate]
+		  //system(va("%s\\openbattlefrontproject\\update.exe",buffer));//[AutoUpdate]
 		  _UI_Init(arg0);
 		  return 0;
 
@@ -817,11 +817,53 @@ int ProcessNewUI( int command, int arg0, int arg1, int arg2, int arg3, int arg4,
 int	uiSkinColor=TEAM_FREE;
 int	uiHoldSkinColor=TEAM_FREE;	// Stores the skin color so that in non-team games, the player screen remembers the team you chose, in case you're coming back from the force powers screen.
 
+#define OBP_SKIN_FACTION_TOR	0
+#define OBP_SKIN_FACTION_TSE	1
+#define OBP_SKIN_FACTION_CIV	2
+#define OBP_SKIN_FACTION_REP	3
+#define OBP_SKIN_FACTION_CIS	4
+#define OBP_SKIN_FACTION_MAN	5
+#define OBP_SKIN_FACTION_REB	6
+#define OBP_SKIN_FACTION_EMP	7
+#define OBP_SKIN_FACTION_BH		8
+#define OBP_SKIN_FACTION_RES	9
+#define OBP_SKIN_FACTION_FO		10
+#define OBP_SKIN_FACTION_PIR	11
+#define OBP_SKIN_FACTION_ALL	12
+#define OBP_SKIN_FACTION_MAX	13
+
+typedef struct obpSkinFaction_s
+{
+	const char *tag;
+	const char *displayName;
+} obpSkinFaction_t;
+
+static const obpSkinFaction_t obpSkinFactions[OBP_SKIN_FACTION_MAX] =
+{
+	{ "TOR", "Old Republic"      },
+	{ "TSE", "Sith Empire"       },
+	{ "MAN", "Mandalorians"      },
+	{ "REP", "Republic"          },
+	{ "CIS", "Confederacy"       },
+	{ "BH",  "Bounty Hunters"    },
+	{ "REB", "Rebellion"         },
+	{ "EMP", "Empire"            },
+	{ "PIR", "Pirates"           },
+	{ "RES", "Resistance"        },
+	{ "FO",  "First Order"       },
+	{ "CIV", "Civilians"         },
+	{ "ALL", "ALL"               }
+};
+
+static int uiSkinFaction = OBP_SKIN_FACTION_TOR;
+static unsigned int uiQ3HeadFactionBits[MAX_Q3PLAYERMODELS];
+static qboolean uiSkinFactionAvailable[OBP_SKIN_FACTION_MAX];
+
 static const serverFilter_t serverFilters[] = {
 	//[SERVERFILTERS]
-	//since OJP Enhanced only works with OJP Enhanced servers, only show them.
+	//since Open Battlefront Project only works with Open Battlefront Project servers, only show them.
 	{"MENUS_ALL", "" },
-	{"OJP_MENUS_OJP_ENHANCED", "ojpenhanced"},
+	{"OBP_MENUS_OPENBATTLEFRONTPROJECT", "openbattlefrontproject"},
 	//{"MENUS_ALL", "" },
 	//{"MENUS_JEDI_ACADEMY", "" },
 	//[/SERVERFILTERS]
@@ -1012,11 +1054,15 @@ int MenuFontToHandle(int iMenuFont)
 	return uiInfo.uiDC.Assets.qhMediumFont;	// 0;
 }
 
+#define UI_TEXT_COLOR_BUFFER_SIZE 4096
+
 int Text_Width(const char *text, float scale, int iMenuFont) 
 {	
 	int iFontIndex = MenuFontToHandle(iMenuFont);
+	char cleanText[UI_TEXT_COLOR_BUFFER_SIZE];
 
-	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	Q_StripColorStrings( text, cleanText, sizeof( cleanText ) );
+	return trap_R_Font_StrLenPixels(cleanText, iFontIndex, scale);
 }
 
 int Text_Height(const char *text, float scale, int iMenuFont) 
@@ -1029,8 +1075,18 @@ int Text_Height(const char *text, float scale, int iMenuFont)
 void Text_Paint(float x, float y, float scale, vec4_t color, const char *text, float adjust, int limit, int style, int iMenuFont)
 {
 	int iStyleOR = 0;
-
 	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int remainingChars = limit ? limit : -1;
+	const char *segmentStart;
+	const char *scan;
+	float drawX = x;
+	vec4_t currentColor;
+	char segment[UI_TEXT_COLOR_BUFFER_SIZE];
+
+	if ( !text ) {
+		return;
+	}
+
 	//
 	// kludge.. convert JK2 menu styles to SOF2 printstring ctrl codes...
 	//	
@@ -1045,14 +1101,55 @@ void Text_Paint(float x, float y, float scale, vec4_t color, const char *text, f
 	case  ITEM_TEXTSTYLE_SHADOWEDMORE:		iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow
 	}
 
-	trap_R_Font_DrawString(	x,		// int ox
-							y,		// int oy
-							text,	// const char *text
-							color,	// paletteRGBA_c c
-							iStyleOR | iFontIndex,	// const int iFontHandle
-							!limit?-1:limit,		// iCharLimit (-1 = none)
-							scale	// const float scale = 1.0f
-							);
+	memcpy( currentColor, color, sizeof( currentColor ) );
+	segmentStart = text;
+	scan = text;
+
+	while ( 1 ) {
+		int colorLength = *scan ? Q_ColorStringLength( scan ) : 0;
+
+		if ( !*scan || colorLength ) {
+			int segmentLength = (int)( scan - segmentStart );
+
+			if ( segmentLength > 0 && remainingChars != 0 ) {
+				int segmentChars;
+				int drawLimit;
+
+				if ( segmentLength >= (int)sizeof( segment ) ) {
+					segmentLength = sizeof( segment ) - 1;
+				}
+
+				memcpy( segment, segmentStart, segmentLength );
+				segment[segmentLength] = '\0';
+				segmentChars = trap_R_Font_StrLenChars( segment );
+				drawLimit = remainingChars < 0 ? -1 : remainingChars;
+
+				trap_R_Font_DrawString( (int)drawX, (int)y, segment, currentColor,
+					iStyleOR | iFontIndex, drawLimit, scale );
+
+				if ( remainingChars >= 0 ) {
+					if ( segmentChars >= remainingChars ) {
+						break;
+					}
+					remainingChars -= segmentChars;
+				}
+
+				drawX += trap_R_Font_StrLenPixels( segment, iFontIndex, scale );
+			}
+
+			if ( !*scan || remainingChars == 0 ) {
+				break;
+			}
+
+			Q_ColorStringColor( scan, currentColor );
+			currentColor[3] = color[3];
+			scan += colorLength;
+			segmentStart = scan;
+			continue;
+		}
+
+		scan++;
+	}
 }
 
 
@@ -1072,8 +1169,7 @@ void Text_PaintWithCursor(float x, float y, float scale, vec4_t color, const cha
 		sTemp[iCopyCount] = '\0';  // Null-terminate string
 
 		{
-			int iFontIndex = MenuFontToHandle(iMenuFont);
-			int iNextXpos = trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale);
+			int iNextXpos = Text_Width(sTemp, scale, iMenuFont);
 
 			Text_Paint(x + iNextXpos, y, scale, color, va("%c", cursor), 0, limit, style | ITEM_TEXTSTYLE_BLINK, iMenuFont);
 		}
@@ -1087,10 +1183,9 @@ static void Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t 
 {
 	// this is kinda dirty, but...
 	//
-	int iFontIndex = MenuFontToHandle(iMenuFont);
 	
 	//float fMax = *maxX;
-	int iPixelLen = trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	int iPixelLen = Text_Width(text, scale, iMenuFont);
 	if (x + iPixelLen > *maxX)
 	{
 		// whole text won't fit, so we need to print just the amount that does...
@@ -1102,12 +1197,23 @@ static void Text_Paint_Limit(float *maxX, float x, float y, float scale, vec4_t 
 		char *psOutLastGood = psOut;
 		unsigned int uiLetter;
 
-		while (*psText && (x + trap_R_Font_StrLenPixels(sTemp, iFontIndex, scale)<=*maxX) 
+		while (*psText && (x + Text_Width(sTemp, scale, iMenuFont)<=*maxX) 
 			   && psOut < &sTemp[sizeof(sTemp)-1]	// sanity
 				)
 		{
 			int iAdvanceCount;
+			int colorLength = Q_ColorStringLength( psText );
 			psOutLastGood = psOut;
+
+			if ( colorLength ) {
+				if ( psOut + colorLength >= &sTemp[sizeof(sTemp)] ) {
+					break;
+				}
+				memcpy( psOut, psText, colorLength );
+				psOut += colorLength;
+				psText += colorLength;
+				continue;
+			}
 			
 			uiLetter = trap_AnyLanguage_ReadCharFromString(psText, &iAdvanceCount, NULL);
 			psText += iAdvanceCount;
@@ -1884,11 +1990,11 @@ static const char* UI_GetGameTypeName(int gtEnum)
 	case GT_JEDIMASTER:
 		//[OLDGAMETYPES]
 		//return UI_GetStringEdString("MENUS", "SAGA");//"Jedi Master";??
-		return UI_GetStringEdString("OJP_MENUS", "JEDIMASTER");//"Jedi Master";??
+		return UI_GetStringEdString("OBP_MENUS", "JEDIMASTER");//"Jedi Master";??
 		//[/OLDGAMETYPES]
 	case GT_SINGLE_PLAYER:
 		//[CoOp]
-		return UI_GetStringEdString("OJP_MENUS", "COOP");
+		return UI_GetStringEdString("OBP_MENUS", "COOP");
 		//return UI_GetStringEdString("MENUS", "SAGA");//"Team FFA";
 		//[/CoOp]
 	case GT_DUEL:
@@ -2167,27 +2273,177 @@ static void UI_DrawForceMastery(rectDef_t *rect, float scale, vec4_t color, int 
 }
 
 
-static void UI_DrawSkinColor(rectDef_t *rect, float scale, vec4_t color, int textStyle, int val, int min, int max, int iMenuFont)
-{
-	char s[256];
+static const char *UI_SelectedTeamHead(int index, int *actual);
 
-	switch(val)
+static const char *UI_SkinFactionDisplayName(int faction)
+{
+	if (faction < 0 || faction >= OBP_SKIN_FACTION_MAX)
 	{
-	case TEAM_RED:
-		trap_SP_GetStringTextString("MENUS_TEAM_RED", s, sizeof(s));
-//		Com_sprintf(s, sizeof(s), "Red\0");
-		break;
-	case TEAM_BLUE:
-		trap_SP_GetStringTextString("MENUS_TEAM_BLUE", s, sizeof(s));
-//		Com_sprintf(s, sizeof(s), "Blue\0");
-		break;
-	default:
-		trap_SP_GetStringTextString("MENUS_DEFAULT", s, sizeof(s));
-//		Com_sprintf(s, sizeof(s), "Default\0");
-		break;
+		faction = OBP_SKIN_FACTION_ALL;
 	}
 
-	Text_Paint(rect->x, rect->y, scale, color, s, 0, 0, textStyle, iMenuFont);
+	return obpSkinFactions[faction].displayName;
+}
+
+static qboolean UI_SkinFactionAnyFactionAvailable(void)
+{
+	int i;
+
+	for (i = 0; i < OBP_SKIN_FACTION_ALL; i++)
+	{
+		if (uiSkinFactionAvailable[i])
+		{
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
+static qboolean UI_Q3HeadMatchesSkinFaction(int index, int faction)
+{
+	if (index < 0 || index >= uiInfo.q3HeadCount)
+	{
+		return qfalse;
+	}
+
+	if (faction == OBP_SKIN_FACTION_ALL)
+	{
+		/* ALL is the union of all non-empty faction lists.  If no faction list
+		 * has loaded yet, fall back to showing every discovered skin instead of
+		 * leaving the model menu empty/broken.
+		 */
+		if (!UI_SkinFactionAnyFactionAvailable())
+		{
+			return qtrue;
+		}
+
+		return (uiQ3HeadFactionBits[index] != 0);
+	}
+
+	if (faction < 0 || faction >= OBP_SKIN_FACTION_ALL)
+	{
+		return qfalse;
+	}
+
+	return ((uiQ3HeadFactionBits[index] & (1u << faction)) != 0);
+}
+
+static qboolean UI_SkinFactionHasSkins(int faction)
+{
+	if (faction == OBP_SKIN_FACTION_ALL)
+	{
+		return UI_SkinFactionAnyFactionAvailable();
+	}
+
+	if (faction < 0 || faction >= OBP_SKIN_FACTION_ALL)
+	{
+		return qfalse;
+	}
+
+	return uiSkinFactionAvailable[faction];
+}
+
+static void UI_EnsureValidSkinFaction(void)
+{
+	int i;
+
+	if (UI_SkinFactionHasSkins(uiSkinFaction))
+	{
+		return;
+	}
+
+	for (i = 0; i < OBP_SKIN_FACTION_MAX; i++)
+	{
+		if (UI_SkinFactionHasSkins(i))
+		{
+			uiSkinFaction = i;
+			return;
+		}
+	}
+
+	uiSkinFaction = OBP_SKIN_FACTION_ALL;
+}
+
+static int UI_GetSkinFactionVisibleIndexForActualHead(int actual)
+{
+	int i;
+	int c = 0;
+
+	if (actual < 0 || actual >= uiInfo.q3HeadCount)
+	{
+		return -1;
+	}
+
+	for (i = 0; i < uiInfo.q3HeadCount; i++)
+	{
+		if (UI_Q3HeadMatchesSkinFaction(i, uiSkinFaction))
+		{
+			if (i == actual)
+			{
+				return c;
+			}
+			c++;
+		}
+	}
+
+	return -1;
+}
+
+static qboolean UI_SkinFaction_HandleKey(int flags, float *special, int key, int type)
+{
+	if (key == A_MOUSE1 || key == A_MOUSE2 || key == A_ENTER || key == A_KP_ENTER)
+	{
+		int i;
+		int oldActual = -1;
+		int newVisible;
+		int step = (key == A_MOUSE2) ? -1 : 1;
+
+		UI_SelectedTeamHead(uiInfo.q3SelectedHead, &oldActual);
+
+		for (i = 0; i < OBP_SKIN_FACTION_MAX; i++)
+		{
+			uiSkinFaction += step;
+
+			if (uiSkinFaction < 0)
+			{
+				uiSkinFaction = OBP_SKIN_FACTION_MAX - 1;
+			}
+			else if (uiSkinFaction >= OBP_SKIN_FACTION_MAX)
+			{
+				uiSkinFaction = 0;
+			}
+
+			if (UI_SkinFactionHasSkins(uiSkinFaction))
+			{
+				break;
+			}
+		}
+
+		if (!UI_SkinFactionHasSkins(uiSkinFaction))
+		{
+			uiSkinFaction = OBP_SKIN_FACTION_ALL;
+		}
+
+		newVisible = UI_GetSkinFactionVisibleIndexForActualHead(oldActual);
+		if (newVisible < 0)
+		{
+			newVisible = 0;
+		}
+
+		uiInfo.q3SelectedHead = newVisible;
+		trap_Cvar_Set("ui_selectedModelIndex", va("%i", newVisible));
+		UI_FeederSelection(FEEDER_Q3HEADS, uiInfo.q3SelectedHead, NULL);
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void UI_DrawSkinColor(rectDef_t *rect, float scale, vec4_t color, int textStyle, int val, int min, int max, int iMenuFont)
+{
+	UI_EnsureValidSkinFaction();
+	Text_Paint(rect->x, rect->y, scale, color, UI_SkinFactionDisplayName(uiSkinFaction), 0, 0, textStyle, iMenuFont);
 }
 
 static void UI_DrawForceSide(rectDef_t *rect, float scale, vec4_t color, int textStyle, int val, int min, int max, int iMenuFont)
@@ -2282,6 +2538,7 @@ static void UI_DrawForceSide(rectDef_t *rect, float scale, vec4_t color, int tex
 			Menu_ShowItemByName(menu2, "darkpowers_team", qtrue);//(ui_gameType.integer >= GT_TEAM));
 		}
 	}
+
 
 	Text_Paint(rect->x, rect->y, scale, color, s,0, 0, textStyle, iMenuFont);
 }
@@ -2729,55 +2986,21 @@ void UpdateForceStatus()
 		*/
 		//[/ExpSys]
 
-		// The leftmost button should be "apply" unless you are in spectator, where you can join any team.
-		if ((int)(trap_Cvar_VariableValue("ui_myteam")) != TEAM_SPECTATOR)
+		/*
+		 * In-game Profile lower buttons are controlled by gametype, not by
+		 * whether the player is already spawned.  A live player must still see
+		 * Join Game in every non-Siege gametype; Siege remains class-based and
+		 * uses its own class join menu instead of the generic Join Game button.
+		 */
 		{
-			Menu_ShowItemByName(menu, "playerapply", qtrue);
-			Menu_ShowItemByName(menu, "playerforcejoin", qfalse);
-			Menu_ShowItemByName(menu, "playerforcered", qtrue);
-			Menu_ShowItemByName(menu, "playerforceblue", qtrue);
-			Menu_ShowItemByName(menu, "playerforcespectate", qtrue);
-		}
-		else
-		{
-			// Set or reset buttons based on choices
-			if (atoi(Info_ValueForKey(info, "g_gametype")) >= GT_TEAM)
-			{	// This is a team-based game.
-				Menu_ShowItemByName(menu, "playerforcespectate", qtrue);
-				
-				// This is disabled, always show both sides from spectator.
-				if ( atoi(Info_ValueForKey(info, "g_forceBasedTeams")))
-				{	// Show red or blue based on what side is chosen.
-					if (uiForceSide==FORCE_LIGHTSIDE)
-					{
-						Menu_ShowItemByName(menu, "playerforcered", qfalse);
-						Menu_ShowItemByName(menu, "playerforceblue", qtrue);
-					}
-					else if (uiForceSide==FORCE_DARKSIDE)
-					{
-						Menu_ShowItemByName(menu, "playerforcered", qtrue);
-						Menu_ShowItemByName(menu, "playerforceblue", qfalse);
-					}
-					else
-					{
-						Menu_ShowItemByName(menu, "playerforcered", qtrue);
-						Menu_ShowItemByName(menu, "playerforceblue", qtrue);
-					}
-				}
-				else
-				{
-					Menu_ShowItemByName(menu, "playerforcered", qtrue);
-					Menu_ShowItemByName(menu, "playerforceblue", qtrue);
-				}
-			}
-			else
-			{
-				Menu_ShowItemByName(menu, "playerforcered", qfalse);
-				Menu_ShowItemByName(menu, "playerforceblue", qfalse);
-			}
+			const int gametype = atoi(Info_ValueForKey(info, "g_gametype"));
+			const qboolean showTeamButtons =
+				(gametype == GT_TEAM || gametype == GT_CTF || gametype == GT_CTY);
 
 			Menu_ShowItemByName(menu, "playerapply", qfalse);
-			Menu_ShowItemByName(menu, "playerforcejoin", qtrue);
+			Menu_ShowItemByName(menu, "playerforcejoin", (gametype != GT_SIEGE));
+			Menu_ShowItemByName(menu, "playerforcered", showTeamButtons);
+			Menu_ShowItemByName(menu, "playerforceblue", showTeamButtons);
 			Menu_ShowItemByName(menu, "playerforcespectate", qtrue);
 		}
 	}
@@ -3174,21 +3397,8 @@ static int UI_OwnerDrawWidth(int ownerDraw, float scale) {
 				s = handicapValues[i];
       break;
     case UI_SKIN_COLOR:
-		switch(uiSkinColor)
-		{
-		case TEAM_RED:
-//			s = "Red";
-			s = (char *)UI_GetStringEdString("MENUS", "TEAM_RED");
-			break;
-		case TEAM_BLUE:
-//			s = "Blue";
-			s = (char *)UI_GetStringEdString("MENUS", "TEAM_BLUE");
-			break;
-		default:
-//			s = "Default";
-			s = (char *)UI_GetStringEdString("MENUS", "DEFAULT");
-			break;
-		}
+		UI_EnsureValidSkinFaction();
+		s = UI_SkinFactionDisplayName(uiSkinFaction);
 		break;
     case UI_FORCE_SIDE:
 		i = uiForceSide;
@@ -3411,7 +3621,7 @@ static void UI_DrawRedBlue(rectDef_t *rect, float scale, vec4_t color, int textS
 	//[CoOp]
 	if (trap_Cvar_VariableValue( "g_gametype" ) == GT_SINGLE_PLAYER)
 	{//print different team names for CoOp
-		Text_Paint(rect->x, rect->y, scale, color, (uiInfo.redBlue == 0) ? UI_GetStringEdString("OJP_MENUS","ENEMYTEAM") : UI_GetStringEdString("OJP_MENUS","PLAYERTEAM"), 0, 0, textStyle,iMenuFont);
+		Text_Paint(rect->x, rect->y, scale, color, (uiInfo.redBlue == 0) ? UI_GetStringEdString("OBP_MENUS","ENEMYTEAM") : UI_GetStringEdString("OBP_MENUS","PLAYERTEAM"), 0, 0, textStyle,iMenuFont);
 	}
 	else
 	{
@@ -4910,7 +5120,7 @@ static qboolean UI_OwnerDrawHandleKey(int ownerDraw, int flags, float *special, 
       return UI_Handicap_HandleKey(flags, special, key);
       break;
     case UI_SKIN_COLOR:
-      return UI_SkinColor_HandleKey(flags, special, key, uiSkinColor, TEAM_FREE, TEAM_BLUE, ownerDraw);
+      return UI_SkinFaction_HandleKey(flags, special, key, ownerDraw);
       break;
     case UI_FORCE_SIDE:
       return UI_ForceSide_HandleKey(flags, special, key, uiForceSide, 1, 2, ownerDraw);
@@ -8061,30 +8271,18 @@ UI_HeadCountByColor
 */
 static int UI_HeadCountByColor() {
 	int i, c;
-	char *teamname;
 
+	UI_EnsureValidSkinFaction();
 	c = 0;
 
-	switch(uiSkinColor)
+	for (i = 0; i < uiInfo.q3HeadCount; i++)
 	{
-		case TEAM_BLUE:
-			teamname = "/blue";
-			break;
-		case TEAM_RED:
-			teamname = "/red";
-			break;
-		default:
-			teamname = "/default";
-	}
-
-	// Count each head with this color
-	for (i=0; i<uiInfo.q3HeadCount; i++)
-	{
-		if (uiInfo.q3HeadNames[i] && strstr(uiInfo.q3HeadNames[i], teamname))
+		if (UI_Q3HeadMatchesSkinFaction(i, uiSkinFaction))
 		{
 			c++;
 		}
 	}
+
 	return c;
 }
 
@@ -8257,7 +8455,7 @@ static void UI_BuildServerDisplayList(qboolean force) {
 			}
 			
 			//[SERVERFILTERS]
-			// removed the ui_serverFilterType check to allow our first filter to be for OJP servers.
+			// removed the ui_serverFilterType check to allow our first filter to be for OBP servers.
 			if (Q_stricmp(Info_ValueForKey(info, "game"), serverFilters[ui_serverFilterType.integer].basedir) != 0) {
 				trap_LAN_MarkServerVisible(ui_netSource.integer, i, qfalse);
 				continue;
@@ -8818,20 +9016,41 @@ void UI_SetSiegeTeams(void)
     trap_FS_FCloseFile(f);
 
     if (BG_SiegeGetValueGroup(siege_info, "Teams", teams)) {
+        char defaultTeam1[1024];
+        char defaultTeam2[1024];
+
+        defaultTeam1[0] = '\0';
+        defaultTeam2[0] = '\0';
+        BG_SiegeGetPairedValue(teams, "team1", defaultTeam1);
+        BG_SiegeGetPairedValue(teams, "team2", defaultTeam2);
+
         siege_Cvar_VariableStringBuffer("cg_siegeTeam1", buf, 1024);
         if (buf[0] && Q_stricmp(buf, "none")) {
-            Q_strncpyz( team1, buf, sizeof( team1 ) );
+            Q_strncpyz(team1, buf, 1024);
         }
         else {
-            BG_SiegeGetPairedValue(teams, "team1", team1);
+            Q_strncpyz(team1, defaultTeam1, 1024);
+        }
+
+        /* OBP: cg_siegeTeam1 can persist from a previous Siege map. If the
+         * chosen block is not present in this map's .siege file, fall back to
+         * the map-defined default instead of leaving team1Theme NULL. This is
+         * especially important for generated .siege files with different team
+         * block names. */
+        if (!BG_SiegeGetValueGroup(siege_info, team1, teamInfo) && defaultTeam1[0]) {
+            Q_strncpyz(team1, defaultTeam1, 1024);
         }
 
         siege_Cvar_VariableStringBuffer("cg_siegeTeam2", buf, 1024);
         if (buf[0] && Q_stricmp(buf, "none")) {
-            Q_strncpyz( team2, buf, sizeof( team2 ) );
+            Q_strncpyz(team2, buf, 1024);
         }
         else {
-            BG_SiegeGetPairedValue(teams, "team2", team2);
+            Q_strncpyz(team2, defaultTeam2, 1024);
+        }
+
+        if (!BG_SiegeGetValueGroup(siege_info, team2, teamInfo) && defaultTeam2[0]) {
+            Q_strncpyz(team2, defaultTeam2, 1024);
         }
     }
     else {
@@ -8852,8 +9071,8 @@ void UI_SetSiegeTeams(void)
     siegeTeam1 = BG_SiegeFindThemeForTeam(SIEGETEAM_TEAM1);
     siegeTeam2 = BG_SiegeFindThemeForTeam(SIEGETEAM_TEAM2);
 
-    if (!siegeTeam1 || !siegeTeam1->classes[0]) {
-        Com_Error(ERR_DROP, "Error loading teams in UI");
+    if (!siegeTeam1 || !siegeTeam1->classes[0] || !siegeTeam2 || !siegeTeam2->classes[0]) {
+        Com_Error(ERR_DROP, "Error loading teams in UI for map '%s': team1 block '%s', team2 block '%s'", mapname, team1, team2);
     }
 
     Menu_SetFeederSelection(NULL, FEEDER_SIEGE_TEAM1, 0, NULL);
@@ -9128,39 +9347,25 @@ UI_HeadCountByColor
 ==================
 */
 static const char *UI_SelectedTeamHead(int index, int *actual) {
-	char *teamname;
-	int i,c=0;
+	int i, c = 0;
 
-	switch(uiSkinColor)
+	UI_EnsureValidSkinFaction();
+	*actual = -1;
+
+	for (i = 0; i < uiInfo.q3HeadCount; i++)
 	{
-		case TEAM_BLUE:
-			teamname = "/blue";
-			break;
-		case TEAM_RED:
-			teamname = "/red";
-			break;
-		default:
-			teamname = "/default";
-			break;
-	}
-
-	// Count each head with this color
-
-	for (i=0; i<uiInfo.q3HeadCount; i++)
-	{
-		if (uiInfo.q3HeadNames[i] && strstr(uiInfo.q3HeadNames[i], teamname))
+		if (UI_Q3HeadMatchesSkinFaction(i, uiSkinFaction))
 		{
-			if (c==index)
+			if (c == index)
 			{
 				*actual = i;
 				return uiInfo.q3HeadNames[i];
 			}
-			else
-			{
-				c++;
-			}
+			c++;
 		}
 	}
+
+	*actual = -1;
 	return "";
 }
 
@@ -10715,6 +10920,90 @@ static qboolean bIsImageFile(const char* dirptr, const char* skinname)
 }
 
 
+static void UI_AddSkinToFaction(const char *skin, int faction)
+{
+	int i;
+
+	if (!skin || !skin[0] || faction < 0 || faction >= OBP_SKIN_FACTION_ALL)
+	{
+		return;
+	}
+
+	for (i = 0; i < uiInfo.q3HeadCount; i++)
+	{
+		if (!Q_stricmp(uiInfo.q3HeadNames[i], skin))
+		{
+			uiQ3HeadFactionBits[i] |= (1u << faction);
+			uiSkinFactionAvailable[faction] = qtrue;
+			return;
+		}
+	}
+}
+
+static void UI_LoadSkinFactionFile(int faction)
+{
+	fileHandle_t f;
+	int len;
+	char path[MAX_QPATH];
+	char *buffer;
+	const char *token;
+	const char *p;
+
+	if (faction < 0 || faction >= OBP_SKIN_FACTION_ALL)
+	{
+		return;
+	}
+
+	Com_sprintf(path, sizeof(path), "models/factionskins/%s.txt", obpSkinFactions[faction].tag);
+	len = trap_FS_FOpenFile(path, &f, FS_READ);
+	if (!f || len <= 0)
+	{
+		return;
+	}
+
+	UI_AllocMem((void **)&buffer, len + 1);
+	if (!buffer)
+	{
+		trap_FS_FCloseFile(f);
+		return;
+	}
+
+	trap_FS_Read(buffer, len, f);
+	trap_FS_FCloseFile(f);
+	buffer[len] = '\0';
+
+	p = buffer;
+	COM_BeginParseSession(path);
+	while (p)
+	{
+		token = COM_ParseExt(&p, qtrue);
+		if (!token || !token[0])
+		{
+			break;
+		}
+
+		UI_AddSkinToFaction(token, faction);
+	}
+
+	UI_FreeMem(buffer);
+}
+
+static void UI_BuildSkinFactionTable(void)
+{
+	int i;
+
+	memset(uiQ3HeadFactionBits, 0, sizeof(uiQ3HeadFactionBits));
+	memset(uiSkinFactionAvailable, 0, sizeof(uiSkinFactionAvailable));
+
+	for (i = 0; i < OBP_SKIN_FACTION_ALL; i++)
+	{
+		UI_LoadSkinFactionFile(i);
+	}
+
+	uiSkinFactionAvailable[OBP_SKIN_FACTION_ALL] = UI_SkinFactionHasSkins(OBP_SKIN_FACTION_ALL);
+	UI_EnsureValidSkinFaction();
+}
+
 /*
 =================
 PlayerModel_BuildList
@@ -10826,12 +11115,15 @@ if (!dirlist || !filelist) {
 
             if (uiInfo.q3HeadCount >= MAX_Q3PLAYERMODELS)
             {
+                UI_BuildSkinFactionTable();
                 UI_FreeMem(dirlist);  // Use UI_FreeMem instead of free
                 UI_FreeMem(filelist); // Use UI_FreeMem instead of free
                 return;
             }
         }
     }
+
+    UI_BuildSkinFactionTable();
 
     // Use UI_FreeMem instead of free
     UI_FreeMem(dirlist);

@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // g_local.h -- local definitions for game module
 
@@ -31,7 +31,7 @@ extern vec3_t gPainPoint;
 //==================================================================
 
 // the "gameversion" client command will print this plus compile date
-#define	GAMEVERSION	CURRENT_OJPENHANCED_CLIENTVERSION
+#define	GAMEVERSION	CURRENT_OPENBATTLEFRONTPROJECT_CLIENTVERSION
 #define BODY_QUEUE_SIZE_MAX			MAX_CLIENTS
 #define BODY_QUEUE_SIZE		8
 
@@ -544,6 +544,8 @@ typedef struct {
 	int			updateUITime;		// only update userinfo for FP/SL if < level.time
 	qboolean	teamLeader;			// true when this client is a team leader
 	char		siegeClass[64];
+	char		siegeClassTeam1[64];	// last valid Siege class chosen for TEAM_RED/SIEGETEAM_TEAM1
+	char		siegeClassTeam2[64];	// last valid Siege class chosen for TEAM_BLUE/SIEGETEAM_TEAM2
 	char		saberType[64];
 	char		saber2Type[64];
 	char		myip[64];			// For SavedIPs
@@ -587,9 +589,9 @@ typedef struct {
 	qboolean	teamInfo;			// send team overlay updates?
 
 	//[ClientPlugInDetect]
-	//this flag shows weither or not this client is running the right version of OJP on the client side.  
+	//this flag shows weither or not this client is running the right version of OBP on the client side.  
 	//This is used to determine if the visual weapon events can be sent or not.
-	qboolean ojpClientPlugIn;
+	qboolean obpClientPlugIn;
 	//[/ClientPlugInDetect]
 } clientPersistant_t;
 
@@ -899,6 +901,14 @@ struct gclient_s {
 
 	int			lastGenCmd;
 	int			lastGenCmdTime;
+
+	//[JediMasterAntiCamp]
+	vec3_t		jediMasterCampOrigin;
+	int			jediMasterCampStartTime;
+	int			jediMasterCampWarnTime;
+	int			jediMasterCampHintTime;
+	int			jediMasterStatusHintTime;
+	//[/JediMasterAntiCamp]
 	
 	//[SaberSys]
 	vec3_t		prevviewangle;
@@ -955,6 +965,13 @@ struct gclient_s {
 	int			skillDebounce;			//debouncer for skill point updates to the player client
 	int			skillLevel[NUM_SKILLS];
 	//[/ExpSys]
+
+	//[DualGunsToggle]
+	// Server-only preference: level-3 dual-capable weapons spawn dual by default,
+	// but the player can toggle the current weapon between single and dual mode.
+	int			dualGunsDisabledWeapons;
+	int			dualGunsToggleDebounce;
+	//[/DualGunsToggle]
 
 	//[Flamethrower]
 	int			flameTime;
@@ -1029,6 +1046,10 @@ struct gclient_s {
 
 	int saberStyleBiasTime;
 	int saberStyleBias;
+
+	int		holocronHintDebounceTime;
+
+	char		securityKey[MAX_QPATH];
 
 };
 
@@ -1178,6 +1199,9 @@ typedef struct {
 	char		*spawnVars[MAX_SPAWN_VARS][2];	// key / value pairs
 	int			numSpawnVarChars;
 	char		spawnVarChars[MAX_SPAWN_VARS_CHARS];
+
+	// spawn/progression state for SP maps running under MP rules
+	qboolean	spMapProgression;
 
 	// intermission state
 	int			intermissionQueued;		// intermission was qualified, but
@@ -1338,6 +1362,7 @@ void	G_SetAnim(gentity_t *ent, usercmd_t *ucmd, int setAnimParts, int anim, int 
 gentity_t *G_PickTarget (char *targetname);
 void	GlobalUse(gentity_t *self, gentity_t *other, gentity_t *activator);
 void	G_UseTargets2( gentity_t *ent, gentity_t *activator, const char *string );
+qboolean G_UsingSPMapProgression( void );
 void	G_UseTargets (gentity_t *ent, gentity_t *activator);
 void	G_SetMovedir ( vec3_t angles, vec3_t movedir);
 void	G_SetAngles( gentity_t *ent, vec3_t angles );
@@ -1627,10 +1652,22 @@ void respawn (gentity_t *ent);
 void BeginIntermission (void);
 void InitBodyQue (void);
 void ClientSpawn( gentity_t *ent );
+void G_ApplySpawnProtection( gentity_t *ent );
+void G_ClearSpawnProtection( gentity_t *ent );
+qboolean G_HasSpawnProtection( const gentity_t *ent );
+int G_GetSpawnProtectionTime( void );
 void player_die (gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod);
 void AddScore( gentity_t *ent, vec3_t origin, int score );
 void CalculateRanks( void );
 qboolean SpotWouldTelefrag( gentity_t *spot );
+//[DualGunsToggle]
+qboolean G_IsDualGunWeapon( int weapon );
+int G_DualGunSkillForWeapon( int weapon );
+qboolean G_ClientHasDualGunSkill( const gclient_t *client, int weapon );
+qboolean G_DualGunsDisabledForWeapon( const gclient_t *client, int weapon );
+void G_SetDualGunEFlagForWeapon( gclient_t *client, int weapon );
+qboolean G_ToggleDualGunsForWeapon( gclient_t *client, int weapon, int time );
+//[/DualGunsToggle]
 //[LastManStanding]
 qboolean LMS_EnoughPlayers();
 //[/LastManStanding]
@@ -1849,6 +1886,8 @@ void QDECL G_ClearClientLog(int client);
 // g_siege.c
 void InitSiegeMode(void);
 void G_SiegeClientExData(gentity_t *msgTarg);
+void G_SiegeObjectiveHintsThink(void);
+void G_SiegeSendObjectiveHint(gentity_t *ent, qboolean force);
 
 // g_timer
 //Timing information
@@ -1925,6 +1964,9 @@ extern	gentity_t		g_entities[MAX_GENTITIES];
 
 #define	FOFS(x) offsetof(gentity_t, x)
 
+void G_CTFStalemateHintsThink(void);
+void G_CTYYsalamiriFeedbackThink(void);
+
 extern	vmCvar_t	g_gametype;
 extern	vmCvar_t	g_dedicated;
 extern	vmCvar_t	g_developer;
@@ -1951,11 +1993,11 @@ extern  vmCvar_t	g_allowROQ;
 //[/ROQFILES]
 
 //[LastManStanding]
-extern vmCvar_t		ojp_lms;
-extern vmCvar_t		ojp_lmslives;
+extern vmCvar_t		obp_lms;
+extern vmCvar_t		obp_lmslives;
 //[Coop]
-extern vmCvar_t		ojp_liveExp;
-extern vmCvar_t		ojp_dodgemulti;
+extern vmCvar_t		obp_liveExp;
+extern vmCvar_t		obp_dodgemulti;
 //[/Coop]
 //[/LastManStanding]
 
@@ -2034,6 +2076,7 @@ extern  vmCvar_t	g_mishapRegenTime;
 //[/SaberSys]
 
 extern	vmCvar_t	g_spawnInvulnerability;
+extern	vmCvar_t	g_spawnProtectionTime;
 extern	vmCvar_t	g_forcePowerDisable;
 extern	vmCvar_t	g_weaponDisable;
 extern	vmCvar_t	g_itemDisable;
@@ -2065,6 +2108,7 @@ extern	vmCvar_t	g_knockback;
 extern	vmCvar_t	g_quadfactor;
 extern	vmCvar_t	g_forcerespawn;
 extern	vmCvar_t	g_siegeRespawn;
+extern	vmCvar_t	g_siegeRespawnWaveTime;
 extern	vmCvar_t	g_inactivity;
 extern	vmCvar_t	g_debugMove;
 extern	vmCvar_t	g_debugAlloc;
@@ -2074,6 +2118,57 @@ extern	vmCvar_t	g_debugDamage;
 extern	vmCvar_t	g_debugviewlock;
 //[/SaberSys]
 #endif
+extern	vmCvar_t	g_debugAutoJoin;
+extern	vmCvar_t	g_debugSiegeJoin;
+extern	vmCvar_t	g_siegeBotClassBalance;
+extern	vmCvar_t	g_siegeBotObjectiveAI;
+extern	vmCvar_t	g_siegeObjectiveHints;
+extern	vmCvar_t	g_siegeObjectiveHintInterval;
+extern	vmCvar_t	g_siegeClassObjectiveHints;
+
+void SiegeStartRoundNow(int entNum);
+int G_SiegeRespawnWaveInterval(void);
+int G_SiegeRespawnWaveMarkerTime(void);
+extern	vmCvar_t	g_debugSiegeObjectives;
+extern	vmCvar_t	g_ctfBotRoles;
+extern	vmCvar_t	g_ctfBotCarrierAI;
+extern	vmCvar_t	g_ctfBotReturnFlagPriority;
+extern	vmCvar_t	g_ctfBotEscortAI;
+extern	vmCvar_t	g_ctfAssistScoring;
+extern	vmCvar_t	g_ctfEscortAssistRadius;
+extern	vmCvar_t	g_ctfSpawnObjectiveAware;
+extern	vmCvar_t	g_ctfStalemateTimer;
+extern	vmCvar_t	g_ctfStalemateHintInterval;
+extern	vmCvar_t	g_ctyBotRoles;
+extern	vmCvar_t	g_ctyBotCarrierAI;
+extern	vmCvar_t	g_ctyBotReturnPriority;
+extern	vmCvar_t	g_ctyBotEscortAI;
+extern	vmCvar_t	g_ctyAssistScoring;
+extern	vmCvar_t	g_ctyEscortAssistRadius;
+extern	vmCvar_t	g_ctySpawnObjectiveAware;
+extern	vmCvar_t	g_ctyYsalamiriFeedback;
+extern	vmCvar_t	g_debugCTYBotRoles;
+extern	vmCvar_t	g_debugCTFBotRoles;
+extern	vmCvar_t	g_teamBotRoles;
+extern	vmCvar_t	g_teamBalanceMoveBotsFirst;
+extern	vmCvar_t	g_teamSpawnFairness;
+extern	vmCvar_t	g_ffaSpawnFairness;
+extern	vmCvar_t	g_holocronSpawnFairness;
+extern	vmCvar_t	g_holocronBotPriority;
+extern	vmCvar_t	g_holocronMaxHeld;
+extern	vmCvar_t	g_holocronDropOnDamage;
+extern	vmCvar_t	g_holocronDropChance;
+extern	vmCvar_t	g_holocronHints;
+extern	vmCvar_t	g_holocronPlayerSpawnFairness;
+extern	vmCvar_t	g_jediMasterBotAI;
+extern	vmCvar_t	g_jediMasterAntiCamp;
+extern	vmCvar_t	g_jediMasterHints;
+extern	vmCvar_t	g_botTargetDiversity;
+extern	vmCvar_t	g_debugTeamBotRoles;
+void G_DropHolocronFromClient(gentity_t *ent, qboolean randomDrop);
+extern	vmCvar_t	g_debugDuelQueue;
+extern	vmCvar_t	g_debugPowerDuelQueue;
+extern	vmCvar_t	g_duelQueueMode;
 extern	vmCvar_t	g_debugServerSkel;
 extern	vmCvar_t	g_weaponRespawn;
 extern	vmCvar_t	g_weaponTeamRespawn;
@@ -2091,7 +2186,7 @@ extern	vmCvar_t	g_AllowMapVote;
 extern	vmCvar_t	g_AllowKickVote;
 
 //[ChatSpamProtection]
-extern	vmCvar_t	ojp_chatProtectTime;
+extern	vmCvar_t	obp_chatProtectTime;
 //[/ChatSpamProtection]
 //[/AdminSys]
 extern	vmCvar_t	g_teamAutoJoin;
@@ -2149,9 +2244,9 @@ extern	vmCvar_t	bot_thinklevel;
 
 extern vmCvar_t		g_showDuelHealths;
 //[CoOp]
-extern vmCvar_t		ojp_skipcutscenes;
-extern vmCvar_t		ojp_spmodel;
-extern vmCvar_t		ojp_spmodelrgb;
+extern vmCvar_t		obp_skipcutscenes;
+extern vmCvar_t		obp_spmodel;
+extern vmCvar_t		obp_spmodelrgb;
 //[/CoOp]
 
 //[AotCAI]
@@ -2163,21 +2258,21 @@ extern vmCvar_t		g_corpseRemovalTime;
 //[/NOBODYQUE]
 
 //[ExpandedMOTD]
-extern vmCvar_t		ojp_clientMOTD;
-extern vmCvar_t		ojp_MOTD;
+extern vmCvar_t		obp_clientMOTD;
+extern vmCvar_t		obp_MOTD;
 //[/ExpandedMOTD]
 
 //[DodgeSys]
-extern vmCvar_t		ojp_allowBodyDodge;
+extern vmCvar_t		obp_allowBodyDodge;
 //[/DodgeSys]
 
 //[FFARespawnTimer]
-extern vmCvar_t		ojp_ffaRespawnTimer;
+extern vmCvar_t		obp_ffaRespawnTimer;
 //[/FFARespawnTimer]
 
-extern vmCvar_t		ojp_truebalance;//[TrueBalance]
+extern vmCvar_t		obp_truebalance;//[TrueBalance]
 
-extern vmCvar_t ojp_modelscaleEnabled;//[Modelscale]
+extern vmCvar_t obp_modelscaleEnabled;//[Modelscale]
 //serenity		  
 extern vmCvar_t		m_nerf;
 extern vmCvar_t		m_grapple;

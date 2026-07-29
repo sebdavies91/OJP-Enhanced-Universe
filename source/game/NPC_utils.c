@@ -1,6 +1,7 @@
 //NPC_utils.cpp
 
 #include "b_local.h"
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 #include "../icarus/Q3_Interface.h"
 #include "../ghoul2/g2.h"
 
@@ -855,6 +856,101 @@ void SetTeamNumbers (void)
 
 extern stringID_table_t BSTable[];
 extern stringID_table_t BSETTable[];
+
+static void NPC_BuildScriptIBIName( const char *scriptName, char *out, int outSize )
+{
+	int len;
+
+	Q_strncpyz( out, scriptName, outSize );
+	len = strlen( out );
+	if ( len < 4 || Q_stricmp( out + len - 4, ".ibi" ) )
+	{
+		Q_strcat( out, outSize, ".ibi" );
+	}
+}
+
+static qboolean NPC_ScriptIBIExists( const char *scriptName )
+{
+	fileHandle_t f;
+	char filename[MAX_QPATH];
+	int len;
+
+	NPC_BuildScriptIBIName( scriptName, filename, sizeof( filename ) );
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	if ( len > 0 )
+	{
+		trap_FS_FCloseFile( f );
+		return qtrue;
+	}
+	return qfalse;
+}
+
+static qboolean NPC_ReplaceFirst( const char *src, const char *find, const char *replace, char *out, int outSize )
+{
+	char *spot;
+	int prefixLen;
+
+	Q_strncpyz( out, src, outSize );
+	spot = strstr( out, find );
+	if ( !spot )
+	{
+		return qfalse;
+	}
+
+	prefixLen = spot - out;
+	Com_sprintf( out, outSize, "%.*s%s%s", prefixLen, src, replace, src + prefixLen + strlen( find ) );
+	return qtrue;
+}
+
+static int NPC_TryRunExistingScriptVariant( gentity_t *self, const char *scriptName )
+{
+	char lowerName[MAX_QPATH];
+
+	if ( NPC_ScriptIBIExists( scriptName ) )
+	{
+		return trap_ICARUS_RunScript( self, scriptName );
+	}
+
+	Q_strncpyz( lowerName, scriptName, sizeof( lowerName ) );
+	Q_strlwr( lowerName );
+	if ( Q_stricmp( lowerName, scriptName ) && NPC_ScriptIBIExists( lowerName ) )
+	{
+		return trap_ICARUS_RunScript( self, lowerName );
+	}
+
+	return 0;
+}
+
+static int NPC_RunResolvedScript( gentity_t *self, const char *scriptName )
+{
+	char altName[MAX_QPATH];
+	int result;
+
+	/*
+	 * A few stock SP entity lumps contain the typo "invisibleNotSolid" while the
+	 * shipped compiled IBI is named "invisiblenonsolid".  Resolve that class of
+	 * NotSolid/NonSolid typo generically before ICARUS prints a hard error.
+	 */
+	if ( NPC_ReplaceFirst( scriptName, "NotSolid", "NonSolid", altName, sizeof( altName ) ) )
+	{
+		result = NPC_TryRunExistingScriptVariant( self, altName );
+		if ( result )
+		{
+			return result;
+		}
+	}
+	if ( NPC_ReplaceFirst( scriptName, "notsolid", "nonsolid", altName, sizeof( altName ) ) )
+	{
+		result = NPC_TryRunExistingScriptVariant( self, altName );
+		if ( result )
+		{
+			return result;
+		}
+	}
+
+	return trap_ICARUS_RunScript( self, scriptName );
+}
+
 qboolean G_ActivateBehavior (gentity_t *self, int bset )
 {
 	bState_t	bSID = (bState_t)-1;
@@ -900,13 +996,13 @@ qboolean G_ActivateBehavior (gentity_t *self, int bset )
 		//make the code handle the case of the scripts directory already being given
 		if(!Q_strncmp(bs_name, va( "%s/", Q3_SCRIPT_DIR ), 8 ) )
 		{//already has script directory specified.
-			trap_ICARUS_RunScript( self, bs_name );
+			NPC_RunResolvedScript( self, bs_name );
 		}
 		else
 		{
-			trap_ICARUS_RunScript( self, va( "%s/%s", Q3_SCRIPT_DIR, bs_name ) );
+			NPC_RunResolvedScript( self, va( "%s/%s", Q3_SCRIPT_DIR, bs_name ) );
 		}
-		//trap_ICARUS_RunScript( self, va( "%s/%s", Q3_SCRIPT_DIR, bs_name ) );
+		//NPC_RunResolvedScript( self, va( "%s/%s", Q3_SCRIPT_DIR, bs_name ) );
 		//[/CoOp]	
 	}
 	return qtrue;
@@ -1482,10 +1578,12 @@ static qboolean NPC_CheckPlayerDistance( void )
 
 	if(ClosestPlayer != -1)
 	{
+		gentity_t *bestPlayer = &g_entities[ClosestPlayer];
 		
-		if(ClosestDistance + 128 * 128 < DistanceSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin ) )
+		if(ClosestDistance + 128 * 128 < DistanceSquared( NPC->r.currentOrigin, NPC->enemy->r.currentOrigin )
+			&& G_ValidEnemy( NPC, bestPlayer ) )
 		{//player has too be reasonably closer than the current enemy
-			G_SetEnemy( NPC, &g_entities[ClosestPlayer] );
+			G_SetEnemy( NPC, bestPlayer );
 			return qtrue;
 		}
 	}

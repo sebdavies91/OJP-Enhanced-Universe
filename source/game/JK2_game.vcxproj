@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug(Final)|Win32">
@@ -22,6 +22,7 @@
     <ProjectName>JK2game</ProjectName>
     <ProjectGuid>{5B587283-8429-4F8B-AECA-C09BF364B617}</ProjectGuid>
     <RootNamespace>JK2game</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'" Label="Configuration">
@@ -66,16 +67,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\../Release/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">.\../Final/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\../Debug/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\openbattlefrontproject</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">.\../Debug/JK2game\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">jampgamex86</TargetName>
@@ -108,6 +109,7 @@
       <ObjectFileName>.\../Release/JK2game/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Release/JK2game/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
@@ -118,7 +120,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\jampgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\jampgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -157,6 +159,7 @@
       <ObjectFileName>.\../Final/JK2game/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Final/JK2game/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
     <ResourceCompile>
@@ -166,7 +169,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../ojpenhanced/jampgamex86.dll</OutputFile>
+      <OutputFile>../../openbattlefrontproject/jampgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>
@@ -202,8 +205,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2game/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_Debug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -212,7 +216,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\jampgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\jampgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -245,8 +249,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2game/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_Debug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -255,7 +260,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>winmm.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\jampgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\jampgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_game.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -333,6 +338,7 @@
     <ClCompile Include="g_vehicleTurret.c" />
     <ClCompile Include="g_weapon.c" />
     <ClCompile Include="NPC.c" />
+    <ClCompile Include="NPC_AI_BobaFett.c" />
     <ClCompile Include="NPC_AI_Animal.c" />
     <ClCompile Include="NPC_AI_AssassinDroid.c" />
     <ClCompile Include="NPC_AI_Atst.c" />
@@ -351,8 +357,8 @@
     <ClCompile Include="NPC_AI_Rancor.c" />
     <ClCompile Include="NPC_AI_Remote.c" />
     <ClCompile Include="NPC_AI_RocketTrooper.c" />
-	    <ClCompile Include="NPC_AI_Tusken.c" />
-	    <ClCompile Include="NPC_AI_HazardTrooper.c" />
+    <ClCompile Include="NPC_AI_Tusken.c" />
+    <ClCompile Include="NPC_AI_HazardTrooper.c" />
     <ClCompile Include="NPC_AI_SaberDroid.c" />
     <ClCompile Include="NPC_AI_Sand_creature.c" />
     <ClCompile Include="NPC_AI_Seeker.c" />
@@ -421,7 +427,7 @@
     <ClInclude Include="g_team.h" />
     <ClInclude Include="inv.h" />
     <ClInclude Include="match.h" />
-    <ClInclude Include="..\..\ojpenhanced\ui\jamp\menudef.h" />
+    <ClInclude Include="..\ui\jamp\menudef.h" />
     <ClInclude Include="npc_headers.h" />
     <ClInclude Include="q_shared.h" />
     <ClInclude Include="say.h" />

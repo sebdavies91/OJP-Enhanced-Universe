@@ -1,8 +1,11 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 
 #include "g_local.h"
 #include "bg_saga.h"
+
+extern void ForceShootBlinding(gentity_t *self);
+extern void ForceShootDestruction(gentity_t *self);
 
 
 // Track if a real client was held by a monster last frame so we can unstick them safely on release.
@@ -75,6 +78,7 @@ qboolean PM_SaberInReturn( int move );
 qboolean saberCheckKnockdown_DuelLoss(gentity_t *saberent, gentity_t *saberOwner, gentity_t *other);
 
 extern vmCvar_t g_saberLockRandomNess;
+extern qboolean G_ThereIsAMaster(void);
 
 void P_SetTwitchInfo(gclient_t	*client)
 {
@@ -999,14 +1003,12 @@ void G_CheapWeaponFire(int entNum, int ev)
 
 			FireWeapon( ent, qfalse );
 			ent->client->dangerTime = level.time;
-			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
-			ent->client->invulnerableTimer = 0;
+			G_ClearSpawnProtection(ent);
 			break;
 		case EV_ALT_FIRE:
 			FireWeapon( ent, qtrue );
 			ent->client->dangerTime = level.time;
-			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
-			ent->client->invulnerableTimer = 0;
+			G_ClearSpawnProtection(ent);
 			break;
 	}
 }
@@ -1113,8 +1115,7 @@ void ClientEvents(gentity_t* ent, int oldEventSequence) {
 			// Fire the weapon
 			FireWeapon(ent, qfalse);
 			ent->client->dangerTime = level.time;
-			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
-			ent->client->invulnerableTimer = 0;
+			G_ClearSpawnProtection(ent);
 			fired = qtrue;
 			break;
 
@@ -1128,15 +1129,13 @@ void ClientEvents(gentity_t* ent, int oldEventSequence) {
 			}
 			FireWeapon(ent, qtrue);
 			ent->client->dangerTime = level.time;
-			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
-			ent->client->invulnerableTimer = 0;
+			G_ClearSpawnProtection(ent);
 			altFired = qtrue;
 			break;
 
 		case EV_SABER_ATTACK:
 			ent->client->dangerTime = level.time;
-			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
-			ent->client->invulnerableTimer = 0;
+			G_ClearSpawnProtection(ent);
 			break;
 
 			// Item use events
@@ -2318,65 +2317,68 @@ int ClipSize(int ammo,gentity_t *ent)
 	case AMMO_ROCKETS:
 		return 1;
 	case AMMO_POWERCELL:
-		if(ent->client->skillLevel[SK_BOWCASTER] >= ent->client->skillLevel[SK_DISRUPTOR])
 		{
-			switch(ent->client->skillLevel[SK_BOWCASTER])
+			int powercellSkill = ent->client->skillLevel[SK_BOWCASTER];
+
+			if ( ent->client->skillLevel[SK_DISRUPTOR] > powercellSkill )
 			{
-			case FORCE_LEVEL_3:
-				return 30;
-				break;
-			case FORCE_LEVEL_2:
-				return 20;
-				break;
-			case FORCE_LEVEL_1:
-				return 10;
-				break;
+				powercellSkill = ent->client->skillLevel[SK_DISRUPTOR];
 			}
-		}
-		else
-		{
-			switch(ent->client->skillLevel[SK_DISRUPTOR])
+
+			/*
+			 * DEMP2 also uses AMMO_POWERCELL.  Bots such as aerial/incinerator
+			 * can legitimately have SK_DEMP2 without Bowcaster/Disruptor, so do
+			 * not let ClipSize() return -1 for their powercell ammo.  A -1 ammo
+			 * count makes BotWeaponSelectable() reject WP_DEMP2 even when the bot
+			 * has the weapon bit and a positive BotWeaponWeights entry.
+			 */
+			if ( ent->client->skillLevel[SK_DEMP2] > powercellSkill )
+			{
+				powercellSkill = ent->client->skillLevel[SK_DEMP2];
+			}
+
+			switch ( powercellSkill )
 			{
 			case FORCE_LEVEL_3:
 				return 30;
-				break;
 			case FORCE_LEVEL_2:
 				return 20;
-				break;
 			case FORCE_LEVEL_1:
 				return 10;
+			default:
 				break;
 			}
 		}
 		break;
 	case AMMO_METAL_BOLTS:
-		if(ent->client->skillLevel[SK_REPEATER] >= ent->client->skillLevel[SK_FLECHETTE])
 		{
-			switch(ent->client->skillLevel[SK_REPEATER])
+			int metalBoltSkill = ent->client->skillLevel[SK_REPEATER];
+
+			if ( ent->client->skillLevel[SK_FLECHETTE] > metalBoltSkill )
 			{
-			case FORCE_LEVEL_3:
-				return 100;
-				break;
-			case FORCE_LEVEL_2:
-				return 50;
-				break;
-			case FORCE_LEVEL_1:
-				return 20;
-				break;
+				metalBoltSkill = ent->client->skillLevel[SK_FLECHETTE];
 			}
-		}
-		else
-		{
-			switch(ent->client->skillLevel[SK_FLECHETTE])
+
+			/*
+			 * Concussion also uses AMMO_METAL_BOLTS.  A bot with only
+			 * SK_CONCUSSION must still receive a valid clip size, otherwise
+			 * BotWeaponSelectable() rejects WP_CONCUSSION even when the bot file
+			 * explicitly lists it.
+			 */
+			if ( ent->client->skillLevel[SK_CONCUSSION] > metalBoltSkill )
+			{
+				metalBoltSkill = ent->client->skillLevel[SK_CONCUSSION];
+			}
+
+			switch ( metalBoltSkill )
 			{
 			case FORCE_LEVEL_3:
 				return 100;
-				break;
 			case FORCE_LEVEL_2:
 				return 50;
-				break;
 			case FORCE_LEVEL_1:
 				return 20;
+			default:
 				break;
 			}
 		}
@@ -2981,8 +2983,8 @@ void ClientThink_real( gentity_t *ent ) {
 		{
 			// watch the code here, you MUST "return" within this IF(), *unless* you're stopping the cinematic skip.
 				//skip cutscene code
-			if ( !skippingCutscene && (ojp_skipcutscenes.integer == 1 
-				|| ojp_skipcutscenes.integer == 2 || ClientCinematicThink(ent->client, &ent->client->pers.cmd)))
+			if ( !skippingCutscene && (obp_skipcutscenes.integer == 1 
+				|| obp_skipcutscenes.integer == 2 || ClientCinematicThink(ent->client, &ent->client->pers.cmd)))
 			{//order the system to accelerate the cutscene
 				if (cinematicSkipScript[0])
 				{//there's a skip script for this cutscene
@@ -2991,14 +2993,14 @@ void ClientThink_real( gentity_t *ent ) {
 				}
 
 				skippingCutscene = qtrue;
-				if(ojp_skipcutscenes.integer == 2 || ojp_skipcutscenes.integer == 4)
+				if(obp_skipcutscenes.integer == 2 || obp_skipcutscenes.integer == 4)
 				{//use time accell
 					trap_Cvar_Set("timescale", "100");
 				}
 				return;
 			}
-			else if(skippingCutscene && (ojp_skipcutscenes.integer == 0 
-				|| ((ojp_skipcutscenes.integer == 3 || ojp_skipcutscenes.integer == 4) 
+			else if(skippingCutscene && (obp_skipcutscenes.integer == 0 
+				|| ((obp_skipcutscenes.integer == 3 || obp_skipcutscenes.integer == 4) 
 				&& ClientCinematicThink(ent->client, &ent->client->pers.cmd))) )
 			{//stopping a skip already in progress
 					skippingCutscene = qfalse;
@@ -3088,7 +3090,12 @@ void ClientThink_real( gentity_t *ent ) {
 	{
 		if (ent->client->invulnerableTimer <= level.time)
 		{
-			ent->client->ps.eFlags &= ~EF_INVULNERABLE;
+			G_ClearSpawnProtection(ent);
+		}
+		else if (ucmd && (ucmd->buttons & (BUTTON_ATTACK|BUTTON_ALT_ATTACK|BUTTON_FORCEPOWER)))
+		{
+			// Spawn protection is defensive only.  The first attack/Force-use cancels it.
+			G_ClearSpawnProtection(ent);
 		}
 	}
 
@@ -3887,11 +3894,7 @@ void ClientThink_real( gentity_t *ent ) {
 				*/
 				//[/DuelSys]
 
-				if (g_spawnInvulnerability.integer)
-				{
-					ent->client->ps.eFlags |= EF_INVULNERABLE;
-					ent->client->invulnerableTimer = level.time + g_spawnInvulnerability.integer;
-				}
+					G_ApplySpawnProtection(ent);
 			}
 
 			//[DuelSys]	
@@ -4542,6 +4545,21 @@ void ClientThink_real( gentity_t *ent ) {
 		VectorCopy(ent->r.mins, pm.mins);
 		VectorCopy(ent->r.maxs, pm.maxs);
 #if 1
+		if ( ent->s.NPC_class == CLASS_ATST && ent->client->ps.groundEntityNum != ENTITYNUM_NONE )
+		{
+			gentity_t *under = &g_entities[ent->client->ps.groundEntityNum];
+			if ( under && under != ent && under->health > 0 && under->takedamage && under->nDamageFromVehicleTimer < level.time )
+			{
+				vec3_t down = {0,0,-1};
+				int crushDamage = ent->client->ps.speed;
+				if ( crushDamage < 50 )
+				{
+					crushDamage = 50;
+				}
+				G_Damage( under, ent, ent, down, under->r.currentOrigin, crushDamage, 0, MOD_CRUSH );
+				under->nDamageFromVehicleTimer = level.time + 500;
+			}
+		}
 		if (ent->s.NPC_class == CLASS_VEHICLE &&
 			ent->m_pVehicle )
 		{
@@ -4848,13 +4866,25 @@ void ClientThink_real( gentity_t *ent ) {
 
 			break;
 		case GENCMD_FORCE_FORCEPOWEROTHER:
-			if (ent->client->skillLevel[SK_DESTRUCTIONA] == FORCE_LEVEL_2)
 			{
-			ForceBlinding(ent);
-			}
-			else
-			{
-			ForceDestruction(ent);
+				int wasTeamForceActive = ent->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE);
+
+				if (ent->client->skillLevel[SK_DESTRUCTIONA] == FORCE_LEVEL_2)
+				{
+					ForceBlinding(ent);
+					if (!wasTeamForceActive && (ent->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
+					{
+						ForceShootBlinding(ent);
+					}
+				}
+				else
+				{
+					ForceDestruction(ent);
+					if (!wasTeamForceActive && (ent->client->ps.fd.forcePowersActive & (1 << FP_TEAM_FORCE)))
+					{
+						ForceShootDestruction(ent);
+					}
+				}
 			}
 			break;
 		case GENCMD_FORCE_SEEING:
@@ -4944,6 +4974,7 @@ void ClientThink_real( gentity_t *ent ) {
 			break;
 		case GENCMD_USE_JETPACK:
 			if ( (ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK)) &&
+				ent->client->skillLevel[SK_JETPACK] >= FORCE_LEVEL_1 &&
 				G_ItemUsable(&ent->client->ps, HI_JETPACK) )
 			{
 				ItemUse_Jetpack(ent);
@@ -5068,7 +5099,8 @@ void ClientThink_real( gentity_t *ent ) {
 //===================grapplemod========================
 
 	if (ent->client && m_enable_grapple.integer == 1 &&
-		ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_GRAPPLE) )
+		ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_GRAPPLE) &&
+		ent->client->skillLevel[SK_GRAPPLE] >= FORCE_LEVEL_1 )
 	{
 		// If we were mounted on an emplaced gun at the start of this frame and pressed USE,
 		// block grappling-hook input so we don't fire a new hook on the dismount frame.
@@ -5289,11 +5321,11 @@ void ClientThink_real( gentity_t *ent ) {
 				forceRes = 1;
 			}
 			else if (g_gametype.integer == GT_SIEGE &&
-				g_siegeRespawn.integer)
+				G_SiegeRespawnWaveInterval())
 			{ //wave respawning on
 				forceRes = 1;
 			}
-			else if(ojp_ffaRespawnTimer.integer)
+			else if(obp_ffaRespawnTimer.integer)
 				forceRes = 1;
 
 			if ( forceRes > 0 && 
@@ -5520,6 +5552,150 @@ A fast client will have multiple ClientThink for each ClientEdFrame,
 while a slow client may have multiple ClientEndFrame between ClientThink.
 ==============
 */
+
+//[JediMasterAntiCamp]
+#define JM_ANTICAMP_RADIUS             384.0f
+#define JM_ANTICAMP_RADIUS_SQ          (JM_ANTICAMP_RADIUS * JM_ANTICAMP_RADIUS)
+#define JM_ANTICAMP_TIME               30000
+#define JM_ANTICAMP_WARN_INTERVAL      10000
+#define JM_ANTICAMP_HINT_INTERVAL      15000
+
+static void G_JediMasterAntiCampThink( gentity_t *ent )
+{
+	vec3_t delta;
+	int mode;
+	int i;
+
+	if (!ent || !ent->client)
+	{
+		return;
+	}
+
+	if (g_gametype.integer != GT_JEDIMASTER)
+	{
+		return;
+	}
+
+	mode = g_jediMasterAntiCamp.integer;
+	if (mode <= 0)
+	{
+		return;
+	}
+
+	if (!ent->client->ps.isJediMaster || ent->health <= 0 || ent->client->ps.stats[STAT_HEALTH] <= 0)
+	{
+		ent->client->jediMasterCampStartTime = 0;
+		ent->client->jediMasterCampWarnTime = 0;
+		ent->client->jediMasterCampHintTime = 0;
+		VectorClear(ent->client->jediMasterCampOrigin);
+		return;
+	}
+
+	if (ent->client->jediMasterCampStartTime <= 0)
+	{
+		VectorCopy(ent->client->ps.origin, ent->client->jediMasterCampOrigin);
+		ent->client->jediMasterCampStartTime = level.time;
+		ent->client->jediMasterCampWarnTime = 0;
+		ent->client->jediMasterCampHintTime = 0;
+		return;
+	}
+
+	VectorSubtract(ent->client->ps.origin, ent->client->jediMasterCampOrigin, delta);
+	if (VectorLengthSquared(delta) > JM_ANTICAMP_RADIUS_SQ ||
+		ent->client->buttons & (BUTTON_ATTACK|BUTTON_ALT_ATTACK|BUTTON_FORCEPOWER|BUTTON_USE) ||
+		ent->client->damage_blood > 0 || ent->client->damage_armor > 0)
+	{
+		VectorCopy(ent->client->ps.origin, ent->client->jediMasterCampOrigin);
+		ent->client->jediMasterCampStartTime = level.time;
+		ent->client->jediMasterCampWarnTime = 0;
+		ent->client->jediMasterCampHintTime = 0;
+		return;
+	}
+
+	if (level.time - ent->client->jediMasterCampStartTime < JM_ANTICAMP_TIME)
+	{
+		return;
+	}
+
+	if (ent->client->jediMasterCampWarnTime < level.time)
+	{
+		trap_SendServerCommand(ent->s.number, "cp \"Keep moving as Jedi Master.\n\"");
+		ent->client->jediMasterCampWarnTime = level.time + JM_ANTICAMP_WARN_INTERVAL;
+	}
+
+	// mode 2 also gives other players a short, throttled hint. No penalty is applied.
+	if (mode < 2 || ent->client->jediMasterCampHintTime >= level.time)
+	{
+		return;
+	}
+
+	for (i = 0; i < level.maxclients; i++)
+	{
+		gentity_t *other = &g_entities[i];
+
+		if (!other->inuse || !other->client || other == ent)
+		{
+			continue;
+		}
+		if (other->client->sess.sessionTeam == TEAM_SPECTATOR || other->health <= 0)
+		{
+			continue;
+		}
+		if (other->r.svFlags & SVF_BOT)
+		{
+			continue;
+		}
+
+		trap_SendServerCommand(other->s.number, "cp \"Jedi Master is hiding. Hunt them down.\n\"");
+	}
+
+	ent->client->jediMasterCampHintTime = level.time + JM_ANTICAMP_HINT_INTERVAL;
+}
+//[/JediMasterAntiCamp]
+
+//[JediMasterHints]
+#define JM_STATUS_HINT_INTERVAL        60000
+
+static void G_JediMasterHintThink( gentity_t *ent )
+{
+	if (!ent || !ent->client)
+	{
+		return;
+	}
+
+	if (g_gametype.integer != GT_JEDIMASTER || g_jediMasterHints.integer < 2)
+	{
+		return;
+	}
+
+	if (ent->r.svFlags & SVF_BOT)
+	{
+		return;
+	}
+
+	if (ent->health <= 0 || ent->client->ps.stats[STAT_HEALTH] <= 0)
+	{
+		return;
+	}
+
+	if (ent->client->jediMasterStatusHintTime >= level.time)
+	{
+		return;
+	}
+
+	if (ent->client->ps.isJediMaster)
+	{
+		trap_SendServerCommand(ent->s.number, "cp \"You are the Jedi Master. Survive.\n\"");
+	}
+	else if (G_ThereIsAMaster())
+	{
+		trap_SendServerCommand(ent->s.number, "cp \"Defeat the Jedi Master.\n\"");
+	}
+
+	ent->client->jediMasterStatusHintTime = level.time + JM_STATUS_HINT_INTERVAL;
+}
+//[/JediMasterHints]
+
 void ClientEndFrame( gentity_t *ent ) {
 	int			i;
 	clientPersistant_t	*pers;
@@ -5534,6 +5710,9 @@ void ClientEndFrame( gentity_t *ent ) {
 		SpectatorClientEndFrame( ent );
 		return;
 	}
+
+	G_JediMasterAntiCampThink( ent );
+	G_JediMasterHintThink( ent );
 
 	pers = &ent->client->pers;
 

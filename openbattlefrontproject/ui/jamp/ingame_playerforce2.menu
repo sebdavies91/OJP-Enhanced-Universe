@@ -1,0 +1,2796 @@
+//[NewMenus]
+//-----------------------------------
+// SETUP MENU 
+//-----------------------------------
+//
+// This menu has no background, only the text and the Force Powers. This is actually 'pasted' over top the ingame_player.menu. This is done,
+// because otherwise, the Force Powers would not appear/dissapear correctly when selecting/deselecting Force Sense.
+//
+// The 'outOfBoundsClick' has been commented out, otherwise, the whole menu would close if you would accidentically misclick
+// inbetween the options on the left hand part of the screen.
+//
+{
+	menuDef 
+	{
+		name						"ingame_playerforce2"
+		visible						1
+		fullscreen					0
+//		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
+		rect						120 45 570 400
+		focusColor					0.82 0.84 0.88 1								// Focus color for text and items
+		style						1
+		border						1
+		descX						320
+		descY						421
+		descScale					1
+		descColor					0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER		
+		onOpen  
+		{ 
+			uiScript setForce "none"
+		}
+		onClose 
+		{ 
+			uiScript setForce "none"
+		//	open			ingame_player 
+		}
+		onEsc
+		{
+			close ingame_playerforce2 ;
+		}
+		
+//------------------------------------------------------------------------------------------------
+// The Force
+//------------------------------------------------------------------------------------------------
+
+		// Force Title
+		itemDef
+		{
+			name 				forcetitle
+			style				WINDOW_STYLE_FILLED
+			text				"Choose Your Other Force"
+			rect				8 6 508 21
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			254
+			textaligny			-2
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
+			font				3
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+		}
+		
+		itemDef
+		{
+			name				descbackground
+			style				0
+			rect				5 390 520 20
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			visible				1
+		}
+		
+		// Force Rank display
+		itemDef 
+		{
+			name				siderank
+			group				"playersettingforcegroup"
+			style				WINDOW_STYLE_EMPTY	
+			text				@MENUS_FORCE_MASTERY
+			ownerdraw			UI_FORCE_RANK
+			rect				205 30 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			backcolor			0 0 0 0
+			visible				1 
+			decoration
+		}
+		
+		// Force points remaining
+		itemDef 
+		{
+			name				siderank
+			group				"playersettingforcegroup"
+			style				WINDOW_STYLE_EMPTY	
+			text				@MENUS_POINTS_REMAINING
+			ownerdraw			UI_FORCE_POINTS
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+		
+		//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+		itemDef 
+		{
+			name				notforcesensitive
+			group				"playersettinggroup"
+			text				@OBP_MENUS_NOTFORCESENSITIVE
+			type				1
+			style				0	
+			rect				43 115 0 0
+			textalign			ITEM_ALIGN_CENTER	 	
+			textalignx			65
+			textaligny			0
+			font				4
+			textscale			1
+						outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText			@OBP_MENUS_DESC_NOTFORCESENSITIVE
+			visible				0 
+			decoration
+		}
+		
+		// Invisible description box for notforcesensitive
+		itemDef 
+		{
+			name				notforcesensitive
+			group				"playersettinggroup"
+			style				0
+			rect				220 248 175 34
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			descText			@OBP_MENUS_DESC_NOTFORCESENSITIVE
+			visible				0
+		}
+	// Second Column
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// The Light Side Force Powers
+	////////////////////////////////////////////////////////////////////////////////
+		
+	// Force Ranks title		
+		itemDef 
+		{
+			name				forceranktitle
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Miscellaneous Powers"
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+				// Force Heal title
+		itemDef 
+		{
+			name					setfp_healself
+			group					lightpowers
+			style					0	
+			text					"Recovery Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					180 90 175 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_healself_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Recovery Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					180 90 175 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Heal Assign
+		itemDef 
+		{
+			name					setfp_healself
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_HEAL
+			rect					80 90 175 15
+					 
+				textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+	        descText				"Recovery Power"
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_healself_blink
+				show			setfp_healself_labelblink
+				setitemcolor	setfp_healself forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_healself_blink
+				hide			setfp_healself_labelblink
+				setitemcolor	setfp_healself forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_healself_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_HEAL
+			rect				80 90 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+		// Force Heala title
+		itemDef 
+		{
+			name					setsk_heala
+			group					lightpowers
+			style					0	
+			text					"Heal / Regeneration / ..:"
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_heala_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Heal / Regeneration / ..:"
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Heala assign
+		itemDef 
+		{
+			name					setsk_heala
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_HEALA
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Heal / Force Regeneration / .."
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_heala_blink
+				show			setsk_heala_labelblink
+				setitemcolor	setsk_heala forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_heala_blink
+				hide			setsk_heala_labelblink
+				setitemcolor	setsk_heala forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_heala_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_HEALA
+			rect				80 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+	// Force Ranks title		
+		itemDef 
+		{
+			name				forceranktitleA
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Status Powers"
+			rect				180 150 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2A
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 150 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		// Force Protect title
+		itemDef 
+		{
+			name					setfp_protect
+			group					lightpowers
+			style					0	
+			text					"Damage Field Power:"
+			rect					180 165 110 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_protect_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Damage Field Power:"
+			rect					180 165 110 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// Force Protect assign
+		itemDef 
+		{
+			name					setfp_protect
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_PROTECT
+			rect					80 165 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+					font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Damage Field Power"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_protect_blink
+				show			setfp_protect_labelblink
+				setitemcolor	setfp_protect forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_protect_blink
+				hide			setfp_protect_labelblink
+				setitemcolor	setfp_protect forecolor  0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_protect_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_PROTECT
+			rect				80 165 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+		// Force Protecta title
+		itemDef 
+		{
+			name					setsk_protecta
+			group					lightpowers
+			style					0	
+			text					"Protect / Dark Aura / .."
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_protecta_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Protect / Dark Aura / .."
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Protecta assign
+		itemDef 
+		{
+			name					setsk_protecta
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_PROTECTA
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Protect / Force Dark Aura / .."
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_protecta_blink
+				show			setsk_protecta_labelblink
+				setitemcolor	setsk_protecta forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_protecta_blink
+				hide			setsk_protecta_labelblink
+				setitemcolor	setsk_protecta forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_protecta_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_PROTECTA
+			rect				80 180 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		// Force Absorb title
+		itemDef 
+		{
+			name					setfp_absorb
+			group					lightpowers
+			style					0	
+			text					"Force Field Power:"
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_absorb_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Force Field Power:"
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Absorb assign
+		itemDef 
+		{
+			name					setfp_absorb
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_ABSORB
+			rect					80 195 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Field Power"
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_absorb_blink
+				show			setfp_absorb_labelblink
+				setitemcolor	setfp_absorb forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_absorb_blink
+				hide			setfp_absorb_labelblink
+				setitemcolor	setfp_absorb forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_absorb_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_ABSORB
+			rect				80 195 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+		
+		// Force Absorba title
+		itemDef 
+		{
+			name					setsk_absorba
+			group					lightpowers
+			style					0	
+			text					"Absorb / Deadly Sight / ..:"
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_absorba_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Absorb / Deadly Sight / ..:"
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Absorba assign
+		itemDef 
+		{
+			name					setsk_absorba
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_ABSORBA
+			rect					80 210 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Absorb / Force Deadly Sight / .."
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_absorba_blink
+				show			setsk_absorba_labelblink
+				setitemcolor	setsk_absorba forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_absorba_blink
+				hide			setsk_absorba_labelblink
+				setitemcolor	setsk_absorba forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_absorba_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_ABSORBA
+			rect				80 210 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		
+	
+	// Force Ranks title		
+		itemDef 
+		{
+			name				forceranktitleB
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Influence Powers"
+			rect				180 255 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2B
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 255 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}			
+		// Force Mind Trick title
+		itemDef 
+		{
+			name					setfp_mindtrick
+			group					lightpowers
+			style					0	
+			text					"Telepathy Power:"
+			rect					180 270 110 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_mindtrick_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Telepathy Power:"
+			rect					180 270 110 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// Force Mind Trick assign
+		itemDef 
+		{
+			name					setfp_mindtrick
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_TELEPATHY
+			rect					80 270 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Telepathy Power"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_mindtrick_blink
+				show			setfp_mindtrick_labelblink
+				setitemcolor	setfp_mindtrick forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_mindtrick_blink
+				hide			setfp_mindtrick_labelblink
+				setitemcolor	setfp_mindtrick forecolor  0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_mindtrick_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_TELEPATHY
+			rect				80 270 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+		
+		// Force Telepathya title
+		itemDef 
+		{
+			name					setsk_telepathya
+			group					lightpowers
+			style					0	
+			text					"Confusion / Corruption / ..:"
+			rect					180 285 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_telepathya_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Confusion / Corruption / ..:"
+			rect					180 285 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Telepathya assign
+		itemDef 
+		{
+			name					setsk_telepathya
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_TELEPATHYA
+			rect					80 285 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Confusion / Force Corruption / .."
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_telepathya_blink
+				show			setsk_telepathya_labelblink
+				setitemcolor	setsk_telepathya forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_telepathya_blink
+				hide			setsk_telepathya_labelblink
+				setitemcolor	setsk_telepathya forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_telepathya_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_TELEPATHYA
+			rect				80 285 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+	
+
+
+			// Force Stasis title
+		itemDef 
+		{
+			name					setfp_team_heal
+			group					lightpowers
+			style					0	
+			text					"Incapacitation Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					180 300 175 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_team_heal_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Incapacitation Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					180 300 175 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Stasis title
+		itemDef 
+		{
+			name					setfp_team_heal
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_TEAM_HEAL
+			rect					80 300 175 15
+					 
+				textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+	        descText				"Incapacitation Power"
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_team_heal_blink
+				show			setfp_team_heal_labelblink
+				setitemcolor	setfp_team_heal forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_team_heal_blink
+				hide			setfp_team_heal_labelblink
+				setitemcolor	setfp_team_heal forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_team_heal_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_TEAM_HEAL
+			rect				80 300 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+
+		// Force Stasisa title
+		itemDef 
+		{
+			name					setsk_stasisa
+			group					lightpowers
+			style					0	
+			text					"Stasis / Insanity / ..:"
+			rect					180 315 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_stasisa_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Stasis / Insanity / ..:"
+			rect					180 315 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Stasisa assign
+		itemDef 
+		{
+			name					setsk_stasisa
+			group					lightpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_STASISA
+			rect					80 315 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Stasis / Force Insanity / .."
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_stasisa_blink
+				show			setsk_stasisa_labelblink
+				setitemcolor	setsk_stasisa forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_stasisa_blink
+				hide			setsk_stasisa_labelblink
+				setitemcolor	setsk_stasisa forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_stasisa_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_STASISA
+			rect				80 315 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+	
+		
+	////////////////////////////////////////////////////////////////////////////////
+	// The Dark Side Force Powers
+	////////////////////////////////////////////////////////////////////////////////
+		
+	// Force Ranks title		
+		itemDef 
+		{
+			name				forceranktitleC
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Telekinetic Powers"
+			rect				430 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2C
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				380 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			outlinecolor		.5 .5 .5 .5
+			font					4
+			textscale				1
+		forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+		
+		// Force Grip title
+		itemDef 
+		{
+			name					setfp_grip
+			group					darkpowers
+			style					0	
+			text					"Telekinesis Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]
+			rect					430 90 110 15
+			//rect					220 223 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_grip_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Telekinesis Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]
+			rect					430 90 110 15
+			//rect					220 223 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+	
+		// Force Grip assign
+		itemDef 
+		{
+			name					setfp_grip
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_GRIP
+			//[ForceSys]
+			rect					330 90 175 15
+			//rect					220 223 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+				font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Telekinesis Power"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_grip_blink
+				show			setfp_grip_labelblink
+				setitemcolor	setfp_grip forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_grip_blink
+				hide			setfp_grip_labelblink
+				setitemcolor	setfp_grip forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_grip_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_GRIP
+			rect				330 90 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+// Force Gripa title
+		itemDef 
+		{
+			name					setsk_gripa
+			group					darkpowers
+			style					0	
+			text					"Grip / Grasp / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 105 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_gripa_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Grip / Grasp / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 105 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Gripa assign
+		itemDef 
+		{
+			name					setsk_gripa
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_GRIPA
+			//[ForceSys]
+			rect					330 105 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Grip / Force Grasp / .."
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_gripa_blink
+				show			setsk_gripa_labelblink
+				setitemcolor	setsk_gripa forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_gripa_blink
+				hide			setsk_gripa_labelblink
+				setitemcolor	setsk_gripa forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_gripa_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_GRIPA
+			rect				330 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+	// Force Ranks title		
+		itemDef 
+		{
+			name				forceranktitleD
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Energy Powers"
+			rect				430 150 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2D
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				380 150 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			outlinecolor		.5 .5 .5 .5
+			font					4
+			textscale				1
+		forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}		
+		// Force Lightning title
+		itemDef 
+		{
+			name					setfp_lightning
+			group					darkpowers
+			style					0	
+			text					"Electricity Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]
+			rect					430 165 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+		forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_lightning_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Electricity Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]
+			rect					430 165 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+		forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Lightning assign
+		itemDef 
+		{
+			name					setfp_lightning
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_LIGHTNING
+			//[ForceSys]
+			rect					330 165 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Electricity Power"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_lightning_blink
+				show			setfp_lightning_labelblink
+				setitemcolor	setfp_lightning forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_lightning_blink
+				hide			setfp_lightning_labelblink
+				setitemcolor	setfp_lightning forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_lightning_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_LIGHTNING
+			rect				330 165 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+// Force Lightninga title
+		itemDef 
+		{
+			name					setsk_lightninga
+			group					darkpowers
+			style					0	
+			text					"Lightning / Judgement / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 180 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_lightninga_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Lightning / Judgement / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 180 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Lightninga assign
+		itemDef 
+		{
+			name					setsk_lightninga
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_LIGHTNINGA
+			//[ForceSys]
+			rect					330 180 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Lightning / Force Judgement / .."
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_lightninga_blink
+				show			setsk_lightninga_labelblink
+				setitemcolor	setsk_lightninga forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_lightninga_blink
+				hide			setsk_lightninga_labelblink
+				setitemcolor	setsk_lightninga forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_lightninga_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_LIGHTNINGA
+			rect				330 180 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+	
+// Force Drain title
+		itemDef 
+		{
+			name					setfp_drain
+			group					darkpowers
+			style					0	
+			text					"Consumption Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 195 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_drain_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Consumption Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 195 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Drain assign
+		itemDef 
+		{
+			name					setfp_drain
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_DRAIN
+			//[ForceSys]
+			rect					330 195 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Consumption Power"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_drain_blink
+				show			setfp_drain_labelblink
+				setitemcolor	setfp_drain forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_drain_blink
+				hide			setfp_drain_labelblink
+				setitemcolor	setfp_drain forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_drain_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_DRAIN
+			rect				330 195 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+	
+// Force Draina title
+		itemDef 
+		{
+			name					setsk_draina
+			group					darkpowers
+			style					0	
+			text					"Drain / Sever / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 210 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_draina_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Drain / Sever / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 210 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Draina assign
+		itemDef 
+		{
+			name					setsk_draina
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_DRAINA
+			//[ForceSys]
+			rect					330 210 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Drain / Force Sever / .."
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_draina_blink
+				show			setsk_draina_labelblink
+				setitemcolor	setsk_draina forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_draina_blink
+				hide			setsk_draina_labelblink
+				setitemcolor	setsk_draina forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_draina_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_DRAINA
+			rect				330 210 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+		
+	// Force Ranks title		
+		itemDef 
+		{
+			name				forceranktitleE
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Other Status & Energy Powers"
+			rect				430 255 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2E
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				380 255 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			outlinecolor		.5 .5 .5 .5
+			font					4
+			textscale				1
+		forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}		
+		// Force Rage title
+		itemDef 
+		{
+			name					setfp_rage
+			group					darkpowers
+			style					0	
+			text					"Enhancement Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 270 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_rage_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Enhancement Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 270 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Rage assign
+		itemDef 
+		{
+			name					setfp_rage
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_RAGE
+			//[ForceSys]
+			rect					330 270 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Enhancement Power"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_rage_blink
+				show			setfp_rage_labelblink
+				setitemcolor	setfp_rage forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_rage_blink
+				hide			setfp_rage_labelblink
+				setitemcolor	setfp_rage forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_rage_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_RAGE
+			rect				330 270 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+// Force Ragea title
+		itemDef 
+		{
+			name					setsk_ragea
+			group					darkpowers
+			style					0	
+			text					"Rage / Valor / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 285 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_ragea_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Rage / Valor / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 285 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Ragea assign
+		itemDef 
+		{
+			name					setsk_ragea
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_RAGEA
+			//[ForceSys]
+			rect					330 285 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Rage / Force Valor / .."
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_ragea_blink
+				show			setsk_ragea_labelblink
+				setitemcolor	setsk_ragea forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_ragea_blink
+				hide			setsk_ragea_labelblink
+				setitemcolor	setsk_ragea forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_ragea_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_RAGEA
+			rect				330 285 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+			
+// Force Destruction title
+		itemDef 
+		{
+			name					setfp_team_force
+			group					darkpowers
+			style					0	
+			text					"Focus Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 300 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setfp_team_force_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Focus Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 300 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Destruction assign
+		itemDef 
+		{
+			name					setfp_team_force
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_TEAM_FORCE
+			//[ForceSys]
+			rect					330 300 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Focus Power"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setfp_team_force_blink
+				show			setfp_team_force_labelblink
+				setitemcolor	setfp_team_force forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setfp_team_force_blink
+				hide			setfp_team_force_labelblink
+				setitemcolor	setfp_team_force forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setfp_team_force_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_TEAM_FORCE
+			rect				330 300 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+// Force Destructiona title
+		itemDef 
+		{
+			name					setsk_destructiona
+			group					darkpowers
+			style					0	
+			text					"Destruction / Blinding / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 315 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_destructiona_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Destruction / Blinding / ..:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			//[ForceSys]			430 255 175 15
+			rect					430 315 110 15
+			//rect					220 257 110 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
+
+		// Force Destructiona assign
+		itemDef 
+		{
+			name					setsk_destructiona
+			group					darkpowers
+			style					0	
+			type					1
+			ownerdraw				UI_FORCE_RANK_DESTRUCTIONA
+			//[ForceSys]
+			rect					330 315 175 15
+			//rect					220 257 175 15
+			//[/ForceSys]
+			textalign				ITEM_ALIGN_RIGHT										
+			textalignx				115
+			textaligny				-5
+			font					4
+			textscale				1
+			forecolor				0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Force Destruction / Force Blinding / .."
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_destructiona_blink
+				show			setsk_destructiona_labelblink
+				setitemcolor	setsk_destructiona forecolor 0.82 0.84 0.88 1
+			}
+			mouseexit 
+			{ 
+				hide			setsk_destructiona_blink
+				hide			setsk_destructiona_labelblink
+				setitemcolor	setsk_destructiona forecolor 0.82 0.84 0.88 1
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_destructiona_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_DESTRUCTIONA
+			rect				330 315 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+	}
+}
+
+//[/NewMenus]
+
+

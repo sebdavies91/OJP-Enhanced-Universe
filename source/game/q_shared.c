@@ -1105,6 +1105,118 @@ void Q_strcat( char *dest, int size, const char *src ) {
 }
 
 
+/*
+================
+Q_ColorStringLength / Q_ColorStringIndex
+
+Recognise the original one-digit colour codes and the extended numeric
+codes ^10 through ^13. Matching the longest valid code is essential so
+that ^10 is not interpreted as red (^1) followed by a visible zero.
+================
+*/
+int Q_ColorStringLength( const char *p ) {
+	if ( !p || p[0] != Q_COLOR_ESCAPE || !p[1] || p[1] == Q_COLOR_ESCAPE ) {
+		return 0;
+	}
+
+	if ( p[1] < '0' || p[1] > '9' ) {
+		return 0;
+	}
+
+	if ( p[1] == '1' && p[2] >= '0' && p[2] <= '3' ) {
+		return 3;
+	}
+
+	return 2;
+}
+
+int Q_ColorStringIndex( const char *p ) {
+	int length = Q_ColorStringLength( p );
+
+	if ( length == 3 ) {
+		return 10 + ( p[2] - '0' );
+	}
+
+	if ( length == 2 ) {
+		return p[1] - '0';
+	}
+
+	return COLOR_INDEX_WHITE;
+}
+
+/*
+================
+Q_ColorStringColor
+
+Resolve a text colour without extending g_color_table. The renderer and
+legacy code paths assume g_color_table has exactly eight entries, so the
+extra colours are resolved here instead of changing that shared table.
+================
+*/
+void Q_ColorStringColor( const char *p, vec4_t color ) {
+	int index;
+
+	if ( !color ) {
+		return;
+	}
+
+	index = Q_ColorStringIndex( p );
+	if ( index >= COLOR_INDEX_BLACK && index <= COLOR_INDEX_WHITE ) {
+		memcpy( color, g_color_table[index], sizeof( vec4_t ) );
+		return;
+	}
+
+	switch ( index ) {
+	case COLOR_INDEX_LIME:
+		MAKERGBA( color, 0.60f, 1.00f, 0.00f, 1.00f );
+		break;
+	case COLOR_INDEX_WINE:
+		MAKERGBA( color, 0.50f, 0.00f, 0.20f, 1.00f );
+		break;
+	case COLOR_INDEX_ORANGE:
+		MAKERGBA( color, 1.00f, 0.50f, 0.00f, 1.00f );
+		break;
+	case COLOR_INDEX_LILAC:
+		MAKERGBA( color, 0.78f, 0.62f, 1.00f, 1.00f );
+		break;
+	case COLOR_INDEX_GRAY:
+		MAKERGBA( color, 0.55f, 0.55f, 0.55f, 1.00f );
+		break;
+	case COLOR_INDEX_BROWN:
+		MAKERGBA( color, 0.50f, 0.27f, 0.10f, 1.00f );
+		break;
+	default:
+		memcpy( color, g_color_table[COLOR_INDEX_WHITE], sizeof( vec4_t ) );
+		break;
+	}
+}
+
+void Q_StripColorStrings( const char *in, char *out, int outSize ) {
+	int colorLength;
+
+	if ( !out || outSize <= 0 ) {
+		return;
+	}
+
+	if ( !in ) {
+		out[0] = '\0';
+		return;
+	}
+
+	while ( *in && outSize > 1 ) {
+		colorLength = Q_ColorStringLength( in );
+		if ( colorLength ) {
+			in += colorLength;
+			continue;
+		}
+
+		*out++ = *in++;
+		outSize--;
+	}
+
+	*out = '\0';
+}
+
 int Q_PrintStrlen( const char *string ) {
 	int			len;
 	const char	*p;
@@ -1117,7 +1229,7 @@ int Q_PrintStrlen( const char *string ) {
 	p = string;
 	while( *p ) {
 		if( Q_IsColorString( p ) ) {
-			p += 2;
+			p += Q_ColorStringLength( p );
 			continue;
 		}
 		p++;
@@ -1139,8 +1251,11 @@ char* Q_CleanStr(char* string) {
 	int c;
 
 	while ((c = *s) != 0) {
-		if (Q_IsColorString(s)) {
-			s++;  // Skip color code
+		int colorLength = Q_ColorStringLength( s );
+
+		if ( colorLength ) {
+			s += colorLength;
+			continue;
 		}
 		else if (c >= 0x20 && c <= 0x7E) {
 			*d++ = c;  // Copy printable characters

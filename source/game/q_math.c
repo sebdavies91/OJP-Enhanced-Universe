@@ -1460,15 +1460,48 @@ float Q_flrand(float min, float max)
 
 int irand(int min, int max)
 {
-	int		result;
+	unsigned int randomValue;
+	unsigned int range;
+	unsigned int offset;
 
-	assert((max - min) < 32768);
-
-	max++;
+	/*
+	 * The original implementation asserted when max - min was 32768 or
+	 * greater because its random source is 15-bit. Game code can request
+	 * wider intervals (for example long timers), so scale the same 15-bit
+	 * sample without overflowing the intermediate multiplication. For all
+	 * intervals accepted by the old implementation this produces exactly
+	 * the same result and advances the generator exactly once.
+	 */
 	holdrand = (holdrand * 214013) + 2531011;
-	result = holdrand >> 17;
-	result = ((result * (max - min)) >> 15) + min;
-	return(result);
+	randomValue = holdrand >> 17;
+
+	/* Treat an invalid or single-value interval as that single value. */
+	if (max <= min)
+	{
+		return min;
+	}
+
+	/*
+	 * Unsigned subtraction avoids signed overflow if the interval crosses
+	 * zero. A zero range here represents the complete 32-bit int range.
+	 */
+	range = (unsigned int)max - (unsigned int)min + 1U;
+
+	if (range == 0U)
+	{
+		offset = randomValue << 17;
+	}
+	else
+	{
+		/*
+		 * Exact form of floor(randomValue * range / 32768), split into
+		 * high and low parts so the 32-bit multiplication cannot overflow.
+		 */
+		offset = randomValue * (range >> 15);
+		offset += (randomValue * (range & 0x7FFFU)) >> 15;
+	}
+
+	return (int)((unsigned int)min + offset);
 }
 
 int Q_irand(int value1, int value2)

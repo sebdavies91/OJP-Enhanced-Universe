@@ -1142,12 +1142,6 @@ void Touch_DoorTrigger( gentity_t *ent, gentity_t *other, trace_t *trace )
 			return;
 		}
 		
-
-		if (other->client && other->s.number < MAX_CLIENTS &&
-			other->client->ps.m_iVehicleNum && !other->client->skillLevel[SK_SPECIALCHARACTER]>=FORCE_LEVEL_1)
-		{ //can't open a door while on a vehicle
-			return;
-		}
 	}
 
 	if ( ent->flags & FL_INACTIVE )

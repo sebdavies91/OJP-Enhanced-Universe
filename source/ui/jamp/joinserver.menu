@@ -1,4 +1,4 @@
-//----------------------------------------------------------------------------------------------
+﻿//----------------------------------------------------------------------------------------------
 // Join a Server
 //	Allows user to view a list of available servers and choose which one to join.
 //
@@ -29,7 +29,7 @@
 			
 		
 //----------------------------------------------------------------------------------------------
-//	OJP MENU BACKGROUND
+//	OBP MENU BACKGROUND
 //----------------------------------------------------------------------------------------------
 
 
@@ -49,7 +49,7 @@
 			name				bgpic
 			style				WINDOW_STYLE_SHADER
 			rect				118 98 404 304
-			background			"ojp/menu/2"
+			background			"obp/menu/2"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -73,7 +73,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				115 -40 150 150
-			background			"ojp/menu/bluewire"
+			background			"obp/menu/bluewire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -87,7 +87,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				375 -40 150 150
-			background			"ojp/menu/redwire"
+			background			"obp/menu/redwire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -100,7 +100,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				103 104 26 300
-			background			"ojp/menu/boltblue"
+			background			"obp/menu/boltblue"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -112,7 +112,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				511 104 26 300
-			background			"ojp/menu/boltred"
+			background			"obp/menu/boltred"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -126,7 +126,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				508 85 32 32
-			background			"ojp/menu/red_emitter"
+			background			"obp/menu/red_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -138,7 +138,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				100 85 32 32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -151,7 +151,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				508 380 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -163,7 +163,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				100 380 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -175,7 +175,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 391 640 18
-			background			"ojp/menu/lowbar"
+			background			"obp/menu/lowbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -187,7 +187,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 85 640 18
-			background			"ojp/menu/topbar"
+			background			"obp/menu/topbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -201,7 +201,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 0 320 80
-			background			"ojp/menu/bluebeam"
+			background			"obp/menu/bluebeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -213,7 +213,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				320 1 320 72
-			background			"ojp/menu/redbeam"
+			background			"obp/menu/redbeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -237,7 +237,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/redspin"
+			background			"obp/menu/redspin"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -249,7 +249,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				-1.5 -5 80 80
-			background			"ojp/menu/lightside"
+			background			"obp/menu/lightside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -261,7 +261,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/darkside"
+			background			"obp/menu/darkside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -270,11 +270,11 @@
 
 		itemDef 
 		{
-			name				ojplogo
+			name				obplogo
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				220 0 200 90
-			background			"ojp/menu/ojplogo"
+			background			"obp/menu/obplogo"
 			forecolor			1 1 1 1
 			visible				1
 			decoration

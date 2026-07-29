@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 
 // this file holds commands that can be executed by the server console, but not remote clients
@@ -529,7 +529,7 @@ ConsoleCommand
 =================
 */
 //[AdminSys]
-qboolean OJP_AllPlayersHaveClientPlugin(void);
+qboolean OBP_AllPlayersHaveClientPlugin(void);
 //[/AdminSys]
 qboolean	ConsoleCommand( void ) {
 	char	cmd[MAX_TOKEN_CHARS];
@@ -588,7 +588,7 @@ qboolean	ConsoleCommand( void ) {
 	//added bigsay command to be able to print things to the center of the screen as the server admin.
 	if (Q_stricmp (cmd, "centersay") == 0)
 	{
-		if(OJP_AllPlayersHaveClientPlugin())
+		if(OBP_AllPlayersHaveClientPlugin())
 		{//just fire off the text without editting it for line breaks.
 			trap_SendServerCommand( -1, va("cp \"%s\n\"", ConcatArgs(1) ) );
 		}

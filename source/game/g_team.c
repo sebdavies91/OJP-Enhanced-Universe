@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 
 #include "g_local.h"
@@ -200,7 +200,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 		{
 			ent1 = (gentity_t *)ent1->m_pVehicle->m_pPilot;
 		}
-		else if ( ent1->client && ent1->client->NPC_class == CLASS_VEHICLE )
+		else
 		{
 			return qfalse;
 		}
@@ -211,7 +211,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 		{
 			ent2 = (gentity_t *)ent2->m_pVehicle->m_pPilot;
 		}
-		else if ( ent2->client && ent2->client->NPC_class == CLASS_VEHICLE )
+		else
 		{
 			return qfalse;
 		}
@@ -269,7 +269,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 	{
 		sideA = TEAM_RED;
 	}
-	else if ( ent1->client->sess.sessionTeam == TEAM_FREE || (ent1->NPC && ent1->client->playerTeam == NPCTEAM_FREE) || ent1->client->sess.duelTeam == DUELTEAM_FREE)
+	else if ( ent1->client->sess.sessionTeam == TEAM_FREE || ent1->client->playerTeam == NPCTEAM_FREE || ent1->client->sess.duelTeam == DUELTEAM_FREE)
 	{
 		sideA = TEAM_FREE;
 	}
@@ -283,7 +283,7 @@ qboolean OnSameTeam( gentity_t *ent1, gentity_t *ent2 ) {
 	{
 		sideB = TEAM_RED;
 	}
-	else if ( ent2->client->sess.sessionTeam == TEAM_FREE || (ent2->NPC && ent2->client->playerTeam == NPCTEAM_FREE) || ent2->client->sess.duelTeam == DUELTEAM_FREE)
+	else if ( ent2->client->sess.sessionTeam == TEAM_FREE || ent2->client->playerTeam == NPCTEAM_FREE || ent2->client->sess.duelTeam == DUELTEAM_FREE)
 	{
 		sideB = TEAM_FREE;
 	}
@@ -826,8 +826,9 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 	// Ok, let's do the player loop, hand out the bonuses
 	for (i = 0; i < g_maxclients.integer; i++) {
+		qboolean awardedAssist = qfalse;
 		player = &g_entities[i];
-		if (!player->inuse)
+		if (!player->inuse || !player->client)
 			continue;
 
 		if (player->client->sess.sessionTeam !=
@@ -845,6 +846,7 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 
 				player->client->ps.persistant[PERS_ASSIST_COUNT]++;
 				player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+				awardedAssist = qtrue;
 
 			} else if (player->client->pers.teamState.lastfraggedcarrier + 
 				CTF_FRAG_CARRIER_ASSIST_TIMEOUT > level.time) {
@@ -852,6 +854,43 @@ int Team_TouchOurFlag( gentity_t *ent, gentity_t *other, int team ) {
 				other->client->pers.teamState.assists++;
 				player->client->ps.persistant[PERS_ASSIST_COUNT]++;
 				player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+				awardedAssist = qtrue;
+			}
+
+			// Optional OBP CTF/CTY improvement: give a small assist to teammates who
+			// were actually escorting the carrier at the moment of capture.  Keep this
+			// modest and cvar-controlled so vanilla scoring can be restored.
+			if (!awardedAssist && player != other &&
+				player->client->sess.sessionTeam != TEAM_SPECTATOR) {
+				qboolean allowEscortAssist = qfalse;
+				float escortRadius = 0.0f;
+
+				if (g_gametype.integer == GT_CTF && g_ctfAssistScoring.integer) {
+					allowEscortAssist = qtrue;
+					escortRadius = g_ctfEscortAssistRadius.value;
+				} else if (g_gametype.integer == GT_CTY && g_ctyAssistScoring.integer) {
+					allowEscortAssist = qtrue;
+					escortRadius = g_ctyEscortAssistRadius.value;
+				}
+
+				if (allowEscortAssist) {
+					vec3_t escortDelta;
+
+					if (escortRadius < 128.0f) {
+						escortRadius = 128.0f;
+					} else if (escortRadius > 2048.0f) {
+						escortRadius = 2048.0f;
+					}
+
+					VectorSubtract(player->r.currentOrigin, other->r.currentOrigin, escortDelta);
+					if (VectorLengthSquared(escortDelta) <= escortRadius * escortRadius &&
+						trap_InPVS(player->r.currentOrigin, other->r.currentOrigin)) {
+						AddScore(player, ent->r.currentOrigin, CTF_ESCORT_CAPTURE_ASSIST_BONUS);
+						other->client->pers.teamState.assists++;
+						player->client->ps.persistant[PERS_ASSIST_COUNT]++;
+						player->client->rewardTime = level.time + REWARD_SPRITE_TIME;
+					}
+				}
 			}
 		}
 	}
@@ -960,23 +999,35 @@ static int G_CombatFactionTag( gentity_t *ent )
 	if ( !ent )
 		return -1;
 
-	// Vehicles should always inherit their pilot's combat identity.
+	// Vehicles are neutral unless occupied.
+	// When occupied, the vehicle temporarily inherits the pilot's combat identity,
+	// so bots/NPCs attack only enemy-piloted vehicles. When the pilot leaves,
+	// the vehicle immediately becomes neutral again.
 	// Important: some vehicle entities may still have a client struct in MP,
 	// so this must happen before any client-based logic.
-	if ( ent->m_pVehicle && ent->m_pVehicle->m_pPilot )
+	if ( ent->m_pVehicle )
 	{
-		gentity_t *pilotEnt = (gentity_t *)ent->m_pVehicle->m_pPilot;
-		if ( pilotEnt && pilotEnt->client )
+		if ( ent->m_pVehicle->m_pPilot )
 		{
-			return G_CombatFactionTag( pilotEnt );
+			gentity_t *pilotEnt = (gentity_t *)ent->m_pVehicle->m_pPilot;
+			if ( pilotEnt && pilotEnt->client )
+			{
+				return G_CombatFactionTag( pilotEnt );
+			}
 		}
+
+		return -2;
 	}
 
-	// Vehicles and other client-less combatants: try to resolve to their pilot/owner.
-	// This is critical for AI target selection (bots/NPCs attacking piloted vehicles).
+	if ( ent->client && ent->client->NPC_class == CLASS_VEHICLE )
+	{
+		return -2;
+	}
+
+	// Client-less non-vehicle combatants: try to resolve to their owner.
 	if ( !ent->client )
 	{
-		// Some vehicle/remote entities don't expose m_pPilot but do set ownerNum.
+		// Some remote entities do not expose direct team data but do set ownerNum.
 		if ( ent->r.ownerNum >= 0 && ent->r.ownerNum < MAX_CLIENTS )
 		{
 			gentity_t *owner = &g_entities[ent->r.ownerNum];
@@ -1003,38 +1054,60 @@ static int G_CombatFactionTag( gentity_t *ent )
 		return -1;
 	}
 
-	// Spectators / neutral never participate in combat target selection
-	if ( ent->client->ps.pm_type == PM_SPECTATOR || ent->client->sess.sessionTeam == TEAM_SPECTATOR )
+	// Spectators / neutral never participate in combat target selection.
+	// Both directions must ignore each other:
+	// TEAM_SPECTATOR <-> NPCTEAM_NEUTRAL.
+	if ( ent->client->ps.pm_type == PM_SPECTATOR
+		|| ent->client->sess.sessionTeam == TEAM_SPECTATOR
+		|| ent->client->playerTeam == NPCTEAM_NEUTRAL )
+	{
 		return -2;
+	}
+
+	// Seeker/squadteam entities inherit their activator's faction first.
+	// This keeps player/enemy-owned followers from becoming unrelated FREE actors.
+	if ( ( ent->client->NPC_class == CLASS_SEEKER || ent->client->NPC_class == CLASS_SQUADTEAM )
+		&& ent->originalactivator && ent->originalactivator->client )
+	{
+		return G_CombatFactionTag( ent->originalactivator );
+	}
 
 	{
 		npcteam_t t = NPCTEAM_FREE;
 
-		if ( ent->s.eType == ET_NPC )
+		// Shared bidirectional combat bridge:
+		// TEAM_BLUE      <-> NPCTEAM_PLAYER
+		// TEAM_RED       <-> NPCTEAM_ENEMY
+		// TEAM_FREE      <-> NPCTEAM_FREE
+		// TEAM_SPECTATOR <-> NPCTEAM_NEUTRAL handled above as -2
+		if ( ent->client->sess.sessionTeam == TEAM_BLUE
+			|| ent->client->playerTeam == NPCTEAM_PLAYER
+			|| ent->client->sess.duelTeam == DUELTEAM_DOUBLE )
 		{
-			t = ent->client->playerTeam;
+			t = NPCTEAM_PLAYER;
+		}
+		else if ( ent->client->sess.sessionTeam == TEAM_RED
+			|| ent->client->playerTeam == NPCTEAM_ENEMY
+			|| ent->client->sess.duelTeam == DUELTEAM_LONE )
+		{
+			t = NPCTEAM_ENEMY;
+		}
+		else if ( ent->client->sess.sessionTeam == TEAM_FREE
+			|| ent->client->playerTeam == NPCTEAM_FREE
+			|| ent->client->sess.duelTeam == DUELTEAM_FREE )
+		{
+			t = NPCTEAM_FREE;
 		}
 		else
 		{
-			switch ( ent->client->sess.sessionTeam )
-			{
-			case TEAM_RED: t = NPCTEAM_ENEMY; break;
-			case TEAM_BLUE: t = NPCTEAM_PLAYER; break;
-			case TEAM_SPECTATOR: t = NPCTEAM_NEUTRAL; break;
-			case TEAM_FREE: default: t = NPCTEAM_FREE; break;
-			}
+			return -1;
 		}
 
-		if ( t == NPCTEAM_NEUTRAL )
-			return -2;
-
 		// FFA semantics: TEAM_FREE / NPCTEAM_FREE are NOT one big allied bucket.
-		// Each client is its own faction; owned followers share their owner's faction.
+		// Each FREE actor is its own faction, so BLUE/RED/PLAYER/ENEMY attack FREE
+		// and FREE attacks BLUE/RED/PLAYER/ENEMY.
 		if ( t == NPCTEAM_FREE )
 		{
-			// Player-owned followers (squadteam, remote, seekers, etc.) should belong to their activator.
-			// In team modes this means inheriting the owner's team bucket; in FFA it means inheriting
-			// the owner's unique faction.
 			if ( ent->originalactivator && ent->originalactivator->client )
 			{
 				return G_CombatFactionTag( ent->originalactivator );
@@ -1042,7 +1115,7 @@ static int G_CombatFactionTag( gentity_t *ent )
 			return ent->s.number;
 		}
 
-		// Team modes: collapse into stable buckets
+		// Team modes: collapse BLUE/PLAYER and RED/ENEMY into stable buckets.
 		return 10000 + (int)t;
 	}
 }
@@ -1067,7 +1140,7 @@ qboolean G_CombatEnemy( gentity_t *ent1, gentity_t *ent2 )
 	int a = G_CombatFactionTag( ent1 );
 	int b = G_CombatFactionTag( ent2 );
 
-	// Neutral/spectator never fights.
+	// Neutral/spectator never fights and is never a target.
 	if ( a == -2 || b == -2 )
 		return qfalse;
 
@@ -1097,6 +1170,131 @@ qboolean Team_GetLocationMsg(gentity_t *ent, char *loc, int loclen)
 	return qtrue;
 }
 
+
+/*---------------------------------------------------------------------------*/
+
+static gentity_t *G_CTFCarrierForFlagTeam(team_t flagTeam)
+{
+	int i;
+	int flagPowerup;
+
+	if (flagTeam == TEAM_RED)
+	{
+		flagPowerup = PW_REDFLAG;
+	}
+	else if (flagTeam == TEAM_BLUE)
+	{
+		flagPowerup = PW_BLUEFLAG;
+	}
+	else
+	{
+		return NULL;
+	}
+
+	for (i = 0; i < level.maxclients; i++)
+	{
+		gentity_t *ent = &g_entities[i];
+
+		if (!ent->inuse || !ent->client)
+		{
+			continue;
+		}
+
+		if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+		{
+			continue;
+		}
+
+		if (ent->client->ps.powerups[flagPowerup])
+		{
+			return ent;
+		}
+	}
+
+	return NULL;
+}
+
+static gentity_t *G_CTFDroppedFlagForTeam(team_t flagTeam)
+{
+	gentity_t *flag = NULL;
+	const char *classname;
+
+	if (flagTeam == TEAM_RED)
+	{
+		classname = "team_CTF_redflag";
+	}
+	else if (flagTeam == TEAM_BLUE)
+	{
+		classname = "team_CTF_blueflag";
+	}
+	else
+	{
+		return NULL;
+	}
+
+	while ((flag = G_Find(flag, FOFS(classname), classname)) != NULL)
+	{
+		if (flag->flags & FL_DROPPED_ITEM)
+		{
+			return flag;
+		}
+	}
+
+	return NULL;
+}
+
+static float G_CTFObjectiveSpawnScore(gentity_t *spot, team_t team)
+{
+	float score;
+	gentity_t *enemyCarrier;
+	gentity_t *ownDroppedFlag;
+
+	if (!spot)
+	{
+		return -999999.0f;
+	}
+
+	/* Small random term preserves some vanilla variation among otherwise equal spots. */
+	score = (float)(rand() & 127);
+
+	/* If the enemy has our flag, avoid spawning directly on top of their escape path. */
+	enemyCarrier = G_CTFCarrierForFlagTeam(team);
+	if (enemyCarrier)
+	{
+		float dist = Distance(spot->s.origin, enemyCarrier->r.currentOrigin);
+
+		if (dist < 512.0f)
+		{
+			score -= 5000.0f;
+		}
+		else if (dist < 1024.0f)
+		{
+			score -= (1024.0f - dist) * 2.0f;
+		}
+		else
+		{
+			if (dist > 4096.0f)
+			{
+				dist = 4096.0f;
+			}
+			score += dist * 0.10f;
+		}
+	}
+
+	/* If our flag is dropped, prefer useful defensive spawns without making it mandatory. */
+	ownDroppedFlag = G_CTFDroppedFlagForTeam(team);
+	if (ownDroppedFlag)
+	{
+		float dist = Distance(spot->s.origin, ownDroppedFlag->r.currentOrigin);
+
+		if (dist < 2048.0f)
+		{
+			score += (2048.0f - dist) * 0.25f;
+		}
+	}
+
+	return score;
+}
 
 /*---------------------------------------------------------------------------*/
 
@@ -1192,6 +1390,30 @@ gentity_t *SelectRandomTeamSpawnPoint( int teamstate, team_t team, int siegeClas
 		{ //found at least one
 			selection = rand() % classCount;
 			return spots[ selection ];
+		}
+	}
+
+	if ((g_gametype.integer == GT_CTF && g_ctfSpawnObjectiveAware.integer) ||
+		(g_gametype.integer == GT_CTY && g_ctySpawnObjectiveAware.integer))
+	{
+		int bestIndex = -1;
+		float bestScore = -999999.0f;
+		int i;
+
+		for (i = 0; i < count; i++)
+		{
+			float score = G_CTFObjectiveSpawnScore(spots[i], team);
+
+			if (bestIndex < 0 || score > bestScore)
+			{
+				bestIndex = i;
+				bestScore = score;
+			}
+		}
+
+		if (bestIndex >= 0)
+		{
+			return spots[bestIndex];
 		}
 	}
 
@@ -1482,7 +1704,7 @@ void TeamplayInfoMessage( gentity_t *ent ) {
 
 			//[BugFix34]
 			//check to make sure that duplicate data isn't being transmitted to the clients.
-			if(ent->client->pers.ojpClientPlugIn //don't use this method if the player doesn't have the client plugin
+			if(ent->client->pers.obpClientPlugIn //don't use this method if the player doesn't have the client plugin
 				&& oldOverLayData[i].location == player->client->pers.teamState.location
 				&& oldOverLayData[i].health == h
 				&& oldOverLayData[i].armor == a 
@@ -1604,7 +1826,7 @@ void SP_team_CTF_bluespawn(gentity_t *ent) {
 
 
 //[AdminSys]
-int OJP_PointSpread(void)
+int OBP_PointSpread(void)
 {//returns the approprate point spread required to force team balancing based on score
 	switch(g_gametype.integer)
 	{
@@ -1623,3 +1845,150 @@ int OJP_PointSpread(void)
 }
 //[/AdminSys]
 
+
+
+/*
+================
+G_CTFStalemateHintsThink
+
+Optional, non-gameplay CTF stalemate hinting. This is deliberately short and
+throttled so it behaves like a light objective reminder rather than a spammy
+HUD replacement.
+================
+*/
+void G_CTFStalemateHintsThink(void)
+{
+	static int bothFlagsHeldStart = 0;
+	static int nextHintTime = 0;
+	int staleTime;
+	int interval;
+	int i;
+	qboolean bothFlagsHeld;
+
+	if (g_gametype.integer != GT_CTF || !g_ctfStalemateTimer.integer)
+	{
+		bothFlagsHeldStart = 0;
+		nextHintTime = 0;
+		return;
+	}
+
+	bothFlagsHeld = (teamgame.redStatus == FLAG_TAKEN &&
+		teamgame.blueStatus == FLAG_TAKEN);
+
+	if (!bothFlagsHeld)
+	{
+		bothFlagsHeldStart = 0;
+		nextHintTime = 0;
+		return;
+	}
+
+	if (!bothFlagsHeldStart)
+	{
+		bothFlagsHeldStart = level.time;
+		return;
+	}
+
+	staleTime = g_ctfStalemateTimer.integer;
+	if (staleTime < 30)
+	{
+		staleTime = 30;
+	}
+
+	if (level.time - bothFlagsHeldStart < staleTime * 1000)
+	{
+		return;
+	}
+
+	interval = g_ctfStalemateHintInterval.integer;
+	if (interval < 15)
+	{
+		interval = 15;
+	}
+	else if (interval > 120)
+	{
+		interval = 120;
+	}
+
+	if (nextHintTime > level.time)
+	{
+		return;
+	}
+
+	for (i = 0; i < level.maxclients; i++)
+	{
+		gentity_t *ent = &g_entities[i];
+
+		if (!ent->inuse || !ent->client ||
+			(ent->r.svFlags & SVF_BOT) ||
+			ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+		{
+			continue;
+		}
+
+		trap_SendServerCommand(ent->s.number,
+			"cp \"Both flags are held. Escort carrier or return your flag.\n\"");
+	}
+
+	nextHintTime = level.time + interval * 1000;
+}
+
+/*
+================
+G_CTYYsalamiriFeedbackThink
+
+Short, state-change-only feedback for CTY/Ysalamiri force suppression.
+BG_HasYsalamiri/BG_CanUseFPNow and the force-protection checks handle gameplay;
+this only tells human players when their own Force powers became protected/
+suppressed or restored.
+================
+*/
+void G_CTYYsalamiriFeedbackThink(void)
+{
+	static qboolean lastSuppressed[MAX_CLIENTS];
+	static int nextFeedbackTime[MAX_CLIENTS];
+	int i;
+
+	if (g_gametype.integer != GT_CTY || !g_ctyYsalamiriFeedback.integer)
+	{
+		for (i = 0; i < MAX_CLIENTS; i++)
+		{
+			lastSuppressed[i] = qfalse;
+			nextFeedbackTime[i] = 0;
+		}
+		return;
+	}
+
+	for (i = 0; i < level.maxclients; i++)
+	{
+		gentity_t *ent = &g_entities[i];
+		qboolean suppressed;
+
+		if (!ent->inuse || !ent->client ||
+			(ent->r.svFlags & SVF_BOT) ||
+			ent->client->sess.sessionTeam == TEAM_SPECTATOR ||
+			ent->client->ps.stats[STAT_HEALTH] <= 0)
+		{
+			lastSuppressed[i] = qfalse;
+			nextFeedbackTime[i] = 0;
+			continue;
+		}
+
+		suppressed = BG_HasYsalamiri(g_gametype.integer, &ent->client->ps);
+		if (suppressed == lastSuppressed[i])
+		{
+			continue;
+		}
+
+		lastSuppressed[i] = suppressed;
+
+		// Extra guard against pickup/drop spam in the same burst.
+		if (nextFeedbackTime[i] > level.time)
+		{
+			continue;
+		}
+
+		trap_SendServerCommand(ent->s.number,
+			va("cp \"%s\n\"", suppressed ? "Force suppressed/protected" : "Force restored"));
+		nextFeedbackTime[i] = level.time + 3000;
+	}
+}

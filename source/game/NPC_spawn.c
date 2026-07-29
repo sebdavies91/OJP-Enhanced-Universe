@@ -1,4 +1,4 @@
-//b_spawn.cpp
+﻿//b_spawn.cpp
 //added by MCG
 #include "b_local.h"
 #include "anims.h"
@@ -1539,7 +1539,7 @@ NPC_SetWeapons
 */
 
 //[VisualWeapons]
-qboolean OJP_AllPlayersHaveClientPlugin(void);
+qboolean OBP_AllPlayersHaveClientPlugin(void);
 //[/VisualWeapons]
 void NPC_SetWeapons( gentity_t *ent )
 {
@@ -1582,9 +1582,9 @@ void NPC_SetWeapons( gentity_t *ent )
 
 	//[VisualWeapons]
 	//update the weapon stats for this player since they have changed.
-	if(OJP_AllPlayersHaveClientPlugin())
+	if(OBP_AllPlayersHaveClientPlugin())
 	{//don't send the weapon updates if someone isn't able to process this new event type (IE anyone without
-		//the OJP client plugin)
+		//the OBP client plugin)
 		G_AddEvent(ent, EV_WEAPINVCHANGE, ent->client->ps.stats[STAT_WEAPONS]);
 	}
 	//[/VisualWeapons]
@@ -1967,19 +1967,12 @@ else
 	// Setup saber style bias cooldown logic
 	if (ent->client->saberStyleBiasTime < level.time)
 	{
-		ent->client->saberStyleBias = Q_irand(1, 5); // 1=FAST, ..., 5=DESANN
-		ent->client->saberStyleBiasTime = level.time + Q_irand(30000, 60000);
+		ent->client->saberStyleBias = Q_irand(SS_FAST, SS_TAVION);
+		ent->client->saberStyleBiasTime = level.time + Q_irand(7000, 16000);
 	}
 
 	int newLevel;
-	switch (ent->client->saberStyleBias)
-	{
-		case 5: newLevel = SS_DESANN; break;
-		case 4: newLevel = SS_TAVION; break;
-		case 3: newLevel = SS_STRONG; break;
-		case 2: newLevel = SS_MEDIUM; break;
-		default: newLevel = SS_FAST; break;
-	}
+	newLevel = ent->client->saberStyleBias;
 
 	// Validate and correct if needed
 	if (!G_ValidSaberStyle(ent, newLevel))
@@ -4012,6 +4005,13 @@ NOTSOLID - Starts not solid
 STARTINSOLID - Don't try to fix if spawn in solid
 SHY - Spawner is shy
 */
+void SP_NPC_Merchant( gentity_t *self)
+{
+	self->NPC_type = "merchant";
+
+	SP_NPC_spawner( self );
+}
+
 void SP_NPC_Rebel( gentity_t *self)
 {
 	if(!self->NPC_type)
@@ -4209,6 +4209,18 @@ NOTSOLID (64) - Starts not solid
 STARTINSOLID (128) - Don't try to fix if spawn in solid
 SHY (256) - Spawner is shy
 */
+void SP_NPC_BobaFett( gentity_t *self )
+{
+	self->NPC_type = "Boba_Fett";
+	SP_NPC_spawner( self );
+}
+
+void SP_NPC_Ragnos( gentity_t *self )
+{
+	self->NPC_type = "Ragnos";
+	SP_NPC_spawner( self );
+}
+
 void SP_NPC_Chewbacca (gentity_t *self)
 {
 	self->NPC_type = "chewie";
@@ -4814,6 +4826,13 @@ NOTSOLID - Starts not solid
 STARTINSOLID - Don't try to fix if spawn in solid
 SHY - Spawner is shy
 */
+void SP_NPC_Monster_Mutant_Rancor( gentity_t *self)
+{
+	self->NPC_type = "mutant_rancor";
+
+	SP_NPC_spawner( self );
+}
+
 void SP_NPC_Monster_Wampa( gentity_t *self)
 {
 	self->NPC_type = "wampa";
@@ -4834,7 +4853,14 @@ SHY - Spawner is shy
 */
 void SP_NPC_Monster_Rancor( gentity_t *self)
 {
-	self->NPC_type = "rancor";
+	if ( (self->spawnflags&1) )
+	{
+		self->NPC_type = "mutant_rancor";
+	}
+	else
+	{
+		self->NPC_type = "rancor";
+	}
 
 	SP_NPC_spawner( self );
 }
@@ -5717,4 +5743,21 @@ void SP_NPC_Droid_Assassin( gentity_t *self)
 	SP_NPC_spawner( self );
 }
 //[/CoOp]
+void SP_NPC_RocketTrooper( gentity_t *self)
+{
+	if ( !self->NPC_type )
+	{
+		if ( (self->spawnflags&1) )
+		{
+			self->NPC_type = "rockettrooper2Officer";
+		}
+		else
+		{
+			self->NPC_type = "rockettrooper2";
+		}
+	}
+
+	SP_NPC_spawner( self );
+}
+
 

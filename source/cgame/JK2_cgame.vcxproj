@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug(Final)|Win32">
@@ -22,6 +22,7 @@
     <ProjectName>JK2cgame</ProjectName>
     <ProjectGuid>{4DC69D68-9DB8-4DEB-AC63-481153B1F41D}</ProjectGuid>
     <RootNamespace>JK2cgame</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'" Label="Configuration">
@@ -66,16 +67,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\../Debug/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">.\../Final/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\../Debug/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\openbattlefrontproject</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">.\../Debug/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">cgamex86</TargetName>
@@ -109,6 +110,7 @@
       <ObjectFileName>.\../Release/JK2cgame/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Release/JK2cgame/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
@@ -120,7 +122,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\cgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\cgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_cgame.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -160,6 +162,7 @@
       <ObjectFileName>.\../Final/JK2cgame/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Final/JK2cgame/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
     </ClCompile>
@@ -170,7 +173,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../ojpenhanced/cgamex86.dll</OutputFile>
+      <OutputFile>../../openbattlefrontproject/cgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_cgame.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>
@@ -207,8 +210,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2cgame/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <ResourceCompile>
@@ -218,7 +222,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\cgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\cgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_cgame.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -252,8 +256,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2cgame/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <ResourceCompile>
@@ -263,7 +268,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\cgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\cgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_cgame.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -356,7 +361,7 @@
     <ClInclude Include="..\ghoul2\G2.h" />
     <ClInclude Include="holocronicons.h" />
     <ClInclude Include="..\ui\keycodes.h" />
-    <ClInclude Include="..\..\ojpenhanced\ui\jamp\menudef.h" />
+    <ClInclude Include="..\ui\jamp\menudef.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
     <ClInclude Include="..\game\surfaceflags.h" />

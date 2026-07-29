@@ -1,10 +1,18 @@
-//[dynamicMusic]
+﻿//[dynamicMusic]
 //g_dynmusic.c
 //dynamic music code file
 #include "g_local.h"
 #include "g_dynmusic.h"
 
 DynamicMusicGroup_t DMSData;		//holds all our dynamic music data
+
+static void DMS_ClearData( void )
+{
+	memset( &DMSData, 0, sizeof( DMSData ) );
+	DMSData.dmDebounceTime = -1;
+	DMSData.dmState = DM_AUTO;
+	DMSData.olddmState = DM_AUTO;
+}
 
 void LoadDynamicMusicGroup(char *mapname, char *buffer);
 
@@ -15,6 +23,10 @@ void LoadDynamicMusic(void)
     fileHandle_t f;
     char* buffer;  // use pointer now
     vmCvar_t mapname;
+
+    // Always reset stale DMS state when changing maps.  Otherwise a map with
+    // no valid entry can inherit/keep the previous or default theme state.
+    DMS_ClearData();
 
     // Allocate memory using BG_TempAlloc instead of BG_Alloc
     buffer = (char*)BG_TempAlloc(DMS_INFO_SIZE);
@@ -263,11 +275,8 @@ void LoadDynamicMusicGroup(char* mapname, char* buffer)
         return;
     }
 
-    // initialize DMSData
-    DMSData.valid = qfalse;
-    DMSData.actionMusic.valid = qfalse;
-    DMSData.exploreMusic.valid = qfalse;
-    DMSData.bossMusic.valid = qfalse;
+    // initialize DMSData for this candidate group
+    DMS_ClearData();
 
     BG_SiegeGetValueGroup(buffer, "levelmusic", MapMusicGroup);
 
@@ -308,6 +317,25 @@ void LoadDynamicMusicGroup(char* mapname, char* buffer)
 
     LoadDMSSongLengths();
 
+    // Start map exploration music immediately.  The old code loaded DMS but
+    // left CS_MUSIC empty until the first DMS frame update, and worldspawn then
+    // overwrote it with an empty string.  In GT_SINGLEPLAYER that allowed the
+    // default OBP theme/menu music to keep playing on many SP/JK2 maps.
+    if ( DMSData.exploreMusic.valid && DMSData.exploreMusic.fileName[0] )
+    {
+        trap_SetConfigstring( CS_MUSIC, DMSData.exploreMusic.fileName );
+        DMSData.dmState = DM_EXPLORE;
+        DMSData.olddmState = DM_EXPLORE;
+        DMSData.dmStartTime = level.time;
+    }
+    else if ( DMSData.actionMusic.valid && DMSData.actionMusic.fileName[0] )
+    {
+        trap_SetConfigstring( CS_MUSIC, DMSData.actionMusic.fileName );
+        DMSData.dmState = DM_ACTION;
+        DMSData.olddmState = DM_ACTION;
+        DMSData.dmStartTime = level.time;
+    }
+
     BG_TempFree(DMS_INFO_SIZE);  // Replacing memset with BG_TempFree to "clear" memory before returning
 }
 
@@ -328,13 +356,17 @@ void TransitionBetweenState(void)
 	if((DMSData.olddmState != DM_ACTION && DMSData.olddmState != DM_EXPLORE) 
 		|| !DMSData.dmStartTime)
 	{//not transitioning between action and explore, just start the music
-		if(DMSData.dmState == DM_ACTION)
+		if ( DMSData.dmState == DM_ACTION && DMSData.actionMusic.valid )
 		{//want to switch to action
  			trap_SetConfigstring( CS_MUSIC, DMSData.actionMusic.fileName );
 		}
-		else
+		else if ( DMSData.exploreMusic.valid )
 		{//want to switch to explore
 			trap_SetConfigstring( CS_MUSIC, DMSData.exploreMusic.fileName );
+		}
+		else
+		{
+			return;
 		}
 		DMSData.olddmState = DMSData.dmState;
 		DMSData.dmStartTime = level.time;
@@ -445,9 +477,9 @@ void G_DynamicMusicUpdate( void )
 		player = &g_entities[i];
 
 		//check to make sure this player is valid
-		if(!player || !player->inuse 
+		if ( !player || !player->inuse || !player->client
 			|| player->client->pers.connected == CON_DISCONNECTED
-			|| player->client->sess.sessionTeam == TEAM_SPECTATOR)
+			|| player->client->sess.sessionTeam == TEAM_SPECTATOR )
 		{
 			continue;
 		}
@@ -569,13 +601,17 @@ void G_DynamicMusicUpdate( void )
 		}
 	}
 
-	if ( battle )
+	if ( battle && DMSData.actionMusic.valid )
 	{
 		SetDMSState(DM_ACTION);
 	}
-	else 
+	else if ( DMSData.exploreMusic.valid )
 	{//switch to explore
 		SetDMSState(DM_EXPLORE);
+	}
+	else if ( DMSData.actionMusic.valid )
+	{//some maps may only define action music
+		SetDMSState(DM_ACTION);
 	}
 
 	if(DMSData.dmState != DMSData.olddmState)
@@ -588,11 +624,26 @@ void G_DynamicMusicUpdate( void )
 //set the dynamic music system's desired state
 void SetDMSState( int DMSState )
 {
-	if(DMSData.valid && DMSData.olddmState != DMSState)
+	if ( !DMSData.valid || DMSData.olddmState == DMSState )
 	{
-		DMSData.dmState = DMSState;
-		DMSData.dmDebounceTime = -1;
+		return;
 	}
+
+	if ( DMSState == DM_EXPLORE && !DMSData.exploreMusic.valid )
+	{
+		return;
+	}
+	if ( DMSState == DM_ACTION && !DMSData.actionMusic.valid )
+	{
+		return;
+	}
+	if ( DMSState == DM_BOSS && !DMSData.bossMusic.valid )
+	{
+		return;
+	}
+
+	DMSData.dmState = DMSState;
+	DMSData.dmDebounceTime = -1;
 }
 //[/dynamicMusic]
 

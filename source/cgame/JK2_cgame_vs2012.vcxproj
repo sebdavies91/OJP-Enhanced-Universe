@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug(Final)|Win32">
@@ -66,16 +66,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\../Debug/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">.\../Final/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\../Debug/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">.\../Debug/JK2cgame\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">true</LinkIncremental>
     <IncludePath Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">C:\Users\Brain\Downloads\patriciogonzalezvivo-ofxFX-46492fe\patriciogonzalezvivo-ofxFX-46492fe\src;$(IncludePath)</IncludePath>
@@ -116,6 +116,7 @@
       <ObjectFileName>.\../Release/JK2cgame/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Release/JK2cgame/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
@@ -127,7 +128,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\cgamex86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\cgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_cgame.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -170,6 +171,7 @@
       <ObjectFileName>.\../Final/JK2cgame/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Final/JK2cgame/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <CompileAs>Default</CompileAs>
     </ClCompile>
@@ -180,7 +182,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../ojpenhanced/cgamex86.dll</OutputFile>
+      <OutputFile>../../openbattlefrontproject/cgamex86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\JK2_cgame.def</ModuleDefinitionFile>
       <ProgramDatabaseFile>
@@ -221,8 +223,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2cgame/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <ResourceCompile>
@@ -237,9 +240,9 @@
       <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <ModuleDefinitionFile>.\JK2_cgame.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <ProgramDatabaseFile>..\..\ojpenhanced\cgamex86.pdb</ProgramDatabaseFile>
+      <ProgramDatabaseFile>..\..\openbattlefrontproject\cgamex86.pdb</ProgramDatabaseFile>
       <GenerateMapFile>true</GenerateMapFile>
-      <MapFileName>..\..\ojpenhanced\cgamex86.map</MapFileName>
+      <MapFileName>..\..\openbattlefrontproject\cgamex86.map</MapFileName>
       <SubSystem>Windows</SubSystem>
       <BaseAddress>0x30000000</BaseAddress>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -271,8 +274,9 @@
       <ProgramDataBaseFileName>.\../Debug/JK2cgame/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <CompileAs>Default</CompileAs>
     </ClCompile>
     <ResourceCompile>

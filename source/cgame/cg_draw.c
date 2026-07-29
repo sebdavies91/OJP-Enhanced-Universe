@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_draw.c -- draw all of the graphical elements during
 // active (after loading) gameplay
@@ -40,10 +40,10 @@ char teamChat2[256];
 int cg_siegeDeathTime = 0;
 
 //[NewHud]
-#define MAX_OJPHUD_TICS 8
+#define MAX_OBPHUD_TICS 8
 //#define MAX_HUD_TICS 4
 
-const char *armorTicName[MAX_OJPHUD_TICS] = 
+const char *armorTicName[MAX_OBPHUD_TICS] = 
 //const char *armorTicName[MAX_HUD_TICS] = 
 //[/NewHud]
 {
@@ -72,7 +72,7 @@ const char *healthTicName[MAX_HUD_TICS] =
 //[/NewHud]
 
 //[NewHud]
-const char *forceTicName[MAX_OJPHUD_TICS] = 
+const char *forceTicName[MAX_OBPHUD_TICS] = 
 //const char *forceTicName[MAX_HUD_TICS] = 
 //[/NewHud]
 {
@@ -90,7 +90,7 @@ const char *forceTicName[MAX_OJPHUD_TICS] =
 
 
 //[DodgeSys]
-const char *dodgeTicName[MAX_OJPHUD_TICS] = 
+const char *dodgeTicName[MAX_OBPHUD_TICS] = 
 {
 "dodge_tic1", 
 "dodge_tic2", 
@@ -104,7 +104,7 @@ const char *dodgeTicName[MAX_OJPHUD_TICS] =
 //[/DodgeSys]
 
 //[NewHud]
-const char *ammoTicName[MAX_OJPHUD_TICS] = 
+const char *ammoTicName[MAX_OBPHUD_TICS] = 
 //const char *ammoTicName[MAX_HUD_TICS] = 
 {
 "ammo_tic1", 
@@ -402,11 +402,15 @@ int MenuFontToHandle(int iMenuFont)
 	return cgDC.Assets.qhMediumFont;
 }
 
+#define CG_TEXT_COLOR_BUFFER_SIZE 4096
+
 int CG_Text_Width(const char *text, float scale, int iMenuFont) 
 {
 	int iFontIndex = MenuFontToHandle(iMenuFont);
+	char cleanText[CG_TEXT_COLOR_BUFFER_SIZE];
 
-	return trap_R_Font_StrLenPixels(text, iFontIndex, scale);
+	Q_StripColorStrings( text, cleanText, sizeof( cleanText ) );
+	return trap_R_Font_StrLenPixels(cleanText, iFontIndex, scale);
 }
 
 int CG_Text_Height(const char *text, float scale, int iMenuFont) 
@@ -421,7 +425,17 @@ void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text
 {
 	int iStyleOR = 0;
 	int iFontIndex = MenuFontToHandle(iMenuFont);
+	int remainingChars = limit ? limit : -1;
+	const char *segmentStart;
+	const char *scan;
+	float drawX = x;
+	vec4_t currentColor;
+	char segment[CG_TEXT_COLOR_BUFFER_SIZE];
 	
+	if ( !text ) {
+		return;
+	}
+
 	switch (style)
 	{
 	case  ITEM_TEXTSTYLE_NORMAL:			iStyleOR = 0;break;					// JK2 normal text
@@ -433,14 +447,55 @@ void CG_Text_Paint(float x, float y, float scale, vec4_t color, const char *text
 	case  ITEM_TEXTSTYLE_SHADOWEDMORE:		iStyleOR = (int)STYLE_DROPSHADOW;break;	// JK2 drop shadow ( need a color for this )
 	}
 
-	trap_R_Font_DrawString(	x,		// int ox
-							y,		// int oy
-							text,	// const char *text
-							color,	// paletteRGBA_c c
-							iStyleOR | iFontIndex,	// const int iFontHandle
-							!limit?-1:limit,		// iCharLimit (-1 = none)
-							scale	// const float scale = 1.0f
-							);
+	memcpy( currentColor, color, sizeof( currentColor ) );
+	segmentStart = text;
+	scan = text;
+
+	while ( 1 ) {
+		int colorLength = *scan ? Q_ColorStringLength( scan ) : 0;
+
+		if ( !*scan || colorLength ) {
+			int segmentLength = (int)( scan - segmentStart );
+
+			if ( segmentLength > 0 && remainingChars != 0 ) {
+				int segmentChars;
+				int drawLimit;
+
+				if ( segmentLength >= (int)sizeof( segment ) ) {
+					segmentLength = sizeof( segment ) - 1;
+				}
+
+				memcpy( segment, segmentStart, segmentLength );
+				segment[segmentLength] = '\0';
+				segmentChars = trap_R_Font_StrLenChars( segment );
+				drawLimit = remainingChars < 0 ? -1 : remainingChars;
+
+				trap_R_Font_DrawString( (int)drawX, (int)y, segment, currentColor,
+					iStyleOR | iFontIndex, drawLimit, scale );
+
+				if ( remainingChars >= 0 ) {
+					if ( segmentChars >= remainingChars ) {
+						break;
+					}
+					remainingChars -= segmentChars;
+				}
+
+				drawX += trap_R_Font_StrLenPixels( segment, iFontIndex, scale );
+			}
+
+			if ( !*scan || remainingChars == 0 ) {
+				break;
+			}
+
+			Q_ColorStringColor( scan, currentColor );
+			currentColor[3] = color[3];
+			scan += colorLength;
+			segmentStart = scan;
+			continue;
+		}
+
+		scan++;
+	}
 }
 
 /*
@@ -493,6 +548,510 @@ qboolean CG_WorldCoordToScreenCoord( vec3_t worldCoord, int *x, int *y )
 }
 */
 
+
+/*
+================
+Active effect option-state helpers
+
+EF_FP_OPTION_2 describes the currently selected force subtype. Some force
+powers keep running after the player scrolls to another power, so cache that
+force option at activation time for the active icon only.
+
+Binoculars do not use EF_HI_OPTION_2/3. Those bits belong to the selected
+holdable icon subtype system. Binocular active mode is encoded by zoom state:
+  zoomMode 2                 = normal binoculars
+  zoomMode 3 + !zoomLocked   = thermal binoculars
+  zoomMode 3 + zoomLocked    = x-ray binoculars
+================
+*/
+static int cg_activeForceIconFlags[NUM_FORCE_POWERS];
+static qboolean cg_activeForceIconWasActive[NUM_FORCE_POWERS];
+
+static int CG_CurrentForceIconFlags( void )
+{
+	return (cg.snap->ps.eFlags & EF_FP_OPTION_2);
+}
+
+//[ActiveForceDirectButtonIconFix4]
+// Active force icons must not depend on the force-selection HUD state.  Direct
+// keybinds such as +force_absorb/+force_protect can start a duration power
+// without first cycling the HUD selection, so fd.forcePowerSelected and
+// EF_FP_OPTION_2 may still describe the previously selected power on the first
+// active snapshot.  Prefer the actual active-state markers where they exist
+// (userInt3 flags set by game code), then fall back to the local forcepowers
+// config string used to choose the alternate power variant.
+static qboolean CG_UserInt3FlagActiveForIcon( int flag )
+{
+	const playerState_t *ps;
+	const centity_t *cent;
+
+	if ( !cg.snap || flag < 0 )
+	{
+		return qfalse;
+	}
+
+	ps = &cg.snap->ps;
+	if ( ps->userInt3 & (1 << flag) )
+	{
+		return qtrue;
+	}
+
+	cent = &cg_entities[ps->clientNum];
+	if ( cent->currentState.userInt3 & (1 << flag) )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static int CG_ActiveForceIconFlagsFromState( int forcePower )
+{
+	if ( !cg.snap || forcePower < 0 || forcePower >= NUM_FORCE_POWERS ||
+		!(cg.snap->ps.fd.forcePowersActive & (1 << forcePower)) )
+	{
+		return 0;
+	}
+
+	switch ( forcePower )
+	{
+	case FP_ABSORB:
+		return CG_UserInt3FlagActiveForIcon( FLAG_ABSORB2 ) ? EF_FP_OPTION_2 : 0;
+	case FP_PROTECT:
+		return CG_UserInt3FlagActiveForIcon( FLAG_PROTECT2 ) ? EF_FP_OPTION_2 : 0;
+	case FP_RAGE:
+		return CG_UserInt3FlagActiveForIcon( FLAG_RAGE2 ) ? EF_FP_OPTION_2 : 0;
+	case FP_DRAIN:
+		return CG_UserInt3FlagActiveForIcon( FLAG_DRAIN2 ) ? EF_FP_OPTION_2 : 0;
+	case FP_LIGHTNING:
+		return CG_UserInt3FlagActiveForIcon( FLAG_LIGHTNING2 ) ? EF_FP_OPTION_2 : 0;
+	case FP_TEAM_FORCE:
+		return CG_UserInt3FlagActiveForIcon( FLAG_DESTRUCTION2 ) ? EF_FP_OPTION_2 : 0;
+	case FP_PUSH:
+		return CG_UserInt3FlagActiveForIcon( FLAG_PUSH2 ) ? EF_FP_OPTION_2 : 0;
+	case FP_PULL:
+		return CG_UserInt3FlagActiveForIcon( FLAG_PULL2 ) ? EF_FP_OPTION_2 : 0;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+static int CG_SkillLevelFromForceInfoForIcon( const char *forceInfo, int skill )
+{
+	const char *levels;
+	int levelIndex;
+	char levelChar;
+
+	if ( !forceInfo || skill < 0 || skill >= NUM_SKILLS )
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	// forcePowers is formatted as "rank-side-levels".  Locate the second dash
+	// rather than assuming a fixed 4-character header, because OBP rank values
+	// can be larger than the original JKA single-digit ranks.
+	levels = strchr( forceInfo, '-' );
+	if ( !levels )
+	{
+		return FORCE_LEVEL_0;
+	}
+	levels++;
+
+	levels = strchr( levels, '-' );
+	if ( !levels )
+	{
+		return FORCE_LEVEL_0;
+	}
+	levels++;
+
+	levelIndex = NUM_FORCE_POWERS + skill;
+	if ( levelIndex < 0 || levelIndex >= (int)strlen( levels ) )
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	levelChar = levels[levelIndex];
+	if ( levelChar < '0' || levelChar > '3' )
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	return levelChar - '0';
+}
+
+static int CG_LocalSkillLevelForForceIcon( int skill )
+{
+	char forcePowers[MAX_QPATH];
+	clientInfo_t *ci;
+	int level;
+
+	if ( !cg.snap || skill < 0 || skill >= NUM_SKILLS )
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	// The local userinfo cvar is available immediately on map start, while the
+	// clientinfo configstring can lag behind until other UI activity refreshes it.
+	// This is the important part for direct force buttons pressed immediately
+	// after entering a map.
+	trap_Cvar_VariableStringBuffer( "forcepowers", forcePowers, sizeof( forcePowers ) );
+	level = CG_SkillLevelFromForceInfoForIcon( forcePowers, skill );
+	if ( level > FORCE_LEVEL_0 )
+	{
+		return level;
+	}
+
+	ci = &cgs.clientinfo[cg.snap->ps.clientNum];
+	if ( ci->infoValid )
+	{
+		return CG_SkillLevelFromForceInfoForIcon( ci->forcePowers, skill );
+	}
+
+	return FORCE_LEVEL_0;
+}
+
+static int CG_AltSkillForForcePowerIcon( int forcePower )
+{
+	switch ( forcePower )
+	{
+	case FP_PUSH:
+		return SK_PUSHA;
+	case FP_PULL:
+		return SK_PULLA;
+	case FP_HEAL:
+		return SK_HEALA;
+	case FP_PROTECT:
+		return SK_PROTECTA;
+	case FP_ABSORB:
+		return SK_ABSORBA;
+	case FP_TELEPATHY:
+		return SK_TELEPATHYA;
+	case FP_TEAM_HEAL:
+		return SK_STASISA;
+	case FP_GRIP:
+		return SK_GRIPA;
+	case FP_LIGHTNING:
+		return SK_LIGHTNINGA;
+	case FP_DRAIN:
+		return SK_DRAINA;
+	case FP_RAGE:
+		return SK_RAGEA;
+	case FP_TEAM_FORCE:
+		return SK_DESTRUCTIONA;
+	default:
+		break;
+	}
+
+	return -1;
+}
+
+static int CG_ForcePowerIconFlagsForPower( int forcePower )
+{
+	int altSkill;
+	int activeFlags;
+
+	if ( !cg.snap || forcePower < 0 || forcePower >= NUM_FORCE_POWERS )
+	{
+		return 0;
+	}
+
+	activeFlags = CG_ActiveForceIconFlagsFromState( forcePower );
+	if ( activeFlags )
+	{
+		return activeFlags;
+	}
+
+	// If the currently selected HUD power matches this icon, the server-selected
+	// option bit is still the best source for the selection HUD and for powers
+	// that do not have a persistent userInt3 active marker.
+	if ( cg.snap->ps.fd.forcePowerSelected == forcePower && CG_CurrentForceIconFlags() )
+	{
+		return CG_CurrentForceIconFlags();
+	}
+
+	altSkill = CG_AltSkillForForcePowerIcon( forcePower );
+	if ( altSkill < 0 || cg.snap->ps.fd.forcePowerLevel[forcePower] < FORCE_LEVEL_1 )
+	{
+		return 0;
+	}
+
+	if ( CG_LocalSkillLevelForForceIcon( altSkill ) == FORCE_LEVEL_2 )
+	{
+		return EF_FP_OPTION_2;
+	}
+
+	return 0;
+}
+//[/ActiveForceDirectButtonIconFix4]
+
+static int CG_ActiveForceIconFlags( int forcePower )
+{
+	if ( forcePower < 0 || forcePower >= NUM_FORCE_POWERS )
+	{
+		return 0;
+	}
+
+	return cg_activeForceIconFlags[forcePower];
+}
+
+static void CG_UpdateActiveForceIconFlags( void )
+{
+	int i;
+
+	if ( !cg.snap )
+	{
+		for ( i = 0; i < NUM_FORCE_POWERS; i++ )
+		{
+			cg_activeForceIconWasActive[i] = qfalse;
+			cg_activeForceIconFlags[i] = 0;
+		}
+		return;
+	}
+
+	for ( i = 0; i < NUM_FORCE_POWERS; i++ )
+	{
+		if ( cg.snap->ps.fd.forcePowersActive & (1 << i) )
+		{
+			//[ActiveForceDirectButtonIconFix4]
+			// Re-evaluate from the active power itself every frame.  The variant is
+			// tied to the power/skill that is actually running, not to whichever
+			// power the selection HUD happens to be highlighting.
+			cg_activeForceIconWasActive[i] = qtrue;
+			cg_activeForceIconFlags[i] = CG_ForcePowerIconFlagsForPower( i );
+			//[/ActiveForceDirectButtonIconFix4]
+		}
+		else
+		{
+			cg_activeForceIconWasActive[i] = qfalse;
+			cg_activeForceIconFlags[i] = 0;
+		}
+	}
+}
+
+static qboolean CG_BinocularThermalActive( void )
+{
+	if ( cg.predictedPlayerState.zoomMode == 3 && !cg.predictedPlayerState.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	if ( cg.snap && cg.snap->ps.zoomMode == 3 && !cg.snap->ps.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static qboolean CG_BinocularXRayActive( void )
+{
+	if ( cg.predictedPlayerState.zoomMode == 3 && cg.predictedPlayerState.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	if ( cg.snap && cg.snap->ps.zoomMode == 3 && cg.snap->ps.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void CG_DrawBinocularLensModeTint( void )
+{
+	vec4_t color;
+
+	if ( CG_BinocularXRayActive() )
+	{
+		/* Level 3: strong purple x-ray lens tint, constrained to the binocular lens. */
+		color[0] = 0.65f;
+		color[1] = 0.08f;
+		color[2] = 1.0f;
+		color[3] = 0.34f;
+		trap_R_SetColor( color );
+		CG_DrawPic( 34, 48, 570, 362, cgs.media.whiteShader );
+
+		/* Soft glow to make the x-ray mode immediately readable. */
+		color[0] = 0.78f;
+		color[1] = 0.24f;
+		color[2] = 1.0f;
+		color[3] = 0.20f;
+		trap_R_SetColor( color );
+		CG_DrawPic( 92, 72, 456, 316, cgs.media.disruptorLight );
+	}
+	else if ( CG_BinocularThermalActive() )
+	{
+		/* Level 2: strong red/orange thermal lens tint, constrained to the binocular lens. */
+		color[0] = 1.0f;
+		color[1] = 0.28f;
+		color[2] = 0.03f;
+		color[3] = 0.32f;
+		trap_R_SetColor( color );
+		CG_DrawPic( 34, 48, 570, 362, cgs.media.whiteShader );
+
+		/* Soft heat glow, no scan/vertical lines. */
+		color[0] = 1.0f;
+		color[1] = 0.45f;
+		color[2] = 0.06f;
+		color[3] = 0.18f;
+		trap_R_SetColor( color );
+		CG_DrawPic( 92, 72, 456, 316, cgs.media.disruptorLight );
+	}
+
+	trap_R_SetColor( NULL );
+}
+
+static void CG_DrawBinocularModeHUD( void )
+{
+	vec4_t color;
+	const char *modeName;
+
+	if ( CG_BinocularXRayActive() )
+	{
+		modeName = "X-RAY OPTICS";
+		color[0] = 0.90f;
+		color[1] = 0.35f;
+		color[2] = 1.0f;
+		color[3] = 0.95f;
+	}
+	else if ( CG_BinocularThermalActive() )
+	{
+		modeName = "THERMAL OPTICS";
+		color[0] = 1.0f;
+		color[1] = 0.58f;
+		color[2] = 0.12f;
+		color[3] = 0.95f;
+	}
+	else
+	{
+		modeName = "NORMAL OPTICS";
+		color[0] = 0.25f;
+		color[1] = 1.0f;
+		color[2] = 0.45f;
+		color[3] = 0.90f;
+	}
+
+	/* Draw the label inside the binocular pane. */
+	trap_R_SetColor( colorTable[CT_BLACK] );
+	CG_DrawPic( 232, 72, 176, 22, cgs.media.whiteShader );
+
+	CG_Text_Paint( 244, 89, 0.55f, color, modeName, 0, 0, ITEM_TEXTSTYLE_SHADOWEDMORE, FONT_SMALL );
+	trap_R_SetColor( NULL );
+}
+
+static void CG_DrawForceSeeVanillaAura( void )
+{
+	static qhandle_t jsenseShader = 0;
+	vec4_t color;
+
+	if ( !cg.snap || !(cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) ||
+		cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_1 )
+	{
+		return;
+	}
+
+	if ( !jsenseShader )
+	{
+		jsenseShader = trap_R_RegisterShader( "gfx/2d/jsense" );
+	}
+
+	/* Vanilla Force Sight overlay.  Light purple/transparent so it keeps the
+	 * circular aura without turning into an opaque full-screen wash. */
+	color[0] = 0.86f;
+	color[1] = 0.42f;
+	color[2] = 1.0f;
+	color[3] = 0.55f;
+	trap_R_SetColor( color );
+	CG_DrawPic( 0, 0, 640, 480, jsenseShader );
+
+	/* Very soft second pass for the lighter purple corona visible in vanilla. */
+	color[0] = 1.0f;
+	color[1] = 0.78f;
+	color[2] = 1.0f;
+	color[3] = 0.16f;
+	trap_R_SetColor( color );
+	CG_DrawPic( 0, 0, 640, 480, jsenseShader );
+
+	trap_R_SetColor( NULL );
+}
+
+static qboolean CG_DeadlySightActive( void )
+{
+	const playerState_t *ps;
+	const centity_t *cent;
+
+	if ( !cg.snap )
+	{
+		return qfalse;
+	}
+
+	ps = &cg.snap->ps;
+
+	/* Deadly Sight is carried by FP_ABSORB in game code. Do not draw this
+	 * for normal Absorb: require the alternate-skill marker that game sets
+	 * when ForceDeathsight starts. */
+	if ( !(ps->fd.forcePowersActive & (1 << FP_ABSORB)) )
+	{
+		return qfalse;
+	}
+
+	if ( ps->userInt3 & (1 << FLAG_ABSORB2) )
+	{
+		return qtrue;
+	}
+
+	cent = &cg_entities[ps->clientNum];
+	if ( cent->currentState.userInt3 & (1 << FLAG_ABSORB2) )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static void CG_DrawDeadlySightAura( void )
+{
+	static qhandle_t dsenseShader = 0;
+	static qhandle_t dsenseShader2 = 0;
+	vec4_t color;
+
+	if ( !CG_DeadlySightActive() )
+	{
+		return;
+	}
+
+	if ( !dsenseShader )
+	{
+		dsenseShader = trap_R_RegisterShader( "gfx/2d/dsense" );
+	}
+	if ( !dsenseShader2 )
+	{
+		dsenseShader2 = trap_R_RegisterShader( "gfx/2d/dsense2" );
+	}
+
+	/* Match Force See: fullscreen shader passes. The shader uses additive
+	 * blending, so black parts of the gfx are transparent and do not block
+	 * the player's view. Do not rotate the screen quad here. */
+	color[0] = 1.0f;
+	color[1] = 1.0f;
+	color[2] = 1.0f;
+	color[3] = 0.55f;
+	trap_R_SetColor( color );
+	CG_DrawPic( 0, 0, 640, 480, dsenseShader );
+
+	color[0] = 1.0f;
+	color[1] = 1.0f;
+	color[2] = 1.0f;
+	color[3] = 0.16f;
+	trap_R_SetColor( color );
+	CG_DrawPic( 0, 0, 640, 480, dsenseShader2 );
+
+	trap_R_SetColor( NULL );
+}
+
 /*
 ================
 CG_DrawZoomMask
@@ -511,7 +1070,7 @@ static void CG_DrawZoomMask( void )
 	float max, fi;
 
 	// Check for Binocular specific zooming since we'll want to render different bits in each case
-	if ( cg.predictedPlayerState.zoomMode == 2 )
+	if ( cg.predictedPlayerState.zoomMode == 2 || cg.predictedPlayerState.zoomMode == 3 )
 	{
 		int val, i;
 		float off;
@@ -535,6 +1094,7 @@ static void CG_DrawZoomMask( void )
 		// draw blue tinted distortion mask, trying to make it as small as is necessary to fill in the viewable area
 		trap_R_SetColor( colorTable[CT_WHITE] );
 		CG_DrawPic( 34, 48, 570, 362, cgs.media.binocularStatic );
+		CG_DrawBinocularLensModeTint();
 	
 		// Black out the area behind the numbers
 		trap_R_SetColor( colorTable[CT_BLACK]);
@@ -608,6 +1168,8 @@ static void CG_DrawZoomMask( void )
 		{
 			flip = !flip;
 		}
+
+		CG_DrawBinocularModeHUD();
 	}
 	else if ( cg.predictedPlayerState.zoomMode == 1 && cg.predictedPlayerState.weapon != WP_BOWCASTER)
 	{
@@ -1071,13 +1633,13 @@ void CG_DrawArmor( menuDef_t *menuHUD )
 
 	currValue = armor;
 	//[NewHud]
-	inc = (float) maxArmor / MAX_OJPHUD_TICS;
+	inc = (float) maxArmor / MAX_OBPHUD_TICS;
 	//inc = (float) maxArmor / MAX_HUD_TICS;
 	//[/NewHud]
 
 	memcpy(calcColor, hudTintColor, sizeof(vec4_t));
 	//[NewHud]
-	for (i=(MAX_OJPHUD_TICS-1);i>=0;i--)
+	for (i=(MAX_OBPHUD_TICS-1);i>=0;i--)
 	//for (i=(MAX_HUD_TICS-1);i>=0;i--)
 	//[/NewHud]
 	{
@@ -1103,7 +1665,7 @@ void CG_DrawArmor( menuDef_t *menuHUD )
 		trap_R_SetColor( calcColor);
 
 		//[NewHud]
-		if ((i==(MAX_OJPHUD_TICS-1)) && (currValue < inc))
+		if ((i==(MAX_OBPHUD_TICS-1)) && (currValue < inc))
 		//if ((i==(MAX_HUD_TICS-1)) && (currValue < inc))
 		//[/NewHud]
 		{
@@ -1457,7 +2019,7 @@ static void CG_DrawAmmo( centity_t	*cent,menuDef_t *menuHUD)
 		weaponData[cent->currentState.weapon].altEnergyPerShot == 0)
 	{ //just draw "infinite"
 		//[NewHud]
-		inc = 8 / MAX_OJPHUD_TICS;
+		inc = 8 / MAX_OBPHUD_TICS;
 		//inc = 8 / MAX_HUD_TICS;
 		//[/NewHud]
 		value = 8;
@@ -1479,14 +2041,14 @@ static void CG_DrawAmmo( centity_t	*cent,menuDef_t *menuHUD)
 			//if ( (cent->currentState.eFlags & EF_DOUBLE_AMMO) )
 			//{
 			//	//[NewHud]
-			//	inc = (float) (ammoData[weaponData[cent->currentState.weapon].ammoIndex].max*2.0f) / MAX_OJPHUD_TICS;
+			//	inc = (float) (ammoData[weaponData[cent->currentState.weapon].ammoIndex].max*2.0f) / MAX_OBPHUD_TICS;
 			//	//inc = (float) (ammoData[weaponData[cent->currentState.weapon].ammoIndex].max*2.0f) / MAX_HUD_TICS;
 			//	//[NewHud]
 			//}
 			//else
 			{
 				//[NewHud]
-				inc = (float) ammoData[weaponData[cent->currentState.weapon].ammoIndex].max / MAX_OJPHUD_TICS;
+				inc = (float) ammoData[weaponData[cent->currentState.weapon].ammoIndex].max / MAX_OBPHUD_TICS;
 				//inc = (float) ammoData[weaponData[cent->currentState.weapon].ammoIndex].max / MAX_HUD_TICS;
 				//[/NewHud]
 			}
@@ -1507,7 +2069,7 @@ static void CG_DrawAmmo( centity_t	*cent,menuDef_t *menuHUD)
 
 	// Draw tics
 	//[NewHud]
-	for (i=MAX_OJPHUD_TICS-1;i>=0;i--)
+	for (i=MAX_OBPHUD_TICS-1;i>=0;i--)
 	//for (i=MAX_HUD_TICS-1;i>=0;i--)
 	//[/NewHud]
 	{
@@ -1663,13 +2225,13 @@ void CG_DrawDodge( menuDef_t *menuHUD )
 	}
 
 	//[NewHud]
-	inc = (float)  DODGE_MAX / MAX_OJPHUD_TICS;
+	inc = (float)  DODGE_MAX / MAX_OBPHUD_TICS;
 	//inc = (float)  DODGE_MAX / MAX_HUD_TICS;
 	//[/NewHud]
 	value = cg.snap->ps.stats[STAT_DODGE];
 
 	//[NewHud]
-	for (i=MAX_OJPHUD_TICS-1;i>=0;i--)
+	for (i=MAX_OBPHUD_TICS-1;i>=0;i--)
 	//for (i=MAX_HUD_TICS-1;i>=0;i--)
 	//[/NewHud]
 	{
@@ -1921,13 +2483,13 @@ void CG_DrawForcePower( menuDef_t *menuHUD )
 	}
 
 	//[NewHud]
-	inc = (float)  maxForcePower / MAX_OJPHUD_TICS;
+	inc = (float)  maxForcePower / MAX_OBPHUD_TICS;
 	//inc = (float)  maxForcePower / MAX_HUD_TICS;
 	//[/NewHud]
 	value = cg.snap->ps.fd.forcePower;
 
 	//[NewHud]
-	for (i=MAX_OJPHUD_TICS-1;i>=0;i--)
+	for (i=MAX_OBPHUD_TICS-1;i>=0;i--)
 	//for (i=MAX_HUD_TICS-1;i>=0;i--)
 	//[/NewHud]
 	{
@@ -2053,240 +2615,691 @@ void CG_DrawForcePower( menuDef_t *menuHUD )
 CG_DrawHUD
 ================
 */
-void CG_DrawHUD(centity_t	*cent)
+
+/*
+================
+OBP Battlefront II-style HUD helpers - v5 Overheat
+
+Stable code-drawn HUD layout:
+ - lower-left: HEALTH + ARMOR
+ - top-right:  BATT + FUEL
+ - lower-right: DODGE + FORCE + HEAT
+
+Design goals:
+ - clean DICE/Battlefront-inspired bracket panels
+ - plain continuous fills, no inner bar lines
+ - equal spacing between paired/triple vertical bars
+ - keep center screen clear
+
+Implementation note:
+ There is no dedicated "overheat" playerstate field in this codebase.
+ The HEAT bar is derived from weaponTime, which gives a practical
+ saber/weapon attack load / recovery meter:
+   - saber: shows swing/special attack recovery load
+   - gun:   shows fire/recovery load
+================
+*/
+
+static float CG_OBPClamp01(float v)
 {
-	menuDef_t	*menuHUD = NULL;
-	itemDef_t	*focusItem = NULL;
-	const char *scoreStr = NULL;
-	int	scoreBias;
-	char scoreBiasStr[16];
-
-	if (cg_hudFiles.integer)
+	if (v < 0.0f)
 	{
-		int x = 0;
-		int y = SCREEN_HEIGHT-80;
-		char ammoString[64];
-		int weapX = x;
+		return 0.0f;
+	}
+	if (v > 1.0f)
+	{
+		return 1.0f;
+	}
+	return v;
+}
 
-		UI_DrawProportionalString( x+16, y+40, va( "%i", cg.snap->ps.stats[STAT_HEALTH] ),
-			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_HUD_RED] );
+static float CG_OBPClampMax(float v, float max)
+{
+	if (v < 0.0f)
+	{
+		return 0.0f;
+	}
+	if (v > max)
+	{
+		return max;
+	}
+	return v;
+}
 
-		UI_DrawProportionalString( x+18+14, y+40+14, va( "%i", cg.snap->ps.stats[STAT_ARMOR] ),
-			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_HUD_GREEN] );
+static void CG_OBPDrawString(float x, float y, const char *text, const float *color, int cw, int ch)
+{
+	CG_DrawStringExt((int)x, (int)y, text, color, qfalse, qtrue, cw, ch, 0);
+}
 
-		if (cg.snap->ps.weapon == WP_SABER)
-		{
-			if (cg.snap->ps.fd.saberDrawAnimLevel == SS_DUAL)
-			{
-				Com_sprintf(ammoString, sizeof(ammoString), "AKIMBO");
-				weapX += 16;
-			}
-			else if (cg.snap->ps.fd.saberDrawAnimLevel == SS_STAFF)
-			{
-				Com_sprintf(ammoString, sizeof(ammoString), "STAFF");
-				weapX += 16;
-			}
-			else if (cg.snap->ps.fd.saberDrawAnimLevel == FORCE_LEVEL_3)
-			{
-				Com_sprintf(ammoString, sizeof(ammoString), "STRONG");
-				weapX += 16;
-			}
-			else if (cg.snap->ps.fd.saberDrawAnimLevel == FORCE_LEVEL_2)
-			{
-				Com_sprintf(ammoString, sizeof(ammoString), "MEDIUM");
-				weapX += 16;
-			}
-			else
-			{
-				Com_sprintf(ammoString, sizeof(ammoString), "FAST");
-			}
-		}
-		else
-		{
-			Com_sprintf(ammoString, sizeof(ammoString), "%i", cg.snap->ps.ammo[weaponData[cent->currentState.weapon].ammoIndex]);
-		}
-		
-		UI_DrawProportionalString( SCREEN_WIDTH-(weapX+16+32), y+40, va( "%s", ammoString ),
-			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_HUD_ORANGE] );
+static void CG_OBPDrawBracketPanel(float x, float y, float w, float h)
+{
+	vec4_t glass;
+	vec4_t shadow;
 
-		UI_DrawProportionalString( SCREEN_WIDTH-(x+18+14+32), y+40+14, va( "%i", cg.snap->ps.fd.forcePower),
-			UI_SMALLFONT|UI_DROPSHADOW, colorTable[CT_ICON_BLUE] );
+	shadow[0] = 0.0f; shadow[1] = 0.0f; shadow[2] = 0.0f; shadow[3] = 0.14f;
+	glass[0] = 0.008f; glass[1] = 0.010f; glass[2] = 0.012f; glass[3] = 0.17f;
 
+	/*
+	 * Menu-style gray transparent framing: the panel fill and panel borders all
+	 * use the same subdued glass tone so nothing reads as a brighter separate
+	 * outline.
+	 */
+	CG_FillRect(x + 3.0f, y + 3.0f, w, h, shadow);
+	CG_FillRect(x, y, w, h, glass);
+	CG_DrawRect(x, y, w, h, 1.0f, glass);
+	CG_DrawRect(x + 1.0f, y + 1.0f, w - 2.0f, h - 2.0f, 1.0f, glass);
+}
+
+static void CG_OBPDrawVerticalMeter(float x, float y, float w, float h, float frac, const float *fillColor, const char *label, int value)
+{
+	float filledH;
+	float labelX;
+	float valueX;
+	int labelPixelW;
+	int valuePixelW;
+	vec4_t textColor;
+	vec4_t inactiveColor;
+	vec4_t wellColor;
+	vec4_t edgeColor;
+	char valueText[32];
+
+	frac = CG_OBPClamp01(frac);
+	filledH = h * frac;
+
+	textColor[0] = 0.80f; textColor[1] = 0.82f; textColor[2] = 0.84f; textColor[3] = 0.82f;
+	inactiveColor[0] = 0.012f; inactiveColor[1] = 0.016f; inactiveColor[2] = 0.020f; inactiveColor[3] = 0.42f;
+	/* Bar frames/borders use the same gray transparent glass as the menu-style panels. */
+	wellColor[0] = 0.008f; wellColor[1] = 0.010f; wellColor[2] = 0.012f; wellColor[3] = 0.17f;
+	edgeColor[0] = 0.008f; edgeColor[1] = 0.010f; edgeColor[2] = 0.012f; edgeColor[3] = 0.17f;
+
+	labelPixelW = (int)strlen(label) * 5;
+	labelX = x + ((w - labelPixelW) * 0.5f);
+	CG_OBPDrawString(labelX, y - 12.0f, label, textColor, 5, 7);
+
+	CG_FillRect(x - 3.0f, y - 3.0f, w + 6.0f, h + 6.0f, wellColor);
+	CG_DrawRect(x - 3.0f, y - 3.0f, w + 6.0f, h + 6.0f, 1.0f, edgeColor);
+
+	CG_FillRect(x, y, w, h, inactiveColor);
+	if (filledH > 0.0f)
+	{
+		CG_FillRect(x, y + h - filledH, w, filledH, fillColor);
+	}
+
+	Com_sprintf(valueText, sizeof(valueText), "%i", value);
+	valuePixelW = (int)strlen(valueText) * 6;
+	valueX = x + ((w - valuePixelW) * 0.5f);
+	CG_OBPDrawString(valueX, y + h + 7.0f, valueText, textColor, 6, 8);
+}
+
+static float CG_OBPGetFraction(int value, int maxValue)
+{
+	if (maxValue <= 0)
+	{
+		return 0.0f;
+	}
+
+	if (value < 0)
+	{
+		value = 0;
+	}
+	if (value > maxValue)
+	{
+		value = maxValue;
+	}
+
+	return CG_OBPClamp01((float)value / (float)maxValue);
+}
+
+static int CG_OBPClampIntToMax(int value, int maxValue)
+{
+	if (value < 0)
+	{
+		return 0;
+	}
+	if (maxValue > 0 && value > maxValue)
+	{
+		return maxValue;
+	}
+	return value;
+}
+
+static int CG_OBPGetResourceMaxFromValue(int value)
+{
+	/*
+	 * These resource caps are assigned by the game code from the corresponding
+	 * gadget skill levels: level 1/basic = 100, level 2 = 150, level 3 = 250.
+	 * Cgame receives the current fuel values, not the gadget skill levels, so
+	 * keep using these same level caps without changing playerState_t.
+	 */
+	if (value > 150)
+	{
+		return 250;
+	}
+	if (value > 100)
+	{
+		return 150;
+	}
+	if (value > 0)
+	{
+		return 100;
+	}
+	return 0;
+}
+
+static int CG_OBPGetForceMax(const playerState_t *ps)
+{
+	if (!ps)
+	{
+		return 0;
+	}
+
+	/*
+	 * Do not depend on fd.forcePowerMax for the cgame HUD. In this codebase it
+	 * is not always reliable client-side, which can make the FORCE bar divide by
+	 * the current value and stay visually full while Force is being consumed.
+	 *
+	 * The game code assigns Force/Dodge caps from the same level source:
+	 *   FP_SEE 3 = 250, FP_SEE 2 = 150, FP_SEE 1 = 100,
+	 *   saber user without FP_SEE = 100, non-Force user = 0.
+	 * These fields already exist in playerState_t, so this remains cgame-only.
+	 */
+	if (ps->fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_3)
+	{
+		return 250;
+	}
+	if (ps->fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_2)
+	{
+		return 150;
+	}
+	if (ps->fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_1)
+	{
+		return 100;
+	}
+	if (ps->stats[STAT_WEAPONS] & (1 << WP_SABER))
+	{
+		return 100;
+	}
+
+	return 0;
+}
+
+static int CG_OBPGetTrackedFuelMax(int value, int fallbackMax, int clientNum, int holdableItems, int *cachedClientNum, int *cachedItems, int *cachedMax, int *lastValue)
+{
+	int inferredMax;
+
+	if (value < 0)
+	{
+		value = 0;
+	}
+
+	inferredMax = CG_OBPGetResourceMaxFromValue(value);
+	if (inferredMax <= 0)
+	{
+		inferredMax = fallbackMax;
+	}
+
+	/*
+	 * Cgame does not receive the gadget skill levels directly. The game fills
+	 * jetpack/cloak pools to the level cap (100/150/250), then sends only the
+	 * current value. Track the highest observed cap, but reset it on clear
+	 * client/item changes or large refill jumps so changing to a lower-level
+	 * class/item does not leave the old larger cap stuck on the HUD.
+	 */
+	if (*cachedClientNum != clientNum || *cachedItems != holdableItems)
+	{
+		*cachedClientNum = clientNum;
+		*cachedItems = holdableItems;
+		*cachedMax = inferredMax;
+	}
+	else if (value > *lastValue + 25)
+	{
+		/* Respawn/class refill: treat the new filled value as the new level cap. */
+		*cachedMax = inferredMax;
+	}
+	else if (inferredMax > *cachedMax)
+	{
+		/* Normal higher-level refill crossing 100/150 should raise the visible cap. */
+		*cachedMax = inferredMax;
+	}
+	else if (*cachedMax <= 0)
+	{
+		*cachedMax = inferredMax;
+	}
+
+	*lastValue = value;
+	return *cachedMax;
+}
+
+static int CG_OBPGetJetpackFuelMax(const playerState_t *ps, int value)
+{
+	static int cachedClientNum = -1;
+	static int cachedItems = 0;
+	static int cachedMax = 0;
+	static int lastValue = 0;
+	int fallbackMax;
+	int holdableItems;
+
+	if (!ps)
+	{
+		return 0;
+	}
+
+	holdableItems = ps->stats[STAT_HOLDABLE_ITEMS];
+	fallbackMax = 0;
+	if (holdableItems & ((1 << HI_JETPACK) | (1 << HI_FLAMETHROWER)))
+	{
+		fallbackMax = 100;
+	}
+
+	return CG_OBPGetTrackedFuelMax(value, fallbackMax, ps->clientNum, holdableItems, &cachedClientNum, &cachedItems, &cachedMax, &lastValue);
+}
+
+static int CG_OBPGetCloakFuelMax(const playerState_t *ps, int value)
+{
+	static int cachedClientNum = -1;
+	static int cachedItems = 0;
+	static int cachedMax = 0;
+	static int lastValue = 0;
+	int fallbackMax;
+	int holdableItems;
+
+	if (!ps)
+	{
+		return 0;
+	}
+
+	holdableItems = ps->stats[STAT_HOLDABLE_ITEMS];
+	fallbackMax = 0;
+	if (holdableItems & ((1 << HI_CLOAK) | (1 << HI_ELECTROSHOCKER) | (1 << HI_SPHERESHIELD) | (1 << HI_OVERLOAD)))
+	{
+		fallbackMax = 100;
+	}
+
+	return CG_OBPGetTrackedFuelMax(value, fallbackMax, ps->clientNum, holdableItems, &cachedClientNum, &cachedItems, &cachedMax, &lastValue);
+}
+
+static qboolean CG_OBPUsingSaber(const playerState_t *ps)
+{
+	if (!ps)
+	{
+		return qfalse;
+	}
+
+	if (ps->weapon != WP_SABER)
+	{
+		return qfalse;
+	}
+
+	/* 2 means fully holstered/off. 0 and 1 still mean an active saber is in use. */
+	if (ps->saberHolstered == 2)
+	{
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+static qboolean CG_OBPGetSaberStyleColor(const playerState_t *ps, vec4_t bladeColor, int *style)
+{
+	int saberStyle;
+
+	if (!CG_OBPUsingSaber(ps))
+	{
+		return qfalse;
+	}
+
+	saberStyle = ps->fd.saberDrawAnimLevel;
+	if (style)
+	{
+		*style = saberStyle;
+	}
+
+	switch (saberStyle)
+	{
+	case SS_FAST:
+		bladeColor[0] = 0.20f; bladeColor[1] = 0.48f; bladeColor[2] = 1.00f; bladeColor[3] = 0.90f;
+		return qtrue;
+	case SS_MEDIUM:
+		bladeColor[0] = 1.00f; bladeColor[1] = 0.86f; bladeColor[2] = 0.18f; bladeColor[3] = 0.90f;
+		return qtrue;
+	case SS_STRONG:
+		bladeColor[0] = 0.96f; bladeColor[1] = 0.16f; bladeColor[2] = 0.16f; bladeColor[3] = 0.90f;
+		return qtrue;
+	case SS_DESANN:
+		bladeColor[0] = 0.20f; bladeColor[1] = 0.92f; bladeColor[2] = 0.24f; bladeColor[3] = 0.90f;
+		return qtrue;
+	case SS_TAVION:
+		bladeColor[0] = 0.74f; bladeColor[1] = 0.30f; bladeColor[2] = 0.96f; bladeColor[3] = 0.90f;
+		return qtrue;
+	case SS_DUAL:
+		bladeColor[0] = 0.98f; bladeColor[1] = 0.98f; bladeColor[2] = 1.00f; bladeColor[3] = 0.92f;
+		return qtrue;
+	case SS_STAFF:
+		bladeColor[0] = 1.00f; bladeColor[1] = 0.56f; bladeColor[2] = 0.14f; bladeColor[3] = 0.92f;
+		return qtrue;
+	default:
+		break;
+	}
+
+	return qfalse;
+}
+
+static void CG_OBPDrawSaberHilt(float x, float y, float w, float h)
+{
+	vec4_t hiltColor;
+	vec4_t hiltEdge;
+
+	hiltColor[0] = 0.36f; hiltColor[1] = 0.37f; hiltColor[2] = 0.40f; hiltColor[3] = 0.92f;
+	hiltEdge[0] = 0.10f; hiltEdge[1] = 0.11f; hiltEdge[2] = 0.12f; hiltEdge[3] = 0.95f;
+
+	CG_FillRect(x, y, w, h, hiltColor);
+	CG_DrawRect(x, y, w, h, 1.0f, hiltEdge);
+}
+
+static void CG_OBPDrawSaberBlade(float x, float y, float w, const float *bladeColor)
+{
+	vec4_t glowColor;
+	vec4_t coreColor;
+
+	if (w <= 0.0f)
+	{
 		return;
 	}
 
-	//[NewHud]
-	//the new hud looks ugly if set with team colors.
-	hudTintColor = colorTable[CT_WHITE];
-	/* basejka code
-	if (cgs.gametype >= GT_TEAM && cgs.gametype != GT_SIEGE)
-	{	// tint the hud items based on team
-		if (cg.snap->ps.persistant[PERS_TEAM] == TEAM_RED )
-			hudTintColor = redhudtint;
-		else if (cg.snap->ps.persistant[PERS_TEAM] == TEAM_BLUE )
-			hudTintColor = bluehudtint;
-		else // If we're not on a team for whatever reason, leave things as they are.
-			hudTintColor = colorTable[CT_WHITE];
-	}
-	else
-	{	// tint the hud items white (dont' tint)
-		hudTintColor = colorTable[CT_WHITE];
-	}
-	*/
-	//[/NewHud]
+	glowColor[0] = bladeColor[0]; glowColor[1] = bladeColor[1]; glowColor[2] = bladeColor[2]; glowColor[3] = 0.32f;
+	coreColor[0] = bladeColor[0]; coreColor[1] = bladeColor[1]; coreColor[2] = bladeColor[2]; coreColor[3] = bladeColor[3];
 
-	// Draw the left HUD 
-	menuHUD = Menus_FindByName("lefthud");
-	if (menuHUD)
+	CG_FillRect(x, y - 1.5f, w, 6.0f, glowColor);
+	CG_FillRect(x, y, w, 3.0f, coreColor);
+}
+
+static void CG_OBPDrawSingleSaberIcon(float x, float y, float totalW, const float *bladeColor)
+{
+	const float hiltW = 10.0f;
+	const float hiltH = 4.0f;
+	float bladeW;
+
+	bladeW = totalW - hiltW - 1.0f;
+	if (bladeW < 0.0f)
 	{
-		itemDef_t *focusItem;
-
-		// Print scanline
-		focusItem = Menu_FindItemByName(menuHUD, "scanline");
-		if (focusItem)
-		{
-			trap_R_SetColor( hudTintColor );	
-			CG_DrawPic( 
-				focusItem->window.rect.x, 
-				focusItem->window.rect.y, 
-				focusItem->window.rect.w, 
-				focusItem->window.rect.h, 
-				focusItem->window.background 
-				);			
-		}
-
-		// Print frame
-		focusItem = Menu_FindItemByName(menuHUD, "frame");
-		if (focusItem)
-		{
-			trap_R_SetColor( hudTintColor );	
-			CG_DrawPic( 
-				focusItem->window.rect.x, 
-				focusItem->window.rect.y, 
-				focusItem->window.rect.w, 
-				focusItem->window.rect.h, 
-				focusItem->window.background 
-				);			
-		}
-
-		if (cg.predictedPlayerState.pm_type != PM_SPECTATOR)
-		{
-			CG_DrawArmor(menuHUD);
-			CG_DrawHealth(menuHUD);
-		}
-	}
-	else
-	{ 
-		//CG_Error("CG_ChatBox_ArrayInsert: unable to locate HUD menu file ");
+		bladeW = 0.0f;
 	}
 
-	//scoreStr = va("Score: %i", cgs.clientinfo[cg.snap->ps.clientNum].score);
-	if ( cgs.gametype == GT_DUEL )
-	{//A duel that requires more than one kill to knock the current enemy back to the queue
-		//show current kills out of how many needed
+	CG_OBPDrawSaberHilt(x, y, hiltW, hiltH);
+	CG_OBPDrawSaberBlade(x + hiltW + 1.0f, y + 1.0f, bladeW, bladeColor);
+}
+
+static void CG_OBPDrawStaffSaberIcon(float x, float y, float totalW, const float *bladeColor)
+{
+	const float hiltW = 10.0f;
+	const float hiltH = 4.0f;
+	float bladeW;
+	float hiltX;
+
+	bladeW = (totalW - hiltW - 2.0f) * 0.5f;
+	if (bladeW < 0.0f)
+	{
+		bladeW = 0.0f;
+	}
+
+	hiltX = x + ((totalW - hiltW) * 0.5f);
+
+	CG_OBPDrawSaberBlade(x, y + 1.0f, bladeW, bladeColor);
+	CG_OBPDrawSaberHilt(hiltX, y, hiltW, hiltH);
+	CG_OBPDrawSaberBlade(hiltX + hiltW + 1.0f, y + 1.0f, bladeW, bladeColor);
+}
+
+static void CG_OBPDrawSaberStyleIndicator(float x, float y, float panelW, const playerState_t *ps)
+{
+	vec4_t bladeColor;
+	int saberStyle;
+	float iconX;
+
+	if (!CG_OBPGetSaberStyleColor(ps, bladeColor, &saberStyle))
+	{
+		return;
+	}
+
+	switch (saberStyle)
+	{
+	case SS_DUAL:
+		iconX = x + ((panelW - 52.0f) * 0.5f);
+		/* Lower the upper dual-saber icon slightly so it does not overlap the HUD numbers. */
+		CG_OBPDrawSingleSaberIcon(iconX, y - 2.0f, 46.0f, bladeColor);
+		CG_OBPDrawSingleSaberIcon(iconX + 6.0f, y + 4.0f, 46.0f, bladeColor);
+		break;
+	case SS_STAFF:
+		iconX = x + ((panelW - 56.0f) * 0.5f);
+		CG_OBPDrawStaffSaberIcon(iconX, y, 56.0f, bladeColor);
+		break;
+	default:
+		iconX = x + ((panelW - 50.0f) * 0.5f);
+		CG_OBPDrawSingleSaberIcon(iconX, y, 50.0f, bladeColor);
+		break;
+	}
+}
+
+static int CG_OBPGetHeatMax(const playerState_t *ps)
+{
+	(void)ps;
+	return HEAT_MAX;
+}
+
+static int CG_OBPGetHeatValue(const playerState_t *ps)
+{
+	int heat;
+
+	if (!ps)
+	{
+		return 0;
+	}
+
+	heat = ps->stats[STAT_HEAT];
+	if (heat < 0)
+	{
+		heat = 0;
+	}
+	if (heat > HEAT_MAX)
+	{
+		heat = HEAT_MAX;
+	}
+	return heat;
+}
+
+static void CG_OBPDrawLeftVitals(void)
+{
+	playerState_t *ps;
+	int health;
+	int maxHealth;
+	int armor;
+	int maxArmor;
+	vec4_t healthColor;
+	vec4_t armorColor;
+	float x;
+	float y;
+	float panelW;
+
+	ps = &cg.predictedPlayerState;
+	health = ps->stats[STAT_HEALTH];
+	maxHealth = ps->stats[STAT_MAX_HEALTH];
+	armor = ps->stats[STAT_ARMOR];
+	maxArmor = ps->stats[STAT_MAX_ARMOR];
+
+	if (maxHealth <= 0)
+	{
+		maxHealth = 100;
+	}
+	if (maxArmor <= 0)
+	{
+		maxArmor = 100;
+	}
+
+	health = (int)CG_OBPClampMax((float)health, (float)maxHealth);
+	armor = (int)CG_OBPClampMax((float)armor, (float)maxArmor);
+
+	healthColor[0] = 0.70f; healthColor[1] = 0.18f; healthColor[2] = 0.13f; healthColor[3] = 0.64f;
+	armorColor[0] = 0.16f; armorColor[1] = 0.38f; armorColor[2] = 0.62f; armorColor[3] = 0.64f;
+
+	x = 12.0f;
+	y = SCREEN_HEIGHT - 114.0f;
+	panelW = 89.0f;
+
+	/* Use the same bar-to-frame margin as the right-side panels. */
+	CG_OBPDrawBracketPanel(x, y, panelW, 112.0f);
+	CG_OBPDrawVerticalMeter(x + 18.5f, y + 28.0f, 13.0f, 56.0f, CG_OBPGetFraction(health, maxHealth), healthColor, "HEALTH", health);
+	CG_OBPDrawVerticalMeter(x + 57.5f, y + 28.0f, 13.0f, 56.0f, CG_OBPGetFraction(armor, maxArmor), armorColor, "ARMOR", armor);
+}
+
+static void CG_OBPDrawFuelBattery(void)
+{
+	playerState_t *ps;
+	int fuel;
+	int maxFuel;
+	int battery;
+	int maxBattery;
+	vec4_t fuelColor;
+	vec4_t batteryColor;
+	float x;
+	float y;
+	float panelW;
+
+	/*
+	 * Use the snapshot values for gadget fuel. These values are maintained by
+	 * game-side item/skill code and are not predicted like Force/Dodge movement.
+	 */
+	ps = &cg.snap->ps;
+	fuel = ps->jetpackFuel;
+	battery = ps->cloakFuel;
+	maxFuel = CG_OBPGetJetpackFuelMax(ps, fuel);
+	maxBattery = CG_OBPGetCloakFuelMax(ps, battery);
+
+	fuel = CG_OBPClampIntToMax(fuel, maxFuel);
+	battery = CG_OBPClampIntToMax(battery, maxBattery);
+
+	batteryColor[0] = 0.12f; batteryColor[1] = 0.26f; batteryColor[2] = 0.66f; batteryColor[3] = 0.64f;
+	fuelColor[0] = 0.66f; fuelColor[1] = 0.12f; fuelColor[2] = 0.10f; fuelColor[3] = 0.64f;
+
+	/*
+	 * Keep the top-right panel right-aligned with the lower-right panel and
+	 * keep BATT/FUEL aligned above DODGE/FORCE, using the same side margins
+	 * as every other box.
+	 */
+	panelW = 89.0f;
+	x = SCREEN_WIDTH - 99.0f;
+	y = 236.0f;
+
+	CG_OBPDrawBracketPanel(x, y, panelW, 112.0f);
+	CG_OBPDrawVerticalMeter(x + 18.5f, y + 28.0f, 13.0f, 56.0f, CG_OBPGetFraction(battery, maxBattery), batteryColor, "BATT", battery);
+	CG_OBPDrawVerticalMeter(x + 57.5f, y + 28.0f, 13.0f, 56.0f, CG_OBPGetFraction(fuel, maxFuel), fuelColor, "FUEL", fuel);
+}
+
+static void CG_OBPDrawLowerRightResources(void)
+{
+	playerState_t *ps;
+	int dodge;
+	int maxDodge;
+	int force;
+	int maxForce;
+	int heat;
+	int maxHeat;
+	vec4_t dodgeColor;
+	vec4_t forceColor;
+	vec4_t heatColor;
+	float x;
+	float y;
+
+	/* Use predicted values so Force/Dodge visibly move immediately when consumed. */
+	ps = &cg.predictedPlayerState;
+	dodge = ps->stats[STAT_DODGE];
+	maxDodge = ps->stats[STAT_MAX_DODGE];
+	force = ps->fd.forcePower;
+	maxForce = CG_OBPGetForceMax(ps);
+	heat = CG_OBPGetHeatValue(ps);
+	maxHeat = CG_OBPGetHeatMax(ps);
+
+	if (maxDodge < 0)
+	{
+		maxDodge = 0;
+	}
+	if (maxForce < 0)
+	{
+		maxForce = 0;
+	}
+
+	dodge = CG_OBPClampIntToMax(dodge, maxDodge);
+	force = CG_OBPClampIntToMax(force, maxForce);
+	heat = CG_OBPClampIntToMax(heat, maxHeat);
+
+	dodgeColor[0] = 0.10f; dodgeColor[1] = 0.48f; dodgeColor[2] = 0.31f; dodgeColor[3] = 0.64f;
+	forceColor[0] = 0.46f; forceColor[1] = 0.26f; forceColor[2] = 0.72f; forceColor[3] = 0.64f;
+	heatColor[0] = 0.74f; heatColor[1] = 0.46f; heatColor[2] = 0.16f; heatColor[3] = 0.64f;
+
+	x = SCREEN_WIDTH - 138.0f;
+	y = SCREEN_HEIGHT - 114.0f;
+
+	/* Keep the right-side panels right-aligned and use uniform side margins. */
+	CG_OBPDrawBracketPanel(x, y, 128.0f, 112.0f);
+	CG_OBPDrawVerticalMeter(x + 18.5f, y + 28.0f, 13.0f, 56.0f, CG_OBPGetFraction(heat, maxHeat), heatColor, "HEAT", heat);
+	CG_OBPDrawVerticalMeter(x + 57.5f, y + 28.0f, 13.0f, 56.0f, CG_OBPGetFraction(dodge, maxDodge), dodgeColor, "DODGE", dodge);
+	CG_OBPDrawVerticalMeter(x + 96.5f, y + 28.0f, 13.0f, 56.0f, CG_OBPGetFraction(force, maxForce), forceColor, "FORCE", force);
+	/* Lower the saber style icon slightly so it does not touch the numbers. */
+	CG_OBPDrawSaberStyleIndicator(x, y + 103.0f, 128.0f, ps);
+}
+
+static void CG_OBPDrawScoreLine(void)
+{
+	const char *scoreStr;
+	vec4_t scoreColor;
+
+	scoreColor[0] = 0.82f; scoreColor[1] = 0.84f; scoreColor[2] = 0.86f; scoreColor[3] = 0.78f;
+
+	if (cgs.gametype == GT_DUEL)
+	{
 		scoreStr = va("%s: %i/%i", CG_GetStringEdString("MP_INGAME", "SCORE"), cg.snap->ps.persistant[PERS_SCORE], cgs.fraglimit);
 	}
-	else if (0 && cgs.gametype < GT_TEAM )
-	{	// This is a teamless mode, draw the score bias.
-		scoreBias = cg.snap->ps.persistant[PERS_SCORE] - cgs.scores1;
-		if (scoreBias == 0)
-		{	// We are the leader!
-			if (cgs.scores2 <= 0)
-			{	// Nobody to be ahead of yet.
-				Com_sprintf(scoreBiasStr, sizeof(scoreBiasStr), "");
-			}
-			else
-			{
-				scoreBias = cg.snap->ps.persistant[PERS_SCORE] - cgs.scores2;
-				if (scoreBias == 0)
-				{
-					Com_sprintf(scoreBiasStr, sizeof(scoreBiasStr), " (Tie)");
-				}
-				else
-				{
-					Com_sprintf(scoreBiasStr, sizeof(scoreBiasStr), " (+%d)", scoreBias);
-				}
-			}
-		}
-		else // if (scoreBias < 0)
-		{	// We are behind!
-			Com_sprintf(scoreBiasStr, sizeof(scoreBiasStr), " (%d)", scoreBias);
-		}
-		scoreStr = va("%s: %i%s", CG_GetStringEdString("MP_INGAME", "SCORE"), cg.snap->ps.persistant[PERS_SCORE], scoreBiasStr);
-	}
 	else
-	{	// Don't draw a bias.
+	{
 		scoreStr = va("%s: %i", CG_GetStringEdString("MP_INGAME", "SCORE"), cg.snap->ps.persistant[PERS_SCORE]);
 	}
 
-	menuHUD = Menus_FindByName("righthud");
+	CG_OBPDrawString(SCREEN_WIDTH - 260.0f, SCREEN_HEIGHT - 20.0f, scoreStr, scoreColor, 8, 10);
+}
 
-	if (menuHUD)
+static void CG_OBPDrawBattlefrontHUD(const centity_t *cent)
+{
+	(void)cent;
+
+	if (!cg.snap)
 	{
-		if (cgs.gametype != GT_POWERDUEL)
-		{
-			focusItem = Menu_FindItemByName(menuHUD, "score_line");
-			if (focusItem)
-			{
-				UI_DrawScaledProportionalString(
-					focusItem->window.rect.x, 
-					focusItem->window.rect.y, 
-					scoreStr, 
-					UI_RIGHT|UI_DROPSHADOW, 
-					focusItem->window.foreColor, 
-					0.7);
-			}
-		}
-
-		// Print scanline
-		focusItem = Menu_FindItemByName(menuHUD, "scanline");
-		if (focusItem)
-		{
-			trap_R_SetColor( hudTintColor );	
-			CG_DrawPic( 
-				focusItem->window.rect.x, 
-				focusItem->window.rect.y, 
-				focusItem->window.rect.w, 
-				focusItem->window.rect.h, 
-				focusItem->window.background 
-				);			
-		}
-
-		focusItem = Menu_FindItemByName(menuHUD, "frame");
-		if (focusItem)
-		{
-			trap_R_SetColor( hudTintColor );	
-			CG_DrawPic( 
-				focusItem->window.rect.x, 
-				focusItem->window.rect.y, 
-				focusItem->window.rect.w, 
-				focusItem->window.rect.h, 
-				focusItem->window.background 
-				);			
-		}
-
-		CG_DrawForcePower(menuHUD);
-		//[DodgeSys]
-		CG_DrawDodge(menuHUD);
-		//[/DodgeSys]
-		//[SaberSys]
-		CG_DrawBalance(cent, menuHUD);
-		//[/SaberSys]
-
-		// Draw ammo tics or saber style
-		if ( cent->currentState.weapon == WP_SABER )
-		{
-			CG_DrawSaberStyle(cent,menuHUD);
-		}
-		else
-		{
-			CG_DrawAmmo(cent,menuHUD);
-		}
+		return;
 	}
-	else
-	{ 
-		//CG_Error("CG_ChatBox_ArrayInsert: unable to locate HUD menu file ");
+
+	if (cg.predictedPlayerState.pm_type == PM_SPECTATOR)
+	{
+		return;
 	}
+
+	CG_OBPDrawLeftVitals();
+	CG_OBPDrawFuelBattery();
+	CG_OBPDrawLowerRightResources();
+	CG_OBPDrawScoreLine();
+}
+
+void CG_DrawHUD(centity_t	*cent)
+{
+	/*
+	 * OBP Battlefront II-style HUD v5:
+	 * HEALTH/ARMOR | BATT/FUEL | DODGE/FORCE/HEAT
+	 */
+	if (cg_hudFiles.integer)
+	{
+		CG_OBPDrawBattlefrontHUD(cent);
+		return;
+	}
+
+	hudTintColor = colorTable[CT_WHITE];
+
+	CG_OBPDrawBattlefrontHUD(cent);
 }
 
 #define MAX_SHOWPOWERS NUM_FORCE_POWERS
@@ -2348,6 +3361,17 @@ void CG_DrawForceSelect( void )
 	{
 		return;
 	}
+
+	//[IconFlagSync]
+	// Do not draw a force icon for a client-side pending selection. Wait until
+	// the server snapshot has applied fd.forcePowerSelected and its matching
+	// EF_FP_* flags, otherwise the previous option flags can briefly draw the
+	// wrong icon variant.
+	if (cg.forceSelect != cg.snap->ps.fd.forcePowerSelected)
+	{
+		return;
+	}
+	//[/IconFlagSync]
 
 	// count the number of powers owned
 	count = 0;
@@ -2529,6 +3553,16 @@ void CG_DrawInvenSelect( void )
 	{
 		cg.itemSelect = bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag;
 	}
+
+	//[IconFlagSync]
+	// Holdable alternate icons are selected from EF_HI_* flags. Wait until
+	// STAT_HOLDABLE_ITEM matches the current local selection so the EF_HI_*
+	// flags correspond to the item being drawn.
+	if (cg.itemSelect != bg_itemlist[cg.snap->ps.stats[STAT_HOLDABLE_ITEM]].giTag)
+	{
+		return;
+	}
+	//[/IconFlagSync]
 
 //const int bits = cg.snap->ps.stats[ STAT_ITEMS ];
 
@@ -4905,7 +5939,7 @@ static float CG_DrawTeamOverlay( float y, qboolean right, qboolean upper ) {
 			// draw weapon icon
 			xx += TINYCHAR_WIDTH * 3;
 
-			if ( cg_weapons[ci->curWeapon].weaponIcon ) {
+			if ( ci->curWeapon > WP_NONE && ci->curWeapon < MAX_WEAPONS && cg_weapons[ci->curWeapon].weaponIcon ) {
 			
 				CG_DrawPic( xx + xOffset, y, TINYCHAR_WIDTH, TINYCHAR_HEIGHT, 
 					cg_weapons[ci->curWeapon].weaponIcon );
@@ -6750,7 +7784,8 @@ static void CG_DrawHolocronIcons(void)
 	{
 		if (cg.snap->ps.holocronBits & (1 << forcePowerSorted[i]))
 		{
-		if(cg.snap->ps.eFlags & EF_FP_OPTION_2)
+		if ( (CG_ActiveForceIconFlags( forcePowerSorted[i] ) & EF_FP_OPTION_2) &&
+			cgs.media.forcePowerIcons2[forcePowerSorted[i]] )
 		{
 			CG_DrawPic( startx, starty, endx, endy, cgs.media.forcePowerIcons2[forcePowerSorted[i]]);
 		}
@@ -6811,19 +7846,25 @@ static void CG_DrawActivePowers(void)
 		return;
 	}
 
+	CG_UpdateActiveForceIconFlags();
+
 	while (i < NUM_FORCE_POWERS)
 	{
 		if ((cg.snap->ps.fd.forcePowersActive & (1 << forcePowerSorted[i])) &&
 			CG_IsDurationPower(forcePowerSorted[i]))
 		{
-		if(cg.snap->ps.eFlags & EF_FP_OPTION_2)
-		{
-			CG_DrawPic( startx, starty, endx, endy, cgs.media.forcePowerIcons2[forcePowerSorted[i]]);
-		}
-		else
-		{
-			CG_DrawPic( startx, starty, endx, endy, cgs.media.forcePowerIcons[forcePowerSorted[i]]);
-		}
+			int power = forcePowerSorted[i];
+
+			if ( (CG_ActiveForceIconFlags( power ) & EF_FP_OPTION_2) &&
+				cgs.media.forcePowerIcons2[power] )
+			{
+				CG_DrawPic( startx, starty, endx, endy, cgs.media.forcePowerIcons2[power]);
+			}
+			else if ( cgs.media.forcePowerIcons[power] )
+			{
+				CG_DrawPic( startx, starty, endx, endy, cgs.media.forcePowerIcons[power]);
+			}
+
 			startx += (icon_size+2); //+2 for spacing
 			if ((startx+icon_size) >= SCREEN_WIDTH-80)
 			{
@@ -7347,19 +8388,18 @@ void CG_SanitizeString( char *in, char *out )
 			break;
 		}
 
-		if (in[i] == '^')
+		if ( in[i] == Q_COLOR_ESCAPE )
 		{
-			if (in[i+1] >= 48 && //'0'
-				in[i+1] <= 57) //'9'
-			{ //only skip it if there's a number after it for the color
-				i += 2;
+			int colorLength = Q_ColorStringLength( &in[i] );
+
+			if ( colorLength )
+			{
+				i += colorLength;
 				continue;
 			}
-			else
-			{ //just skip the ^
-				i++;
-				continue;
-			}
+
+			i++;
+			continue;
 		}
 
 		if (in[i] < 32)
@@ -7692,8 +8732,8 @@ static void CG_DrawVote(void) {
 		else if ( Q_stricmp("Jedi Master", cgs.voteString+11)==0 )
 		{
 			//[VoteSys]
-			Q_strncpyz(sParm, CG_GetStringEdString("OJP_MENUS", "JEDIMASTER"), sizeof(sParm));
-			//sParm = CG_GetStringEdString("OJP_MENUS", "JEDIMASTER");
+			Q_strncpyz(sParm, CG_GetStringEdString("OBP_MENUS", "JEDIMASTER"), sizeof(sParm));
+			//sParm = CG_GetStringEdString("OBP_MENUS", "JEDIMASTER");
 			//[/VoteSys]
 		}
 		else if ( Q_stricmp("Holocron FFA", cgs.voteString+11)==0  )
@@ -7741,8 +8781,8 @@ static void CG_DrawVote(void) {
 		else if ( Q_stricmp("Single Player", cgs.voteString+11)==0 )
 		{
 			
-			Q_strncpyz(sParm, CG_GetStringEdString("OJP_MENUS", "COOP"), sizeof(sParm));
-			//sParm = CG_GetStringEdString("OJP_MENUS", "COOP");
+			Q_strncpyz(sParm, CG_GetStringEdString("OBP_MENUS", "COOP"), sizeof(sParm));
+			//sParm = CG_GetStringEdString("OBP_MENUS", "COOP");
 		}
 		//[/VoteSys]
 		//[/CoOp]
@@ -8164,7 +9204,7 @@ static void CG_DrawWarmup( void ) {
 		} else if ( cgs.gametype == GT_JEDIMASTER ) {
 			//[OLDGAMETYPES]
 			//s = CG_GetStringEdString("MENUS", "POWERDUEL");//"Jedi Master";??
-			s = CG_GetStringEdString("OJP_MENUS", "JEDIMASTER");//"Jedi Master";??
+			s = CG_GetStringEdString("OBP_MENUS", "JEDIMASTER");//"Jedi Master";??
 			//[/OLDGAMETYPES]
 		} else if ( cgs.gametype == GT_TEAM ) {
 			s = CG_GetStringEdString("MENUS", "TEAM_FFA");//"Team FFA";
@@ -8176,7 +9216,7 @@ static void CG_DrawWarmup( void ) {
 			s = CG_GetStringEdString("MENUS", "CAPTURE_THE_YSALIMARI");//"Capture the Ysalamiri";
 		//[CoOp]
 		} else if ( cgs.gametype == GT_SINGLE_PLAYER ) {
-			s = CG_GetStringEdString("OJP_MENUS", "COOP");//"Cooperative";
+			s = CG_GetStringEdString("OBP_MENUS", "COOP");//"Cooperative";
 		//[/CoOp]
 		} else {
 			s = "";
@@ -8509,14 +9549,17 @@ float cgRageFadeVal = 0;
 int cgRageRecTime = 0;
 int cgRageRecFadeTime = 0;
 float cgRageRecFadeVal = 0;
+qboolean cgRageWasAlt = qfalse;
 
 int cgAbsorbTime = 0;
 int cgAbsorbFadeTime = 0;
 float cgAbsorbFadeVal = 0;
+qboolean cgAbsorbWasDeadlySight = qfalse;
 
 int cgProtectTime = 0;
 int cgProtectFadeTime = 0;
 float cgProtectFadeVal = 0;
+qboolean cgProtectWasAlt = qfalse;
 
 int cgYsalTime = 0;
 int cgYsalFadeTime = 0;
@@ -8905,7 +9948,8 @@ static void CG_Draw2DScreenTints( void )
 	{
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_RAGE))
 		{
-			if(cg.snap->ps.userInt3 & (1 << FLAG_RAGE2))
+			cgRageWasAlt = ((cg.snap->ps.userInt3 & (1 << FLAG_RAGE2)) != 0);
+			if(cgRageWasAlt)
 			{
 			if (!cgRageTime)
 			{
@@ -8974,7 +10018,7 @@ static void CG_Draw2DScreenTints( void )
 		}
 		else if (cgRageTime)
 		{
-		if (cg.snap->ps.userInt3 & (1 << FLAG_RAGE2))
+		if (cgRageWasAlt)
 		{
 			if (!cgRageFadeTime)
 			{
@@ -9040,6 +10084,7 @@ static void CG_Draw2DScreenTints( void )
 					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
 				}
 				cgRageTime = 0;
+				cgRageWasAlt = qfalse;
 			}			
 		}
 		else
@@ -9104,12 +10149,13 @@ static void CG_Draw2DScreenTints( void )
 					CG_DrawRect(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_WIDTH*SCREEN_HEIGHT, hcolor);
 				}
 				cgRageTime = 0;
+				cgRageWasAlt = qfalse;
 			}			
 		}
 		}
 		else if (cg.snap->ps.fd.forceRageRecoveryTime > cg.time)
 		{
-		if (cg.snap->ps.userInt3 & (1 << FLAG_RAGE2))
+		if (cgRageWasAlt)
 		{
 			if (!cgRageRecTime)
 			{
@@ -9211,6 +10257,7 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgRageRecTime = 0;
+				cgRageWasAlt = qfalse;
 			}			
 		}
 		else
@@ -9246,13 +10293,15 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgRageRecTime = 0;
+				cgRageWasAlt = qfalse;
 			}			
 		}
 		}
 		
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_ABSORB))
 		{
-			if(cg.snap->ps.userInt3 & (1 << FLAG_ABSORB2))
+			cgAbsorbWasDeadlySight = CG_DeadlySightActive();
+			if ( cgAbsorbWasDeadlySight )
 			{
 			if (!cgAbsorbTime)
 			{
@@ -9321,7 +10370,7 @@ static void CG_Draw2DScreenTints( void )
 		}
 		else if (cgAbsorbTime)
 		{
-			if(cg.snap->ps.userInt3 & (1 << FLAG_ABSORB2))
+			if ( cgAbsorbWasDeadlySight )
 			{
 			if (!cgAbsorbFadeTime)
 			{
@@ -9354,6 +10403,7 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgAbsorbTime = 0;
+				cgAbsorbWasDeadlySight = qfalse;
 			}				
 			}
 			else
@@ -9389,13 +10439,15 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgAbsorbTime = 0;
+				cgAbsorbWasDeadlySight = qfalse;
 			}				
 			}
 		}
 		
 		if (cg.snap->ps.fd.forcePowersActive & (1 << FP_PROTECT))
 		{
-			if(cg.snap->ps.userInt3 & (1 << FLAG_PROTECT2))
+			cgProtectWasAlt = ((cg.snap->ps.userInt3 & (1 << FLAG_PROTECT2)) != 0);
+			if(cgProtectWasAlt)
 			{
 			if (!cgProtectTime)
 			{
@@ -9464,7 +10516,7 @@ static void CG_Draw2DScreenTints( void )
 		}
 		else if (cgProtectTime)
 		{
-			if(cg.snap->ps.userInt3 & (1 << FLAG_PROTECT2))
+			if(cgProtectWasAlt)
 			{
 			if (!cgProtectFadeTime)
 			{
@@ -9497,6 +10549,7 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgProtectTime = 0;
+				cgProtectWasAlt = qfalse;
 			}				
 			}
 			else
@@ -9532,10 +10585,12 @@ static void CG_Draw2DScreenTints( void )
 			else
 			{
 				cgProtectTime = 0;
+				cgProtectWasAlt = qfalse;
 			}						
 			}
 		}
-		if(cg_entities[cg.snap->ps.clientNum].teamPowerEffectTime > cg.time && cg_entities[cg.snap->ps.clientNum].teamPowerType == 8)
+		if( (cg_entities[cg.snap->ps.clientNum].teamPowerEffectTimes[8] > cg.time)
+			|| (cg_entities[cg.snap->ps.clientNum].teamPowerEffectTime > cg.time && cg_entities[cg.snap->ps.clientNum].teamPowerType == 8) )
 		{
 			
 			blindingTime = (float)(cg.time - cgBlindingTime);
@@ -9594,7 +10649,8 @@ static void CG_Draw2DScreenTints( void )
 			cgBlindingFadeVal = 0;				
 			
 		}
-		else if(cg_entities[cg.snap->ps.clientNum].itemPowerEffectTime > cg.time && cg_entities[cg.snap->ps.clientNum].itemPowerType == 4)
+		else if((cg_entities[cg.snap->ps.clientNum].itemPowerEffectTimes[4] > cg.time) ||
+			(cg_entities[cg.snap->ps.clientNum].itemPowerEffectTime > cg.time && cg_entities[cg.snap->ps.clientNum].itemPowerType == 4))
 		{
 			
 			blindingTime = (float)(cg.time - cgBlindingTime);
@@ -9817,14 +10873,17 @@ static void CG_Draw2D( void ) {
 		cgRageRecTime = 0;
 		cgRageRecFadeTime = 0;
 		cgRageRecFadeVal = 0;
+		cgRageWasAlt = qfalse;
 
 		cgAbsorbTime = 0;
 		cgAbsorbFadeTime = 0;
 		cgAbsorbFadeVal = 0;
+		cgAbsorbWasDeadlySight = qfalse;
 
 		cgProtectTime = 0;
 		cgProtectFadeTime = 0;
 		cgProtectFadeVal = 0;
+		cgProtectWasAlt = qfalse;
 
 		cgBlindingTime = 0;
 		cgBlindingFadeTime = 0;
@@ -9866,12 +10925,16 @@ static void CG_Draw2D( void ) {
 		CG_DrawActivePowers();
 	}
 
-	if (cg.snap->ps.jetpackFuel <= 250 && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
-	{ //draw it as long as it isn't full
+	/*
+	 * OBP Battlefront HUD draws jetpack fuel and cloak battery together
+	 * inside one framed right-side module. Do not draw the old loose bars.
+	 */
+	if (0 && cg.snap->ps.jetpackFuel <= 250 && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
+	{
         CG_DrawJetpackFuel();        
 	}
-	if (cg.snap->ps.cloakFuel <= 250 && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
-	{ //draw it as long as it isn't full
+	if (0 && cg.snap->ps.cloakFuel <= 250 && cgs.clientinfo[cg.snap->ps.clientNum].team != TEAM_SPECTATOR)
+	{
 		CG_DrawCloakFuel();
 	}
 	if (cg.predictedPlayerState.emplacedIndex > 0)
@@ -9883,6 +10946,9 @@ static void CG_Draw2D( void ) {
 			CG_DrawEWebHealth();
 		}
 	}
+
+	CG_DrawForceSeeVanillaAura();
+	CG_DrawDeadlySightAura();
 
 	// Draw this before the text so that any text won't get clipped off
 	CG_DrawZoomMask();

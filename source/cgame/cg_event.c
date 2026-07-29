@@ -10,7 +10,7 @@
 // for the voice chats
 //[SVN]
 //rearraigned repository to make it easier to initially compile.
-#include "../../ojpenhanced/ui/jamp/menudef.h"
+#include "../ui/jamp/menudef.h"
 
 // Vehicle weapon assets may be registered lazily by bg_vehicleLoad.c.
 extern void BG_EnsureVehWeaponAssetsLoaded( int weaponIndex );
@@ -32,6 +32,59 @@ extern int cg_siegeDeathTime;
 extern int cg_siegeDeathDelay;
 extern int cg_vehicleAmmoWarning;
 extern int cg_vehicleAmmoWarningTime;
+
+static void CG_SetTeamPowerEffect( int entNum, int type, int endTime )
+{
+	if ( entNum < 0 || entNum >= MAX_GENTITIES )
+	{
+		return;
+	}
+
+	if ( type >= 0 && type < 11 )
+	{
+		cg_entities[entNum].teamPowerEffectTimes[type] = endTime;
+	}
+
+	/* Preserve the legacy single-effect fields for any older code paths. */
+	cg_entities[entNum].teamPowerEffectTime = endTime;
+	cg_entities[entNum].teamPowerType = type;
+}
+
+static void CG_ClearTeamPowerEffect( int entNum, int type )
+{
+	if ( entNum < 0 || entNum >= MAX_GENTITIES )
+	{
+		return;
+	}
+
+	if ( type >= 0 && type < 11 )
+	{
+		cg_entities[entNum].teamPowerEffectTimes[type] = 0;
+	}
+
+	if ( cg_entities[entNum].teamPowerType == type )
+	{
+		cg_entities[entNum].teamPowerEffectTime = 0;
+	}
+}
+
+static void CG_SetItemPowerEffect( int entNum, int type, int endTime )
+{
+	if ( entNum < 0 || entNum >= MAX_GENTITIES )
+	{
+		return;
+	}
+
+	if ( type >= 0 && type < 5 )
+	{
+		cg_entities[entNum].itemPowerEffectTimes[type] = endTime;
+	}
+
+	/* Preserve the legacy single-effect fields for any older code paths. */
+	cg_entities[entNum].itemPowerEffectTime = endTime;
+	cg_entities[entNum].itemPowerType = type;
+}
+
 
 //I know, not siege, but...
 typedef enum
@@ -403,7 +456,7 @@ static void CG_Obituary( entityState_t *ent ) {
 		//[Asteroids]
 		if ( vehMessage )
 		{
-			message = (char *)CG_GetStringEdString("OJP_INGAMEVEH", message);
+			message = (char *)CG_GetStringEdString("OBP_INGAMEVEH", message);
 		}
 		else
 		{
@@ -733,7 +786,7 @@ clientkilled:
 		{
 			if ( vehMessage )
 			{
-				message = (char *)CG_GetStringEdString("OJP_INGAMEVEH", message);
+				message = (char *)CG_GetStringEdString("OBP_INGAMEVEH", message);
 			}
 			else
 			{
@@ -824,7 +877,7 @@ void CG_ToggleBinoculars(centity_t *cent, int forceZoom)
 	{
 		trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.zoomStart );
 	}
-	else if (cg.snap->ps.zoomMode == 2)
+	else if (cg.snap->ps.zoomMode == 2 || cg.snap->ps.zoomMode == 3)
 	{
 		trap_S_StartSound( NULL, cg.snap->ps.clientNum, CHAN_AUTO, cgs.media.zoomEnd );
 	}
@@ -1765,8 +1818,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			cl_ent->weapon = WP_NONE;
 			cl_ent->teamPowerEffectTime = 0;
 			cl_ent->teamPowerType = 0;
+			memset( cl_ent->teamPowerEffectTimes, 0, sizeof( cl_ent->teamPowerEffectTimes ) );
 			cl_ent->itemPowerEffectTime = 0;
 			cl_ent->itemPowerType = 0;
+			memset( cl_ent->itemPowerEffectTimes, 0, sizeof( cl_ent->itemPowerEffectTimes ) );
 			cl_ent->numLoopingSounds = 0;
 			//cl_ent->localAnimIndex = 0;
 		}
@@ -2566,7 +2621,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			int weapon = es->eventParm;
 			weaponInfo_t *weaponInfo;
 			
-			assert(weapon >= 0 && weapon < MAX_WEAPONS);
+			if ( weapon <= WP_NONE || weapon >= MAX_WEAPONS )
+			{
+				break;
+			}
 
 			weaponInfo = &cg_weapons[weapon];
 
@@ -3534,7 +3592,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 			trap_Cvar_Set("ui_myteam", va("%i", es->bolt2));
 
-			if (!( trap_Key_GetCatcher() & KEYCATCH_UI ) && !es->bolt1)
+			if (!( trap_Key_GetCatcher() & KEYCATCH_UI ) && !es->bolt1 && es->bolt2 != TEAM_SPECTATOR)
 			{
 				trap_OpenUIMenu(UIMENU_PLAYERCONFIG);
 			}
@@ -4347,16 +4405,14 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 		ByteToDir( es->eventParm, dir );
 		FX_ForceDrained(position, dir);
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 0;
+		CG_SetTeamPowerEffect( es->owner, 0, cg.time + 2500 );
 		break;
 	case EV_FORCE_SEVERED:
 		DEBUGNAME("EV_FORCE_SEVERED");
 		ByteToDir( es->eventParm, dir );
 		FX_ForceSevered(position, dir);
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 1;
+		CG_SetTeamPowerEffect( es->owner, 1, cg.time + 2500 );
 		break;		
 	case EV_FORCE_HEALED:
 		DEBUGNAME("EV_FORCE_HEALED");
@@ -4371,52 +4427,69 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_FORCE_STASIS:
 		DEBUGNAME("EV_FORCE_STASIS");
 		ByteToDir( es->eventParm, dir );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 5000*es->otherEntityNum2;
-		cg_entities[es->owner].teamPowerType = 6;
+		CG_SetTeamPowerEffect( es->owner, 6, cg.time + 5000*es->otherEntityNum2 );
 		break;
 	case EV_FORCE_INSANITY:
 		DEBUGNAME("EV_FORCE_INSANITY");
 		ByteToDir( es->eventParm, dir );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 5000*es->otherEntityNum2;
-		cg_entities[es->owner].teamPowerType = 7;
+		CG_SetTeamPowerEffect( es->owner, 7, cg.time + 5000*es->otherEntityNum2 );
 		break;
 	case EV_FORCE_LIGHTNING:
 		DEBUGNAME("EV_FORCE_LIGHTNING");
 		ByteToDir( es->eventParm, dir );
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 2;
+		CG_SetTeamPowerEffect( es->owner, 2, cg.time + 2500 );
 		break;
 	case EV_FORCE_JUDGEMENT:
 		DEBUGNAME("EV_FORCE_JUDGEMENT");
 		ByteToDir( es->eventParm, dir );
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 3;
+		CG_SetTeamPowerEffect( es->owner, 3, cg.time + 2500 );
 		break;
 
 	case EV_FORCE_DEATHFIELDED:
 		DEBUGNAME("EV_FORCE_DEATHFIELDED");
 		ByteToDir( es->eventParm, dir );
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.crackleSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 4;
+		CG_SetTeamPowerEffect( es->owner, 4, cg.time + 2500 );
 		break;
 		
 	case EV_FORCE_DEATHSIGHTED:
 		DEBUGNAME("EV_FORCE_DEATHSIGHTED");
 		ByteToDir( es->eventParm, dir );
 		trap_S_StartSound (NULL, es->owner, CHAN_AUTO, cgs.media.drainSound );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500;
-		cg_entities[es->owner].teamPowerType = 5;
+		CG_SetTeamPowerEffect( es->owner, 5, cg.time + 2500 );
 		break;
 
 	case EV_FORCE_BLINDED:
 		DEBUGNAME("EV_FORCE_BLINDED");
 		ByteToDir( es->eventParm, dir );
-		cg_entities[es->owner].teamPowerEffectTime = cg.time + 2500*es->otherEntityNum2;
-		cg_entities[es->owner].teamPowerType = 8;
-		break;			
+		CG_SetTeamPowerEffect( es->owner, 8, cg.time + 2500*es->otherEntityNum2 );
+		break;
+	case EV_FORCE_CONFUSED:
+		DEBUGNAME("EV_FORCE_CONFUSED");
+		ByteToDir( es->eventParm, dir );
+		if ( es->otherEntityNum2 <= 0 )
+		{
+			CG_ClearTeamPowerEffect( es->owner, 9 );
+		}
+		else
+		{
+			CG_SetTeamPowerEffect( es->owner, 9, cg.time + es->otherEntityNum2 );
+		}
+		break;
+	case EV_FORCE_CORRUPTED:
+		DEBUGNAME("EV_FORCE_CORRUPTED");
+		ByteToDir( es->eventParm, dir );
+		if ( es->otherEntityNum2 <= 0 )
+		{
+			CG_ClearTeamPowerEffect( es->owner, 10 );
+		}
+		else
+		{
+			CG_SetTeamPowerEffect( es->owner, 10, cg.time + es->otherEntityNum2 );
+		}
+		break;
 	case EV_BURNED:
 		{
 			int victim;
@@ -4441,8 +4514,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
 			FX_Burned(position, dir);
 			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.incinerationSound );
-			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
-			cg_entities[victim].itemPowerType = 0;
+			CG_SetItemPowerEffect( victim, 0, cg.time + 2500 );
 		}
 			break;
 
@@ -4470,8 +4542,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
 			FX_Frozen(position, dir);
 			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.cryoSound );
-			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
-			cg_entities[victim].itemPowerType = 1;
+			CG_SetItemPowerEffect( victim, 1, cg.time + 2500 );
 		}
 			break;
 
@@ -4498,8 +4569,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 			}
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
 			trap_S_StartSound (NULL, victim, CHAN_AUTO, cgs.media.crackleSound );
-			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
-			cg_entities[victim].itemPowerType = 2;
+			CG_SetItemPowerEffect( victim, 2, cg.time + 2500 );
 		}
 			break;	
 
@@ -4525,8 +4595,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				}
 			}
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
-			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
-			cg_entities[victim].itemPowerType = 3;
+			CG_SetItemPowerEffect( victim, 3, cg.time + 2500 );
 		}
 		break;	
 	
@@ -4552,8 +4621,7 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 				}
 			}
 			if (victim < 0 || victim >= MAX_GENTITIES) { victim = es->number; }
-			cg_entities[victim].itemPowerEffectTime = cg.time + 2500;
-			cg_entities[victim].itemPowerType = 4;
+			CG_SetItemPowerEffect( victim, 4, cg.time + 2500 );
 		}
 		break;	
 		
@@ -4587,7 +4655,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 
 	case EV_WEAPON_CHARGE:
 		DEBUGNAME("EV_WEAPON_CHARGE");
-		assert(es->eventParm > WP_NONE && es->eventParm < WP_NUM_WEAPONS);
+		if ( es->eventParm <= WP_NONE || es->eventParm >= MAX_WEAPONS )
+		{
+			break;
+		}
 		if (cg_weapons[es->eventParm].chargeSound)
 		{
 			trap_S_StartSound(NULL, es->number, CHAN_WEAPON, cg_weapons[es->eventParm].chargeSound);
@@ -4601,7 +4672,10 @@ void CG_EntityEvent( centity_t *cent, vec3_t position ) {
 	case EV_WEAPON_CHARGE_ALT:
 		DEBUGNAME("EV_WEAPON_CHARGE_ALT");
 
-		assert(es->eventParm > WP_NONE && es->eventParm < WP_NUM_WEAPONS);
+		if ( es->eventParm <= WP_NONE || es->eventParm >= MAX_WEAPONS )
+		{
+			break;
+		}
 		if (cg_weapons[es->eventParm].altChargeSound)
 		{
 			trap_S_StartSound(NULL, es->number, CHAN_WEAPON, cg_weapons[es->eventParm].altChargeSound);

@@ -1,0 +1,1931 @@
+//----------------------------------------------------------------------------------------------
+//	MAIN MENU
+//----------------------------------------------------------------------------------------------
+//[OLDGAMETYPES]
+//ui_netGameType
+//0 = FFA
+//1 = Holocron FFA
+//2 = Jedi Master
+//3 = Duel
+//4 = Power Duel
+//5 = Team FFA 
+//6 = Siege
+//7 = Capture the Flag
+//8 = Capture the Ysalimari
+
+/*
+//ui_net_gametype
+//	0 = FFA
+//	1 = DUEL
+//	2 = POWER DUEL
+//	3 = TEAM FFA
+//	4 = SIEGE
+//	5 = CTF
+*/
+
+//[/OLDGAMETYPES]
+
+{
+	menuDef  
+	{
+		name					"botscreateserver"
+		fullScreen				MENU_TRUE				
+		rect					0 0 640 480						// Size and position of the menu
+		visible					MENU_FALSE							// Visible on open
+		focusColor			0.82 0.84 0.88 1
+		descX					320
+		descY					421
+		descScale				1
+		descColor				0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER		
+		popup
+		outOfBoundsClick										// this closes the window if it gets a click out of the rectangle
+
+
+		
+		onESC 
+		{ 
+				
+				close			botscreateserver ;
+				open			advancedcreateserver
+		}
+
+		itemDef 
+		{
+			name				setup_background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 480	
+			backcolor			0 0 0 1
+			forecolor			0.82 0.84 0.88 1
+			border			0
+			visible				1
+			decoration
+		}
+		//----------------------------------------------------------------------------------------------
+		//
+		//	MENU BACKGROUND
+		//
+		//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				really_background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				156 154 320 240
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text_b
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				480 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}	
+
+		itemDef
+		{
+			name				bgpic
+			style				WINDOW_STYLE_SHADER
+			rect				0 127 640 314
+			background			"obp/menu/bespin"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef
+		{
+			name				mainbackground
+			style				WINDOW_STYLE_FILLED
+			rect				0 127 640 314
+			backcolor			0 0 0 0.8
+			visible				1
+			decoration
+		}
+
+	
+
+
+		itemdef
+		{
+			name				lowbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 428 640 18
+			background			"obp/menu/lowbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 85 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar2
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 114 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+
+		itemDef 
+		{
+			name				obplogo
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				220 0 200 90
+			background			"obp/menu/obplogo"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+		/*itemDef 
+		{
+			name					frame_pic
+			group					none
+			style					WINDOW_STYLE_SHADER
+			rect				20 10 560 380
+			background				"gfx/menus/menu_box_ingame"
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible			0 
+			appearance_slot			1
+		}*/
+
+//----------------------------------------------------------------------------------------------
+//
+//	TOP MENU BUTTONS
+//
+//----------------------------------------------------------------------------------------------
+
+		itemDef 
+		{
+			name				quickserver_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			4 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				quickserver_button
+			group				toprow
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect			4 100 124 24
+			text				@MENUS_SOLO_GAME
+			descText			@MENUS_QUICKSTART_DESC
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{  
+				show			quickserver_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			quickserver_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			All ; 
+				open			quickgame
+			}
+		}
+
+		itemDef 
+		{
+			name				startserver_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			173 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				startserver_button
+			group				toprow
+			text				"CREATE GAME"
+
+			descText			"Create Your Own Game"
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect			173 100 124 24
+			textaligny			0
+			font				3
+			textscale			0.85
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{  
+				show			startserver_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			startserver_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+			
+				close			All ; 
+				open			createserver 
+			}
+		}
+
+
+		itemDef 
+		{
+			name				joinserver_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			343 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef {
+			name				joinserver_button
+			group				toprow
+			text				@MENUS_JOIN_SERVER_CAPS
+			descText			"Join a server"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			343 100 124 24
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible				1			 
+			mouseEnter 
+			{  
+				show			joinserver_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			joinserver_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ;
+			
+				close			All ; 
+				open			joinserver 
+			}
+		}
+
+
+		itemDef 
+		{
+			name				startdemo_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			512 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef {
+			name				startdemo_button
+			group				toprow
+			text				"@MENUS_DEMOS"
+			descText			"Play a Demo"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			512 100 124 24
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible				1			 
+			mouseEnter 
+			{  
+				show			startdemo_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			startdemo_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+			
+				close			All ; 
+				open			demo 
+			}
+		}
+//------------------------------------------------
+// BOTS OPTIONS
+//------------------------------------------------
+
+
+//---------------------------------------------
+//	SKILL BUTTON
+//---------------------------------------------
+		itemDef 
+		{
+			name				rules_title
+			group				none
+			text				"BOTS"
+
+      			rect				55 130 110 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+		}
+
+		itemDef 
+		{
+			name				difficultyfield_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect				145 130 140 20
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				difficultyfield
+			group				grpsettings
+			style				0	
+			ownerdraw			UI_SKILL
+			text				"Skill:"
+			descText			@MENUS_ADJUSTS_THE_DIFFICULTY
+			rect				145 130 140 20
+			font				3
+			textscale			0.7
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			cvarTest			"ui_netGameType"
+			mouseEnter 
+			{ 
+				show			difficultyfield_glow
+			}
+			mouseExit 
+			{ 
+				hide			difficultyfield_glow
+			}
+			action 
+			{ 
+				
+			}	  	  
+		}
+
+
+		itemDef 
+		{
+			name				bottype_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect				295 130 160 20
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				bottype
+			group				grpsettings
+			style				0	
+			type				ITEM_TYPE_MULTI
+			text				"Bot Type:"
+			descText			@MENUS_ADJUSTS_THE_DIFFICULTY
+			cvar				"ui_bottype"
+			cvarFloatList		
+			{ 
+				"Jedi Academy"	 		0
+				"Force Unleashed"			1
+//[AotCAI]
+				"Battlefront"			2
+//[/AotCAI]
+				"Hybrid"			3
+			}
+			rect				295 130 160 20 
+			font				3
+			textscale			0.7
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				show			bottype_glow
+			}
+			mouseExit 
+			{ 
+				hide			bottype_glow
+			}
+			action 
+			{ 
+				
+			}  	  
+		}
+		itemDef 
+		{
+			name				defaultbots_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect				530 130 90 20
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{ 
+			name				defaultbots
+			group				grpsettings
+			style				0	
+			type				ITEM_TYPE_BUTTON
+			text				"Default"
+			descText			"Reset all 32 bot slots to HUMAN"
+			rect				530 130 90 20
+			font				3
+			textscale			0.7
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{  
+				show			defaultbots_glow
+			}
+			mouseExit 
+			{ 
+				hide			defaultbots_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				setcvar			ui_blueteam1	"1" ;
+				setcvar			ui_redteam1	"1" ;
+				setcvar			ui_blueteam2	"1" ;
+				setcvar			ui_redteam2	"1" ;
+				setcvar			ui_blueteam3	"1" ;
+				setcvar			ui_redteam3	"1" ;
+				setcvar			ui_blueteam4	"1" ;
+				setcvar			ui_redteam4	"1" ;
+				setcvar			ui_blueteam5	"1" ;
+				setcvar			ui_redteam5	"1" ;
+				setcvar			ui_blueteam6	"1" ;
+				setcvar			ui_redteam6	"1" ;
+				setcvar			ui_blueteam7	"1" ;
+				setcvar			ui_redteam7	"1" ;
+				setcvar			ui_blueteam8	"1" ;
+				setcvar			ui_redteam8	"1" ;
+				setcvar			ui_blueteam9	"1" ;
+				setcvar			ui_redteam9	"1" ;
+				setcvar			ui_blueteam10	"1" ;
+				setcvar			ui_redteam10	"1" ;
+				setcvar			ui_blueteam11	"1" ;
+				setcvar			ui_redteam11	"1" ;
+				setcvar			ui_blueteam12	"1" ;
+				setcvar			ui_redteam12	"1" ;
+				setcvar			ui_blueteam13	"1" ;
+				setcvar			ui_redteam13	"1" ;
+				setcvar			ui_blueteam14	"1" ;
+				setcvar			ui_redteam14	"1" ;
+				setcvar			ui_blueteam15	"1" ;
+				setcvar			ui_redteam15	"1" ;
+				setcvar			ui_blueteam16	"1" ;
+				setcvar			ui_redteam16	"1" ;
+			}	  	  
+		}		
+		
+
+		// Bot roster backdrop, matched to player skinlist margins.
+		itemDef
+		{
+			name				botlist_backdrop
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				55 150 531 258
+			border				1
+			bordercolor			.5 .5 .5 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+//-------------------------------------
+// BOT LIST FOR NON-TEAMGAMES
+//-------------------------------------
+
+
+
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_1_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM1
+			rect				92 171 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_2_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM1
+			rect				92 199 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_3_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM2
+			rect				92 227 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_4_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM2
+			rect				92 255 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_5_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM3
+			rect				92 283 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_6_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM3
+			rect				92 311 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_7_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM4
+			rect				92 339 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_8_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM4
+			rect				92 367 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+
+		
+		itemDef 
+		{
+			name				humanbotfield
+			style 				0	
+			text 				@MENUS_9_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM5
+			rect				222 171 120 20 			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+
+		itemDef 
+		{
+		      	name 				humanbotfield
+		      	style 				0
+			text 				@MENUS_10	
+ 			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM5
+		      	rect				222 199 120 20 		      	textalign 			ITEM_ALIGN_LEFT		
+      			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+		      	border 				0
+		      	bordercolor 			0 0 0 0
+        		visible 			1
+	    	}
+
+
+		itemDef 
+		{
+      			name 				humanbotfield
+      			style 				0
+			text 				@MENUS_11	
+ 			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+	  		ownerdraw 			UI_BLUETEAM6
+		      	rect				222 227 120 20      			textalign 			ITEM_ALIGN_LEFT		
+      			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+      			border 				0
+      			bordercolor 			0 0 0 0
+       			visible 			1
+		}
+
+
+
+		itemDef 
+		{
+      			name 				humanbotfield
+      			style 				0	
+			text 				@MENUS_12
+ 			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+	  		ownerdraw 			UI_REDTEAM6
+      			rect				222 255 120 20      			textalign 			ITEM_ALIGN_LEFT		
+      			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+      			border 				0
+      			bordercolor 			0 0 0 0
+       			visible 			1
+
+    		}
+
+
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_13
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM7
+			rect				222 283 120 20			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+
+
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_14
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM7
+			rect				222 311 120 20			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+		 	visible 			1
+		}
+
+
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_15
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM8
+			rect				222 339 120 20 			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				@MENUS_16
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM8
+			rect				222 367 120 20 			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"17."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM9
+			rect				352 171 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"18."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM9
+			rect				352 199 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"19."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM10
+			rect				352 227 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"20."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM10
+			rect				352 255 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"21."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM11
+			rect				352 283 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"22."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM11
+			rect				352 311 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"23."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM12
+			rect				352 339 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"24."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM12
+			rect				352 367 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"25."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM13
+			rect				482 171 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"26."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM13
+			rect				482 199 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"27."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM14
+			rect				482 227 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"28."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM14
+			rect				482 255 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 		
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"29."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM15
+			rect				482 283 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"30."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM15
+			rect				482 311 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 		
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"31."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM16
+			rect				482 339 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotfield
+			style 				0	
+			text 				"32."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM16
+			rect				482 367 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_1_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM1
+			rect				92 171 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_2_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM1
+			rect				92 199 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_3_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM2
+			rect				92 227 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_4_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM2
+			rect				92 255 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_5_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM3
+			rect				92 283 120 20 			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_6_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM3
+			rect				92 311 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_7_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM4
+			rect				92 339 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_8_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM4
+			rect				92 367 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+
+		
+		itemDef 
+		{
+			name				humanbotnonfield
+			style 				0	
+			text 				@MENUS_9_1
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM5
+			rect				222 171 120 20			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+
+		itemDef 
+		{
+		      	name 				humanbotnonfield
+		      	style 				0
+			text 				@MENUS_10	
+ 			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM5
+		      	rect				222 199 120 20 		      	textalign 			ITEM_ALIGN_LEFT		
+      			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+		      	border 				0
+		      	bordercolor 			0 0 0 0
+        		visible 			1
+	    	}
+
+
+		itemDef 
+		{
+      			name 				humanbotnonfield
+      			style 				0
+			text 				@MENUS_11	
+ 			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+	  		ownerdraw 			UI_BLUETEAM6
+		      	rect				222 227 120 20      			textalign 			ITEM_ALIGN_LEFT		
+      			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+      			border 				0
+      			bordercolor 			0 0 0 0
+       			visible 			1
+		}
+
+
+
+		itemDef 
+		{
+      			name 				humanbotnonfield
+      			style 				0	
+			text 				@MENUS_12
+ 			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+	  		ownerdraw 			UI_REDTEAM6
+      			rect				222 255 120 20       			textalign 			ITEM_ALIGN_LEFT		
+      			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+      			border 				0
+      			bordercolor 			0 0 0 0
+       			visible 			1
+
+    		}
+
+
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_13
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM7
+			rect				222 283 120 20 			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+
+
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_14
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM7
+			rect				222 311 120 20 			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+		 	visible 			1
+		}
+
+
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_15
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM8
+			rect				222 339 120 20 			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				@MENUS_16
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM8
+			rect				222 367 120 20			textalign 			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"17."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM9
+			rect				352 171 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"18."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM9
+			rect				352 199 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+		
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"19."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM10
+			rect				352 227 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"20."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM10
+			rect				352 255 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"21."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM11
+			rect				352 283 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"22."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM11
+			rect				352 311 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}		
+		
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"23."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM12
+			rect				352 339 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"24."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM12
+			rect				352 367 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}	
+		
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"25."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM13
+			rect				482 171 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"26."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM13
+			rect				482 199 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}	
+		
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"27."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM14
+			rect				482 227 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"28."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM14
+			rect				482 255 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}	
+		
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"29."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM15
+			rect				482 283 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"30."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM15
+			rect				482 311 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}	
+		
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"31."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_BLUETEAM16
+			rect				482 339 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			0.25 0.35 1 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}
+
+		itemDef 
+		{
+			name 				humanbotnonfield
+			style 				0	
+			text 				"32."
+			descText			@MENUS_CLICK_FOR_HUMAN_BOTS
+			ownerdraw 			UI_REDTEAM16
+			rect				482 367 120 20			textalign			ITEM_ALIGN_LEFT
+			textalignx			0     
+			textaligny 			2
+			font				4
+			textscale			1
+			forecolor			1 0.25 0.25 1
+			border 				0
+			bordercolor 			0 0 0 0
+			visible 			1
+
+		}	
+
+		
+		
+		//----------------------------------------------------------------------------------------------
+//	BOTTOM BUTTONS
+//----------------------------------------------------------------------------------------------
+		itemDef
+		{
+			name				back_button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			4 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef
+		{
+			name				back_button
+			text				@MENUS_BACK
+			descText			"Back to rules"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			4 445 124 32
+			font				3
+			textscale			0.9
+			textalignx			62
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter {  show back_button_glow }
+			mouseExit { hide back_button_glow }
+			action
+			{
+				play				"sound/interface/button1.mp3" ;
+				
+				close			botscreateserver ;
+				open			advancedcreateserver
+			}
+		}
+
+itemDef
+		{
+			name				next_button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			512 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef
+		{
+			name				next_button
+			text				@MENUS_BEGIN
+			descText			@MENUS_START_SERVER
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			512 445 124 32
+			font				3
+			textscale			0.9
+			textalignx			62
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter {  show next_button_glow }
+			mouseExit { hide next_button_glow }
+			action
+			{
+				play				"sound/interface/button1.mp3" ;
+				
+				uiScript setSiegeNoBots ;
+				uiScript weaponDisable ;
+				uiScript StartServer ;
+				setcvartocvar password g_password ;
+				close			botscreateserver ;
+			}
+		}
+
+	}
+}

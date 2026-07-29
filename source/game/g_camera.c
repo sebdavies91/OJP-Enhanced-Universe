@@ -868,8 +868,6 @@ void DisablePlayerCameraPos(void)
 
 	for(i = 0; i < MAX_CLIENTS; i++)
 	{
-		int flags;
-
 		if(!playerCamPos[i].inuse)
 		{//player's camera position was never set, just move on.
 			continue;
@@ -899,10 +897,11 @@ void DisablePlayerCameraPos(void)
 			continue;
 		}
 
-		//flip the teleport flag so this dude doesn't client lerp
-		flags = player->client->ps.eFlags & (EF_TELEPORT_BIT );
-		flags ^= EF_TELEPORT_BIT;
-		player->client->ps.eFlags = flags;
+		// Flip the teleport flag so this dude doesn't client lerp.
+		// Do not rebuild ps.eFlags from only EF_TELEPORT_BIT here: SP
+		// cinematics/camera restores must preserve persistent visual/loadout
+		// flags such as EF_WP_OPTION_* and EF_DUAL_WEAPONS.
+		player->client->ps.eFlags ^= EF_TELEPORT_BIT;
 
 		//restore view angle
 		SetClientViewAngle(player, playerCamPos[i].viewangles);

@@ -1,4 +1,4 @@
-//NPC_stats.cpp
+﻿//NPC_stats.cpp
 #include "b_local.h"
 #include "b_public.h"
 #include "anims.h"
@@ -115,6 +115,20 @@ stringID_table_t BSTable[] =
 	ENUM2STRING(BS_NOCLIP),//# Moves through walls), etc.
 	ENUM2STRING(BS_REMOVE),//# Waits for player to leave PVS then removes itself
 	ENUM2STRING(BS_CINEMATIC),//# Does nothing but face it's angles and move to a goal if it has one
+	/*
+	 * SP maps and scripts commonly use the short behavior names documented in
+	 * the NPC_spawner comments.  Treat them as behavior states instead of trying
+	 * to open scripts/standguard.IBI, scripts/huntkill.IBI, etc.
+	 */
+	{"default",			BS_DEFAULT},
+	{"wait",				BS_WAIT},
+	{"standguard",		BS_STAND_GUARD},
+	{"standshoot",		BS_STAND_AND_SHOOT},
+	{"huntkill",			BS_HUNT_AND_KILL},
+	{"BS_WAIT",			BS_WAIT},
+	{"BS_STAND_GUARD",	BS_STAND_GUARD},
+	{"BS_STAND_AND_SHOOT", BS_STAND_AND_SHOOT},
+	{"BS_HUNT_AND_KILL", BS_HUNT_AND_KILL},
 	//the rest are internal only
 	{"",				-1}
 };
@@ -262,9 +276,149 @@ extern qboolean BG_ParseLiteral( const char **data, const char *string );
 //
 // NPC parameters file : scripts/NPCs.cfg
 //
-#define MAX_NPC_DATA_SIZE  0xFFFFF
+/*
+ * NPC parameter text pool.
+ *
+ * GT_SINGLE_PLAYER maps can reference legacy stock NPC definitions while OBP/OJP
+ * installs may also provide many modular ext_data/NPCs/*.npc files.  Keep the
+ * parser's single contiguous NPCParms stream, but make the pool large enough
+ * for a full modular install plus aggregate fallback files.
+ */
+#define MAX_NPC_DATA_SIZE  0x1000000
+#define NPC_EXTENSION_LIST_BUF_SIZE 0x100000
 char	NPCParms[MAX_NPC_DATA_SIZE];
 char	NPCFile[MAX_QPATH];
+
+
+static char NPCParmsLazyTried[16384];
+
+static qboolean NPC_LazyLoadAlreadyTried( const char *npcName )
+{
+	char needle[MAX_QPATH + 4];
+
+	Com_sprintf( needle, sizeof( needle ), "\n%s\n", npcName );
+	return ( strstr( NPCParmsLazyTried, needle ) != NULL );
+}
+
+static void NPC_MarkLazyLoadTried( const char *npcName )
+{
+	int used;
+	int need;
+
+	if ( NPC_LazyLoadAlreadyTried( npcName ) )
+	{
+		return;
+	}
+
+	used = strlen( NPCParmsLazyTried );
+	need = strlen( npcName ) + 2;
+	if ( used + need + 1 >= (int)sizeof( NPCParmsLazyTried ) )
+	{
+		return;
+	}
+
+	NPCParmsLazyTried[used++] = '\n';
+	Q_strncpyz( NPCParmsLazyTried + used, npcName, sizeof( NPCParmsLazyTried ) - used );
+	used += strlen( npcName );
+	NPCParmsLazyTried[used++] = '\n';
+	NPCParmsLazyTried[used] = 0;
+}
+
+static qboolean NPC_AppendParmsFileDirect( const char *filename, const char *reason )
+{
+	fileHandle_t f;
+	int len;
+	int oldLen;
+	int compressedLen;
+	char *marker;
+
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	if ( len <= 0 )
+	{
+		return qfalse;
+	}
+
+	oldLen = strlen( NPCParms );
+	if ( oldLen + len + 2 >= MAX_NPC_DATA_SIZE )
+	{
+		trap_FS_FCloseFile( f );
+		Com_Printf( S_COLOR_RED "NPC_LoadParms: cannot append %s for %s, NPC parameter buffer is full (%d + %d, max %d)\n",
+			filename, reason, oldLen, len, MAX_NPC_DATA_SIZE - 1 );
+		return qfalse;
+	}
+
+	marker = NPCParms + oldLen;
+	trap_FS_Read( marker, len, f );
+	trap_FS_FCloseFile( f );
+	marker[len] = 0;
+
+	compressedLen = COM_Compress( marker );
+	if ( oldLen + compressedLen + 2 >= MAX_NPC_DATA_SIZE )
+	{
+		Com_Printf( S_COLOR_RED "NPC_LoadParms: cannot append compressed %s for %s, NPC parameter buffer is full (%d + %d, max %d)\n",
+			filename, reason, oldLen, compressedLen, MAX_NPC_DATA_SIZE - 1 );
+		marker[0] = 0;
+		return qfalse;
+	}
+
+	marker[compressedLen++] = '\n';
+	marker[compressedLen] = 0;
+
+	Com_Printf( "NPC_LoadParms: lazy-loaded %s for missing NPC '%s' (%d bytes, total %d)\n",
+		filename, reason, compressedLen, oldLen + compressedLen );
+	return qtrue;
+}
+
+static qboolean NPC_TryLoadParmsForNPC( const char *NPCName )
+{
+	char cleanName[MAX_QPATH];
+	char filename[MAX_QPATH];
+
+	if ( !NPCName || !NPCName[0] )
+	{
+		return qfalse;
+	}
+
+	Q_strncpyz( cleanName, NPCName, sizeof( cleanName ) );
+	Q_strlwr( cleanName );
+
+	if ( NPC_LazyLoadAlreadyTried( cleanName ) )
+	{
+		return qfalse;
+	}
+	NPC_MarkLazyLoadTried( cleanName );
+
+	/*
+	 * Some large installs overflow/truncate the initial GetFileList result before
+	 * late alphabetic stock SP NPC files are reached.  Load the exact per-NPC file
+	 * on demand instead of hard-coding individual NPC definitions.
+	 */
+	Com_sprintf( filename, sizeof( filename ), "ext_data/NPCs/%s.npc", cleanName );
+	if ( NPC_AppendParmsFileDirect( filename, cleanName ) )
+	{
+		return qtrue;
+	}
+
+	Com_sprintf( filename, sizeof( filename ), "ext_data/npcs/%s.npc", cleanName );
+	if ( NPC_AppendParmsFileDirect( filename, cleanName ) )
+	{
+		return qtrue;
+	}
+
+	Com_sprintf( filename, sizeof( filename ), "ext_data/NPCs/%s.cfg", cleanName );
+	if ( NPC_AppendParmsFileDirect( filename, cleanName ) )
+	{
+		return qtrue;
+	}
+
+	Com_sprintf( filename, sizeof( filename ), "ext_data/npcs/%s.cfg", cleanName );
+	if ( NPC_AppendParmsFileDirect( filename, cleanName ) )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
 
 /*
 team_t TranslateTeamName( const char *name ) 
@@ -888,6 +1042,20 @@ void NPC_Precache ( gentity_t *spawner )
 		}
 	}
 
+	/*
+	** The Mouse Droid is a JK2/SP-era MD3 NPC. In MP codepaths it can still
+	** come through with playerModel "mouse", which makes codemp try to load a
+	** non-existent ghoul2 model (models/players/mouse/model.glm). The renderer
+	** then falls back to the RGB debug axes. Force it onto the MD3 path here so
+	** the client renders the model as a simple MD3 NPC instead.
+	*/
+	if ( spawner->NPC_type && !Q_stricmp( spawner->NPC_type, "mouse" ) )
+	{
+		md3Model = qtrue;
+		Q_strncpyz( playerModel, "mouse", sizeof( playerModel ) );
+		customSkin[0] = '\0';
+	}
+
 	// If we're not a vehicle, then an error here would be valid...
 	if ( !spawner->client || spawner->client->NPC_class != CLASS_VEHICLE )
 	{
@@ -1196,11 +1364,19 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 		COM_BeginParseSession(NPCFile);
 
 		// look for the right NPC
+findNPCParms:
 		while ( p ) 
 		{
 			token = COM_ParseExt( &p, qtrue );
 			if ( token[0] == 0 )
 			{
+				if ( NPC_TryLoadParmsForNPC( NPCName ) )
+				{
+					p = NPCParms;
+					COM_BeginParseSession( NPCFile );
+					goto findNPCParms;
+				}
+				Com_Printf( S_COLOR_RED "NPC_ParseParms: could not find NPC definition '%s' in loaded NPC parameter data\n", NPCName );
 				return qfalse;
 			}
 
@@ -1213,6 +1389,13 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 		}
 		if ( !p ) 
 		{
+			if ( NPC_TryLoadParmsForNPC( NPCName ) )
+			{
+				p = NPCParms;
+				COM_BeginParseSession( NPCFile );
+				goto findNPCParms;
+			}
+			Com_Printf( S_COLOR_RED "NPC_ParseParms: could not find NPC definition '%s' in loaded NPC parameter data\n", NPCName );
 			return qfalse;
 		}
 
@@ -3656,6 +3839,17 @@ qboolean NPC_ParseParms( const char *NPCName, gentity_t *NPC )
 /*
 Ghoul2 Insert Start
 */
+	/*
+	** The base Mouse Droid does not have a MP ghoul2 player model. Treat it as
+	** an MD3 NPC so we send a MD3 modelindex instead of a bad .glm path.
+	*/
+	if ( NPCName && !Q_stricmp( NPCName, "mouse" ) )
+	{
+		md3Model = qtrue;
+		Q_strncpyz( playerModel, "mouse", sizeof( playerModel ) );
+		customSkin[0] = '\0';
+	}
+
 	if ( !md3Model )
 	{
 		qboolean setTypeBack = qfalse;
@@ -3670,11 +3864,11 @@ Ghoul2 Insert Start
 			{//no players have spawned in yet.  As such, wing it by using jan
 				int rgb[3];
 				char *s2;
-				Q_strncpyz( playerModel, ojp_spmodel.string, sizeof(playerModel) );
-				s2 = va("%s", ojp_spmodelrgb.string);
+				Q_strncpyz( playerModel, obp_spmodel.string, sizeof(playerModel) );
+				s2 = va("%s", obp_spmodelrgb.string);
 				*s2 = '\0';
 				if ( sscanf(s2, "%i %i %i", &rgb[0], &rgb[1], &rgb[2]) != 3 ) {
-					G_Printf( "^3Warning: ojp_spmodelrgb could not parse out all 3 valid colors! Using Defaults.\n" );
+					G_Printf( "^3Warning: obp_spmodelrgb could not parse out all 3 valid colors! Using Defaults.\n" );
 					rgb[0] = 255;
 					rgb[1] = 255;
 					rgb[2] = 255;
@@ -3800,88 +3994,114 @@ Ghoul2 Insert End
 
 char npcParseBuffer[MAX_NPC_DATA_SIZE];
 
-void NPC_LoadParms(void)
+static int NPC_AppendParmsText( const char *sourceName, const char *text, int len, int totallen )
 {
-    int len, totallen, npcExtFNLen, mainBlockLen, fileCnt, i;
-    char* holdChar, * marker;
-    char* npcExtensionListBuf;
-    fileHandle_t f;
+	char *marker;
 
-    len = 0;
+	if ( len <= 0 )
+	{
+		return totallen;
+	}
 
-    // Allocate large buffer using BG_TempAlloc instead of BG_Alloc
-    npcExtensionListBuf = (char*)BG_TempAlloc(32768);  // Using BG_TempAlloc for memory allocation
-    if (!npcExtensionListBuf)
-    {
-        G_Error("NPC_LoadParms: Failed to allocate memory for npcExtensionListBuf");
-        return;
-    }
+	if ( len >= MAX_NPC_DATA_SIZE )
+	{
+		G_Error( "NPC_LoadParms: %s is too large (%d bytes, max %d)", sourceName, len, MAX_NPC_DATA_SIZE - 1 );
+		return totallen;
+	}
 
-    totallen = mainBlockLen = len;
-    marker = NPCParms + totallen;
-    *marker = 0;
+	/* Need room for the text, a separator newline, and the final NUL. */
+	if ( totallen + len + 2 >= MAX_NPC_DATA_SIZE )
+	{
+		G_Error( "NPC_LoadParms: NPC parameter data is too large while adding %s (%d + %d bytes, max %d)", sourceName, totallen, len, MAX_NPC_DATA_SIZE - 1 );
+		return totallen;
+	}
 
-    fileCnt = trap_FS_GetFileList("ext_data/NPCs", ".npc", npcExtensionListBuf, 32768);
+	marker = NPCParms + totallen;
+	memcpy( marker, text, len );
+	marker[len++] = '\n';
+	marker[len] = 0;
 
-    holdChar = npcExtensionListBuf;
-    for (i = 0; i < fileCnt; i++, holdChar += npcExtFNLen + 1)
-    {
-        npcExtFNLen = strlen(holdChar);
-
-        len = trap_FS_FOpenFile(va("ext_data/NPCs/%s", holdChar), &f, FS_READ);
-
-        if (len == -1)
-        {
-            Com_Printf("error reading file\n");
-        }
-        else
-        {
-            if (totallen + len >= MAX_NPC_DATA_SIZE)
-            {
-												 
-                G_Error("NPC extensions (*.npc) are too large");
-            }
-
-            trap_FS_Read(npcParseBuffer, len, f);
-            npcParseBuffer[len] = 0;
-
-            len = COM_Compress(npcParseBuffer);
-
-            {
-                int remaining = MAX_NPC_DATA_SIZE - totallen;
-                int wrote;
-
-                /* Need room for data + newline + NUL */
-                if (totallen + len + 2 > MAX_NPC_DATA_SIZE)
-                {
-                    G_Error("NPC extensions (*.npc) are too large");
-                }
-
-                Q_strncpyz(marker, npcParseBuffer, remaining);
-                wrote = strlen(marker);
-
-                if (wrote + 2 > remaining)
-                {
-                    G_Error("NPC extensions (*.npc) are too large");
-                }
-
-                marker[wrote++] = '\n';
-                marker[wrote] = 0;
-                len = wrote;
-            }
-
-            trap_FS_FCloseFile(f);
-
-            totallen += len;
-            marker = NPCParms + totallen;
-        }
-    }
-
-    // Replace memset with BG_TempFree to clear the buffer instead of freeing it
-    BG_TempFree(32768);  // Clear memory to ensure no dangling pointer issues
+	return totallen + len;
 }
 
+static int NPC_AppendParmsFile( const char *filename, int totallen )
+{
+	fileHandle_t	f;
+	int				len;
 
+	len = trap_FS_FOpenFile( filename, &f, FS_READ );
+	if ( len <= 0 )
+	{
+		return totallen;
+	}
+
+	if ( len >= MAX_NPC_DATA_SIZE )
+	{
+		trap_FS_FCloseFile( f );
+		G_Error( "NPC_LoadParms: %s is too large (%d bytes, max %d)", filename, len, MAX_NPC_DATA_SIZE - 1 );
+		return totallen;
+	}
+
+	trap_FS_Read( npcParseBuffer, len, f );
+	trap_FS_FCloseFile( f );
+	npcParseBuffer[len] = 0;
+
+	len = COM_Compress( npcParseBuffer );
+	return NPC_AppendParmsText( filename, npcParseBuffer, len, totallen );
+}
+
+void NPC_LoadParms(void)
+{
+	int		totallen;
+	int		npcExtFNLen;
+	int		fileCnt;
+	int		i;
+	char	*holdChar;
+	char	*npcExtensionListBuf;
+
+	Q_strncpyz( NPCFile, "NPC parameter data", sizeof( NPCFile ) );
+	NPCParms[0] = 0;
+	NPCParmsLazyTried[0] = 0;
+	totallen = 0;
+
+	/*
+	 * Load modular OBP/OJP NPC files first.  NPC_ParseParms uses the first
+	 * matching block, so modular overrides keep priority over stock aggregate
+	 * fallback definitions.
+	 */
+	npcExtensionListBuf = (char*)BG_TempAlloc( NPC_EXTENSION_LIST_BUF_SIZE );
+	if ( !npcExtensionListBuf )
+	{
+		G_Error( "NPC_LoadParms: Failed to allocate memory for npcExtensionListBuf" );
+		return;
+	}
+
+	fileCnt = trap_FS_GetFileList( "ext_data/NPCs", ".npc", npcExtensionListBuf, NPC_EXTENSION_LIST_BUF_SIZE );
+
+	holdChar = npcExtensionListBuf;
+	for ( i = 0; i < fileCnt; i++, holdChar += npcExtFNLen + 1 )
+	{
+		npcExtFNLen = strlen( holdChar );
+		if ( !npcExtFNLen )
+		{
+			break;
+		}
+
+		totallen = NPC_AppendParmsFile( va( "ext_data/NPCs/%s", holdChar ), totallen );
+	}
+
+	BG_TempFree( NPC_EXTENSION_LIST_BUF_SIZE );
+
+	/*
+	 * Generic legacy fallback.  This restores stock SP-only definitions such as
+	 * lannik_racto/rancor/mutant_rancor when they live in an aggregate cfg rather
+	 * than in separate .npc files, without hard-coding any NPC names here.
+	 */
+	totallen = NPC_AppendParmsFile( "ext_data/NPCs/NPCs.cfg", totallen );
+	totallen = NPC_AppendParmsFile( "scripts/NPCs.cfg", totallen );
+
+	Com_Printf( "NPC_LoadParms: loaded %d NPC parameter bytes from %d modular .npc files plus aggregate fallbacks\n", totallen, fileCnt );
+}
 
 
 
@@ -3898,7 +4118,7 @@ extern void NPC_Interrogator_Precache(gentity_t *self);
 extern void NPC_MineMonster_Precache( void );
 extern void NPC_Howler_Precache( void );
 extern void NPC_Rancor_Precache( void );
-//extern void NPC_MutantRancor_Precache( void );
+extern void NPC_MutantRancor_Precache( void );
 extern void NPC_Wampa_Precache( void );
 extern void NPC_ATST_Precache(void);
 extern void NPC_Sentry_Precache(void);
@@ -4001,9 +4221,7 @@ void NPC_PrecacheByClassName( const char* type )
 	else if ( !Q_stricmp( "mutant_rancor", type ))
 	{
 		NPC_Rancor_Precache();
-		/* RAFIXME - impliment this later
 		NPC_MutantRancor_Precache();
-		*/
 	}
 	//[NPCSandCreature]
 	else if ( !Q_stricmp( "sand_creature", type ))

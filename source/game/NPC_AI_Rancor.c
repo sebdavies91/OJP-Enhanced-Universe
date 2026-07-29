@@ -44,6 +44,13 @@ void NPC_Rancor_Precache( void )
 	G_SoundIndex( "sound/chars/rancor/chomp.wav" );
 }
 
+void NPC_MutantRancor_Precache( void )
+{
+	G_SoundIndex( "sound/chars/rancor/breath_start.wav" );
+	G_SoundIndex( "sound/chars/rancor/breath_loop.wav" );
+	G_EffectIndex( "mrancor/breath" );
+}
+
 
 /*
 -------------------------

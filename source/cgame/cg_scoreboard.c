@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_scoreboard -- draw the scoreboard on top of the game screen
 #include "cg_local.h"
@@ -530,7 +530,7 @@ qboolean CG_DrawOldScoreboard( void ) {
 	//[ExpSys]
 	if(cgs.gametype != GT_SIEGE)
 	{
-		CG_Text_Paint ( SB_SKILL_X, y, 1.0f, colorWhite, CG_GetStringEdString("OJP_MENUS", "SKILL"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
+		CG_Text_Paint ( SB_SKILL_X, y, 1.0f, colorWhite, CG_GetStringEdString("OBP_MENUS", "SKILL"), 0, 0, ITEM_TEXTSTYLE_OUTLINED, FONT_MEDIUM );
 	}
 	//[/ExpSys]
 

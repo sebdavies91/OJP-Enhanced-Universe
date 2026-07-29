@@ -5,7 +5,7 @@
 
 //[SVN]
 //rearraigned repository to make it easier to initially compile.
-#include "../../ojpenhanced/ui/jamp/menudef.h"
+#include "../ui/jamp/menudef.h"
 //#include "../../ui/menudef.h"			// for the voice chats
 //[/SVN]
 
@@ -259,7 +259,7 @@ Give items to a client
 ==================
 */
 //[VisualWeapons]
-extern qboolean OJP_AllPlayersHaveClientPlugin(void);
+extern qboolean OBP_AllPlayersHaveClientPlugin(void);
 //[/VisualWeapons]
 void Cmd_Give_f (gentity_t *cmdent, int baseArg)
 {
@@ -392,9 +392,9 @@ void Cmd_Give_f (gentity_t *cmdent, int baseArg)
 			}
 			else 
 			{
-			ent->client->ps.fd.forcePower=25;
-			ent->client->ps.fd.forcePowerMax=25;
-			ent->client->ps.stats[STAT_MAX_DODGE] = 25;
+			ent->client->ps.fd.forcePower=0;
+			ent->client->ps.fd.forcePowerMax=0;
+			ent->client->ps.stats[STAT_MAX_DODGE] = 0;
 			}
 			
 		}
@@ -408,9 +408,9 @@ void Cmd_Give_f (gentity_t *cmdent, int baseArg)
 		ent->client->ps.stats[STAT_WEAPONS] = (1 << (LAST_USEABLE_WEAPON+1))  - ( 1 << WP_NONE );
 		//[VisualWeapons]
 		//update the weapon stats for this player since they have changed.
-		if(OJP_AllPlayersHaveClientPlugin())
+		if(OBP_AllPlayersHaveClientPlugin())
 		{//don't send the weapon updates if someone isn't able to process this new event type (IE anyone without
-			//the OJP client plugin)
+			//the OBP client plugin)
 			G_AddEvent(ent, EV_WEAPINVCHANGE, ent->client->ps.stats[STAT_WEAPONS]);
 		}
 		//[/VisualWeapons]
@@ -425,9 +425,9 @@ void Cmd_Give_f (gentity_t *cmdent, int baseArg)
 
 		//[VisualWeapons]
 		//update the weapon stats for this player since they have changed.
-		if(OJP_AllPlayersHaveClientPlugin())
+		if(OBP_AllPlayersHaveClientPlugin())
 		{//don't send the weapon updates if someone isn't able to process this new event type (IE anyone without
-			//the OJP client plugin)
+			//the OBP client plugin)
 			G_AddEvent(ent, EV_WEAPINVCHANGE, ent->client->ps.stats[STAT_WEAPONS]);
 		}
 		//[/VisualWeapons]
@@ -480,7 +480,7 @@ void Cmd_Give_f (gentity_t *cmdent, int baseArg)
 	}
 
 	/*
-	// ensiform - Not used in basejka or OJP so why keep?
+	// ensiform - Not used in basejka or OBP so why keep?
 	if (Q_stricmp(name, "excellent") == 0) {
 		ent->client->ps.persistant[PERS_EXCELLENT_COUNT]++;
 		return;
@@ -922,6 +922,101 @@ qboolean G_PowerDuelCheckFail(gentity_t *ent)
 	return qfalse;
 }
 
+
+static qboolean G_SiegeClientHasValidClassForTeam(gclient_t *client, int team)
+{
+	char className[MAX_QPATH];
+
+	if (!client || (team != TEAM_RED && team != TEAM_BLUE))
+	{
+		return qfalse;
+	}
+
+	Q_strncpyz(className, client->sess.siegeClass, sizeof(className));
+
+	if (!className[0] || !Q_stricmp(className, "none"))
+	{
+		return qfalse;
+	}
+
+	if (BG_SiegeFindClassIndexByName(className) == -1)
+	{
+		return qfalse;
+	}
+
+	return BG_SiegeCheckClassLegality(team, className);
+}
+
+static char *G_SiegeRememberedClassForTeam(gclient_t *client, int team)
+{
+	if (!client)
+	{
+		return NULL;
+	}
+
+	if (team == TEAM_RED)
+	{
+		return client->sess.siegeClassTeam1;
+	}
+	else if (team == TEAM_BLUE)
+	{
+		return client->sess.siegeClassTeam2;
+	}
+
+	return NULL;
+}
+
+static void G_SiegeRememberClassForTeam(gclient_t *client, int team, const char *className)
+{
+	char legalName[MAX_QPATH];
+	char *remembered;
+
+	if (!client || !className || !className[0] || !Q_stricmp(className, "none"))
+	{
+		return;
+	}
+
+	remembered = G_SiegeRememberedClassForTeam(client, team);
+	if (!remembered)
+	{
+		return;
+	}
+
+	Q_strncpyz(legalName, className, sizeof(legalName));
+	if (BG_SiegeFindClassIndexByName(legalName) == -1 ||
+		!BG_SiegeCheckClassLegality(team, legalName) ||
+		Q_stricmp(legalName, className))
+	{
+		return;
+	}
+
+	Q_strncpyz(remembered, className, 64);
+}
+
+static qboolean G_SiegeUseRememberedClassForTeam(gclient_t *client, int team)
+{
+	char className[MAX_QPATH];
+	char *remembered;
+
+	remembered = G_SiegeRememberedClassForTeam(client, team);
+	if (!remembered || !remembered[0] || !Q_stricmp(remembered, "none"))
+	{
+		return qfalse;
+	}
+
+	Q_strncpyz(className, remembered, sizeof(className));
+	if (BG_SiegeFindClassIndexByName(className) == -1 ||
+		!BG_SiegeCheckClassLegality(team, className) ||
+		Q_stricmp(className, remembered))
+	{
+		remembered[0] = '\0';
+		return qfalse;
+	}
+
+	Q_strncpyz(client->sess.siegeClass, remembered, sizeof(client->sess.siegeClass));
+	return qtrue;
+}
+
 /*
 =================
 SetTeam
@@ -930,7 +1025,7 @@ SetTeam
 //[AdminSys]
 int G_CountHumanPlayers(int ignoreClientNum, int team);
 int G_CountBotPlayers( int team );
-extern int OJP_PointSpread(void);
+extern int OBP_PointSpread(void);
 //[/AdminSys]
 qboolean g_dontPenalizeTeam = qfalse;
 qboolean g_preventTeamBegin = qfalse;
@@ -1004,6 +1099,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 		if ( g_teamForceBalance.integer>1 && !g_trueJedi.integer ) 
 		{//racc - override player's choice if the team balancer is in effect.
 			int		counts[TEAM_NUM_TEAMS];
+			qboolean siegeAllowEmptyOpposingTeam = qfalse;
 
 			//[ClientNumFix]
 			counts[TEAM_BLUE] = TeamCount( ent-g_entities, TEAM_BLUE );
@@ -1012,8 +1108,23 @@ void SetTeam( gentity_t *ent, char *s ) {
 			//counts[TEAM_RED] = TeamCount( ent->client->ps.clientNUm, TEAM_RED );
 			//[/ClientNumFix]
 
+			if (g_gametype.integer == GT_SIEGE &&
+				((team == TEAM_RED && counts[TEAM_BLUE] <= 0) ||
+				 (team == TEAM_BLUE && counts[TEAM_RED] <= 0)))
+			{
+				// Let Siege start even when the opposing side is empty.
+				// g_teamForceBalance still applies normally once both sides
+				// have at least one player.
+				siegeAllowEmptyOpposingTeam = qtrue;
+				if (g_debugSiegeJoin.integer)
+				{
+					G_Printf("SiegeJoin: allowing %s to join %s while opposing team is empty (red=%i blue=%i)\n",
+						ent->client->pers.netname, TeamName(team), counts[TEAM_RED], counts[TEAM_BLUE]);
+				}
+			}
+
 			// We allow a spread of two
-			if ( team == TEAM_RED && counts[TEAM_RED] - counts[TEAM_BLUE] > 1 ) {
+			if ( !siegeAllowEmptyOpposingTeam && team == TEAM_RED && counts[TEAM_RED] - counts[TEAM_BLUE] > 1 ) {
 				//For now, don't do this. The legalize function will set powers properly now.
 				/*
 				if (g_forceBasedTeams.integer && ent->client->ps.fd.forceSide == FORCE_DARKSIDE)
@@ -1035,7 +1146,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 				}
 				return; // ignore the request
 			}
-			if ( team == TEAM_BLUE && counts[TEAM_BLUE] - counts[TEAM_RED] > 1 ) {
+			if ( !siegeAllowEmptyOpposingTeam && team == TEAM_BLUE && counts[TEAM_BLUE] - counts[TEAM_RED] > 1 ) {
 				//For now, don't do this. The legalize function will set powers properly now.
 				/*
 				if (g_forceBasedTeams.integer && ent->client->ps.fd.forceSide == FORCE_LIGHTSIDE)
@@ -1061,7 +1172,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 			//balance based on team score
 			if(g_teamForceBalance.integer >= 3 && g_gametype.integer != GT_SIEGE)
 			{//check the scores 
-				if(level.teamScores[TEAM_BLUE] - OJP_PointSpread() >= level.teamScores[TEAM_RED] 
+				if(level.teamScores[TEAM_BLUE] - OBP_PointSpread() >= level.teamScores[TEAM_RED] 
 					&& counts[TEAM_BLUE] >= counts[TEAM_RED] && team == TEAM_BLUE)
 				{//blue team is ahead, don't add more players to that team
 					//[ClientNumFix]
@@ -1071,7 +1182,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 						va("print \"%s\n\"", G_GetStringEdString("MP_SVGAME", "TOOMANYBLUE")) );
 					return;
 				}
-				else if(level.teamScores[TEAM_RED] - OJP_PointSpread() >= level.teamScores[TEAM_BLUE] 
+				else if(level.teamScores[TEAM_RED] - OBP_PointSpread() >= level.teamScores[TEAM_BLUE] 
 					&& counts[TEAM_RED] > counts[TEAM_BLUE] && team == TEAM_RED)
 				{//red team is ahead, don't add more players to that team
 					//[ClientNumFix]
@@ -1084,7 +1195,7 @@ void SetTeam( gentity_t *ent, char *s ) {
 			}
 
 			//teams have to be balanced in this situation, check for human/bot team balance. 
-			if(g_teamForceBalance.integer == 4)
+			if(g_teamForceBalance.integer == 4 && !siegeAllowEmptyOpposingTeam)
 			{//check for human/bot 
 				int BotCount[TEAM_NUM_TEAMS];
 				int HumanCount = G_CountHumanPlayers( -1,-1 );
@@ -1162,6 +1273,37 @@ void SetTeam( gentity_t *ent, char *s ) {
 		//[/BugFix41]
 
 		client->sess.siegeDesiredTeam = team;
+
+		if (team != TEAM_SPECTATOR &&
+			oldTeam == TEAM_SPECTATOR &&
+			!(ent->r.svFlags & SVF_BOT) &&
+			!G_SiegeClientHasValidClassForTeam(client, team))
+		{
+			if (!G_SiegeUseRememberedClassForTeam(client, team))
+			{
+				// A human spectator selected a Siege team, but does not yet have
+				// a valid class for that side.  Keep them as a clean spectator and
+				// open the class menu explicitly; do not silently spawn them with
+				// the first legal/default class.
+				client->sess.siegeDesiredTeam = team;
+				client->sess.spectatorState = SPECTATOR_FREE;
+				trap_SendServerCommand(ent-g_entities, va("sb %i", client->sess.siegeDesiredTeam));
+				trap_SendServerCommand(ent-g_entities, "scl 1");
+
+				if (g_debugSiegeJoin.integer)
+				{
+					G_Printf("SiegeJoin: %s selected %s but needs a valid class first; opening class menu\n",
+						client->pers.netname, TeamName(team));
+				}
+				return;
+			}
+			else if (g_debugSiegeJoin.integer)
+			{
+				G_Printf("SiegeJoin: %s selected %s; reusing remembered class '%s'\n",
+					client->pers.netname, TeamName(team), client->sess.siegeClass);
+			}
+		}
+
 		//oh well, just let them go.
 		/*
 		if (team != TEAM_SPECTATOR)
@@ -1263,7 +1405,8 @@ void SetTeam( gentity_t *ent, char *s ) {
 	}
 	// they go to the end of the line for tournements
 	if ( team == TEAM_SPECTATOR ) {
-		if ( (g_gametype.integer != GT_DUEL) || (oldTeam != TEAM_SPECTATOR) )	{//so you don't get dropped to the bottom of the queue for changing skins, etc.
+		if ( (g_gametype.integer != GT_DUEL && g_gametype.integer != GT_POWERDUEL) ||
+			(oldTeam != TEAM_SPECTATOR) )	{//so you don't get dropped to the bottom of the queue for changing skins, etc.
 			client->sess.spectatorTime = level.time;
 		}
 	}
@@ -1271,6 +1414,21 @@ void SetTeam( gentity_t *ent, char *s ) {
 	client->sess.sessionTeam = team;
 	client->sess.spectatorState = specState;
 	client->sess.spectatorClient = specClient;
+
+	if ( team == TEAM_SPECTATOR )
+	{
+		// Spectators must stay clean spectators.  Duel/Power Duel queue code
+		// may use SPECTATOR_NOT to mean "manually queued", but active
+		// Power Duel side assignment is delayed until AddPowerDuelPlayers()
+		// actually promotes the client into a live slot.
+		if ( g_gametype.integer == GT_POWERDUEL )
+		{
+			client->sess.duelTeam = DUELTEAM_FREE;
+		}
+
+		client->ps.duelInProgress = qfalse;
+		client->ps.duelIndex = ENTITYNUM_NONE;
+	}
 
 	client->sess.teamLeader = qfalse;
 	if ( team == TEAM_RED || team == TEAM_BLUE ) {
@@ -1721,6 +1879,22 @@ void Cmd_SiegeClass_f( gentity_t *ent )
 
 	//Set the session data
 	Q_strncpyz( ent->client->sess.siegeClass, className, sizeof( ent->client->sess.siegeClass ) );
+	G_SiegeRememberClassForTeam(ent->client, team, className);
+
+	if (ent->client->sess.sessionTeam != team &&
+		ent->client->sess.sessionTeam == TEAM_SPECTATOR &&
+		ent->client->sess.siegeDesiredTeam == team)
+	{
+		// The player was held as a clean spectator until a valid Siege class
+		// was chosen.  Start the Siege round before moving/spawning them so the
+		// first successful class join does not appear to spawn first and only
+		// begin the round afterward.
+		SiegeStartRoundNow(ent->s.number);
+
+		// Now that the class is valid, move them to the desired team without
+		// running the full SetTeam checks a second time.
+		SetTeamQuick(ent, team, qfalse);
+	}
 
 	// get and distribute relevent paramters
 	ClientUserinfoChanged( ent->s.number );
@@ -1753,6 +1927,11 @@ Cmd_ForceChanged_f
 */
 void Cmd_ForceChanged_f( gentity_t *ent )
 {
+	if (!ent || !ent->client)
+	{
+		return;
+	}
+
 	//[ExpSys]
 	/* //racc - don't do this stuff anymore since forcepowers are now applied as soon as the client's userinfo updates.
 	char fpChStr[1024];
@@ -1808,9 +1987,66 @@ argCheck:
 		}
 
 		trap_Argv( 1, arg, sizeof( arg ) );
-		if (arg[0] && arg[0] != 'x' && g_gametype.integer != GT_DUEL && g_gametype.integer != GT_POWERDUEL)
+		if (arg[0] && arg[0] != 'x')
 		{ //if there's an arg, assume it's a combo team command from the UI.
-			Cmd_Team_f(ent);
+			if (g_gametype.integer == GT_DUEL)
+			{
+				// With g_teamAutoJoin 0, Duel spectators must be able to
+				// press Join Game from the profile menu after selecting skills.
+				// Still do not let active Duel players use forcechanged as a
+				// team-switch shortcut.
+				if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+				{
+					Cmd_Team_f(ent);
+				}
+			}
+			else if (g_gametype.integer == GT_POWERDUEL)
+			{
+				// The profile menu's Join Game button should put a spectator into
+				// the Power Duel queue/startup flow.  If an active Power Duel slot is
+				// open, assign the missing side just before SetTeam() so the player can
+				// spawn immediately.  If the match is already full, leave the player as
+				// a clean queued spectator: TEAM_SPECTATOR + DUELTEAM_FREE.
+				if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+				{
+					int oldDuelTeam = ent->client->sess.duelTeam;
+
+					if (ent->client->sess.duelTeam == DUELTEAM_FREE)
+					{
+						int loners = 0;
+						int doubles = 0;
+
+						G_PowerDuelCount(&loners, &doubles, qfalse);
+
+						if (loners < 1)
+						{
+							ent->client->sess.duelTeam = DUELTEAM_LONE;
+						}
+						else if (doubles < 2)
+						{
+							ent->client->sess.duelTeam = DUELTEAM_DOUBLE;
+						}
+					}
+
+					SetTeam(ent, arg);
+
+					if (ent->client->sess.sessionTeam == TEAM_SPECTATOR)
+					{
+						// They are waiting in the queue, not occupying a Power Duel side.
+						ent->client->sess.duelTeam = DUELTEAM_FREE;
+					}
+					else if (oldDuelTeam != DUELTEAM_FREE && ent->client->sess.duelTeam == DUELTEAM_FREE)
+					{
+						ent->client->sess.duelTeam = oldDuelTeam;
+					}
+
+					ent->client->switchTeamTime = level.time + 5000;
+				}
+			}
+			else
+			{
+				Cmd_Team_f(ent);
+			}
 		}
 	}
 }
@@ -2249,11 +2485,11 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 			&& (mode != SAY_TELL || ent != target)) 
 		{//prevent players from spamming chat.
 			//Warn them.
-			if(ojp_chatProtectTime.integer > 0)
+			if(obp_chatProtectTime.integer > 0)
 			{
 				trap_SendServerCommand(ent->s.number, 
 					va("cp \""S_COLOR_BLUE"Please Don't Spam.\nWait %.2f Seconds Before Trying Again.\n\"", 
-					((float) ojp_chatProtectTime.integer/(float) 1000)));
+					((float) obp_chatProtectTime.integer/(float) 1000)));
 			}
 			return;
 		}
@@ -2261,7 +2497,7 @@ void G_Say( gentity_t *ent, gentity_t *target, int mode, const char *chatText ) 
 		{//we can chat, bump the debouncer
 			if(ent->client)
 			{ 
-			ent->client->chatDebounceTime = level.time + ojp_chatProtectTime.integer;
+			ent->client->chatDebounceTime = level.time + obp_chatProtectTime.integer;
 			}
 		}
 	}
@@ -2571,19 +2807,19 @@ void SanitizeString2( char *in, char *out )
 			break;
 		}
 
-		if (in[i] == '^')
+		if ( in[i] == Q_COLOR_ESCAPE )
 		{
-			if (in[i+1] >= 48 && //'0'
-				in[i+1] <= 57) //'9'
-			{ //only skip it if there's a number after it for the color
-				i += 2;
+			int colorLength = Q_ColorStringLength( &in[i] );
+
+			if ( colorLength )
+			{
+				i += colorLength;
 				continue;
 			}
-			else
-			{ //just skip the ^
-				i++;
-				continue;
-			}
+
+			// A lone or unknown escape is not part of the visible name.
+			i++;
+			continue;
 		}
 
 		if (in[i] < 32)
@@ -3397,6 +3633,18 @@ int G_ItemUsable(playerState_t *ps, int forcedUse)
 		G_AddEvent(&g_entities[ps->clientNum], EV_ITEMUSEFAIL, SHIELD_NOROOM);
 		return 0;
 	case HI_JETPACK: //do something?
+		if (ps->eFlags & EF_JETPACK_ACTIVE)
+		{
+			return 1;
+		}
+		if (ps->jetpackFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1;
 	case HI_SQUADTEAM:
 		return 1;
@@ -3405,10 +3653,66 @@ int G_ItemUsable(playerState_t *ps, int forcedUse)
 	case HI_EWEB:
 		return 1;
 	case HI_CLOAK:
+		if (ps->powerups[PW_CLOAKED])
+		{
+			return 1;
+		}
+		if (ps->cloakFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
+		return 1;
+	case HI_FLAMETHROWER:
+		if (ps->jetpackFuel < FLAMETHROWER_FUELCOST)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
+		return 1;
+	case HI_ELECTROSHOCKER:
+		if (ps->cloakFuel < ELECTROSHOCKER_FUELCOST)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1;
 	case HI_SPHERESHIELD:
+		if (ps->powerups[PW_SPHERESHIELDED])
+		{
+			return 1;
+		}
+		if (ps->cloakFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1; 
 	case HI_OVERLOAD:
+		if (ps->powerups[PW_OVERLOADED])
+		{
+			return 1;
+		}
+		if (ps->cloakFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1;
 	case HI_GRAPPLE:
 		return 1;
@@ -3584,17 +3888,11 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 	
 	//[BugFix15]
 	// MJN - Saber Cycle Fix - Thanks Wudan!!
-	if ( ent->client->ps.weapon != WP_SABER )
-	{
-        return;
-	}
-
-	/*
 	if ( !ent || !ent->client )
 	{
 		return;
 	}
-	*/
+
 	/*
 	if (ent->client->ps.weaponTime > 0)
 	{ //no switching attack level when busy
@@ -3630,6 +3928,20 @@ void Cmd_SaberAttackCycle_f(gentity_t *ent)
 			return;
 	}
 	//[/TAUNTFIX]
+
+	//[DualGunsToggle]
+	// The saber-style key/command toggles dual-gun mode for dual-capable
+	// guns.  BUTTON_SABERTHROW is reserved for actual saber throws.
+	if ( ent->client->ps.weapon != WP_SABER )
+	{
+		if ( G_IsDualGunWeapon( ent->client->ps.weapon ) &&
+			G_ClientHasDualGunSkill( ent->client, ent->client->ps.weapon ) )
+		{
+			G_ToggleDualGunsForWeapon( ent->client, ent->client->ps.weapon, level.time );
+		}
+		return;
+	}
+	//[/DualGunsToggle]
 
 	/* basejka code
 	if (ent->client->saber[0].model[0] && ent->client->saber[1].model[0])
@@ -4293,8 +4605,8 @@ extern void G_Knockdown( gentity_t *self, gentity_t *attacker, const vec3_t push
 void ClientCommand( int clientNum ) {
 	gentity_t *ent;
 //	gentity_t *targetplayer;
-	char	cmd[MAX_TOKEN_CHARS];
-	char	cmd2[MAX_TOKEN_CHARS];
+	static char	cmd[MAX_TOKEN_CHARS];
+	static char	cmd2[MAX_TOKEN_CHARS];
 	//char	cmd3[MAX_TOKEN_CHARS];
 //	float		bounty;
 //	int clientid = 0;
@@ -4317,7 +4629,7 @@ void ClientCommand( int clientNum ) {
 	{
 		int size;
 //		int temp,temp2;
-		if(!ojp_modelscaleEnabled.integer)
+		if(!obp_modelscaleEnabled.integer)
 		{
 			trap_SendServerCommand( ent-g_entities, va("print \"Modelscale is disabled!\n\"") );
 			return;
@@ -4501,7 +4813,7 @@ void ClientCommand( int clientNum ) {
 	{ //debug use map object
 		if (trap_Argc() > 1)
 		{
-			char sArg[MAX_STRING_CHARS];
+			static char sArg[MAX_STRING_CHARS];
 			gentity_t *targ;
 
 			trap_Argv( 1, sArg, sizeof( sArg ) );
@@ -4568,7 +4880,7 @@ void ClientCommand( int clientNum ) {
 	{
 		if (trap_Argc() > 1)
 		{
-			char sArg[MAX_STRING_CHARS];
+			static char sArg[MAX_STRING_CHARS];
 			int entNum = 0;
 
 			trap_Argv( 1, sArg, sizeof( sArg ) );
@@ -4592,6 +4904,7 @@ void ClientCommand( int clientNum ) {
 		else if (Q_stricmp(cmd, "dropsaber") == 0)
 	{		
 		vec3_t vecnorm;
+		VectorClear(vecnorm);
 
 		if (g_allowDropSaber.integer == 0)
 		{
@@ -4636,7 +4949,7 @@ void ClientCommand( int clientNum ) {
 	//[/Test]
 	else if (Q_stricmp(cmd, "lamercheck") == 0)
 	{
-		trap_SendServerCommand( -1, va("cp \"This mod is based on code taken from the\nOpen Jedi Project. If the supposed author doesn't\ngive proper credit to OJP,\nplease contact us and we\n will deal with it.\nEmail: razorace@hotmail.com\n\""));
+		trap_SendServerCommand( -1, va("cp \"This mod is based on code taken from the\nOpen Battlefront Project. If the supposed author doesn't\ngive proper credit to OBP,\nplease contact us and we\n will deal with it.\nEmail: razorace@hotmail.com\n\""));
 	}
 	//[HolocronFiles]
 	else if (Q_stricmp(cmd, "!addholocron") == 0 && bot_wp_edit.integer >= 1)
@@ -4656,8 +4969,8 @@ void ClientCommand( int clientNum ) {
 	else if (Q_stricmp (cmd, "autosave_add") == 0 && bot_wp_edit.integer)
 	{
 		int args = trap_Argc();
-		char arg1[MAX_STRING_CHARS];
-		char arg2[MAX_STRING_CHARS];
+		static char arg1[MAX_STRING_CHARS];
+		static char arg2[MAX_STRING_CHARS];
 
 		
 		if(args < 1)
@@ -4707,7 +5020,7 @@ void ClientCommand( int clientNum ) {
 	{
 		if (trap_Argc() > 1)
 		{
-			char sArg[MAX_STRING_CHARS];
+			static char sArg[MAX_STRING_CHARS];
 			int entNum = 0;
 
 			trap_Argv( 1, sArg, sizeof( sArg ) );
@@ -4741,7 +5054,7 @@ void ClientCommand( int clientNum ) {
 	{
 		if (trap_Argc() > 1)
 		{
-			char sArg[MAX_STRING_CHARS];
+			static char sArg[MAX_STRING_CHARS];
 			int breakLimb = 0;
 
 			trap_Argv( 1, sArg, sizeof( sArg ) );
@@ -4786,7 +5099,7 @@ void ClientCommand( int clientNum ) {
 	else if (Q_stricmp(cmd, "handcut") == 0 && CheatsOk( ent ))
 	{
 		int bCl = 0;
-		char sarg[MAX_STRING_CHARS];
+		static char sarg[MAX_STRING_CHARS];
 
 		if (trap_Argc() > 1)
 		{
@@ -4898,7 +5211,7 @@ void ClientCommand( int clientNum ) {
 	{
 		int arg = 4000;
 		int bCl = 0;
-		char sarg[MAX_STRING_CHARS];
+		static char sarg[MAX_STRING_CHARS];
 
 		assert(trap_Argc() > 1);
 		trap_Argv( 1, sarg, sizeof( sarg ) );
@@ -4911,7 +5224,7 @@ void ClientCommand( int clientNum ) {
 	{
 		int arg = -4000;
 		int bCl = 0;
-		char sarg[MAX_STRING_CHARS];
+		static char sarg[MAX_STRING_CHARS];
 
 		assert(trap_Argc() > 1);
 		trap_Argv( 1, sarg, sizeof( sarg ) );
@@ -4924,7 +5237,7 @@ void ClientCommand( int clientNum ) {
 	{
 		int arg = 4000;
 		int bCl = 0;
-		char sarg[MAX_STRING_CHARS];
+		static char sarg[MAX_STRING_CHARS];
 
 		assert(trap_Argc() > 1);
 		trap_Argv( 1, sarg, sizeof( sarg ) );
@@ -4937,7 +5250,7 @@ void ClientCommand( int clientNum ) {
 	{
 		int arg = -4000;
 		int bCl = 0;
-		char sarg[MAX_STRING_CHARS];
+		static char sarg[MAX_STRING_CHARS];
 
 		assert(trap_Argc() > 1);
 		trap_Argv( 1, sarg, sizeof( sarg ) );
@@ -4950,7 +5263,7 @@ void ClientCommand( int clientNum ) {
 	{
 		int arg = 4000;
 		int bCl = 0;
-		char sarg[MAX_STRING_CHARS];
+		static char sarg[MAX_STRING_CHARS];
 
 		assert(trap_Argc() > 1);
 		trap_Argv( 1, sarg, sizeof( sarg ) );
@@ -4981,7 +5294,7 @@ void ClientCommand( int clientNum ) {
 		Cmd_Kill_f (ent);
 		if (ent->health < 1)
 		{
-			char	arg[MAX_STRING_CHARS];
+			static char	arg[MAX_STRING_CHARS];
 			int		iArg = 0;
 
 			if (trap_Argc() > 1)
@@ -5035,7 +5348,7 @@ void ClientCommand( int clientNum ) {
 
 		if (trap_Argc() > 1)
 		{
-			char	arg[MAX_STRING_CHARS];
+			static char	arg[MAX_STRING_CHARS];
 
 			trap_Argv( 1, arg, sizeof( arg ) );
 
@@ -5061,7 +5374,7 @@ void ClientCommand( int clientNum ) {
 
 		if (trap_Argc() > 1)
 		{
-			char	arg[MAX_STRING_CHARS];
+			static char	arg[MAX_STRING_CHARS];
 
 			trap_Argv( 1, arg, sizeof( arg ) );
 
@@ -5087,7 +5400,7 @@ void ClientCommand( int clientNum ) {
 
 		if (trap_Argc() > 1)
 		{
-			char	arg[MAX_STRING_CHARS];
+			static char	arg[MAX_STRING_CHARS];
 
 			trap_Argv( 1, arg, sizeof( arg ) );
 
@@ -5113,7 +5426,7 @@ void ClientCommand( int clientNum ) {
 
 		if (trap_Argc() > 1)
 		{
-			char	arg[MAX_STRING_CHARS];
+			static char	arg[MAX_STRING_CHARS];
 
 			trap_Argv( 1, arg, sizeof( arg ) );
 
@@ -5299,8 +5612,8 @@ void ClientCommand( int clientNum ) {
 #ifndef FINAL_BUILD
 	else if (Q_stricmp(cmd, "debugShipDamage") == 0)
 	{
-		char	arg[MAX_STRING_CHARS];
-		char	arg2[MAX_STRING_CHARS];
+		static char	arg[MAX_STRING_CHARS];
+		static char	arg2[MAX_STRING_CHARS];
 		int		shipSurf, damageLevel;
 
 		trap_Argv( 1, arg, sizeof( arg ) );

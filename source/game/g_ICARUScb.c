@@ -1,4 +1,4 @@
-//====================================================================================
+﻿//====================================================================================
 //
 //rww - ICARUS callback file, all that can be handled within vm's is handled in here.
 //
@@ -512,8 +512,8 @@ int Icarus_SoundTime(char soundName[MAX_QPATH])
 	s = subtitle;
 
 	if(s[0] == '?' && s[1] == '?')
-	{//couldn't find it in the original file.  Try looking into OJP's supplimental file.
-		trap_SP_GetStringTextString(va("zojp_coop_%s", sound), subtitle, sizeof(subtitle));
+	{//couldn't find it in the original file.  Try looking into OBP's supplimental file.
+		trap_SP_GetStringTextString(va("zobp_coop_%s", sound), subtitle, sizeof(subtitle));
 		s = subtitle;
 	}
 	
@@ -3040,6 +3040,35 @@ static void Q3_SetEnemyTeam( int entID, char *data )
 //[/CoOp]
 //[/SuperDindon]
 
+//[CoOp]
+// Preserve the player's profile/menu loadout in GT_SINGLE_PLAYER.
+// Some JK2/JA SP spawn scripts target "player" and try to force Kyle/Jaden
+// weapons or Force levels.  That is correct for vanilla SP, but in this MP/OBP
+// profile-menu flow it overwrites the configuration the user just selected.
+// Keep scripts free to modify NPCs/cinematics, but ignore loadout-only script
+// changes on the real player.
+static qboolean Q3_PreserveProfileLoadoutForSPPlayer( gentity_t *ent )
+{
+	if ( !ent || !ent->client || ent->NPC )
+	{
+		return qfalse;
+	}
+
+	if ( g_gametype.integer == GT_SINGLE_PLAYER )
+	{
+		return (qboolean)( ent->s.number == 0 );
+	}
+
+	if ( G_UsingSPMapProgression() )
+	{
+		return (qboolean)( ent->s.number >= 0 && ent->s.number < level.maxclients );
+	}
+
+	return qfalse;
+}
+//[/CoOp]
+
+
 /*
 ============
 Q3_SetHealth
@@ -3889,7 +3918,38 @@ Q3_SetViewEntity
 */
 void Q3_SetViewEntity(int entID, const char *name)
 {
-	G_DebugPrint( WL_WARNING, "Q3_SetViewEntity currently unsupported in MP, ask if you need it.\n");
+	gentity_t *self;
+	gentity_t *viewEnt;
+
+	if ( entID < 0 || entID >= MAX_GENTITIES )
+	{
+		G_DebugPrint( WL_WARNING, "Q3_SetViewEntity: invalid entID %d\n", entID );
+		return;
+	}
+
+	self = &g_entities[entID];
+	viewEnt = G_Find( NULL, FOFS(targetname), (char *)name );
+	if ( !viewEnt )
+	{
+		viewEnt = G_Find( NULL, FOFS(script_targetname), (char *)name );
+	}
+
+	if ( !viewEnt )
+	{
+		G_DebugPrint( WL_WARNING, "Q3_SetViewEntity: can't find entity '%s'\n", name );
+		return;
+	}
+
+	if ( viewEnt->classname && !Q_stricmp( viewEnt->classname, "misc_camera" ) && viewEnt->use )
+	{
+		viewEnt->use( viewEnt, self, self );
+		return;
+	}
+
+	if ( self->client )
+	{
+		Q3_SetViewTarget( entID, name );
+	}
 }
 
 /*
@@ -3938,7 +3998,7 @@ void SetSpawnWeapon( int weap )
 }
 
 //[VisualWeapons]
-qboolean OJP_AllPlayersHaveClientPlugin(void);
+qboolean OBP_AllPlayersHaveClientPlugin(void);
 //[/VisualWeapons]
 void G_SetWeapon( gentity_t *self, int wp )
 {
@@ -3948,6 +4008,13 @@ void G_SetWeapon( gentity_t *self, int wp )
 	if ( !self->client )
 	{
 		G_DebugPrint( WL_ERROR, "Q3_SetWeapon: '%s' is not a player/NPC!\n", self->targetname );
+		return;
+	}
+
+	// Do not let JK2/JA SP scripts force the real player's weapon/loadout.
+	// This catches both Q3_SetWeapon() and any future direct G_SetWeapon() callers.
+	if ( Q3_PreserveProfileLoadoutForSPPlayer( self ) )
+	{
 		return;
 	}
 
@@ -4017,9 +4084,9 @@ void G_SetWeapon( gentity_t *self, int wp )
 	if(!hadWeapon)
 	{
 		//update the weapon stats for this player since they have changed.
-		if(OJP_AllPlayersHaveClientPlugin())
+		if(OBP_AllPlayersHaveClientPlugin())
 		{//don't send the weapon updates if someone isn't able to process this new event type (IE anyone without
-			//the OJP client plugin)
+			//the OBP client plugin)
 			G_AddEvent(self, EV_WEAPINVCHANGE, self->client->ps.stats[STAT_WEAPONS]);
 		}
 	}
@@ -4062,6 +4129,11 @@ static void Q3_SetWeapon (int entID, const char *wp_name)
 	if ( !ent->client )
 	{
 		G_DebugPrint( WL_ERROR, "Q3_SetWeapon: '%s' is not a player/NPC!\n", ent->targetname );
+		return;
+	}
+
+	if ( Q3_PreserveProfileLoadoutForSPPlayer( ent ) )
+	{
 		return;
 	}
 
@@ -4534,9 +4606,7 @@ Q3_SetTarget2
 */
 static void Q3_SetTarget2 (int entID, const char *target2)
 {
-	G_DebugPrint( WL_WARNING, "Q3_SetTarget2 does not exist in MP\n");
-	/*
-	sharedEntity_t	*self  = SV_GentityNum(entID);
+	gentity_t *self = &g_entities[entID];
 
 	if ( !self )
 	{
@@ -4552,7 +4622,6 @@ static void Q3_SetTarget2 (int entID, const char *target2)
 	{
 		self->target2 = G_NewString( target2 );
 	}
-	*/
 }
 /*
 ============
@@ -4581,9 +4650,7 @@ Q3_SetPainTarget
 */
 static void Q3_SetPainTarget (int entID, const char *targetname)
 {
-	G_DebugPrint( WL_WARNING, "Q3_SetPainTarget: NOT SUPPORTED IN MP\n");
-	/*
-	sharedEntity_t	*self  = SV_GentityNum(entID);
+	gentity_t *self = &g_entities[entID];
 
 	if ( !self )
 	{
@@ -4599,7 +4666,6 @@ static void Q3_SetPainTarget (int entID, const char *targetname)
 	{
 		self->paintarget = G_NewString((char *)targetname);
 	}
-	*/
 }
 
 /*
@@ -4658,7 +4724,7 @@ static void Q3_SetForcePowerLevel ( int entID, int forcePower, int forceLevel )
 //[CoOp]
 	gentity_t	*self;
 
-	if ( forcePower < FP_FIRST || forceLevel >= NUM_FORCE_POWERS )
+	if ( forcePower < FP_FIRST || forcePower >= NUM_FORCE_POWERS )
 	{
 		G_DebugPrint( WL_ERROR, "Q3_SetForcePowerLevel: Force Power index %d out of range (%d-%d)\n", forcePower, FP_FIRST, (NUM_FORCE_POWERS-1) );
 		return;
@@ -4684,6 +4750,11 @@ static void Q3_SetForcePowerLevel ( int entID, int forcePower, int forceLevel )
 	if ( !self->client )
 	{
 		G_DebugPrint( WL_ERROR, "Q3_SetForcePowerLevel: ent %s is not a player or NPC\n", self->targetname );
+		return;
+	}
+
+	if ( Q3_PreserveProfileLoadoutForSPPlayer( self ) )
+	{
 		return;
 	}
 
@@ -8028,7 +8099,6 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		//[/CoOp]
 		break;
 	case SET_OBJECTIVE_HIDE:
-		G_DebugPrint( WL_WARNING, "SET_OBJECTIVE_HIDE: NOT SUPPORTED IN MP\n");
 		break;
 	case SET_OBJECTIVE_SUCCEEDED:
 		//[CoOp]
@@ -8046,7 +8116,6 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		break;
 
 	case SET_OBJECTIVE_CLEARALL:
-		G_DebugPrint( WL_WARNING, "SET_OBJECTIVE_CLEARALL: NOT SUPPORTED IN MP\n");
 		break;
 
 	case SET_MISSIONFAILED:
@@ -8061,11 +8130,9 @@ qboolean Q3_Set( int taskID, int entID, const char *type_name, const char *data 
 		break;
 
 	case SET_MISSIONSTATUSTEXT:
-		G_DebugPrint( WL_WARNING, "SET_MISSIONSTATUSTEXT: NOT SUPPORTED IN MP\n");
 		break;
 		
 	case SET_MISSIONSTATUSTIME:
-		G_DebugPrint( WL_WARNING, "SET_MISSIONSTATUSTIME: NOT SUPPORTED IN MP\n");
 		break;
 
 	case SET_CLOSINGCREDITS:
@@ -8478,8 +8545,8 @@ void UpdatePlayerScriptTarget(void)
 	int clientNum = -1;
 	gentity_t *test;
 
-	if(g_gametype.integer != GT_SINGLE_PLAYER)
-	{//only used for CoOp
+	if(g_gametype.integer != GT_SINGLE_PLAYER && !G_UsingSPMapProgression())
+	{//only used for CoOp/SP-progression maps
 		return;
 	}
 

@@ -1,0 +1,748 @@
+//----------------------------------------------------------------------------------------------
+//	MULTIPLAYER RULES
+//
+//	Rules main menu.From here you can get at any of the rules menus.
+//
+//----------------------------------------------------------------------------------------------
+{
+	menuDef 
+	{
+		name					"rulesMenu"
+		fullScreen				1				
+		rect					0 0 640 480						// Size and position of the menu
+		visible				0					
+		focusColor			0.82 0.84 0.88 1
+		descX					320
+		descY					421
+		descScale				1
+		descColor				0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER		
+
+		onOpen 
+		{
+			setcvar				"ui_rules_backout" 0 ;
+		}								
+
+		onESC 
+		{ 
+				
+				close			all ; 
+				open			mainMenu
+		}
+	
+
+		//----------------------------------------------------------------------------------------------
+		//
+		//	MENU BACKGROUND
+		//
+		//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				really_background
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				156 154 320 240
+			background			"gfx/menus/main_centerblue"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 0 160 480
+			background			"gfx/menus/menu_side_text"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text_b
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				480 0 160 480
+			background			"gfx/menus/menu_side_text_right"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}	
+	
+		itemDef 
+		{
+			name				background
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 0 640 480
+			background			"gfx/menus/main_background"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				starwars
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				107 8 428 112
+			background			"gfx/menus/jediacademy"	
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				left_frame
+			group				lf_fr
+			style				WINDOW_STYLE_SHADER
+			rect				0 50 320 160
+			background			"gfx/menus/menu_boxes_left"	
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				right_frame
+			group				rt_fr
+			style				WINDOW_STYLE_SHADER
+			rect				320 50 320 160
+			background			"gfx/menus/menu_boxes_right"	
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+//----------------------------------------------------------------------------------------------
+//	TOP MENU BUTTONS
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				516 445 120 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+		
+		// Big button "Play"
+		itemDef
+		{
+			name				playbutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				7 126 130 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playbutton
+			group				toprow
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect				7 126 130 24
+			text				@MENUS_PLAY
+			descText			@MENUS_START_PLAYING_NOW
+			font				3
+			textscale			1.1
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			65
+			forecolor			0.82 0.84 0.88 1
+			visible			1
+
+			mouseEnter 
+			{
+				show			button_glow  
+				show			playbutton_glow 
+				setitemrect		button_glow	7 126 130 24
+			}
+			mouseExit 
+			{ 
+				hide			playbutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			all ; 
+				open			multiplayermenu 
+			}
+		}
+
+		// Big button "PLAYER PROFILE"
+		itemDef
+		{
+			name				profilebutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			4 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				profilebutton
+			group				toprow
+			text				@MENUS_PROFILE
+			descText			@MENUS_PROFILE_DESC
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect			4 100 124 24
+			textaligny			0
+			font				3
+			textscale			0.85
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			forecolor			0.82 0.84 0.88 1
+			visible			1
+
+			mouseEnter 
+			{
+				show			button_glow  
+				show			profilebutton_glow 
+				setitemrect		button_glow	4 100 124 24
+			}
+			mouseExit 
+			{ 
+				hide			profilebutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			all ; 
+				open			playerMenu
+			}
+		}
+
+		// Big button "CONTROLS"
+		itemDef
+		{
+			name				controlsbutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			258 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				controlsbutton
+			group				toprow
+			text				@MENUS_CONTROLS2
+			descText			@MENUS_CONFIGURE_GAME_CONTROLS
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			258 100 124 24
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible			1
+			 
+			mouseEnter 
+			{
+				show			button_glow  
+				show			controlsbutton_glow 
+				setitemrect		button_glow	258 100 124 24
+			}
+			mouseExit 
+			{ 
+				hide			controlsbutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ;
+				
+				close			all ; 
+				open			controlsMenu ;
+			}
+		}
+
+		// Big button "SETUP"
+		itemDef
+		{
+			name				setupbutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			512 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				setupbutton
+			group				toprow
+			text				@MENUS_SETUP
+			descText			@MENUS_CONFIGURE_GAME_SETTINGS
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			512 100 124 24
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible			1
+			 
+			mouseEnter 
+			{
+				show			button_glow  
+				show			setupbutton_glow 
+				setitemrect		button_glow	512 100 124 24
+			}
+			mouseExit 
+			{ 
+				hide			setupbutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ;
+				
+				close			all ; 
+				open			setup_menu
+			}
+		}
+
+//----------------------------------------------------------------------------------------------
+//	SECOND ROW MENU BUTTONS
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				title_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				100 164 440 16
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+		
+		itemDef 
+		{
+			name				default_rulesheader
+			group				rulesheader
+			style				WINDOW_STYLE_EMPTY
+			text				@MENUS_RULES
+       			rect				100 164 440 16
+			font				3
+			textscale			0.7
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			225
+			textaligny			-1
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+		}
+
+		// GAMES
+		itemDef
+		{
+			name				gamesmenubutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				225 190 190 40
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				gamesmenubutton
+			group				default_submenu
+			text				@MENUS_GAMES
+			descText			@MENUS_GAME_RULES
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				225 190 190 40 
+			font				3
+			textscale			1
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			95
+			textaligny			8
+			forecolor			0.82 0.84 0.88 1
+			visible		1
+			mouseEnter 
+			{
+				show			button_glow  
+				show			gamesmenubutton_glow 
+				setitemrect		button_glow	225 190 190 40
+			}
+			mouseExit 
+			{ 
+				hide			gamesmenubutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+
+				close			"rulesMenu" ;
+				open			"rulesMenu_games" ;
+			}
+		}
+
+		// Games 
+		itemDef
+		{
+			name				forcemenubutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				225 230 190 40
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forcemenubutton
+			group				default_submenu
+			text				@MENUS_FORCE_POWERS
+			descText			@MENUS_FORCE_RULES
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				225 230 190 40 
+			font				3
+			textscale			1
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			95
+			textaligny			8
+			forecolor			0.82 0.84 0.88 1
+			visible		1
+			mouseEnter 
+			{
+				show			button_glow  
+				show			forcemenubutton_glow 
+				setitemrect		button_glow	225 230 190 40
+			}
+			mouseExit 
+			{ 
+				hide			forcemenubutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			"rulesMenu" ;
+				open			"rulesMenu_force" ;
+			}
+		}
+
+		// Weapons 
+		itemDef
+		{
+			name				weaponmenubutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				225 270 190 40
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				weaponmenubutton
+			group				default_submenu
+			text				@MENUS_WEAPONS
+			descText			@MENUS_WEAPON_RULES
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				225 270 190 40 
+			font				3
+			textscale			1
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			95
+			textaligny			8
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+
+				close			"rulesMenu" ;
+				open			"rulesMenu_weapons" ;
+			}
+			mouseEnter 
+			{
+				show			button_glow  
+				show			weaponmenubutton_glow 
+				setitemrect		button_glow	225 270 190 40
+			}
+			mouseExit 
+			{ 
+				hide			weaponmenubutton_glow 
+			}	  	  
+		}
+
+		// Items 
+		itemDef
+		{
+			name				itemmenubutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				225 310 190 40
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				itemmenubutton
+			group				default_submenu
+			text				@MENUS_ITEMS
+			descText			@MENUS_ITEM_RULES
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				225 310 190 40
+			font				3
+			textscale			1
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			95
+			textaligny			8
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+
+				close			"rulesMenu" ;
+				open			"rulesMenu_items" ;
+			}
+			mouseEnter 
+			{
+				show			button_glow  
+				show			itemmenubutton_glow 
+				setitemrect		button_glow	225 310 190 40
+			}
+			mouseExit 
+			{ 
+				hide			itemmenubutton_glow 
+			}	  	  
+		}
+		
+		// Move
+		itemDef
+		{
+			name				itemmenubutton_autoglow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				225 350 190 40
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				itemmenubutton
+			group				default_submenu
+			text				@MENUS_MOVES
+			descText			@MENUS_MOVE_RULES
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				225 350 190 40
+			font				3
+			textscale			1
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			95
+			textaligny			8
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+
+				close			"rulesMenu" ;
+				open			"rulesMenu_moves" ;
+			}
+			mouseEnter 
+			{
+				show			button_glow  
+				show			itemmenubutton_autoglow 
+				setitemrect		button_glow	225 350 190 40
+			}
+			mouseExit 
+			{ 
+				hide			itemmenubutton_autoglow 
+			}	  	  
+		}
+		
+//----------------------------------------------------------------------------------------------
+//	BOTTOM BUTTONS
+//----------------------------------------------------------------------------------------------
+		// BACK button 
+		itemDef
+		{
+			name				backbutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			4 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				backbutton
+			group				fade_buttons
+			text				@MENUS_BACK
+			descText			@MENUS_BACKTOMAIN
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			4 445 124 32
+			font				3
+			textscale			0.9
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			textalignx			62
+			textaligny			-1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+
+			mouseEnter 
+			{
+				show			button_glow  
+				show			backbutton_glow 
+				setitemrect		button_glow	4 445 124 32
+			}
+			mouseExit 
+			{ 
+				hide			backbutton_glow 
+			}	
+			  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			all ; 
+				open			mainMenu
+			}
+
+		}
+		
+		// EXIT button
+		itemDef
+		{
+			name				exitgamebutton_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			512 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				exitgamebutton
+			group				othermain
+			text				@MENUS_EXIT
+			descText			@MENUS_LEAVE_JEDI_KNIGHT_II
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			512 445 124 32
+			font				3
+			textscale			0.9
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			textaligny			-1
+			forecolor			0.82 0.84 0.88 1
+			visible			1
+
+			mouseEnter 
+			{
+				show			button_glow  
+				show			exitgamebutton_glow 
+				setitemrect		button_glow	512 445 124 32
+			}
+			mouseExit 
+			{ 
+				hide			exitgamebutton_glow 
+			}	  	  			  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				 
+				close			all ; 
+				open			quitMenu 
+			}
+		}		
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

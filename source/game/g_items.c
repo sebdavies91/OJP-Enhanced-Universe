@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 #include "g_local.h"
 #include "../ghoul2/g2.h"
@@ -242,8 +242,6 @@ int adjustRespawnTime(float preRespawnTime, int itemType, int itemTag)
 #define SHIELD_HALFTHICKNESS		4
 #define SHIELD_PLACEDIST			64
 
-#define SHIELD_SIEGE_HEALTH			2000
-#define SHIELD_SIEGE_HEALTH_DEC		(SHIELD_SIEGE_HEALTH/25)	// still 25 seconds.
 
 static qhandle_t	shieldLoopSound=0;
 static qhandle_t	shieldAttachSound=0;
@@ -255,7 +253,22 @@ static qhandle_t	shieldDamageSound=0;
 void ShieldRemove(gentity_t *self)
 {
 	//[Forcefield]
-	self->parent->forceFieldThink = level.time + 30000;
+	if ( self->parent && self->parent->client )
+	{
+		int cooldown = 30000;
+		int forceFieldLevel = self->parent->client->skillLevel[SK_FORCEFIELD];
+
+		if ( forceFieldLevel >= FORCE_LEVEL_3 )
+		{
+			cooldown = 10000;
+		}
+		else if ( forceFieldLevel == FORCE_LEVEL_2 )
+		{
+			cooldown = 20000;
+		}
+
+		self->parent->forceFieldThink = level.time + cooldown;
+	}
 	//[/Forcefield]
 	self->think = G_FreeEntity;
 	self->nextthink = level.time + 100;
@@ -279,7 +292,10 @@ void ShieldThink(gentity_t *self)
 	{
 		ShieldRemove(self);
 	}
-	if ( g_entities[self->s.owner].client->ps.stats[STAT_HEALTH] < 0)
+	if ( self->s.owner < 0 || self->s.owner >= MAX_GENTITIES ||
+		!g_entities[self->s.owner].inuse ||
+		!g_entities[self->s.owner].client ||
+		g_entities[self->s.owner].health <= 0 )
 	{
 		ShieldRemove(self);
 	}		
@@ -445,6 +461,7 @@ void CreateShield(gentity_t *ent)
 	int			height, posWidth, negWidth, halfWidth = 0;
 	qboolean	xaxis;
 	int			paramData = 0;
+	int			forceFieldLevel = FORCE_LEVEL_1;
 //	static int	shieldID;
 
 	// trace upward to find height of shield
@@ -517,22 +534,14 @@ void CreateShield(gentity_t *ent)
 	paramData = (xaxis << 24) | (height << 16) | (posWidth << 8) | (negWidth);
 	ent->s.time2 = paramData;
 
-	if ( g_gametype.integer == GT_SIEGE )
+	if ( ent->parent && ent->parent->client )
 	{
-		ent->health = ceil((float)(SHIELD_SIEGE_HEALTH*1));
+		forceFieldLevel = ent->parent->client->skillLevel[SK_FORCEFIELD];
 	}
-//	else if (ent->client->skillLevel[SK_FORCEFIELD] == FORCE_LEVEL_3)
-//	{
-//		ent->health = ceil((float)(SHIELD_HEALTH*3));
-//	}		
-//	else if (ent->client->skillLevel[SK_FORCEFIELD] == FORCE_LEVEL_2)
-//	{
-//		ent->health = ceil((float)(SHIELD_HEALTH*2));
-//	}		
-	else
-	{
-		ent->health = ceil((float)(SHIELD_HEALTH*1));
-	}
+
+	forceFieldLevel = Com_Clampi( FORCE_LEVEL_1, FORCE_LEVEL_3, forceFieldLevel );
+
+	ent->health = SHIELD_HEALTH * forceFieldLevel;
 
 	ent->s.time = ent->health;//???
 	ent->pain = ShieldPain;
@@ -692,13 +701,47 @@ void ItemUse_Binoculars(gentity_t *ent)
 
 	if (ent->client->ps.zoomMode == 0) // not zoomed or currently zoomed with the disruptor
 	{
-		ent->client->ps.zoomMode = 2;
-		ent->client->ps.zoomLocked = qfalse;
+		int binocularLevel = ent->client->skillLevel[SK_BINOCULARS];
+
+		if (binocularLevel < FORCE_LEVEL_1)
+		{
+			binocularLevel = FORCE_LEVEL_1;
+		}
+		else if (binocularLevel > FORCE_LEVEL_3)
+		{
+			binocularLevel = FORCE_LEVEL_3;
+		}
+
+		/*
+		 * Do not use EF_HI_OPTION_2/3 for binocular optics.  Those bits belong to
+		 * the selected holdable icon subtype system and can corrupt other item icons.
+		 *
+		 * Use only zoom state:
+		 *   level 1 -> zoomMode 2, zoomLocked qfalse = normal
+		 *   level 2 -> zoomMode 3, zoomLocked qfalse = thermal
+		 *   level 3 -> zoomMode 3, zoomLocked qtrue  = x-ray
+		 */
+		if (binocularLevel >= FORCE_LEVEL_3)
+		{
+			ent->client->ps.zoomMode = 3;
+			ent->client->ps.zoomLocked = qtrue;
+		}
+		else if (binocularLevel == FORCE_LEVEL_2)
+		{
+			ent->client->ps.zoomMode = 3;
+			ent->client->ps.zoomLocked = qfalse;
+		}
+		else
+		{
+			ent->client->ps.zoomMode = 2;
+			ent->client->ps.zoomLocked = qfalse;
+		}
 		ent->client->ps.zoomFov = 40.0f;
 	}
-	else if (ent->client->ps.zoomMode == 2)
+	else if (ent->client->ps.zoomMode == 2 || ent->client->ps.zoomMode == 3)
 	{
 		ent->client->ps.zoomMode = 0;
+		ent->client->ps.zoomLocked = qfalse;
 		ent->client->ps.zoomTime = level.time;
 	}
 }
@@ -729,7 +772,14 @@ void pas_fire( gentity_t *ent )
 	VectorCopy(ent->r.currentOrigin, myOrg);
 	myOrg[2] += 24;
 
-	VectorCopy(ent->enemy->client->ps.origin, enOrg);
+	if (ent->enemy->client)
+	{
+		VectorCopy(ent->enemy->client->ps.origin, enOrg);
+	}
+	else
+	{
+		VectorCopy(ent->enemy->r.currentOrigin, enOrg);
+	}
 	enOrg[2] += 24;
 
 	VectorSubtract(enOrg, myOrg, fwd);
@@ -738,11 +788,11 @@ void pas_fire( gentity_t *ent )
 	myOrg[0] += fwd[0]*16;
 	myOrg[1] += fwd[1]*16;
 	//[Ticket
-	if (BG_CrouchAnim(ent->enemy->s.legsAnim))
+	if (ent->enemy->client && BG_CrouchAnim(ent->enemy->s.legsAnim))
 	{
 	myOrg[2] += fwd[2]-10;
 	}
-	else if (PM_InKnockDown(ent->enemy->playerState ) )
+	else if (ent->enemy->client && PM_InKnockDown(ent->enemy->playerState ) )
 	{
 
 	}
@@ -765,7 +815,8 @@ static qboolean pas_find_enemies( gentity_t *self )
 {
 	qboolean	found = qfalse;
 	int			count, i;
-	float		bestDist = TURRET_RADIUS*TURRET_RADIUS;
+	float		radius = TURRET_RADIUS;
+	float		bestDist;
 	float		enemyDist;
 	vec3_t		enemyDir, org, org2;
 	gentity_t	*entity_list[MAX_GENTITIES], *target;
@@ -783,16 +834,18 @@ static qboolean pas_find_enemies( gentity_t *self )
 
 	VectorCopy(self->s.pos.trBase, org2);
 
-	count = G_RadiusList( org2, TURRET_RADIUS, self, qtrue, entity_list );
+	if (self->originalactivator && self->originalactivator->client)
+	{
+		radius = 1024.0f;
+	}
+
+	bestDist = radius*radius;
+	count = G_RadiusList( org2, radius, self, qtrue, entity_list );
 
 	for ( i = 0; i < count; i++ )
 	{
 		target = entity_list[i];
 
-		if ( !target->client )
-		{
-			continue;
-		}
 		if ( target == self || !target->takedamage || target->health <= 0 || ( target->flags & FL_NOTARGET ))
 		{
 			continue;
@@ -801,7 +854,7 @@ static qboolean pas_find_enemies( gentity_t *self )
 		{
 			continue;
 		}
-		if ( !G_ValidEnemy( self->originalactivator, target ) )
+		if ( target->client && !G_ValidEnemy( self->originalactivator, target ) )
 		{
 			continue;
 		}
@@ -826,11 +879,6 @@ static qboolean pas_find_enemies( gentity_t *self )
 			continue;
 		}
 
-		if (target->s.eType == ET_NPC &&
-			target->s.NPC_class == CLASS_VEHICLE)
-		{ //don't get mad at vehicles, silly.
-			continue;
-		}
 
 		if ( target->client )
 		{
@@ -1006,7 +1054,7 @@ void pas_think( gentity_t *ent )
 		ent->nextthink = level.time;
 		return;
 	}
-	if ( g_entities[ent->s.owner].client->ps.stats[STAT_HEALTH] < 0)
+	if ( g_entities[ent->s.owner].health <= 0)
 	{
 		G_Sound(ent, CHAN_BODY, G_SoundIndex("sound/chars/turret/shutdown.wav"));
 		ent->s.bolt2 = ENTITYNUM_NONE;
@@ -1051,15 +1099,11 @@ void pas_think( gentity_t *ent )
 
 	if (ent->enemy)
 	{
-		if (!ent->enemy->client)
+		if (ent->enemy->s.number == ent->s.number)
 		{
 			ent->enemy = NULL;
 		}
-		else if (ent->enemy->s.number == ent->s.number)
-		{
-			ent->enemy = NULL;
-		}
-		else if (ent->enemy->health < 1)
+		else if (ent->enemy->health < 1 || !ent->enemy->takedamage)
 		{
 			ent->enemy = NULL;
 		}
@@ -1188,7 +1232,12 @@ void pas_think( gentity_t *ent )
 void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int damage, int mod)
 //------------------------------------------------------------------------------------------------------------
 {
-	gentity_t *owner = &g_entities[self->genericValue3];
+	gentity_t *owner = NULL;
+
+	if (self->genericValue3 >= 0 && self->genericValue3 < MAX_GENTITIES)
+	{
+		owner = &g_entities[self->genericValue3];
+	}
 	// Turn off the thinking of the base & use it's targets
 	self->think = 0;//NULL;
 	self->use = 0;//NULL;
@@ -1198,7 +1247,7 @@ void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 		G_UseTargets( self, attacker );
 	}
 
-	if (!g_entities[self->genericValue3].inuse || !g_entities[self->genericValue3].client)
+	if (!owner || !owner->inuse || !owner->client)
 	{
 		G_FreeEntity(self);
 		return;
@@ -1213,7 +1262,7 @@ void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	VectorSet( self->s.angles, 0, 0, 1 );
 
 	G_PlayEffect(EFFECT_EXPLOSION_PAS, self->s.pos.trBase, self->s.angles);
-	G_RadiusDamage(self->s.pos.trBase, &g_entities[self->genericValue3], 30, 256, self, self, MOD_UNKNOWN);
+	G_RadiusDamage(self->s.pos.trBase, owner, 30, 256, self, self, MOD_UNKNOWN);
 
 	//[SentryGun]
 	//not used anymore since we allow multiple sentry guns now.
@@ -1226,7 +1275,7 @@ void turret_die(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int 
 	//[SentryGun]
 	if (owner->client->ps.fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_0)
 	{
-	owner->sentryDeadThink = level.time + 60000;
+		owner->sentryDeadThink = level.time + 60000;
 	}
 	//[/SentryGun]
 
@@ -1404,19 +1453,12 @@ void ItemUse_Seeker(gentity_t *ent)
 			//TODO: set 'remote->health' according to player skill
 			//remember, demp2 pwns seekers
 
-			//TODO: set these based on player skill
-			remote->genericValue1 = 200; //minimum time between shots
-			remote->genericValue2 = 200; //maximum time between shots
-			if(ent->client->skillLevel[SK_SEEKER]== FORCE_LEVEL_3)
-				{
-			remote->genericValue1 = 100; //minimum time between shots
-			remote->genericValue2 = 100; //maximum time between shots 
-				}
-			else if(ent->client->skillLevel[SK_SEEKER]== FORCE_LEVEL_2)
-				{
-			remote->genericValue1 = 150; //minimum time between shots
-			remote->genericValue2 = 150; //maximum time between shots  
-				}
+				/*
+				 * Keep HI_SEEKER's fire rate constant across skill levels.
+				 * Skill level now improves seeker damage only, matching HI_EWEB/HI_SENTRY.
+				 */
+				remote->genericValue1 = 200; //minimum time between shots
+				remote->genericValue2 = 200; //maximum time between shots
 			//TODO: set this based on player skill
 			//[SeekerNerf]
 				remote->damage = 40; //damage per shot 
@@ -1775,6 +1817,7 @@ void Flamethrower_Fire( gentity_t *self )
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
 	int BURN_TIME = 2500;
 	float	radius = FLAMETHROWER_RADIUS, dot, dist;
+	float	minDot = 0.991f;
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
 	int			iEntityList[MAX_GENTITIES];
@@ -1783,7 +1826,25 @@ void Flamethrower_Fire( gentity_t *self )
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
 
+	if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
+	{
+		radius = 256.0f;
+		minDot = 0.991f; // 15-degree total arc
+	}
+	else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
+	{
+		radius = 384.0f;
+		minDot = 0.924f; // 45-degree total arc
+	}
+	else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
+	{
+		radius = 512.0f;
+		minDot = 0.707f; // 90-degree total arc
+	}
+
 	VectorCopy( self->client->ps.origin, center );
+
+
 	for ( i = 0 ; i < 3 ; i++ ) 
 	{
 		mins[i] = center[i] - radius;
@@ -1838,7 +1899,7 @@ void Flamethrower_Fire( gentity_t *self )
 		//must be within the forward cone
 		VectorSubtract( ent_org, center, dir );
 		VectorNormalize( dir );
-		if ( (dot = DotProduct( dir, forward )) < 0.5 )
+		if ( (dot = DotProduct( dir, forward )) < minDot )
 			continue;
 
 		//must be close enough
@@ -1861,6 +1922,31 @@ void Flamethrower_Fire( gentity_t *self )
 			continue;
 		}
 
+		damage = 1;
+
+		if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
+		{
+			damage = 1;
+		}
+		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
+		{
+			damage = 3;
+		}
+		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
+		{
+			if (self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{//jackin' 'em up, Palpatine-style
+				damage = 7;
+			}
+			else
+			{
+				damage = 5;
+			}
+		}
+
 		if(traceEnt->client)
 		{
 			vec3_t pushDir;
@@ -1868,109 +1954,78 @@ void Flamethrower_Fire( gentity_t *self )
 			VectorNormalize(pushDir);
 			VectorScale( pushDir, 150, traceEnt->client->ps.velocity );
 			//VectorCopy(pushDir,traceEnt->client->ps.velocity);
-		
 
-			if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
-					{
-						damage = 1;
-						}			
-		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
-					{
-						damage = 3;
-						}
-		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
-					{
-			if (self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-				{//jackin' 'em up, Palpatine-style
-					damage = 7;
-				}
-			else
+			if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
+			{
+				if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
 				{
-					damage =5;
+					
 				}
-		}
-
-			
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
-				{
-					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
-					{
-						
-					}
-					else
-					{
-					damage = 0;						
-					}
-				}
-				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				else
 				{
 					damage = 0;						
-				}			
-
-	//			if (modPowerLevel != -1)
-				{
-
-	//					dmg = 0;
-
-
 				}
-				//[ForceSys]
-	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
-
-				if (damage //&& !saberBlocked
-				)
-				//if (dmg)
-				//[/ForceSys]
-				{
-					//rww - Shields can now absorb lightning too.
-					G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_FLAME );
-
-					//[ForceSys]
-					//lightning also blasts the target back.
-
-
-					//[/ForceSys]
-				}
-				if ( traceEnt->client )
-				{
-					if ( !Q_irand( 0, 2 ) )
-					{
-	//					G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
-					}
-
-	// 					if ( traceEnt->client->ps.weapon == WP_SABER )
-					{//Serenitysabersystems saber can block lightning
-	//					int rSaberNum = 0;
-	//					int rBladeNum = 0;						
-	//					traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
-	//					if ( saberBlocked
-	//						&& traceEnt->client
-	//						&& !traceEnt->client->ps.saberHolstered
-	//						&& !traceEnt->client->ps.saberInFlight )
-						{
-	//						vec3_t	end2;
-	//						vec3_t ang = { 0, 0, 0};
-	//						ang[0] = flrand(0,360);
-	//						ang[1] = flrand(0,360);
-	//						ang[2] = flrand(0,360);
-	//						VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
-	//						G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
-						}
-					}
-					//[ForceSys]
-					//don't do the electrical effect unless we didn't block with the saber.
-					if (traceEnt->client->burnTime < (level.time + BURN_TIME/2) && damage)
-					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
-					//[/ForceSys]
-					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-						G_RefreshBurnEffect(traceEnt, dir, BURN_TIME);
-					}
-
-				}
+			}
+			if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+			{
+				damage = 0;						
+			}
 		}
+
+		//[ForceSys]
+//		saberBlocked = OBP_BlockEnergy(self, traceEnt, impactPoint, dmg);
+
+		if (damage //&& !saberBlocked
+		)
+		//if (dmg)
+		//[/ForceSys]
+		{
+			//rww - Shields can now absorb lightning too.
+			G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_FLAME );
+
+			//[ForceSys]
+			//lightning also blasts the target back.
+
+
+			//[/ForceSys]
+		}
+		if ( traceEnt->client )
+		{
+			if ( !Q_irand( 0, 2 ) )
+			{
+//				G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
+			}
+
+// 			if ( traceEnt->client->ps.weapon == WP_SABER )
+			{//Serenitysabersystems saber can block lightning
+//				int rSaberNum = 0;
+//				int rBladeNum = 0;						
+//				traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
+//				if ( saberBlocked
+//					&& traceEnt->client
+//					&& !traceEnt->client->ps.saberHolstered
+//					&& !traceEnt->client->ps.saberInFlight )
+				{
+//					vec3_t	end2;
+//					vec3_t ang = { 0, 0, 0};
+//					ang[0] = flrand(0,360);
+//					ang[1] = flrand(0,360);
+//					ang[2] = flrand(0,360);
+//					VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
+//					G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
+				}
+			}
+			//[ForceSys]
+			//don't do the electrical effect unless we didn't block with the saber.
+			if (traceEnt->client->burnTime < (level.time + BURN_TIME/2) && damage)
+			//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
+			//[/ForceSys]
+			{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
+				G_RefreshBurnEffect(traceEnt, dir, BURN_TIME);
+			}
+
+		}
+
 
 	}
 }
@@ -1984,13 +2039,30 @@ void Dioxisthrower_Fire( gentity_t *self )
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
 	int	TOXIC_TIME = 2500;
 	float	radius = FLAMETHROWER_RADIUS, dot, dist;
+	float	minDot = 0.991f;
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
 	int			iEntityList[MAX_GENTITIES];
 	int		e, numListedEntities, i;
-
+	qboolean saberBlocked = qfalse;
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
+	{
+		radius = 256.0f;
+		minDot = 0.991f; // 15-degree total arc
+	}
+	else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
+	{
+		radius = 384.0f;
+		minDot = 0.924f; // 45-degree total arc
+	}
+	else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
+	{
+		radius = 512.0f;
+		minDot = 0.707f; // 90-degree total arc
+	}
 
 	VectorCopy( self->client->ps.origin, center );
 	for ( i = 0 ; i < 3 ; i++ ) 
@@ -2047,7 +2119,7 @@ void Dioxisthrower_Fire( gentity_t *self )
 		//must be within the forward cone
 		VectorSubtract( ent_org, center, dir );
 		VectorNormalize( dir );
-		if ( (dot = DotProduct( dir, forward )) < 0.5 )
+		if ( (dot = DotProduct( dir, forward )) < minDot )
 			continue;
 
 		//must be close enough
@@ -2070,112 +2142,104 @@ void Dioxisthrower_Fire( gentity_t *self )
 			continue;
 		}
 
-		if(traceEnt->client)
-		{
+		damage = 1;
 
 		if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
-					{
-						damage = 1;
-						}			
+		{
+			damage = 1;
+		}
 		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
-					{
-						damage = 3;
-						}
+		{
+			damage = 3;
+		}
 		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
-					{
+		{
 			if (self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-				{//jackin' 'em up, Palpatine-style
-					damage = 7;
-				}
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{//jackin' 'em up, Palpatine-style
+				damage = 7;
+			}
 			else
-				{
-					damage =5;
-				}
+			{
+				damage = 5;
+			}
 		}
 
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
+		if(traceEnt->client)
+		{
+			if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
+			{
+				if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
 				{
-					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
-					{
-						
-					}
-					else
-					{
-					damage = 0;						
-					}
+					
 				}
-				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				else
 				{
 					damage = 0;						
 				}
+			}
+			if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+			{
+				damage = 0;						
+			}
+		}
+
+		//[ForceSys]
+//		saberBlocked = OBP_BlockEnergy(self, traceEnt, impactPoint, dmg);
+
+		if (damage //&& !saberBlocked
+		)
+		//if (dmg)
+		//[/ForceSys]
+		{
+			//rww - Shields can now absorb lightning too.
+			G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR | DAMAGE_NO_KNOCKBACK |/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_DIOXIS );
+
+			//[ForceSys]
+			//lightning also blasts the target back.
 
 
-	//			if (modPowerLevel != -1)
+			//[/ForceSys]
+		}
+		if ( traceEnt->client )
+		{
+			if ( !Q_irand( 0, 2 ) )
+			{
+//				G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
+			}
+
+// 			if ( traceEnt->client->ps.weapon == WP_SABER )
+			{//Serenitysabersystems saber can block lightning
+//				int rSaberNum = 0;
+//				int rBladeNum = 0;						
+//				traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
+//				if ( saberBlocked
+//					&& traceEnt->client
+//					&& !traceEnt->client->ps.saberHolstered
+//					&& !traceEnt->client->ps.saberInFlight )
 				{
-
-	//					dmg = 0;
-
-
+//					vec3_t	end2;
+//					vec3_t ang = { 0, 0, 0};
+//					ang[0] = flrand(0,360);
+//					ang[1] = flrand(0,360);
+//					ang[2] = flrand(0,360);
+//					VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
+//					G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
 				}
-				//[ForceSys]
-	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
-
-				if (damage //&& !saberBlocked
-				)
-				//if (dmg)
-				//[/ForceSys]
-				{
-					//rww - Shields can now absorb lightning too.
-					G_Damage(traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR | DAMAGE_NO_KNOCKBACK |/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_UNKNOWN);
-
-					//[ForceSys]
-					//lightning also blasts the target back.
-
-
-					//[/ForceSys]
-				}
-				if ( traceEnt->client )
-				{
-					if ( !Q_irand( 0, 2 ) )
-					{
-	//					G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
-					}
-
-	// 					if ( traceEnt->client->ps.weapon == WP_SABER )
-					{//Serenitysabersystems saber can block lightning
-	//					int rSaberNum = 0;
-	//					int rBladeNum = 0;						
-	//					traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
-	//					if ( saberBlocked
-	//						&& traceEnt->client
-	//						&& !traceEnt->client->ps.saberHolstered
-	//						&& !traceEnt->client->ps.saberInFlight )
-						{
-	//						vec3_t	end2;
-	//						vec3_t ang = { 0, 0, 0};
-	//						ang[0] = flrand(0,360);
-	//						ang[1] = flrand(0,360);
-	//						ang[2] = flrand(0,360);
-	//						VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
-	//						G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
-						}
-					}
-					//[ForceSys]
-					//don't do the toxic effect unless we didn't block with the saber.
-					if (traceEnt->client->toxicTime < (level.time + TOXIC_TIME/2) &&  damage)
-					//[/ForceSys]
-					{
-						G_RefreshToxicEffect(traceEnt, TOXIC_TIME);
-					}		
+			}
+			//[ForceSys]
+			//don't do the toxic effect unless we didn't block with the saber.
+			if (traceEnt->client->toxicTime < (level.time + TOXIC_TIME/2) && damage)
+			//[/ForceSys]
+			{
+				G_RefreshToxicEffect(traceEnt, TOXIC_TIME);
+			}		
 	
-		
-				}
+
 		}
 
-		
 
 	}
 }
@@ -2188,13 +2252,30 @@ void Icethrower_Fire( gentity_t *self )
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
 	int	FREEZE_TIME = 2500;
 	float	radius = FLAMETHROWER_RADIUS, dot, dist;
+	float	minDot = 0.991f;
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
 	int			iEntityList[MAX_GENTITIES];
 	int		e, numListedEntities, i;
-
+	qboolean saberBlocked = qfalse;
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
+	{
+		radius = 256.0f;
+		minDot = 0.991f; // 15-degree total arc
+	}
+	else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
+	{
+		radius = 384.0f;
+		minDot = 0.924f; // 45-degree total arc
+	}
+	else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
+	{
+		radius = 512.0f;
+		minDot = 0.707f; // 90-degree total arc
+	}
 
 	VectorCopy( self->client->ps.origin, center );
 	for ( i = 0 ; i < 3 ; i++ ) 
@@ -2251,7 +2332,7 @@ void Icethrower_Fire( gentity_t *self )
 		//must be within the forward cone
 		VectorSubtract( ent_org, center, dir );
 		VectorNormalize( dir );
-		if ( (dot = DotProduct( dir, forward )) < 0.5 )
+		if ( (dot = DotProduct( dir, forward )) < minDot )
 			continue;
 
 		//must be close enough
@@ -2274,114 +2355,104 @@ void Icethrower_Fire( gentity_t *self )
 			continue;
 		}
 
+		damage = 1;
+
+		if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
+		{
+			damage = 1;
+		}
+		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
+		{
+			damage = 3;
+		}
+		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
+		{
+			if (self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{//jackin' 'em up, Palpatine-style
+				damage = 7;
+			}
+			else
+			{
+				damage = 5;
+			}
+		}
 
 		if(traceEnt->client)
 		{
-		if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_1)
-					{
-						damage = 1;
-						}			
-		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_2)
-					{
-						damage = 3;
-						}
-		else if (self->client->skillLevel[SK_FLAMETHROWER] == FORCE_LEVEL_3)
-					{
-			if (self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-				{//jackin' 'em up, Palpatine-style
-					damage = 7;
-				}
-			else
+			if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
+			{
+				if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
 				{
-					damage =5;
+					
 				}
-		}
-
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
-				{
-					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
-					{
-						
-					}
-					else
-					{
-					damage = 0;						
-					}
-				}
-				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				else
 				{
 					damage = 0;						
 				}
+			}
+			if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+			{
+				damage = 0;						
+			}
+		}
+
+		//[ForceSys]
+//		saberBlocked = OBP_BlockEnergy(self, traceEnt, impactPoint, dmg);
+
+		if (damage //&& !saberBlocked
+		)
+		//if (dmg)
+		//[/ForceSys]
+		{
+			//rww - Shields can now absorb lightning too.
+			G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR | DAMAGE_NO_KNOCKBACK |/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_ICE );
+
+			//[ForceSys]
+			//lightning also blasts the target back.
 
 
-	//			if (modPowerLevel != -1)
+			//[/ForceSys]
+		}
+		if ( traceEnt->client )
+		{
+			if ( !Q_irand( 0, 2 ) )
+			{
+//				G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
+			}
+
+// 			if ( traceEnt->client->ps.weapon == WP_SABER )
+			{//Serenitysabersystems saber can block lightning
+//				int rSaberNum = 0;
+//				int rBladeNum = 0;						
+//				traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
+//				if ( saberBlocked
+//					&& traceEnt->client
+//					&& !traceEnt->client->ps.saberHolstered
+//					&& !traceEnt->client->ps.saberInFlight )
 				{
-
-	//					dmg = 0;
-
-
+//					vec3_t	end2;
+//					vec3_t ang = { 0, 0, 0};
+//					ang[0] = flrand(0,360);
+//					ang[1] = flrand(0,360);
+//					ang[2] = flrand(0,360);
+//					VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
+//					G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
 				}
-				//[ForceSys]
-	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
-
-				if (damage //&& !saberBlocked
-				)
-				//if (dmg)
-				//[/ForceSys]
-				{
-					//rww - Shields can now absorb lightning too.
-					G_Damage(traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR | DAMAGE_NO_KNOCKBACK |/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_UNKNOWN);
-
-					//[ForceSys]
-					//lightning also blasts the target back.
-
-
-					//[/ForceSys]
-				}
-				if ( traceEnt->client )
-				{
-					if ( !Q_irand( 0, 2 ) )
-					{
-	//					G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
-					}
-
-	// 					if ( traceEnt->client->ps.weapon == WP_SABER )
-					{//Serenitysabersystems saber can block lightning
-	//					int rSaberNum = 0;
-	//					int rBladeNum = 0;						
-	//					traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
-	//					if ( saberBlocked
-	//						&& traceEnt->client
-	//						&& !traceEnt->client->ps.saberHolstered
-	//						&& !traceEnt->client->ps.saberInFlight )
-						{
-	//						vec3_t	end2;
-	//						vec3_t ang = { 0, 0, 0};
-	//						ang[0] = flrand(0,360);
-	//						ang[1] = flrand(0,360);
-	//						ang[2] = flrand(0,360);
-	//						VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
-	//						G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
-						}
-					}
-					//[ForceSys]
-					//don't do the electrical effect unless we didn't block with the saber.
-					if (traceEnt->client->freezeTime < (level.time + FREEZE_TIME/2) &&  damage)
-					//if (traceEnt->client->ps.electrifyTime < (level.time + 400))
-					//[/ForceSys]
-					{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
-					G_RefreshFrozenEffect( traceEnt, dir, FREEZE_TIME );
-
-					}
-
-		
-				}
+			}
+			//[ForceSys]
+			//don't do the freeze effect unless we didn't block with the saber.
+			if (traceEnt->client->freezeTime < (level.time + FREEZE_TIME/2) && damage)
+			//[/ForceSys]
+			{ //only update every 400ms to reduce bandwidth usage (as it is passing a 32-bit time value)
+				G_RefreshFrozenEffect( traceEnt, dir, FREEZE_TIME );
+			}
+	
 
 		}
-		
+
 
 	}
 }
@@ -2391,9 +2462,23 @@ void Icethrower_Fire( gentity_t *self )
 
 void ItemUse_FlameThrower(gentity_t *ent)
 {
+	assert(ent && ent->client);
+
+	if (ent->health <= 0 ||
+		ent->client->ps.stats[STAT_HEALTH] <= 0 ||
+		(ent->client->ps.eFlags & EF_DEAD) ||
+		ent->client->ps.pm_type == PM_DEAD)
+	{
+		return;
+	}
 
 	if (ent->client->ps.jetpackFuel < FLAMETHROWER_FUELCOST)
 		return;
+
+	if (BG_InGrappleMove(ent->client->ps.torsoAnim))
+	{
+		return;
+	}
 
 	if(BG_InLedgeMove(ent->client->ps.legsAnim))
 	{//can't use flamethrower while in ledgegrab
@@ -2431,6 +2516,7 @@ void Electroshocker_Fire( gentity_t *self )
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
 	int SHOCK_TIME = 2500;
 	float	radius = ELECTROSHOCKER_RADIUS, dot, dist;
+	float	minDot = 0.991f;
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
 	int			iEntityList[MAX_GENTITIES];
@@ -2438,6 +2524,22 @@ void Electroshocker_Fire( gentity_t *self )
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1)
+	{
+		radius = 256.0f;
+		minDot = 0.991f; // 15-degree total arc
+	}
+	else if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_2)
+	{
+		radius = 384.0f;
+		minDot = 0.924f; // 45-degree total arc
+	}
+	else if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3)
+	{
+		radius = 512.0f;
+		minDot = 0.707f; // 90-degree total arc
+	}
 
 	VectorCopy( self->client->ps.origin, center );
 	for ( i = 0 ; i < 3 ; i++ ) 
@@ -2494,7 +2596,7 @@ void Electroshocker_Fire( gentity_t *self )
 		//must be within the forward cone
 		VectorSubtract( ent_org, center, dir );
 		VectorNormalize( dir );
-		if ( (dot = DotProduct( dir, forward )) < 0.5 )
+		if ( (dot = DotProduct( dir, forward )) < minDot )
 			continue;
 
 		//must be close enough
@@ -2517,8 +2619,6 @@ void Electroshocker_Fire( gentity_t *self )
 			continue;
 		}
 
-		if(traceEnt->client)
-		{
 
 		if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1)
 					{
@@ -2543,6 +2643,8 @@ void Electroshocker_Fire( gentity_t *self )
 				}
 		}
 
+		if ( traceEnt->client )
+		{
 				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
 				{
 					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
@@ -2559,6 +2661,7 @@ void Electroshocker_Fire( gentity_t *self )
 					damage = 0;						
 				}
 
+		}
 	//			if (modPowerLevel != -1)
 				{
 
@@ -2567,7 +2670,7 @@ void Electroshocker_Fire( gentity_t *self )
 
 				}
 				//[ForceSys]
-	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
+	//			saberBlocked = OBP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
 				if (damage //&& !saberBlocked
 				)
@@ -2641,43 +2744,48 @@ void Electroshocker_Fire( gentity_t *self )
 						traceEnt->client->jetPackToggleTime = level.time + Q_irand( 3000, 10000 );
 					}		
 				}
-		}
 	}
 }
 
 void Lasersupport_Fire( gentity_t *self )
 {
-	trace_t	tr;
-	vec3_t	forward;
-	gentity_t	*traceEnt;
-	vec3_t	center, mins, maxs, dir, ent_org, size, v;
-
-	float	radius = ELECTROSHOCKER_RADIUS, dot, dist;
+	trace_t tr;
+	vec3_t forward;
+	gentity_t *traceEnt;
+	vec3_t center, mins, maxs, dir, ent_org, size, v;
+	float radius = 256.0f, dot, dist;
+	float minDot = 0.991f; // 15-degree total forward arc
 	int damage = 1;
-	gentity_t	*entityList[MAX_GENTITIES];
-	int			iEntityList[MAX_GENTITIES];
-	int		e, numListedEntities, i;
+	gentity_t *entityList[MAX_GENTITIES];
+	int iEntityList[MAX_GENTITIES];
+	int e, numListedEntities, i;
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
 
+	if ( self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_2 )
+	{
+		radius = 384.0f;
+	}
+	else if ( self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3 )
+	{
+		radius = 512.0f;
+	}
+
 	VectorCopy( self->client->ps.origin, center );
-	for ( i = 0 ; i < 3 ; i++ ) 
+	for ( i = 0 ; i < 3 ; i++ )
 	{
 		mins[i] = center[i] - radius;
 		maxs[i] = center[i] + radius;
 	}
 	numListedEntities = trap_EntitiesInBox( mins, maxs, iEntityList, MAX_GENTITIES );
 
-	i = 0;
-	while (i < numListedEntities)
+	for ( i = 0; i < numListedEntities; i++ )
 	{
 		entityList[i] = &g_entities[iEntityList[i]];
-
-		i++;
 	}
 
-	for ( e = 0 ; e < numListedEntities ; e++ ) 
+	for ( e = 0 ; e < numListedEntities ; e++ )
 	{
 		traceEnt = entityList[e];
 
@@ -2689,21 +2797,22 @@ void Lasersupport_Fire( gentity_t *self )
 			continue;
 		if ( !traceEnt->takedamage )
 			continue;
-		if ( traceEnt->health <= 0 )//no torturing corpses
+		if ( traceEnt->health <= 0 )
 			continue;
-		if ( !g_friendlyFire.integer && OnSameTeam(self, traceEnt))
+		if ( !g_friendlyFire.integer && OnSameTeam(self, traceEnt) )
 			continue;
-		//this is all to see if we need to start a saber attack, if it's in flight, this doesn't matter
-		// find the distance from the edge of the bounding box
-		for ( i = 0 ; i < 3 ; i++ ) 
+
+		for ( i = 0 ; i < 3 ; i++ )
 		{
-			if ( center[i] < traceEnt->r.absmin[i] ) 
+			if ( center[i] < traceEnt->r.absmin[i] )
 			{
 				v[i] = traceEnt->r.absmin[i] - center[i];
-			} else if ( center[i] > traceEnt->r.absmax[i] ) 
+			}
+			else if ( center[i] > traceEnt->r.absmax[i] )
 			{
 				v[i] = center[i] - traceEnt->r.absmax[i];
-			} else 
+			}
+			else
 			{
 				v[i] = 0;
 			}
@@ -2712,143 +2821,76 @@ void Lasersupport_Fire( gentity_t *self )
 		VectorSubtract( traceEnt->r.absmax, traceEnt->r.absmin, size );
 		VectorMA( traceEnt->r.absmin, 0.5, size, ent_org );
 
-		//see if they're in front of me
-		//must be within the forward cone
 		VectorSubtract( ent_org, center, dir );
 		VectorNormalize( dir );
-		if ( (dot = DotProduct( dir, forward )) < 0.5 )
+		if ( (dot = DotProduct( dir, forward )) < minDot )
 			continue;
 
-		//must be close enough
 		dist = VectorLength( v );
-		if ( dist >= radius ) 
-		{
+		if ( dist >= radius )
 			continue;
-		}
-	
-		//in PVS?
-		if ( !traceEnt->r.bmodel && !trap_InPVS( ent_org, self->client->ps.origin ) )
-		{//must be in PVS
-			continue;
-		}
 
-		//Now check and see if we can actually hit it
+		if ( !traceEnt->r.bmodel && !trap_InPVS( ent_org, self->client->ps.origin ) )
+			continue;
+
 		trap_Trace( &tr, self->client->ps.origin, vec3_origin, vec3_origin, ent_org, self->s.number, MASK_SHOT );
 		if ( tr.fraction < 1.0f && tr.entityNum != traceEnt->s.number )
-		{//must have clear LOS
 			continue;
-		}
 
-		if(traceEnt->client)
+		if ( self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1 )
 		{
-
-		if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1)
-					{
-						damage = 1;
-						}			
-		else if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_2)
-					{
-						damage = 3;
-						}
-		else if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3)
-					{
-			if (self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-				{//jackin' 'em up, Palpatine-style
-					damage = 7;
-				}
+			damage = 1;
+		}
+		else if ( self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_2 )
+		{
+			damage = 3;
+		}
+		else if ( self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3 )
+		{
+			if ( self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE )
+			{
+				damage = 7;
+			}
 			else
-				{
-					damage =5;
-				}
+			{
+				damage = 5;
+			}
 		}
 
-
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
+		if ( traceEnt->client )
+		{
+			if ( traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT) )
+			{
+				if ( !(traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2)) )
 				{
-					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
-					{
-						
-					}
-					else
-					{
-					damage = 0;						
-					}
+					damage = 0;
 				}
-				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
-				{
-					damage = 0;						
-				}
+			}
+			if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+			{
+				damage = 0;
+			}
+		}
 
-	//			if (modPowerLevel != -1)
-				{
+		if ( damage )
+		{
+			G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|DAMAGE_IGNORE_TEAM, MOD_UNKNOWN );
+		}
 
-	//					dmg = 0;
+		if ( damage && traceEnt->client )
+		{
+			G_Throw( traceEnt, dir, 100 );
 
-
-				}
-				//[ForceSys]
-	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
-
-				if (damage //&& !saberBlocked
-				)
-				//if (dmg)
-				//[/ForceSys]
-				{
-					//rww - Shields can now absorb lightning too.
-					G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_UNKNOWN );
-
-					//[ForceSys]
-					//lightning also blasts the target back.
-
-
-
-					//[/ForceSys]
-				}
-				if(damage)
-				{
-				G_Throw(traceEnt, dir, 100);					
-				}
-				if ( traceEnt->client )
-				{
-					if ( !Q_irand( 0, 2 ) )
-					{
-	//					G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
-					}
-
-	// 					if ( traceEnt->client->ps.weapon == WP_SABER )
-					{//Serenitysabersystems saber can block lightning
-	//					int rSaberNum = 0;
-	//					int rBladeNum = 0;						
-	//					traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
-	//					if ( saberBlocked
-	//						&& traceEnt->client
-	//						&& !traceEnt->client->ps.saberHolstered
-	//						&& !traceEnt->client->ps.saberInFlight )
-						{
-	//						vec3_t	end2;
-	//						vec3_t ang = { 0, 0, 0};
-	//						ang[0] = flrand(0,360);
-	//						ang[1] = flrand(0,360);
-	//						ang[2] = flrand(0,360);
-	//						VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
-	//						G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
-						}
-					}
-					//[ForceSys]
-					//don't do the electrical effect unless we didn't block with the saber.
-					if ( traceEnt->client->ps.stats[STAT_HEALTH]+ traceEnt->client->ps.stats[STAT_ARMOR]-damage < 1 )
-					{//electrocution effect
-						traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
-					}						
-		
-				}
+			if ( traceEnt->client->ps.stats[STAT_HEALTH] + traceEnt->client->ps.stats[STAT_ARMOR] - damage < 1 )
+			{
+				traceEnt->client->ps.eFlags |= EF_DISINTEGRATION;
+			}
 		}
 	}
 }
-
 
 extern qboolean /*GAME_INLINE*/ WalkCheck( gentity_t * self );
 extern qboolean PM_SaberInBrokenParry( int move );
@@ -2860,7 +2902,8 @@ void Orbitalstrike_Fire( gentity_t *self )
 	gentity_t	*traceEnt;
 	vec3_t	center, mins, maxs, dir, ent_org, size, v;
 
-	float	radius = ELECTROSHOCKER_RADIUS, dot, dist;
+	float	radius = 256.0f, dot, dist;
+	float	minDot = 0.0f; // 180-degree total arc
 	int damage = 1;
 	gentity_t	*entityList[MAX_GENTITIES];
 	int			iEntityList[MAX_GENTITIES];
@@ -2868,6 +2911,15 @@ void Orbitalstrike_Fire( gentity_t *self )
 
 	AngleVectors( self->client->ps.viewangles, forward, NULL, NULL );
 	VectorNormalize( forward );
+
+	if ( self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_2 )
+	{
+		radius = 384.0f;
+	}
+	else if ( self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3 )
+	{
+		radius = 512.0f;
+	}
 
 	VectorCopy( self->client->ps.origin, center );
 	for ( i = 0 ; i < 3 ; i++ ) 
@@ -2924,7 +2976,7 @@ void Orbitalstrike_Fire( gentity_t *self )
 		//must be within the forward cone
 		VectorSubtract( ent_org, center, dir );
 		VectorNormalize( dir );
-		if ( (dot = DotProduct( dir, forward )) < 0.5 )
+		if ( (dot = DotProduct( dir, forward )) < minDot )
 			continue;
 
 		//must be close enough
@@ -2947,110 +2999,112 @@ void Orbitalstrike_Fire( gentity_t *self )
 			continue;
 		}
 
-		if(traceEnt->client)
-		{
-
 		if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_1)
-					{
-						damage = 1;
-						}			
+		{
+			damage = 1;
+		}			
 		else if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_2)
-					{
-						damage = 3;
-						}
+		{
+			damage = 3;
+		}
 		else if (self->client->skillLevel[SK_ELECTROSHOCKER] == FORCE_LEVEL_3)
-					{
+		{
 			if (self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
-					|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
-				{//jackin' 'em up, Palpatine-style
-					damage = 7;
-				}
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| self->client->ps.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{//jackin' 'em up, Palpatine-style
+				damage = 7;
+			}
 			else
-				{
-					damage =5;
-				}
+			{
+				damage = 5;
+			}
 		}
 
-				if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
+		if (traceEnt->client)
+		{
+			if (traceEnt->client->ps.fd.forcePowersActive & (1 << FP_PROTECT)  )
+			{
+				if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
 				{
-					if (traceEnt->client->ps.userInt3 & (1 << FLAG_PROTECT2))
-					{
-						
-					}
-					else
-					{
-					damage = 0;						
-					}
+					
 				}
-				if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+				else
 				{
 					damage = 0;						
 				}
+			}
+			if ( traceEnt->client->ps.powerups[PW_SPHERESHIELDED] )
+			{
+				damage = 0;						
+			}
+		}
 
-	//			if (modPowerLevel != -1)
-				{
+//			if (modPowerLevel != -1)
+		{
 
-	//					dmg = 0;
+//				dmg = 0;
 
 
-				}
-				//[ForceSys]
-	//			saberBlocked = OJP_BlockEnergy(self, traceEnt, impactPoint, dmg);
+		}
+		//[ForceSys]
+//			saberBlocked = OBP_BlockEnergy(self, traceEnt, impactPoint, dmg);
 
-				if (damage //&& !saberBlocked
-				)
-				//if (dmg)
-				//[/ForceSys]
-				{
-					//rww - Shields can now absorb lightning too.
-					G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_UNKNOWN );
+		if (damage //&& !saberBlocked
+		)
+		//if (dmg)
+		//[/ForceSys]
+		{
+			//rww - Shields can now absorb lightning too.
+			G_Damage( traceEnt, self, self, dir, tr.endpos, damage, DAMAGE_NO_ARMOR|DAMAGE_NO_KNOCKBACK|/*DAMAGE_NO_HIT_LOC|*/DAMAGE_IGNORE_TEAM, MOD_UNKNOWN );
 
-					//[ForceSys]
-					//lightning also blasts the target back.
+			//[ForceSys]
+			//lightning also blasts the target back.
+			if ( traceEnt->client )
+			{
 				if(((!WalkCheck(traceEnt) 
 					|| (WalkCheck(traceEnt) && traceEnt->client->ps.MISHAP_VARIABLE <= MISHAPLEVEL_HEAVY) 
 					|| BG_IsUsingHeavyWeap(&traceEnt->client->ps)
 					|| PM_SaberInBrokenParry(traceEnt->client->ps.saberMove)
 					|| traceEnt->client->ps.stats[STAT_DODGE] < DODGE_CRITICALLEVEL)) && damage)
-					{
-						G_Knockdown(traceEnt, self, dir, 300, qtrue);
-					}
-
-					//[/ForceSys]
-				}
-				if ( traceEnt->client )
 				{
-					if ( !Q_irand( 0, 2 ) )
-					{
-	//					G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
-					}
-
-	// 					if ( traceEnt->client->ps.weapon == WP_SABER )
-					{//Serenitysabersystems saber can block lightning
-	//					int rSaberNum = 0;
-	//					int rBladeNum = 0;						
-	//					traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
-	//					if ( saberBlocked
-	//						&& traceEnt->client
-	//						&& !traceEnt->client->ps.saberHolstered
-	//						&& !traceEnt->client->ps.saberInFlight )
-						{
-	//						vec3_t	end2;
-	//						vec3_t ang = { 0, 0, 0};
-	//						ang[0] = flrand(0,360);
-	//						ang[1] = flrand(0,360);
-	//						ang[2] = flrand(0,360);
-	//						VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
-	//						G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
-						}
-					}
-					//[ForceSys]
-					//don't do the electrical effect unless we didn't block with the saber.
-			
-		
+					G_Knockdown(traceEnt, self, dir, 300, qtrue);
 				}
+			}
+
+			//[/ForceSys]
+		}
+		if ( traceEnt->client )
+		{
+			if ( !Q_irand( 0, 2 ) )
+			{
+//				G_Sound( traceEnt, CHAN_BODY, G_SoundIndex( va("sound/weapons/force/lightninghit%i", Q_irand(1, 3) )) );
+			}
+
+// 			if ( traceEnt->client->ps.weapon == WP_SABER )
+			{//Serenitysabersystems saber can block lightning
+//				int rSaberNum = 0;
+//				int rBladeNum = 0;						
+//				traceEnt->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
+//				if ( saberBlocked
+//					&& traceEnt->client
+//					&& !traceEnt->client->ps.saberHolstered
+//					&& !traceEnt->client->ps.saberInFlight )
+				{
+//					vec3_t	end2;
+//					vec3_t ang = { 0, 0, 0};
+//					ang[0] = flrand(0,360);
+//					ang[1] = flrand(0,360);
+//					ang[2] = flrand(0,360);
+//					VectorMA( traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzlePoint, traceEnt->client->saber[rSaberNum].blade[rBladeNum].lengthMax*flrand(0, 1), traceEnt->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end2 );
+//					G_PlayEffectID( G_EffectIndex( "saber/saber_friction.efx"),end2, ang );
+				}
+			}
+			//[ForceSys]
+			//don't do the electrical effect unless we didn't block with the saber.
+	
+
 		}
 	}
 }
@@ -3058,9 +3112,23 @@ void Orbitalstrike_Fire( gentity_t *self )
 
 void ItemUse_Electroshocker(gentity_t *ent)
 {
+	assert(ent && ent->client);
+
+	if (ent->health <= 0 ||
+		ent->client->ps.stats[STAT_HEALTH] <= 0 ||
+		(ent->client->ps.eFlags & EF_DEAD) ||
+		ent->client->ps.pm_type == PM_DEAD)
+	{
+		return;
+	}
 
 	if (ent->client->ps.cloakFuel < ELECTROSHOCKER_FUELCOST)
 		return;
+
+	if (BG_InGrappleMove(ent->client->ps.torsoAnim))
+	{
+		return;
+	}
 
 	if(BG_InLedgeMove(ent->client->ps.legsAnim))
 	{//can't use electroshocker while in ledgegrab
@@ -3793,6 +3861,25 @@ gentity_t *SquadTeam3 = ent->client->SquadTeam3;
 gentity_t *NPC_SpawnType( gentity_t *ent, char *npc_type, char *targetname, qboolean isVehicle );
 
 
+
+static int G_VehicleMountSkillMultiplier(const gentity_t *ent)
+{
+	if (!ent || !ent->client)
+	{
+		return 1;
+	}
+
+	switch (ent->client->skillLevel[SK_VEHICLEMOUNT])
+	{
+	case FORCE_LEVEL_3:
+		return 3;
+	case FORCE_LEVEL_2:
+		return 2;
+	default:
+		return 1;
+	}
+}
+
 void ItemUse_VehicleMount(gentity_t *ent)
 {
 							  
@@ -3950,15 +4037,34 @@ void ItemUse_VehicleMount(gentity_t *ent)
 		}
 	else if(ent->client->skillLevel[SK_TRANSPORTSHIPB] == FORCE_LEVEL_3)
 		{
-		VehicleMount = NPC_SpawnType( ent, "nh", va("player%iVehicleMount", ent->s.number), qtrue );
+		VehicleMount = NPC_SpawnType( ent, "razor_crest_veh", va("player%iVehicleMount", ent->s.number), qtrue );
 		}		
 	else
 		{
 		VehicleMount = NPC_SpawnType( ent, "swoop_mp", va("player%iVehicleMount", ent->s.number), qtrue );
 		}
 		if ( VehicleMount && VehicleMount->client )
-		{	
-			VehicleMount->NPC->scriptFlags|=SCF_IGNORE_ENEMIES;
+		{
+			int mult = G_VehicleMountSkillMultiplier(ent);
+
+			VehicleMount->NPC->scriptFlags |= SCF_IGNORE_ENEMIES;
+			VehicleMount->activator = ent;
+			VehicleMount->genericValue15 = mult;
+
+			if (VehicleMount->m_pVehicle)
+			{
+				VehicleMount->m_pVehicle->m_iArmor *= mult;
+				VehicleMount->m_pVehicle->m_iShields *= mult;
+
+				VehicleMount->health = VehicleMount->m_pVehicle->m_iArmor;
+
+				VehicleMount->client->pers.maxHealth = VehicleMount->m_pVehicle->m_iArmor;
+				VehicleMount->client->ps.stats[STAT_MAX_HEALTH] = VehicleMount->m_pVehicle->m_iArmor;
+				VehicleMount->NPC->stats.health = VehicleMount->m_pVehicle->m_iArmor;
+				VehicleMount->client->ps.stats[STAT_HEALTH] = VehicleMount->m_pVehicle->m_iArmor;
+				VehicleMount->client->ps.stats[STAT_ARMOR] = VehicleMount->m_pVehicle->m_iShields;
+			}
+
 			//VehicleMount->genericValue4 = G_SoundIndex( "sound/chars/droideka/foldout.mp3" );
 		}
 
@@ -4162,6 +4268,15 @@ void EWebDie(gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int dam
 			}
 		}
 	}
+	self->takedamage = qfalse;
+	self->health = 0;
+
+	if (self->think != G_FreeEntity)
+	{
+		self->think = G_FreeEntity;
+		self->nextthink = level.time;
+	}
+
 }
 
 //e-web pain
@@ -4300,6 +4415,7 @@ void EWeb_SetBoneAnim(gentity_t *eweb, int startFrame, int endFrame)
 
 //fire a shot off
 #define EWEB_MISSILE_DAMAGE			40
+extern int BG_EmplacedView(vec3_t baseAngles, vec3_t angles, float *newYaw, float constraint); //bg_misc.c
 void EWebFire(gentity_t *owner, gentity_t *eweb)
 {
 	mdxaBone_t boltMatrix;
@@ -4316,7 +4432,31 @@ void EWebFire(gentity_t *owner, gentity_t *eweb)
 	//get the muzzle point
 	trap_G2API_GetBoltMatrix(eweb->ghoul2, 0, eweb->genericValue10, &boltMatrix, eweb->s.apos.trBase, eweb->r.currentOrigin, level.time, NULL, eweb->modelScale);
 	BG_GiveMeVectorFromMatrix(&boltMatrix, ORIGIN, p);
-	BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, d);
+
+	/*
+	 * Use the bolt only as the muzzle origin.  The E-Web firing animation
+	 * recoils the cannon/flash bolt, so deriving projectile direction from
+	 * the animated bolt matrix makes sustained fire climb upward.  Fire along
+	 * the operator's constrained view aim instead, so players and bots keep
+	 * shooting at their target while the model is free to animate recoil.
+	 */
+	if (owner && owner->client)
+	{
+		float yaw;
+		vec3_t fireAngles;
+
+		VectorCopy(owner->client->ps.viewangles, fireAngles);
+		if (BG_EmplacedView(owner->client->ps.viewangles, eweb->s.angles, &yaw, eweb->s.origin2[0]))
+		{
+			fireAngles[YAW] = yaw;
+		}
+
+		AngleVectors(fireAngles, d, NULL, NULL);
+	}
+	else
+	{
+		BG_GiveMeVectorFromMatrix(&boltMatrix, NEGATIVE_Y, d);
+	}
 
 	//Start the thing backwards into the bounding box so it can't start inside other solid things
 	VectorMA(p, -16.0f, d, bPoint);
@@ -4327,13 +4467,24 @@ void EWebFire(gentity_t *owner, gentity_t *eweb)
 		missile->classname = "bowcaster_alt_proj";
 		missile->s.weapon = WP_BOWCASTER;
 
+		/*
+		 * E-Web bolts already render through the WP_BOWCASTER projectile FX.
+		 * Leave non-team/default and TEAM_BLUE green, and use the existing
+		 * WP option-6 flags for TEAM_RED's orange projectile.
+		 */
+		if (g_gametype.integer >= GT_TEAM && owner && owner->client &&
+			owner->client->sess.sessionTeam == TEAM_RED)
+		{
+			missile->s.eFlags |= (EF_WP_OPTION_2|EF_WP_OPTION_4);
+		}
+
 		VectorSet( missile->r.maxs, 1.0, 1.0, 1.0 );
 		VectorScale( missile->r.maxs, -1, missile->r.mins );
-	if (owner->client->skillLevel[SK_EWEB] == FORCE_LEVEL_3)
+	if (owner && owner->client && owner->client->skillLevel[SK_EWEB] == FORCE_LEVEL_3)
 	{
 		missile->damage = 3*EWEB_MISSILE_DAMAGE;
 	}
-	else if (owner->client->skillLevel[SK_EWEB] == FORCE_LEVEL_2)
+	else if (owner && owner->client && owner->client->skillLevel[SK_EWEB] == FORCE_LEVEL_2)
 	{
 		missile->damage = 2*EWEB_MISSILE_DAMAGE;
 	}		
@@ -4924,7 +5075,7 @@ int Pickup_Ammo (gentity_t *ent, gentity_t *other)
 //======================================================================
 
 //[VisualWeapons]
-qboolean OJP_AllPlayersHaveClientPlugin(void);
+qboolean OBP_AllPlayersHaveClientPlugin(void);
 //[/VisualWeapons]
 int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 	int		quantity=10;
@@ -4969,9 +5120,9 @@ int Pickup_Weapon (gentity_t *ent, gentity_t *other) {
 
 	//[VisualWeapons]
 	//update the weapon stats for this player since they have changed.
-	if(OJP_AllPlayersHaveClientPlugin())
+	if(OBP_AllPlayersHaveClientPlugin())
 	{//don't send the weapon updates if someone isn't able to process this new event type (IE anyone without
-		//the OJP client plugin)
+		//the OBP client plugin)
 		G_AddEvent(other, EV_WEAPINVCHANGE, other->client->ps.stats[STAT_WEAPONS]);
 	}
 	//[/VisualWeapons]
@@ -5295,9 +5446,9 @@ void Touch_Item (gentity_t *ent, gentity_t *other, trace_t *trace) {
 				other->client->ps.stats[STAT_WEAPONS] |= (1 << weapForAmmo);
 				//[VisualWeapons]
 				//update the weapon stats for this player since they have changed.
-				if(OJP_AllPlayersHaveClientPlugin())
+				if(OBP_AllPlayersHaveClientPlugin())
 				{//don't send the weapon updates if someone isn't able to process this new event type (IE anyone without
-				//the OJP client plugin)
+				//the OBP client plugin)
 					G_AddEvent(other, EV_WEAPINVCHANGE, other->client->ps.stats[STAT_WEAPONS]);
 				}
 				//[/VisualWeapons]

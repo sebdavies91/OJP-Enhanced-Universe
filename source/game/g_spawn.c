@@ -1,7 +1,11 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 
 #include "g_local.h"
+
+void SP_target_gravity_change( gentity_t *ent );
+void SP_misc_ion_cannon( gentity_t *ent );
+void SP_misc_panel_turret( gentity_t *ent );
 
 qboolean	G_SpawnString( const char *key, const char *defaultString, char **out ) {
 	int		i;
@@ -322,6 +326,7 @@ void SP_NPC_Bartender( gentity_t *self );
 void SP_NPC_MorganKatarn( gentity_t *self );
 void SP_NPC_Jedi( gentity_t *self );
 void SP_NPC_Prisoner( gentity_t *self );
+void SP_NPC_Merchant( gentity_t *self );
 void SP_NPC_Rebel( gentity_t *self );
 void SP_NPC_Stormtrooper( gentity_t *self );
 void SP_NPC_StormtrooperOfficer( gentity_t *self );
@@ -349,6 +354,7 @@ void SP_NPC_Monster_Glider( gentity_t *self );
 void SP_NPC_Monster_Flier2( gentity_t *self );
 void SP_NPC_Monster_Lizard( gentity_t *self );
 void SP_NPC_Monster_Fish( gentity_t *self );
+void SP_NPC_Monster_Mutant_Rancor( gentity_t *self );
 void SP_NPC_Monster_Wampa( gentity_t *self );
 void SP_NPC_Monster_Rancor( gentity_t *self );
 //[NPCSandCreature]
@@ -369,6 +375,8 @@ void SP_NPC_Droid_R2D2( gentity_t *self );
 void SP_NPC_Droid_R5D2( gentity_t *self );
 void SP_NPC_Droid_Protocol( gentity_t *self );
 //[CoOp]
+void SP_NPC_BobaFett( gentity_t *self );
+void SP_NPC_Ragnos( gentity_t *self );
 void SP_NPC_Chewbacca( gentity_t *self);
 void SP_NPC_Rosh_Penin( gentity_t *self);
 void SP_NPC_Saboteur( gentity_t *self);
@@ -387,6 +395,7 @@ void SP_NPC_Cultist_Destroyer( gentity_t *self );
 void SP_NPC_Cultist_Commando( gentity_t *self );
 //[CoOp]
 void SP_NPC_Human_Merc( gentity_t *self );
+void SP_NPC_RocketTrooper( gentity_t *self);
 void SP_NPC_HazardTrooper( gentity_t *self );
 //[/CoOp]
 
@@ -557,6 +566,7 @@ spawn_t	spawns[] = {
 	{"target_speaker", SP_target_speaker},
 	{"target_print", SP_target_print},
 	{"target_laser", SP_target_laser},
+	{"target_gravity_change", SP_target_gravity_change},
 	{"target_score", SP_target_score},
 	{"target_teleporter", SP_target_teleporter},
 	{"target_relay", SP_target_relay},
@@ -657,6 +667,7 @@ spawn_t	spawns[] = {
 	{"NPC_MorganKatarn", SP_NPC_MorganKatarn },
 	{"NPC_Jedi", SP_NPC_Jedi },
 	{"NPC_Prisoner", SP_NPC_Prisoner },
+	{"NPC_Merchant", SP_NPC_Merchant },
 	{"NPC_Rebel", SP_NPC_Rebel },
 	{"NPC_Stormtrooper", SP_NPC_Stormtrooper },
 	{"NPC_StormtrooperOfficer", SP_NPC_StormtrooperOfficer },
@@ -685,6 +696,7 @@ spawn_t	spawns[] = {
 	{"NPC_Monster_Flier2", SP_NPC_Monster_Flier2 },
 	{"NPC_Monster_Lizard", SP_NPC_Monster_Lizard },
 	{"NPC_Monster_Fish", SP_NPC_Monster_Fish },
+	{"NPC_Monster_Mutant_Rancor", SP_NPC_Monster_Mutant_Rancor },
 	{"NPC_Monster_Wampa", SP_NPC_Monster_Wampa },
 	{"NPC_Monster_Rancor", SP_NPC_Monster_Rancor },
 	//[NPCSandCreature]
@@ -704,6 +716,8 @@ spawn_t	spawns[] = {
 	{"NPC_Droid_R5D2", SP_NPC_Droid_R5D2 },
 	{"NPC_Droid_Protocol", SP_NPC_Droid_Protocol },
 	//[CoOp]
+	{"NPC_BobaFett", SP_NPC_BobaFett },
+	{"NPC_Ragnos", SP_NPC_Ragnos },
 	{"NPC_Chewbacca", SP_NPC_Chewbacca },
 	{"NPC_Rosh_Penin", SP_NPC_Rosh_Penin },
 	{"NPC_Saboteur", SP_NPC_Saboteur},
@@ -725,6 +739,7 @@ spawn_t	spawns[] = {
 
 	//[CoOp]	
 	{"NPC_Human_Merc", SP_NPC_Human_Merc },
+	{"NPC_RocketTrooper", SP_NPC_RocketTrooper },
 	{"NPC_HazardTrooper", SP_NPC_HazardTrooper },
 	//[/CoOp]
 
@@ -769,6 +784,8 @@ spawn_t	spawns[] = {
 
 	{"misc_turret", SP_misc_turret},
 	{"misc_turretG2", SP_misc_turretG2},
+	{"misc_ion_cannon", SP_misc_ion_cannon},
+	{"misc_panel_turret", SP_misc_panel_turret},
 
 
 	{0, 0}
@@ -1470,13 +1487,18 @@ void SP_worldspawn( void )
 
 	G_SpawnString( "music", "", &text );
 	//[DynamicMusic]
-	if(!strcmp(text, ""))
-	{//ok there isn't a given music file for this map, check for dynamic music.
+	if ( text && text[0] )
+	{// The map supplied explicit music. Use it exactly as authored.
+		trap_SetConfigstring( CS_MUSIC, text );
+	}
+	else
+	{// No worldspawn music key: try the SP dynamic music table.
+		// LoadDynamicMusic() now starts the explore track itself when valid.
+		// Do not set CS_MUSIC back to an empty string here, or the client will
+		// keep/restore the default OBP menu/theme music instead of the map music.
 		LoadDynamicMusic();
 	}
 	//[/DynamicMusic]
-
-	trap_SetConfigstring( CS_MUSIC, text );
 
 	G_SpawnString( "message", "", &text );
 	trap_SetConfigstring( CS_MESSAGE, text );				// map specific message

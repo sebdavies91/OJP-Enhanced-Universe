@@ -1,0 +1,326 @@
+//[NewMenus]
+//----------------------------------------------------------------------------------------------
+// ADDBOT MENU 
+//----------------------------------------------------------------------------------------------
+{
+	menuDef  
+	{
+		name					"ingame_addbot"
+		visible					0
+		fullscreen				0
+		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
+		rect					0 45 640 440
+		disableColor			0.82 0.84 0.88 1
+		focusColor			0.82 0.84 0.88 1
+		style					1
+		border					1
+            descX						320
+		descY					421
+		descScale					1
+		descColor			0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER	
+	// Overall window backdrop
+		itemDef 
+		{
+			name				background_pic
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 3 639 437
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Add Bot"
+			rect				3 6 633 21
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			316
+			textaligny			-2
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
+			font				3
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			border				1
+			bordercolor			.33 .33 .33 1
+			visible				1
+			decoration
+		}
+		
+			itemDef 
+		{
+			name				gametypefield
+			style				0
+			text				@MENUS_NAME1
+			ownerdraw			UI_BOTNAME
+//[TABBot]
+			rect				285 75 230 20 
+			//rect				285 75 230 30 
+//[TABBot]
+			textalign			0
+			textalignx			5
+			textaligny			-2
+			font				2
+			textscale			.7 
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+
+		}
+
+		itemDef 
+		{
+			name				gametypefield
+			rect				275 95 200 200
+			style				WINDOW_STYLE_FILLED
+			type				ITEM_TYPE_LISTBOX
+			elementwidth		120
+			elementheight		15
+			elementtype			LISTBOX_TEXT
+			feeder				FEEDER_ALLBOTS
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			outlinecolor		.5 .5 .5 .5
+			font				2
+			textaligny			12
+			textscale			.8
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				fadein message_arena ; 
+				setitemcolor gametypefield bordercolor .33 .33 .33 1 ;
+			} 
+			mouseExit 
+			{ 
+				fadeout message_arena ; 
+				setitemcolor gametypefield bordercolor .33 .33 .33 1 ;
+			}
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+
+		}
+		
+		itemDef 
+		{
+			name				gametypefield
+			style				0
+			text				@MENUS_TEAM
+			ownerdraw			UI_REDBLUE
+//[TABBot]
+			rect				245 305 236 20 
+			//rect				245 305 236 30 
+//[/TABBot]
+			textalign			ITEM_ALIGN_RIGHT	
+			textalignx			80
+			textaligny			0    
+			font				2
+			textscale			.7
+			forecolor			0.82 0.84 0.88 1
+			cvarTest			"g_gametype"
+			disableCvar 
+			{ 
+				"0" ; 
+				"1" ;
+				"2" ;
+				"3" ;
+				"4" ;
+				//[CoOp]
+				//[/CoOp]
+			}     
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+		}
+
+		itemDef 
+		{
+			name				gametypefield
+			style				0	
+			text				@MENUS_SKILL1
+			ownerdraw			UI_BOTSKILL
+//[TABBot]
+			rect				245 320 236 20 
+			//rect				245 320 236 30 
+//[/TABBot]
+			textalign			ITEM_ALIGN_RIGHT	
+			textalignx			80
+			textaligny			0    
+			font				2
+			textscale			.7
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+		}
+
+//[TABBot]
+//Bottype option
+		itemDef 
+		{	
+			name				bottype
+			group				options
+      			type				ITEM_TYPE_MULTI
+			text				"Bot Type:"
+			descText			""
+			cvar				"ui_bottype"
+			cvarFloatList		
+			{ 
+				"Jedi Academy"	 		0
+				"Force Unleashed"			1
+//[AotCAI]
+				"Battlefront"			2
+//[/AotCAI]
+				"Hybrid"			3
+			}
+			rect				245 335 236 20
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			80
+			textaligny			0
+			font				2
+			textscale			.7
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1
+			mouseEnter
+			{
+				
+			}
+
+
+			action 
+			{
+				
+			}
+
+		}
+//[/TABBot]
+
+
+		itemDef 
+		{
+			name				ok
+			text				@MENUS_ADD_BOT
+			descText			@MENUS_ADD_BOT
+			type				1
+			style				WINDOW_STYLE_EMPTY
+
+			rect				385 320 200 30 
+			textalignx			80
+			textaligny			2
+			font				2
+			textscale			0.7
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	385 320 200 30 ;
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		addBot ; 
+				uiScript		closeingame 
+			}
+			mouseEnter 
+			{ 
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}
+		}
+	
+
+		// Shared hover glow for text buttons that use dynamic setitemrect.
+		itemDef
+		{
+			name				button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 0 0 0
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+}
+}
+//[/NewMenus]
+
+
+

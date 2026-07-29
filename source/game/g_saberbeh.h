@@ -1,4 +1,4 @@
-//This file contains functions relate to the saber impact behavior of OJP Enhanced's saber system.
+﻿//This file contains functions relate to the saber impact behavior of Open Battlefront Project's saber system.
 #ifndef _SABERBEH_H
 #define _SABERBEH_H
 

@@ -1,0 +1,839 @@
+//[NewMenus]
+\\ CALL VOTE MENU \\
+{
+	menuDef  
+	{
+		name					"ingame_callvote"
+		visible					0
+		fullscreen				0
+		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
+		rect					0 45 640 440
+		focusColor			0.82 0.84 0.88 1
+		style					1
+		border					1
+		descX					320
+		//[AdminSys]
+		descY					421
+		//descY					210
+		//[/AdminSys]
+		descScale				1
+		descColor			0.82 0.84 0.88 1
+		descAlignment			ITEM_ALIGN_CENTER		
+		onopen 
+		{ 
+			uiscript 			clearmouseover	map ;
+			uiscript 			clearmouseover	type ;
+			uiscript 			clearmouseover	kick ;
+			//[AdminSys]
+			uiscript 			clearmouseover	kickally ;
+			//[/AdminSys]
+			hide				doneButton ;
+			hide				grpcallVote ; 
+			show				misc ; 
+			uiScript			loadArenas ;
+			setitemcolor		grpbutton	forecolor 0.82 0.84 0.88 1 ;
+			setitemcolor		miscbutton	forecolor 0.82 0.84 0.88 1 ;
+			uiscript			resetmaplist ;
+		}
+
+		
+	// Overall window backdrop
+		itemDef 
+		{
+			name				background_pic
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 3 639 437
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"Call Vote"
+			rect				3 6 633 21
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			316
+			textaligny			-2
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
+			font				3
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			border				1
+			bordercolor			.33 .33 .33 1
+			visible				1
+			decoration
+		}
+		
+		
+		// DONE GLOW, used for several buttons
+
+		// 	BUTTONS	//
+		itemDef 
+		{
+			name				miscbutton
+			group				grpbutton
+			text				@MENUS_GENERAL
+			descText			@MENUS_ADJUST_GAME_OPTIONS
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				75 75 103 30
+			font				3
+			textscale			0.8
+			textalignx			100
+			textaligny			5
+			textstyle			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				hide			grpCallVote ; 
+				show			misc ;
+				setitemcolor		grpbutton	forecolor 0.82 0.84 0.88 1 ;
+				setitemcolor		miscbutton	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseEnter 
+			{
+				show			button_glow ;
+				setitemrect		button_glow	75 75 103 30 ;
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+
+		itemDef 
+		{
+			name				gametypebutton
+			group				grpbutton
+			text				@MENUS_GAMETYPE
+			descText			@MENUS_START_A_DIFFERENT_TYPE
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				75 105 103 30
+			font				3
+			textscale			0.8
+			textalignx			100
+			textaligny			5
+			textstyle			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				hide			grpCallVote ; 
+				show			type ;
+				setitemcolor		grpbutton	forecolor 0.82 0.84 0.88 1 ;
+				setitemcolor		gametypebutton	forecolor 0.82 0.84 0.88 1 ;
+			}
+			
+			forecolor			0.82 0.84 0.88 1
+			
+			mouseEnter 
+			{
+				show			button_glow ;
+				setitemrect		button_glow	75 105 103 30 ;
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+
+		itemDef 
+		{
+			name				changemapbutton
+			text				@MENUS_MAP
+			descText			@MENUS_CHANGE_TO_A_NEW_MAP
+			group				grpbutton
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				75 135 103 30
+			font				3
+			textscale			0.8
+			textalignx			100
+			textaligny			5
+			textstyle			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				hide			grpCallVote ; 
+				show			maplist ;
+				show			map ;
+				setitemcolor		grpbutton	forecolor 0.82 0.84 0.88 1 ;
+				setitemcolor		changemapbutton	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseEnter 
+			{
+				show			button_glow ;
+				setitemrect		button_glow	75 135 103 30 ;
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+
+		itemDef 
+		{
+			name				kickbutton
+			group				grpbutton
+			text				@MENUS_KICK
+			descText			@MENUS_BANISH_A_PLAYER_FROM
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				75 165 103 30
+			font				3
+			textscale			0.8
+			textalignx			100
+			textaligny			5
+			textstyle			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				hide			grpCallVote ; 
+				show			kick ;
+				setitemcolor		grpbutton	forecolor 0.82 0.84 0.88 1 ;
+				setitemcolor		kickbutton	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseEnter 
+			{
+				show			button_glow ;
+				setitemrect		button_glow	75 165 103 30 ;
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+
+		//[AdminSys]
+		itemDef
+		{
+			name				kickally_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				75 195 103 30
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				kickallybutton
+			group				grpbutton
+			text				@OBP_MENUS_KICKALLY
+			descText			@OBP_MENUS_BANISH_AN_ALLY_FROM
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				75 195 103 30
+			font				3
+			textscale			0.8
+			textalignx			100
+			textaligny			5
+			textstyle			0
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				hide			grpCallVote ; 
+				show			kickally ;
+				setitemcolor		grpbutton	forecolor 0.82 0.84 0.88 1 ;
+				setitemcolor		kickallybutton	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseEnter 
+			{  
+				show			kickally_glow
+			}
+			mouseExit 
+			{ 
+				hide			kickally_glow
+			}	  	  
+		}
+		//[/AdminSys]
+
+		//----------------------------------
+		// 	MISC VOTE PANEL
+		//----------------------------------
+		itemDef 
+		{
+			name				misc
+			text				@MENUS_RESTART_MAP
+			descText			@MENUS_BEGIN_VOTE_TO_RESTART
+			group				grpCallVote
+			rect				285 73 245 30
+			type				1
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			122
+			textaligny			2
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				exec			"cmd callvote map_restart" ; 
+				uiScript		closeingame 
+			}
+		}
+
+		itemDef 
+		{
+			name				misc
+			group				grpCallVote
+			text				@MENUS_NEXT_MAP
+			descText			@MENUS_BEGIN_VOTE_TO_CYCLE_TO
+			rect				285 103 245 30
+			type				1
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			122
+			textaligny			2
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				exec 			"cmd callvote nextmap" ; 
+				uiScript 		closeingame 
+			}
+		}
+
+		itemDef 
+		{
+			name				misc
+			group				grpCallVote
+			text				@MENUS_WARMUP
+			descText			@MENUS_BEGIN_VOTE_TO_DO_A_WARMUP
+			rect				285 133 245 30
+			type				1
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			122
+			textaligny			2
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				exec 			"cmd callvote g_doWarmup 1" ; 
+				uiScript 		closeingame 
+			}
+		}
+
+		//----------------------------------
+		// 	GAMETYPE VOTE PANEL
+		//----------------------------------
+		itemDef 
+		{
+			name				type
+			group				grpCallVote
+			text				@MENUS_GAME_TYPE
+			descText			@MENUS_SELECT_A_NEW_GAME_TYPE
+			style				0
+			ownerdraw			UI_NETGAMETYPE
+			rect				320 73 230 30
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			50
+			textaligny			2
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+		}
+
+
+		itemDef 
+		{
+			name				type
+			group				grpCallVote
+			text				@MENUS_OKAY
+			descText			@MENUS_BEGIN_VOTE_FOR_THIS_GAME
+			type				1
+			style				WINDOW_STYLE_FILLED
+			rect				285 305 80 30
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			40
+			textaligny			0
+			font				3
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	285 305 80 30 ;
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript voteGame ; 
+				uiScript closeingame 
+			}
+			mouseEnter 
+			{ 
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+
+
+		//----------------------------------
+		// 	MAP VOTE PANEL
+		//----------------------------------
+		itemDef 
+		{
+			name				map
+			group				grpCallVote
+			text				@MENUS_NEW_MAP
+			ownerdraw			UI_ALLMAPS_SELECTION 
+			rect				285 75 230 20
+			textalign			0
+			textalignx			5
+			textaligny			-2
+			font				2
+			textscale			.7 
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible				0
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+		}
+
+		itemDef 
+		{
+			name				maplist
+			group				grpCallVote
+			descText			@MENUS_SELECT_DESIRED_MAP
+			rect				275 95 200 200
+			type				ITEM_TYPE_LISTBOX
+			style				WINDOW_STYLE_FILLED
+			elementwidth		120
+			elementheight		15
+			elementtype			LISTBOX_TEXT
+			feeder				FEEDER_ALLMAPS
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			outlinecolor		.5 .5 .5 .5
+			visible				0
+			font				2
+			textaligny			12
+			textscale			.8
+			forecolor			0.82 0.84 0.88 1
+			mouseEnter 
+			{ 
+				fadein message_arena ; 
+				setitemcolor map bordercolor .33 .33 .33 1 ;
+			} 
+			mouseExit 
+			{ 
+				fadeout message_arena ; 
+				setitemcolor map bordercolor .33 .33 .33 1 ;
+			} 
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+				
+			}
+		}
+
+
+
+		itemDef 
+		{
+			name				map
+			text				@MENUS_OKAY
+			descText			@MENUS_BEGIN_VOTE_TO_SWITCH
+			type				1
+			group				grpCallVote
+			style				WINDOW_STYLE_FILLED
+			rect				285 305 80 30
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			40
+			textaligny			0
+			font				3
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	285 305 80 30 ;
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript voteMap ; 
+				uiScript closeingame 
+			}
+			mouseEnter 
+			{ 
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+
+
+		//----------------------------------
+		// 	KICK VOTE PANEL
+		//----------------------------------
+
+
+		itemDef 
+		{
+			name				kick
+			group				grpCallVote
+			text				@MENUS_KICK_PLAYER
+			ownerdraw			UI_PLAYERNAME
+			rect				285 75 230 20
+			textalign			0
+			textalignx			5
+			textaligny			-2
+			font				2
+			textscale			.7 
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible				0
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+		}		
+		
+		itemDef 
+		{
+			name				kick
+			group				grpCallVote
+			descText			@MENUS_SELECT_PLAYER_TO_KICK
+			rect				275 95 200 200
+			style				WINDOW_STYLE_FILLED
+			type				ITEM_TYPE_LISTBOX
+			elementwidth		120
+			elementheight		15
+			elementtype			LISTBOX_TEXT
+			feeder				FEEDER_PLAYER_LIST
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			outlinecolor		.5 .5 .5 .5
+			font				2
+			textaligny			12
+			textscale			.8
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			mouseEnter 
+			{ 
+				fadein message_arena ; 
+				setitemcolor kick bordercolor .33 .33 .33 1 ;
+			} 
+			mouseExit 
+			{ 
+				fadeout message_arena ; 
+				setitemcolor kick bordercolor .33 .33 .33 1 ;
+			}
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+
+		}
+
+		itemDef 
+		{
+			name				kick
+			text				@MENUS_OKAY
+			descText			@MENUS_BEGIN_VOTE_TO_BANISH
+			type				1
+			group				grpCallVote
+			style				WINDOW_STYLE_FILLED
+			rect				285 305 80 30
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			40
+			textaligny			0
+			font				3
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	285 305 80 30 ;
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript voteKick ; 
+				uiScript closeingame 
+			}
+			mouseEnter 
+			{ 
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+
+		//[AdminSys]
+		//----------------------------------
+		// 	KICKALLY VOTE PANEL
+		//----------------------------------
+				
+		itemDef 
+		{
+			name				kickally
+			group				grpCallVote
+			text				@OBP_MENUS_KICK_ALLY
+			ownerdraw			UI_PLAYERNAME
+			rect				285 75 230 20
+			textalign			0
+			textalignx			5
+			textaligny			-2
+			font				2
+			textscale			.7 
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible				0
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+		}
+
+		
+		itemDef 
+		{
+			name				kickally
+			group				grpCallVote
+			descText			@OBP_MENUS_SELECT_ALLY_TO_KICK
+			rect				275 95 200 200
+			style				WINDOW_STYLE_FILLED
+			type				ITEM_TYPE_LISTBOX
+			elementwidth			120
+			elementheight			15
+			elementtype			LISTBOX_TEXT
+			feeder				FEEDER_PLAYER_LIST
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			outlinecolor		.5 .5 .5 .5
+			font				2
+			textaligny			12
+			textscale			.8
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			mouseEnter 
+			{ 
+				fadein message_arena ; 
+				setitemcolor kickally bordercolor .33 .33 .33 1 ;
+			} 
+			mouseExit 
+			{ 
+				fadeout message_arena ; 
+				setitemcolor kickally bordercolor .33 .33 .33 1 ;
+			}
+			mouseEnter
+			{
+				
+			}
+
+			action
+			{
+				
+			}
+
+		}
+
+		itemDef 
+		{
+			name				kickally
+			text				@MENUS_OKAY
+			descText			@OBP_MENUS_BEGIN_VOTE_TO_BANISH_ALLY
+			type				1
+			group				grpCallVote
+			style				WINDOW_STYLE_FILLED
+			rect				285 305 80 30
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			40
+			textaligny			0
+			font				3
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	285 305 80 30 ;
+			}
+
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript voteTeamKick ; 
+				uiScript closeingame 
+			}
+			mouseEnter 
+			{ 
+			}
+			mouseExit 
+			{
+				hide			button_glow ;
+			}	  	  
+		}
+		//[/AdminSys]
+	
+
+		// Shared hover glow for text buttons that use dynamic setitemrect.
+		itemDef
+		{
+			name				button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 0 0 0
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+}
+}
+//[/NewMenus]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

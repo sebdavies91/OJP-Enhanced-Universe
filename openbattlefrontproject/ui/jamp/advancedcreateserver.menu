@@ -1,0 +1,2320 @@
+//----------------------------------------------------------------------------------------------
+//	MAIN MENU
+//----------------------------------------------------------------------------------------------
+//[OLDGAMETYPES]
+//ui_netGameType
+//0 = FFA
+//1 = Holocron FFA
+//2 = Jedi Master
+//3 = Duel
+//4 = Power Duel
+//5 = Team FFA 
+//6 = Siege
+//7 = Capture the Flag
+//8 = Capture the Ysalimari
+
+/*
+//ui_net_gametype
+//	0 = FFA
+//	1 = DUEL
+//	2 = POWER DUEL
+//	3 = TEAM FFA
+//	4 = SIEGE
+//	5 = CTF
+*/
+
+//[/OLDGAMETYPES]
+
+{
+	menuDef  
+	{
+		name					"advancedcreateserver"
+		fullScreen				MENU_TRUE				
+		rect					0 0 640 480						// Size and position of the menu
+		visible					MENU_FALSE							// Visible on open
+		focusColor			0.82 0.84 0.88 1
+		descX					320
+		descY					421
+		descScale				1
+		descColor				0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER		
+		popup
+		outOfBoundsClick										// this closes the window if it gets a click out of the rectangle
+
+		//[MOREFORCEOPTIONS]
+		/*
+		onOpen
+		{
+			uiScript			setui_dualforcepower
+		}
+		*/
+		//[/MOREFORCEOPTIONS]
+		
+		onESC 
+		{ 
+				
+				close			advancedcreateserver
+				open			createserver 
+		}
+
+		itemDef 
+		{
+			name				setup_background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 480	
+			backcolor			0 0 0 1
+			forecolor			0.82 0.84 0.88 1
+			border			0
+			visible				1
+			decoration
+		}
+		//----------------------------------------------------------------------------------------------
+		//
+		//	MENU BACKGROUND
+		//
+		//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				really_background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				156 154 320 240
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text_b
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				480 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}	
+
+		itemDef 
+		{
+			name				bgpic
+			style				WINDOW_STYLE_SHADER
+			rect				0 127 640 314
+			background			"obp/menu/hoth"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef
+		{
+			name				mainbackground
+			style				WINDOW_STYLE_FILLED
+			rect				0 127 640 314
+			backcolor			0 0 0 0.8
+			visible				1
+			decoration
+		}
+
+	
+
+
+		itemdef
+		{
+			name				lowbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 428 640 18
+			background			"obp/menu/lowbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 85 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar2
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 114 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+
+		itemDef 
+		{
+			name				obplogo
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				220 0 200 90
+			background			"obp/menu/obplogo"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+		/*itemDef 
+		{
+			name					frame_pic
+			group					none
+			style					WINDOW_STYLE_SHADER
+			rect					20 0 560 380
+			background				"gfx/menus/menu_box_ingame"
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible			0 
+			appearance_slot			1
+		}*/
+
+
+
+//----------------------------------------------------------------------------------------------
+//
+//	TOP MENU BUTTONS
+//
+//----------------------------------------------------------------------------------------------
+
+
+		// Shared top navigation: Solo Game / Create Game / Join Game / Demos
+		itemDef { name nav_solo_glow group topbut style WINDOW_STYLE_SHADER rect 4 100 124 24 background "gfx/menus/menu_buttonback" forecolor 0.82 0.84 0.88 1 visible 0 decoration }
+		itemDef { name nav_solo_button group toprow style WINDOW_STYLE_EMPTY type ITEM_TYPE_BUTTON rect 4 100 124 24 text @MENUS_SOLO_GAME descText @MENUS_QUICKSTART_DESC font 3 textscale 0.85 textaligny 0 textalign ITEM_ALIGN_CENTER textstyle 0 textalignx 62 forecolor 0.82 0.84 0.88 1 visible 1 mouseEnter {  show nav_solo_glow } mouseExit { hide nav_solo_glow } action { play "sound/interface/button1.mp3" ;   close all ; open quickgame ; } }
+		itemDef { name nav_create_glow group topbut style WINDOW_STYLE_SHADER rect 173 100 124 24 background "gfx/menus/menu_buttonback" forecolor 0.82 0.84 0.88 1 visible 0 decoration }
+		itemDef { name nav_create_button group toprow style WINDOW_STYLE_EMPTY type ITEM_TYPE_BUTTON rect 173 100 124 24 text "CREATE GAME" descText "Create Your Own Game" font 3 textscale 0.85 textaligny 0 textalign ITEM_ALIGN_CENTER textstyle 0 textalignx 62 forecolor 0.82 0.84 0.88 1 visible 1 mouseEnter {  show nav_create_glow } mouseExit { hide nav_create_glow } action { play "sound/interface/button1.mp3" ;   close all ; open createserver ; } }
+		itemDef { name nav_join_glow group topbut style WINDOW_STYLE_SHADER rect 343 100 124 24 background "gfx/menus/menu_buttonback" forecolor 0.82 0.84 0.88 1 visible 0 decoration }
+		itemDef { name nav_join_button group toprow style WINDOW_STYLE_EMPTY type ITEM_TYPE_BUTTON rect 343 100 124 24 text @MENUS_JOIN_SERVER_CAPS descText "Join a server" font 3 textscale 0.85 textaligny 0 textalign ITEM_ALIGN_CENTER textstyle 0 textalignx 62 forecolor 0.82 0.84 0.88 1 visible 1 mouseEnter {  show nav_join_glow } mouseExit { hide nav_join_glow } action { play "sound/interface/button1.mp3" ;   close all ; open joinserver ; } }
+		itemDef { name nav_demos_glow group topbut style WINDOW_STYLE_SHADER rect 512 100 124 24 background "gfx/menus/menu_buttonback" forecolor 0.82 0.84 0.88 1 visible 0 decoration }
+		itemDef { name nav_demos_button group toprow style WINDOW_STYLE_EMPTY type ITEM_TYPE_BUTTON rect 512 100 124 24 text "@MENUS_DEMOS" descText "Play a Demo" font 3 textscale 0.85 textaligny 0 textalign ITEM_ALIGN_CENTER textstyle 0 textalignx 62 forecolor 0.82 0.84 0.88 1 visible 1 mouseEnter {  show nav_demos_glow } mouseExit { hide nav_demos_glow } action { play "sound/interface/button1.mp3" ;   close all ; open demo ; } }
+
+
+		itemDef
+		{
+			name				serverbuttonswindow
+			group				joinserverbuttons
+			style				WINDOW_STYLE_FILLED
+			backcolor			0.1 0.1 0.1 0.5
+			rect				55 150 531 106
+			border				1
+			bordercolor			0.7 .7 .7 .8
+			visible				1
+
+			decoration
+		}
+//----------------------------------------------------------------------------------------------
+// GENERAL RULES
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				rules_title
+			group				none
+			text				@MENUS_GENERAL_RULES
+      			rect				55 130 240 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+		}
+
+		
+//MIN BOTS PLAYERS
+
+
+		itemDef 
+		{
+			name				minplayers_glow
+			group				grpsettings
+			style				WINDOW_STYLE_SHADER
+			rect				180 209 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			maxchars			4
+			text				@MENUS_PLAYERS
+			descText			@MENUS_PLAYERS_INFO
+			cvar				"bot_minplayers"
+			rect				180 209 180 18
+			textalign		ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				show			minplayers_glow
+			}
+			mouseExit 
+			{ 
+				hide			minplayers_glow
+			}
+			cvarTest			"ui_netGameType" 
+			action 
+			{
+				
+			}
+		}
+		
+
+		itemDef 
+		{
+			name				timelimit_glow
+			style				WINDOW_STYLE_SHADER
+			rect				180 155 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				killlimit_glow
+			style				WINDOW_STYLE_SHADER
+			rect				180 173 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				capturelimit_glow
+			style				WINDOW_STYLE_SHADER
+			rect				180 173 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				duellimit_glow
+			style				WINDOW_STYLE_SHADER
+			rect				180 173 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				teamswitch_glow
+			style				WINDOW_STYLE_SHADER
+			rect				535 209 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+// TEAM SWITCHING
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_TEAM_SWITCHING
+			cvar				"g_siegeTeamSwitch"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+				"7" ;
+			}     
+			rect				535 209 180 18
+			textalign		ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			@MENUS_TEAM_SWITCHING_DESC
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			teamswitch_glow
+			}
+			mouseExit 
+			{ 
+				hide 			teamswitch_glow
+			}
+		}
+		
+//
+// MAX PLAYERS
+//
+
+		
+
+		itemDef 
+		{
+			name				maxplayers_glow
+			group				grpsettings
+			style				WINDOW_STYLE_SHADER
+			rect				180 191 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_MAXIMUM_PLAYERS
+			cvar				"sv_maxclients"
+			rect				180 191 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textaligny			0
+			textalignx			0
+			textscale			1
+			font				4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				show			maxplayers_glow
+			}
+			mouseExit 
+			{ 
+				hide			maxplayers_glow
+			}
+			action 	
+			{ 
+				
+			}			
+		}
+
+//
+// EVEN TEAMS
+//
+//		itemDef 
+//		{
+//			name				expert
+//			group				grpsettings
+//			type				ITEM_TYPE_YESNO
+//			text				@MENUS_EVEN_TEAMS
+//			cvar				"g_teamforcebalance"
+//			cvarTest			"ui_netGameType"
+//			showCvar
+//			{ 
+//				"6" ;
+//				"7" ;
+//				"8" ;
+//				"9" ;
+//			}     
+//			rect				382 195 110 15
+//			textalign			ITEM_ALIGN_RIGHT
+//			textalignx			10
+//			textaligny			2
+//			font				4
+//			textscale			1
+//			forecolor			0.82 0.84 0.88 1
+//			visible				1
+//			descText			@MENUS_THIS_OPTION_RE_BALANCES
+//			action 
+//			{ 
+
+//			}
+//			mouseEnter 
+//			{
+//				show 			settingsButton10 
+//			}
+//			mouseExit 
+//			{ 
+//				hide 			settingsButton10 
+//			}
+//		}
+
+//
+// TIME LIMIT
+//
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_TIME_LIMIT
+			cvar				"timelimit"
+			rect				180 155 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			@MENUS_THIS_VALUE_ADJUSTS_THE
+			cvarTest			"ui_netGameType"
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			timelimit_glow 
+			}
+			mouseExit 
+			{ 	
+				hide 			timelimit_glow 
+			}
+		}
+
+
+//
+// KILL LIMIT / CAPTURE LIMIT /DUEL LIMIT 
+//
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_KILL_LIMIT
+			cvar				"fraglimit"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+				"0" ;
+				"1" ;
+				"2" ;
+				"6";
+			}     
+			rect				180 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			@MENUS_ESTABLISH_THE_NUMBER
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			killlimit_glow
+			}
+			mouseExit 
+			{ 
+				hide 			killlimit_glow
+			}
+		}
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_CAPTURE_LIMIT
+			cvar				"capturelimit" 
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+				"8";
+				"9";
+			}
+			rect				180 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			6
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			@MENUS_THIS_IS_THE_NUMBER_OF
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			capturelimit_glow
+			}
+			mouseExit 
+			{ 
+				hide 			capturelimit_glow
+			}
+		}
+
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_DUEL_LIMIT
+			descText			@MENUS_VALUE_ADJUSTS_THE_TOTAL
+			cvar				"duel_fraglimit"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+				"3" ;
+				"4" ;
+			}     
+			rect				180 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			6
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				
+			}
+			mouseEnter 	
+			{ 	
+				show 			duellimit_glow
+			}
+			mouseExit 
+			{ 
+				hide 			duellimit_glow
+			}
+		}
+
+//---------------------------------
+//
+// COMBAT RULES
+//
+//---------------------------------
+
+		itemDef 
+		{
+			name				rules_title
+			group				none
+			text				@MENUS_COMBAT_RULES
+      			rect				255 130 240 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+		}
+
+
+//---------------------------------
+// TEAM RULES
+//---------------------------------
+		itemDef
+		{
+			name				rules_title
+			group				none
+			text				"TEAM RULES"
+      			rect				450 130 240 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1
+      			decoration
+		}
+
+//-------------------------
+// EVEN TEAMS
+//-------------------------
+		itemDef
+		{
+			name				eventeams_glow
+			style				WINDOW_STYLE_SHADER
+			rect 				535 173 180 18 			background			"gfx/menus/menu_blendbox"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef
+		{
+			name				even_teams
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_EVEN_TEAMS
+			cvar				"g_teamforcebalance"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{
+				"5" ;
+				"6" ;
+				"7" ;
+				"8" ;
+				"9" ;
+			}
+			rect				535 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			@MENUS_THIS_OPTION_RE_BALANCES
+			action
+			{
+				
+			}
+			mouseEnter
+			{
+				show 			eventeams_glow
+			}
+			mouseExit
+			{
+				hide 			eventeams_glow
+			}
+		}
+
+//-------------------------
+// FORCE BASED TEAMS
+//-------------------------
+		itemDef
+		{
+			name				force_based_teams
+			group				grpOptions
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_LIGHT_DARK_TEAMS
+			descText			@MENUS_LIGHT_DARK_INFO
+			cvar				"g_forceBasedTeams"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{
+				"5" ;
+				"6" ;
+				"7" ;
+				"8" ;
+				"9" ;
+			}
+			rect				535 191 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action
+			{
+				
+			}
+			mouseEnter
+			{
+				show 			settingsButton11
+			}
+			mouseExit
+			{
+				hide 			settingsButton11
+			}
+		}
+
+
+//--------------------------------
+// FORCE POWER DISABLE
+//--------------------------------
+		itemDef 
+		{
+			name				settingsButton5
+			style				WINDOW_STYLE_SHADER
+			rect 				355 155 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		//[MOREFORCEOPTIONS]
+		itemDef
+		{	
+			name				options
+			group				grpOptions
+      			type				ITEM_TYPE_MULTI
+			text				@OBP_MENUS_DISABLEFORCEPOWERS
+			descText			@OBP_MENUS_DISABLEFORCEPOWERS_DESC
+			cvar				"g_forcePowerDisable"
+			cvarFloatList		
+			{ 
+				@OBP_MENUS_DISABLEFORCEPOWERS_ALLON		0
+				@OBP_MENUS_DISABLEFORCEPOWERS_ALLOFF		262143
+				@OBP_MENUS_DISABLEFORCEPOWERS_JUMPONLY		262141
+				@OBP_MENUS_DISABLEFORCEPOWERS_NEUTRALSONLY	16353
+				
+			}
+			rect				355 155 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton5 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton5 
+			}
+		}				  	  
+
+		/*
+		itemDef 
+		{
+			name				options
+			group				grpOptions
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_DISABLE_FORCE
+			descText			@MENUS_DISABLE_FORCE_INFO
+			cvar				"g_forcePowerDisable"
+			cvarTest			"ui_netGameType"
+			hideCvar
+			{ 
+				"1" ;
+				"2" 
+			}     
+			rect				355 155 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				uiScript		forcePowersDisable ;
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton5 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton5 
+			}
+		}
+		
+
+// FORCE POWERS setting in Duel/Power Duel
+		itemDef 
+		{
+			name				options
+			group				grpOptions
+			type				ITEM_TYPE_MULTI
+			text				@MENUS_FORCE_POWERS_TITLE
+			descText			@MENUS_FORCE_POWERS_TITLE_DESC
+			cvar				"g_forcePowerDisable"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+				"1" ;
+				"2"
+			}     
+			cvar				"ui_dualforcepower"
+			cvarFloatList	
+			{ 
+				@MENUS_YES	0 
+				@MENUS_NO	1 
+				@MENUS_LIMITED	2 
+			}
+			rect				355 155 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				uiScript		dualForcePowers ;
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton5 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton5 
+			}
+		}
+		*/
+		//[/MOREFORCEOPTIONS]
+
+//------------------------
+// LIGHTSABER ONLY
+//------------------------
+
+		itemDef 
+		{
+			name				settingsButton2
+			style				WINDOW_STYLE_SHADER
+			rect 				355 173 180 18 			background			"gfx/menus/menu_blendbox"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		//[MOREWEAPOPTIONS]
+		itemDef
+		{	
+			name				options
+			group				grpOptions
+      			type				ITEM_TYPE_MULTI
+			text				@OBP_MENUS_WEAPONDISABLE
+			descText			@OBP_MENUS_WEAPONDISABLE_DESC
+			cvar				"g_weaponDisable"
+			cvarFloatList		
+			{ 
+				@OBP_MENUS_WEAPONDISABLE_ALLON	 		0		
+				@OBP_MENUS_WEAPONDISABLE_MELEEONLY		524283
+				@OBP_MENUS_WEAPONDISABLE_SABERSONLY		524279
+				@OBP_MENUS_WEAPONDISABLE_SABERSMELEE		524275
+				@OBP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672
+				
+			}  
+			rect				355 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			cvarTest			"ui_netGameType"
+			//Hide in Duel/Power Duel
+			hideCvar
+			{ 
+				"3" ;
+				"4"
+			}  
+			action 
+			{
+				
+			}
+			mouseEnter 
+			{ 	
+				show 			settingsButton2 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton2 
+			}
+		}
+
+		itemDef
+		{	
+			name				options
+			group				grpOptions
+      			type				ITEM_TYPE_MULTI
+			text				@OBP_MENUS_WEAPONDISABLE
+			descText			@OBP_MENUS_WEAPONDISABLE_DESC
+			cvar				"g_duelWeaponDisable"
+			cvarFloatList		
+			{ 
+				@OBP_MENUS_WEAPONDISABLE_ALLON	 		0		
+				@OBP_MENUS_WEAPONDISABLE_MELEEONLY		524283
+				@OBP_MENUS_WEAPONDISABLE_SABERSONLY		524279
+				@OBP_MENUS_WEAPONDISABLE_SABERSMELEE		524275
+				@OBP_MENUS_WEAPONDISABLE_NOEXPLOSIVES		28672		
+			}
+			rect				355 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			cvarTest			"ui_netGameType"
+			//hide in everthing but Duel/Power Duel
+			showCvar
+			{ 
+				"3" ;
+				"4"
+			}  
+			action 
+			{
+				
+			}
+			mouseEnter 
+			{ 	
+				show 			settingsButton2 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton2 
+			}
+		}
+
+		/*
+		itemDef 
+		{
+			name				options
+			group				grpOptions
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_LIGHTSABER_ONLY
+			descText			@MENUS_SABER_ONLY_INFO
+			cvar				"g_weaponDisable"
+			rect				355 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			cvarTest			"ui_netGameType"
+			//Hide in Duel/Power Duel/Siege
+			hideCvar
+			{ 
+				"1" ;
+				"2"
+			}     
+			action		
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton2
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton2
+			}
+		}
+
+		itemDef 
+		{
+			name				options
+			group				grpOptions
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_LIGHTSABER_ONLY
+			descText			@MENUS_SABER_ONLY_INFO
+			cvar				"g_duelWeaponDisable"
+			rect				355 173 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			cvarTest			"ui_netGameType"
+			//hide in everthing but Duel/Power Duel
+			showCvar
+			{ 
+				"1" ;
+				"2"
+			}     
+			action		
+			{ 	
+				
+			}
+			mouseEnter 
+			{ 	
+				show 			settingsButton2 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton2 
+			}
+		}
+		*/
+		//[/MOREWEAPOPTIONS]
+
+
+
+//--------------------------------
+// ITEM DISABLE
+//--------------------------------
+
+		itemDef 
+		{
+			name				settingsButton4
+			style				WINDOW_STYLE_SHADER
+			rect 				355 191 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		//[MOREFORCEOPTIONS]
+		itemDef
+		{	
+			name				options
+			group				grpOptions
+      			type				ITEM_TYPE_MULTI
+			text				@OBP_MENUS_ITEMDISABLE
+			descText			@OBP_MENUS_ITEMDISABLE_DESC
+			cvar				"g_itemDisable"
+			cvarFloatList		
+			{ 
+				@OBP_MENUS_ITEMDISABLE_ALLON		0
+				@OBP_MENUS_ITEMDISABLE_ALLOFF		177776
+				@OBP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKS		177777
+				@OBP_MENUS_ITEMDISABLE_GRAPPLEHOOKJETPACKSVEHICLES	266664
+				@OBP_MENUS_ITEMDISABLE_NOVEHICLES	266665
+				
+			}
+			rect				355 191 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton4 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton4 
+			}
+		}
+
+
+//--------------------------------
+// SABERLOCKING
+//--------------------------------
+		itemDef 
+		{
+			name				settingsButton7
+			style				WINDOW_STYLE_SHADER
+			rect 				355 209 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_SABERLOCKING
+			descText			@MENUS_SABERLOCKING_DESC
+			cvar				"g_saberLocking"
+			rect				355 209 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton7
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton7
+			}
+		}
+//--------------------------
+// ALLOW PRIVATE DUEL
+//--------------------------
+		itemDef 
+		{
+			name				settingsButton3
+			style				WINDOW_STYLE_SHADER
+			rect 				355 227 180 18 		background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible			0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				options
+			group				grpOptions
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_ALLOW_SABER_CHALLENGE
+			descText			@MENUS_SABER_CHALLENGE_INFO
+			cvar				"g_privateDuel"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+			//[OLDGAMETYPES]
+				"0" ;
+				"1" ;
+				"5" ;
+				"6" ;
+				"8" ;
+				"9"
+			//	"3"
+			//[/OLDGAMETYPES]
+			}     
+			rect				355 227 180 18 
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton3 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton3 
+			}
+		}
+
+//---------------------------------
+// FRIENDLY FIRE
+//---------------------------------
+
+		itemDef 
+		{
+			name				settingsButton1
+			style				WINDOW_STYLE_SHADER
+			rect 				535 155 180 18 			background			"gfx/menus/menu_blendbox"	
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_FRIENDLY_FIRE
+			descText			@MENUS_WHEN_ON_IT_MEANS_TEAMMATES
+			cvar				"g_friendlyfire"
+			cvarTest			"ui_netGameType"
+			showCvar
+			{ 
+			//[OLDGAMETYPES]
+				"0" ;
+				"1" ;
+				"2" ;
+				"3" ;
+				"4" ;
+				"5" ;
+				"6" ;
+				"7" ;
+				"8" ;
+				"9"
+			//[/OLDGAMETYPES]
+			}     
+			rect				535 155 180 18 
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 	
+				show 			settingsButton1 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton1 
+			}
+		}
+		itemDef
+		{
+			name				serverbuttonswindow
+			group				joinserverbuttons
+			style				WINDOW_STYLE_FILLED
+			backcolor			0.1 0.1 0.1 0.5
+			rect				55 292 531 116
+			border				1
+			bordercolor			0.7 .7 .7 .8
+			visible				1
+
+			decoration
+		}
+//---------------------------------
+//
+// ADVANCED SERVER RULES
+//
+//---------------------------------
+
+		itemDef 
+		{
+			name				rules_title
+			group				none
+			text				"ADVANCED RULES"
+      			rect				220 272 240 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+		}
+
+//--------------------------------
+// AUTOJOIN
+//--------------------------------
+		itemDef 
+		{
+			name				settingsButton8
+			style				WINDOW_STYLE_SHADER
+			rect 				180 372 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}		
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_AUTO_JOIN
+			descText			@MENUS_SET_TO_ON_TO_HAVE_PLAYERS
+			cvar				"g_teamautojoin"
+			rect				180 372 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{
+				show 			settingsButton8 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton8 
+			}
+		}
+
+
+//[FIXWARMUP]
+//--------------------------------
+// WARMUP
+//--------------------------------
+		itemDef 
+		{
+			name				settingsButton9
+			style				WINDOW_STYLE_SHADER
+			rect 				355 300 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+	
+		itemDef 
+		{
+			name				settingsButton10
+			style				WINDOW_STYLE_SHADER
+			rect 				355 318 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_MULTI
+			text				@MENUS_DO_WARMUP
+			descText			@MENUS_ENABLES_A_COUNTDOWN_BEFORE
+			cvar				"g_doWarmup"
+			cvarFloatList		
+			{ 
+				@MENUS_NO	 		0
+				@MENUS_YES			1
+				
+			}
+			rect				355 300 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{
+				show 			settingsButton9
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton9 
+			}
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_WARMUP_TIME
+			descText			@MENUS_SETS_THE_AMOUNT_OF_TIME
+			cvar				"g_warmup"
+			maxChars			3
+			maxPaintChars			3
+			rect				355 318 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{
+				show 			settingsButton10 
+			}
+			mouseExit 
+			{ 	
+				hide 			settingsButton10
+			}
+		}
+//[/FIXWARMUP]	
+
+
+		itemDef 
+		{
+			name				adv_minxp_glow
+			style				WINDOW_STYLE_SHADER
+			rect				355 336 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				adv_maxxp_glow
+			style				WINDOW_STYLE_SHADER
+			rect				355 354 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				adv_respawn_glow
+			style				WINDOW_STYLE_SHADER
+			rect				355 372 180 18
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+//--------------------------------
+// MIN/MAX XP LEVEL
+//--------------------------------
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS2_MINXP
+			cvar				"g_minexplevel" 
+			cvarTest			"ui_netGameType"
+			rect				355 336 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show 			adv_minxp_glow
+			}
+			mouseExit 
+			{
+				hide 			adv_minxp_glow
+			}
+			descText			@MENUS2_DESC_MINXP
+		}
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS2_MAXXP
+			cvar				"g_maxexplevel" 
+			cvarTest			"ui_netGameType"
+			rect				355 354 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			visible				1
+			mouseEnter 
+			{
+				show 			adv_maxxp_glow
+			}
+			mouseExit 
+			{
+				hide 			adv_maxxp_glow
+			}
+			descText			@MENUS2_DESC_MAXXP
+		}
+
+//--------------------------------
+// RESPAWN/LIVES
+//--------------------------------
+
+//		itemDef 
+//		{
+//			name				normal
+//			group				grpsettings
+//			type				ITEM_TYPE_NUMERICFIELD
+//			text				@MENUS2_LIVES
+//			cvar				"obp_lmslives" 
+//			cvarTest			"ui_netGameType"
+//			rect				5 305 280 20 
+//			textalign			ITEM_ALIGN_RIGHT
+//			textalignx			165
+//			textaligny			0
+//			font				4
+//			textscale			1
+//			maxchars			6
+//			forecolor			0.82 0.84 0.88 1
+//			visible				1
+//			descText			@MENUS2_DESC_LIVES
+//		}
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS2_RESPAWNTIMER
+			cvar				"obp_ffarespawntimer" 
+			cvarTest			"ui_netGameType"
+			rect				355 372 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show 			adv_respawn_glow
+			}
+			mouseExit 
+			{
+				hide 			adv_respawn_glow
+			}
+			descText			@MENUS2_DESC_RESPAWNTIMER
+		}
+
+
+//--------------------------------
+// FORCE BASED TEAMS
+//--------------------------------
+
+		itemDef 
+		{
+			name				settingsButton11
+			style				WINDOW_STYLE_SHADER
+			rect 				535 191 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible				0
+		}
+
+//		itemDef 
+//		{
+//			name				options
+//			group				grpOptions
+//			type				ITEM_TYPE_YESNO
+//			text				@MENUS_LIGHT_DARK_TEAMS
+//			descText			@MENUS_LIGHT_DARK_INFO
+//			cvar				"g_forceBasedTeams"
+//			cvarTest			"ui_netGameType"
+//			showCvar
+//			{ 		
+//			//[OLDGAMETYPES]
+//				"5" ;
+//				"6" ;
+//				"8" ;
+//				"9" ;
+//			//	"3" ;
+//			//	"5"
+//			//[/OLDGAMETYPES]
+//			}     
+//			rect				25 420 280 20 
+//			textalign			ITEM_ALIGN_RIGHT
+//			textalignx			165
+//			textaligny			0
+//			font				4
+//			textscale			1
+//			forecolor			0.82 0.84 0.88 1
+//			visible				1  
+//			action 
+//			{ 
+
+//			}
+//			mouseEnter 
+//			{ 
+//				show 			settingsButton11 
+//			}
+//			mouseExit 
+//			{ 
+//				hide 			settingsButton11 
+//			}
+//		}
+
+//---------------------------------
+//
+// SERVER RULES
+//
+//---------------------------------
+
+		itemDef 
+		{
+			name				rules_title
+			group				none
+			text				"SERVER RULES"
+      			rect				55 272 240 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+		}
+
+//------------------------
+// AUTO MAP CYCLE
+//------------------------
+		itemDef 
+		{
+			name				settingsButton12
+			style				WINDOW_STYLE_SHADER
+			rect 				180 300 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				auto_map_cycle
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_AUTO_MAP_CYCLE
+			cvar				"g_autoMapCycle"
+			rect				180 300 180 18
+			textalign		ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 		
+			descText			@MENUS_AUTO_MAP_CYCLE_DESC
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton12
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton12 
+			}
+		}
+
+//---------------------
+// ALLOW VOTE
+//---------------------
+		itemDef 
+		{
+			name				settingsButton13
+			style				WINDOW_STYLE_SHADER
+			rect 				180 318 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			decoration
+			visible				0
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_ENABLE_VOTING
+			cvar				"g_allowvote"
+			rect				180 318 180 18
+			textalign		ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 			
+			descText			@MENUS_THIS_ALLOWS_PLAYERS_TO
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton13
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton13 
+			}
+		}
+
+//----------------------------
+// DEDICATED
+//---------------------------
+		itemDef 
+		{
+			name				settingsButton14
+			style				WINDOW_STYLE_SHADER
+			rect 				180 336 180 18 			background			"gfx/menus/menu_blendbox"			
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_MULTI
+			text				@MENUS_DEDICATED_SERVER
+			// syntax for this is cvar name followed by a semicolan separated list of choices first choice equals 0
+			// dedicated is a special cvar in that as soon as it is set, the game goes to console only so the ui catches this one specifically
+			cvar				"ui_dedicated"
+			cvarFloatList	
+			{ 
+				@MENUS_NO 0 @MENUS_LAN 1 @MENUS_INTERNET 2 
+			}
+			rect				180 336 180 18
+			textalign		ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 	
+			descText			@MENUS_A_DEDICATED_SERVER_IS
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton14 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton14 
+			}
+		}
+
+//-------------------------
+// PASSWORD
+//-------------------------
+		itemDef 
+		{
+			name				settingsButton15
+			style				WINDOW_STYLE_SHADER
+			rect 				180 354 180 18 			background			"gfx/menus/menu_blendbox"		
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type 				4
+			text				@MENUS_PASSWORD_1
+			cvar				"g_password"
+			rect				180 354 180 18
+			textalign		ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 	
+			descText			@MENUS_SETS_PASSWORD_FOR_YOUR
+			action 		
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton15 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton15
+			}
+		}
+
+
+//---------------------------------
+//
+// CONNECTION RULES
+//
+//---------------------------------
+
+		itemDef 
+		{
+			name				rules_title
+			group				none
+			text				@MENUS_CONNECTION_RULES
+      			rect				420 272 240 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx			0
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+		}
+
+//-------------------------
+// PURE SERVER
+//-------------------------
+
+		itemDef 
+		{
+			name				settingsButton16
+			style				WINDOW_STYLE_SHADER
+			rect 				535 300 180 18 			background			"gfx/menus/menu_blendbox"		
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				normal
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_PURE_SERVER
+			descText			@MENUS_CLIENT_MUST_HAVE_EXACT
+			cvar				"sv_pure"
+			rect				535 300 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton16 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton16
+			}
+		}
+
+//-------------------------
+// AUTO DOWNLOAD
+//-------------------------
+
+		itemDef 
+		{
+			name				settingsButton17
+			style				WINDOW_STYLE_SHADER
+			rect 				535 318 180 18 			background			"gfx/menus/menu_blendbox"		
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_AUTO_DOWNLOAD
+			descText			@MENUS_CLIENTS_CAN_DOWNLOAD
+			cvar				"sv_allowdownload"
+			rect				535 318 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton17 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton17
+			}
+		}
+
+//-------------------------
+// MIN PING
+//-------------------------
+		itemDef 
+		{
+			name				settingsButton18
+			style				WINDOW_STYLE_SHADER
+			rect 				535 336 180 18 			background			"gfx/menus/menu_blendbox"		
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			maxchars			4
+			text				@MENUS_MINIMUM_PING
+			descText			@MENUS_FASTEST_CLIENT_ALLOWED
+			cvar				"sv_minping"
+			rect				535 336 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton18 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton18
+			}
+		}
+
+//-------------------------
+// MAX PING
+//-------------------------
+		itemDef 
+		{
+			name				settingsButton19
+			style				WINDOW_STYLE_SHADER
+			rect 				535 354 180 18 			background			"gfx/menus/menu_blendbox"		
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			maxchars			4
+			text				@MENUS_MAXIMUM_PING
+			descText			@MENUS_SLOWEST_CLIENT_ALLOWED
+			cvar				"sv_maxping"
+			rect				535 354 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton19 
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton19
+			}
+		}
+
+//-------------------------
+// MAX RATE
+//-------------------------
+		itemDef 
+		{
+			name				settingsButton20
+			style				WINDOW_STYLE_SHADER
+			rect 				535 372 180 18 			background			"gfx/menus/menu_blendbox"		
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_MAX_RATE
+			descText			@MENUS_DATA_TRANSFER_RATE_TO
+			cvar				"sv_maxrate"
+			rect				535 372 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton20
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton20
+			}
+		}
+
+//-------------------------
+// RECONNECT LIMIT
+//-------------------------
+		itemDef 
+		{
+			name				settingsButton21
+			style				WINDOW_STYLE_SHADER
+			rect 				535 390 180 18 			background			"gfx/menus/menu_blendbox"		
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				expert
+			group				grpsettings
+			type				ITEM_TYPE_NUMERICFIELD
+			text				@MENUS_RECONNECT_LIMIT
+			descText			@MENUS_MINIMUM_TIME_ALLOWED
+			cvar				"sv_reconnectlimit"
+			maxchars			4
+			rect				535 390 180 18
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				4
+			textscale			1
+			maxchars			4
+			forecolor			0.82 0.84 0.88 1
+			visible				1 
+			action 
+			{ 
+				
+			}
+			mouseEnter 
+			{ 
+				show 			settingsButton21
+			}
+			mouseExit 
+			{ 
+				hide 			settingsButton21
+			}
+		}
+
+//----------------------------------------------------------------------------------------------
+//	BOTTOM BUTTONS
+//----------------------------------------------------------------------------------------------		
+// EXIT button in lower left corner
+		itemDef 
+		{
+			name				exitgamebutton_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect			4 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			// appearance_slot		1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				exitgamebutton
+			group				exit
+			text				@MENUS_BACK
+			descText			@MENUS_BACK_2_PROFILE
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			4 445 124 32
+			font				3
+			textscale			0.9
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			textalignx			62
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+
+			mouseEnter 
+			{  
+				show			exitgamebutton_glow 
+			}
+			mouseExit 
+			{ 
+				hide			exitgamebutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			advancedcreateserver
+				open			createserver 
+			}
+		}
+		// NEXT button		
+		itemDef
+		{
+			name				button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				516 445 120 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef
+		{
+			name				next_button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect			512 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name					next_button
+			text					@MENUS_NEXT
+			descText				"Configure the bot roster"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			512 445 124 32
+			font				3
+			textscale			0.9
+			textalignx			62
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+	      		action {
+				play				"sound/interface/button1.mp3" ;  close advancedcreateserver ; open botscreateserver ; }
+
+			mouseEnter 
+			{  
+				show			next_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			next_button_glow 
+			}				  	  
+		}			
+
+	}
+
+
+
+
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,810 @@
+============================================================================================================================================
+SW OPEN BATTLEFRONT PROJECT UPDATES
+============================================================================================================================================
+
+============================================================================================================================================
+DOCUMENT INFORMATION
+============================================================================================================================================
+
+Project: SW Open Battlefront Project
+Document: Updates
+File Name: SWOBP_Updates.txt
+
+============================================================================================================================================
+GENERAL DESCRIPTION
+============================================================================================================================================
+
+This document contains only the active SW Open Battlefront Project update history.
+
+============================================================================================================================================
+SW OPEN BATTLEFRONT PROJECT UPDATE HISTORY
+============================================================================================================================================
+
+Update 1 28/07/2026 (Initial SW Open Battlefront Project Release - Major Rebrand, Source Transition, Gameplay Upgrade and Latest Patch)
+
+All the changes below belong to the same 28/07/2026 SW Open Battlefront Project update. The subsections are only area classifications so the update remains readable.
+
+A) PROJECT IDENTITY, LAUNCHERS AND NAMING
+-----------------------------------------
+
+1) Renamed the project identity from SW OJP Enhanced Universe to SW Open Battlefront Project.
+
+2) Changed the active mod folder identity from ojpenhanced to openbattlefrontproject.
+
+3) Updated the executable launch logic so the vanilla launcher starts the game with fs_game set to openbattlefrontproject.
+
+4) Updated the OpenJK launcher so it also starts the game with fs_game set to openbattlefrontproject.
+
+5) Renamed the main vanilla launch batch to SW_Open_Battlefront_Project_Vanilla.
+
+6) Renamed the main OpenJK launch batch to SW_Open_Battlefront_Project_OpenJK.
+
+7) Updated the internal game version string from OJP Enhanced Universe to Open Battlefront Project.
+
+8) Updated the client compatibility keyword from the old OJP Enhanced naming to the new Open Battlefront Project naming.
+
+9) Updated the server browser keyword so SWOBP servers can be identified separately from old OJPEU servers.
+
+10) Updated the default message of the day to welcome players to Open Battlefront Project.
+
+11) Updated several source comments and project references from OJP/OJPEU wording to OBP/SWOBP wording.
+
+12) Preserved the legacy relationship with SW OJP Enhanced Universe while making the new project clearly independent in naming and server identity.
+
+13) This change avoids presenting SWOBP as only a small OJPEU patch; it is now a new project branch with its own name, folder, launchers and server keyword.
+
+14) Existing player or server configs using old ojp_* names should be reviewed because several internal names now use obp_* naming.
+
+15) Old OJPEU servers and new SWOBP servers should not be assumed to be automatically compatible without testing.
+
+
+B) DOCUMENTATION, README AND RELEASE STRUCTURE
+----------------------------------------------
+
+16) Rebuilt the documentation structure around the new SW Open Battlefront Project name.
+
+17) Separated the legacy SW OJP Enhanced Universe update history from the new SWOBP update history.
+
+18) Preserved the full old OJPEU update history for continuity rather than deleting it.
+
+19) Started a new SWOBP update numbering system beginning with Update 1 on 28/07/2026.
+
+20) Updated the intended readme naming to SWOBP_Standard_Readme and SWOBP_Expanded_Readme.
+
+21) Updated the intended contents naming to SWOBP_Standard_Contents and SWOBP_Expanded_Contents.
+
+22) Updated the intended credits naming to SWOBP_Standard_Credits and SWOBP_Expanded_Credits.
+
+23) Updated installation wording to refer to the openbattlefrontproject folder instead of the old ojpenhanced folder.
+
+24) Updated first-run launcher wording to refer to the new SW Open Battlefront Project launchers.
+
+25) Updated later-run launcher wording to refer to the new Play_SW_Open_Battlefront_Project launchers.
+
+26) Preserved the community credits and disclaimer structure used by the old documentation.
+
+27) Preserved the original community-history tone of the documentation while making the new project title clear.
+
+28) The old readme files still served as the style reference, but their obsolete OJPEU paths and launcher names were corrected for SWOBP.
+
+29) The Standard and Expanded documentation remains separated because the two releases still have different content scope.
+
+30) The new update file now clearly states which updates belong to OJPEU and which updates belong to SWOBP.
+
+
+C) SOURCE ARCHIVE FOOTPRINT AND CLEANUP
+---------------------------------------
+
+31) Compared the old SW OJP Enhanced Universe source archive against the new SW Open Battlefront Project source archive.
+
+32) The old source tree contained 1333 files after extraction.
+
+33) The new source tree contained 1120 files after extraction.
+
+34) After normalising the folder rename from ojpenhanced to openbattlefrontproject, 1078 relative paths were common to both source trees.
+
+35) 403 common relative paths changed in content.
+
+36) 675 common relative paths remained byte-identical.
+
+37) 255 normalised paths existed only in the old source tree.
+
+38) 42 normalised paths existed only in the new source tree.
+
+39) Both trees still contained 155 C source files.
+
+40) Both trees still contained 112 header files.
+
+41) The new tree increased the number of menu files from 96 to 120.
+
+42) 67 common C files changed between the old and new source trees.
+
+43) 11 common header files changed between the old and new source trees.
+
+44) 72 common menu files changed between the old and new source trees.
+
+45) 24 menu files were new in the SWOBP tree.
+
+46) Removed many old packaged final build artifacts from the source archive.
+
+47) Removed many old object files, final-output binaries, map files, pdb files, idb files, lib files, exp files and analyzer files from the old archive.
+
+48) Kept the source, project files and necessary development structure while making the archive cleaner than the old OJPEU source package.
+
+49) Some debug or intermediate development artifacts still remain, so the source package is cleaner but not purely source-only.
+
+50) Added new Visual Studio solution names for Open Battlefront Project.
+
+
+D) CVARS, SHARED DEFINITIONS AND GAME-STATE RESOURCES
+-----------------------------------------------------
+
+51) Migrated several old ojp_* cvars to new obp_* cvars.
+
+52) Renamed ojp_lms to obp_lms.
+
+53) Renamed ojp_lmslives to obp_lmslives.
+
+54) Renamed ojp_liveExp to obp_liveExp.
+
+55) Renamed ojp_dodgemulti to obp_dodgemulti.
+
+56) Renamed ojp_skipcutscenes to obp_skipcutscenes.
+
+57) Renamed ojp_spmodel to obp_spmodel.
+
+58) Renamed ojp_spmodelrgb to obp_spmodelrgb.
+
+59) Renamed ojp_clientMOTD to obp_clientMOTD.
+
+60) Renamed ojp_MOTD to obp_MOTD.
+
+61) Renamed ojp_allowBodyDodge to obp_allowBodyDodge.
+
+62) Renamed ojp_ffaRespawnTimer to obp_ffaRespawnTimer.
+
+63) Renamed ojp_trueBalance to obp_trueBalance.
+
+64) Renamed ojp_modelscaleenabled to obp_modelscaleenabled.
+
+65) Added new gameplay cvars for spawn protection, siege respawn waves, objective hints, bot role assignment and target diversity.
+
+66) Added CTF bot role cvars for attackers, carriers, escorts and returners.
+
+67) Added CTY/Ysalamiri bot role cvars mirroring the CTF behaviour.
+
+68) Added GT_TEAM bot role support cvars.
+
+69) Added heat as a new gameplay resource through STAT_HEAT.
+
+70) Added shared heat helpers for cooling, spending, adding, accuracy scaling and weapon/saber heat costs.
+
+
+E) BATTLEFRONT-STYLE HUD AND INTERFACE FEEDBACK
+-----------------------------------------------
+
+71) Added a new Battlefront-style HUD implementation in cgame.
+
+72) Added helper functions for clamping HUD values and drawing unified resource panels.
+
+73) Added bracket-style panel drawing for the new HUD.
+
+74) Added vertical resource meter drawing.
+
+75) Added health and armor display logic for the new left vitals area.
+
+76) Added fuel and battery display logic for equipment and gadgets.
+
+77) Added lower-right resource display logic for force, dodge and heat-style resources.
+
+78) Added force icon active-state caches so active powers can keep the correct icon even when another power is selected.
+
+79) Improved active force icon feedback for Protect, Absorb, Rage, Valor, Drain, Lightning, Destruction, Push and Pull variants.
+
+80) Improved parsing of longer OBP rank strings for force icon levels.
+
+81) Added better force icon flag calculation for selected force-power variants.
+
+82) Reworked binocular feedback so normal, thermal and x-ray modes have clearer HUD/lens behaviour.
+
+83) Added binocular mode tinting.
+
+84) Added binocular mode HUD feedback.
+
+85) Improved weapon, force and item icon loading timing so icons appear more neatly.
+
+
+F) HEAT, OVERHEAT AND ATTACK PACING
+-----------------------------------
+
+86) Added a new heat and overheat system as a gameplay resource separate from ordinary weapon timing.
+
+87) Added HEAT_MAX with a maximum heat value of 100.
+
+88) Added heat cooldown rules with deterministic cooling.
+
+89) Added an inaccuracy threshold so heat only affects accuracy after the heat level passes the configured start point.
+
+90) Added a quadratic heat-to-inaccuracy ramp for smoother behaviour.
+
+91) Added heat cost integration for weapons.
+
+92) Added heat cost integration for saber moves.
+
+93) Added heat spending checks so attacks can be blocked when the weapon is overheated.
+
+94) Added heat clamping so heat remains inside valid limits.
+
+95) Suppressed heat production during Rage/Valor where appropriate.
+
+96) Suppressed heat production during Overload where appropriate.
+
+97) Reduced some general attack heat costs before clamping.
+
+98) Added option-aware heat costs for weapon variants.
+
+99) Added fallback weapon damage values for heat-cost estimation.
+
+100) Balanced heat more carefully for burst-fire weapon modes in the latest patch.
+
+
+G) FORCE POWERS AND COUNTERFORCE BEHAVIOUR
+------------------------------------------
+
+101) Added a central OBP counterforce architecture.
+
+102) Added OBP_CounterForce.
+
+103) Added OBP_BlockEnergy.
+
+104) Added OBP_BlockInfluence.
+
+105) Added OBP_BlockStatus.
+
+106) Added OBP_BlockFocus.
+
+107) Centralised force countering so it is no longer duplicated separately for every power path.
+
+108) Applied energy blocking to Lightning and Drain-style paths.
+
+109) Applied influence blocking to Telepathy and Mind Trick-style paths.
+
+110) Applied status blocking to Protect and Absorb-style interactions.
+
+111) Applied focus blocking to Team Force and Destruction-style interactions.
+
+112) Made Grip and Grasp call the new counterforce logic before applying their effects.
+
+113) Made Push and Pull call the new counterforce logic for target resistance.
+
+114) Improved force blocking consistency when using hands or sabers.
+
+115) Clamped dodge max by Force See level.
+
+116) Force See level 1 now maps to 100 maximum dodge.
+
+117) Force See level 2 now maps to 150 maximum dodge.
+
+118) Force See level 3 now maps to 250 maximum dodge.
+
+119) No Force See now maps to zero maximum dodge.
+
+120) Moved Ysalamiri protection earlier in ForcePowerUsableOn-style logic so airborne force powers cannot bypass CTY/Ysalamiri immunity.
+
+121) Reworked Force Heal so it heals health first and armor second.
+
+122) Adjusted Force Heal levels to 25, 50 and 100 healing points.
+
+123) Added level-based Grip and Grasp distances.
+
+124) Grip and Grasp now turn off the victim jetpack when applied to a client.
+
+125) Improved Lightning, Judgement, Drain and Sever handling against non-client damageable entities.
+
+126) Improved Push, Pull, Explode and Implode target acquisition with better FOV logic and bounding-box centre checks.
+
+127) Reduced normal Push/Pull power relative to the stronger Explode/Implode variants.
+
+128) Added stronger damage and battlefield impact for Explode/Implode-style variants.
+
+
+H) ITEMS, GADGETS, THROWERS AND DEFENSIVE STATES
+------------------------------------------------
+
+129) Reworked Forcefield skill cost so it supports all three levels.
+
+130) Made Forcefield health scale with the owner skill level.
+
+131) Made Forcefield cooldown depend on skill level.
+
+132) Expanded binocular skill cost from one level to three levels.
+
+133) Added normal, thermal and x-ray binocular level behaviour.
+
+134) Reworked binoculars so they no longer corrupt holdable subtype icon flags.
+
+135) Improved sentry targeting when originalactivator is present.
+
+136) Improved sentry enemy validation with better owner-based ally/enemy checks.
+
+137) Improved sentry death/cooldown handling.
+
+138) Made seeker fire rate more constant across levels while keeping level-based improvement meaningful.
+
+139) Expanded Vehicle Mount skill cost support to all three levels.
+
+140) Made flamethrower radius and damage level-dependent.
+
+141) Made dioxis thrower radius and damage level-dependent.
+
+142) Applied similar level structure to ice/effect-style thrower paths.
+
+143) Improved two-handed level-3 thrower behaviour.
+
+144) Improved Force Protect interaction against thrower effects.
+
+145) Improved Sphereshield interaction against thrower effects.
+
+146) Prevented burn, toxic and other cosmetic status effects from refreshing when the actual damage is blocked.
+
+147) Made item effects more consistent with active defensive force and item states.
+
+148) Improved cloak, shield generator and overload behaviour within the broader item system.
+
+
+I) WEAPONS, WEAPON OPTIONS AND DUAL-WIELD HANDLING
+--------------------------------------------------
+
+149) Added weapon-specific dual-gun handling.
+
+150) Added G_IsDualGunWeapon.
+
+151) Added G_DualGunSkillForWeapon.
+
+152) Added G_ClientHasDualGunSkill.
+
+153) Added G_DualGunsDisabledForWeapon.
+
+154) Added G_SetDualGunEFlagForWeapon.
+
+155) Added G_ToggleDualGunsForWeapon.
+
+156) Added PM_SetDualGunFlagForWeapon.
+
+157) Made dual-gun state weapon-specific rather than relying on saberthrow-style side effects.
+
+158) Prevented gun bots from sending saberthrow unless the current weapon is actually a saber.
+
+159) Serialized client weapon option flags into config strings.
+
+160) Serialized dual weapon flags into config strings.
+
+161) Improved cgame invalidation of active and holstered weapon models when option flags change.
+
+162) Reduced one-frame wrong model glitches when switching or hovering through weapon variants.
+
+163) Improved holstered weapon rendering so it follows option and dual-weapon state more reliably.
+
+164) Improved dual weapon muzzle flash synchronization in first person and third person.
+
+165) Added per-hand muzzle flash timestamp tracking for selected dual weapons.
+
+166) Reduced cases where a dual-weapon alt fire muzzle flash appears on the wrong hand or one event late.
+
+167) Improved remote player and bot dual-pistol visuals by making tracked dual muzzle flashes entity-wide rather than local-only.
+
+168) Included dual stun baton in the tracked dual-flash helper.
+
+
+J) LATEST WEAPON BURST-FIRE PATCH
+---------------------------------
+
+169) Converted WP_FireBryarPistol2Alt from charged alternate fire into a three-round burst.
+
+170) Reduced Bryar pistol option 2 alt-fire per-round damage so the full burst preserves the intended total damage.
+
+171) Changed Bryar pistol option 2 alt-fire from charge-based projectile behaviour to normal projectile burst behaviour.
+
+172) Converted WP_FireBryarPistol5Alt into a three-round burst.
+
+173) Converted WP_FireBryarOld2Alt from charged alternate fire into a three-round burst.
+
+174) Converted WP_FireBryarOld4Alt into a three-round burst.
+
+175) Clarified WP_FireBryarOld6Alt as a non-charged automatic alternate-fire variant.
+
+176) Updated dual Bryar pistol and Bryar Old burst logic so dual pistols alternate hands through leftPistol instead of spawning duplicate same-event missiles.
+
+177) Converted Blaster option 2 primary and alternate fire into three-round burst modes.
+
+178) Converted Blaster option 5 primary and alternate fire into three-round burst modes.
+
+179) Reduced Blaster option 2 and option 5 per-round damage so the three-round burst preserves the intended total damage scale.
+
+180) Added a new pmove burst-fire state machine for selected Bryar pistol, Bryar Old and Blaster variants.
+
+181) Defined burst fire as three rounds.
+
+182) Defined a 200 ms interval between burst rounds.
+
+183) Added separate recovery timing for Bryar pistol option 2 and option 5.
+
+184) Added separate recovery timing for Bryar Old option 2 and option 4.
+
+185) Added separate primary and alternate recovery timing for Blaster option 2 and option 5.
+
+186) Stored burst progress in weaponChargeSubtractTime using negative sentinel values.
+
+187) Cancelled unfinished bursts when the trigger is released, when the weapon changes or when the active fire mode changes.
+
+188) Simplified Bryar pistol charged-fire logic so option 1 and option 6 remain charged while options 2 and 5 use burst behaviour.
+
+189) Simplified Bryar Old charged-fire logic so base option 1 remains charged while option variants are handled explicitly as burst or automatic.
+
+190) Rebalanced burst heat costs for Bryar pistol option 5 alternate fire.
+
+191) Rebalanced burst heat costs for Bryar Old option 4 alternate fire.
+
+192) Updated cgame dual-muzzle classification to match the new burst/charged rules.
+
+193) Updated cgame so Bryar pistol options 2 and 5 use alternating hands during burst fire.
+
+194) Updated cgame so Bryar Old options 2 and 4 use alternating hands during burst fire.
+
+195) Added BotUsesBurstAlt to help bots handle burst alternate-fire weapons.
+
+196) Added a new PMF_ALT_ATTACK_HELD flag definition for semi-auto alternate-fire latch work.
+
+197) Rewrote irand to handle wider integer ranges safely without the old large-range assert.
+
+198) Important retest note: Bryar pistol option 5, Bryar Old option 4 and Blaster burst modes should be tested with bots because bot burst mapping must match pmove and cgame mapping exactly.
+
+199) Important retest note: burst-fire weapons should be checked with the heat HUD because heat and burst cadence now interact directly.
+
+200) Important retest note: dual burst-fire weapons should be tested in first person, third person and against bots to confirm both muzzle flash and projectile hand alternation.
+
+
+K) SABERS AND SABER AI
+----------------------
+
+201) Added Bot_ValidateSingleSaberStyle.
+
+202) Added Bot_SelectSingleSaberCombatStyle.
+
+203) Improved single-saber bot style selection so bots do not blindly use invalid preferences.
+
+204) Made bot saber style choices consider enemy health.
+
+205) Made bot saber style choices consider enemy distance.
+
+206) Made bot saber style choices consider whether the enemy is using a saber.
+
+207) Made bot saber style choices consider whether the enemy is performing a large saber move.
+
+208) Added style-bias timing so single-saber bots can change style over time.
+
+209) Favoured faster styles at close range and against weaker targets.
+
+210) Favoured stronger styles against tougher or farther targets.
+
+211) Integrated saber move heat cost with the new heat system.
+
+212) Updated core saber damage and impact behaviour in the shared saber code.
+
+213) Preserved the expanded saber identity while improving bot handling and resource integration.
+
+
+L) JETPACKS, GRAPPLE, BACKPACK ROCKETS AND FALL PREVENTION
+----------------------------------------------------------
+
+214) Added route-aware jetpack helpers for bots.
+
+215) Made bots detect whether they already have horizontal movement intent before using jetpack logic.
+
+216) Made bot jetpack direction derive from waypoints, destinations, goals or visible enemies.
+
+217) Prevented sustained bot flight from becoming vertical-only hovering.
+
+218) Avoided repeatedly pressing use while a bot jetpack is already active.
+
+219) Checked fuel before toggling bot jetpacks.
+
+220) Added upward traces so bots can detect ceilings and avoid roof collisions.
+
+221) Added ground-distance traces for fall and drop logic.
+
+222) Made bots use jetpacks proactively for long waypoint movement.
+
+223) Made bots use jetpacks proactively for upward waypoint movement.
+
+224) Added longer sustained flight for selected bot types.
+
+225) Added route-aware grapple target selection for bots.
+
+226) Made grapple traces follow route direction instead of aiming almost straight up.
+
+227) Reduced ceiling-sticking by rejecting bad near-vertical hooks in normal cases.
+
+228) Made grapple selection prefer high walls or forward ceilings with enough horizontal distance.
+
+229) Made grapple state synchronize to the real server hook.
+
+230) Released passive ceiling hooks if they fail to lift the bot.
+
+231) Allowed bots to aim at enemies while attached instead of staring permanently at the hook point.
+
+232) Allowed gun bots to attack while attached when using suitable non-saber weapons.
+
+233) Removed the practical fall-prevention exemption for jetpack, grapple and Force Jump users.
+
+234) Made mobility-capable bots still go through fatal-drop prevention.
+
+235) Attempted jetpack recovery before ordinary braking when safe.
+
+236) Attempted grapple recovery before ordinary braking when a high hook is available.
+
+237) Added safe direct movement wrappers to prevent bots from walking into fatal drops.
+
+238) Added backpack rocket firing from crouch plus use.
+
+239) Allowed backpack rocket level 1 to dumb-fire.
+
+240) Allowed backpack rocket levels 2 and 3 to lock onto targets.
+
+241) Added bot decision logic for backpack rocket use.
+
+242) Made bots trigger backpack rockets through crouch-plus-use rather than generic holdable use.
+
+
+M) BOT COMBAT, TARGET SELECTION AND OBJECTIVE ROLES
+---------------------------------------------------
+
+243) Added target diversity logic so large bot battles do not collapse onto one target too often.
+
+244) Excluded Duel and Power Duel from ordinary target-diversity penalties.
+
+245) Counted how many bots are already attacking the same client.
+
+246) Protected high-priority objective targets from diversity penalties.
+
+247) Treated Jedi Master targets as high-priority targets.
+
+248) Treated flag carriers as high-priority targets.
+
+249) Treated last-hurt targets as high-priority targets.
+
+250) Penalised spawn-protected targets in bot target selection.
+
+251) Added mild pressure against score leaders in non-objective fights.
+
+252) Added CTF bot role assignment.
+
+253) Added CTY/Ysalamiri bot role assignment.
+
+254) Added attacker, defender, escort, returner and carrier behaviour for objective modes.
+
+255) Made flag carriers avoid chasing distant unrelated enemies.
+
+256) Made carriers still respond to close threats and enemy objective carriers.
+
+257) Made low-health carriers use a smaller threat radius.
+
+258) Made returners prioritise dropped own flags when appropriate.
+
+259) Made escorts protect the carrier instead of wandering into unrelated fights.
+
+260) Added GT_TEAM bot role assignment.
+
+261) Added support roles that can assist injured teammates.
+
+262) Added defensive/bodyguard roles that can follow the team leader.
+
+263) Added hunter roles that can pressure the highest-scoring enemy.
+
+264) Added Jedi Master-specific AI behaviour.
+
+265) Added Holocron pickup value logic based on power value, bot style and current weapon.
+
+266) Improved Duel and Power Duel queue fairness.
+
+
+N) SIEGE, SPAWNS, RESPAWNS AND GAME-MODE FLOW
+---------------------------------------------
+
+267) Added Siege objective dependency checks.
+
+268) Added Siege current objective finding.
+
+269) Added Siege objective description and hint construction.
+
+270) Added class-specific Siege objective hints.
+
+271) Added Siege objective hint broadcasting.
+
+272) Added Siege bot objective usability checks.
+
+273) Made Siege bots skip completed objectives.
+
+274) Made Siege bots defend objectives or move toward current objectives more intelligently.
+
+275) Added Siege respawn-wave override logic.
+
+276) Added configurable spawn protection time.
+
+277) Added spawn protection helpers to apply, clear and check spawn protection.
+
+278) Made spawn protection influence bot target selection.
+
+279) Added team spawn fairness scoring.
+
+280) Added FFA spawn fairness scoring.
+
+281) Added Holocron spawn fairness scoring.
+
+282) Added Duel queue mode controls.
+
+283) Improved Power Duel slot filling so only the missing active slot is filled.
+
+284) Made human autojoin logic more conservative when autojoin is disabled.
+
+285) Allowed bots to fill Duel and Power Duel slots while keeping humans cleaner in the queue.
+
+
+O) NPCS, COOPERATIVE GAMEPLAY AND SINGLEPLAYER HANDLING
+-------------------------------------------------------
+
+286) Updated core NPC behaviour.
+
+287) Updated NPC stat initialization and configuration.
+
+288) Updated NPC spawning behaviour.
+
+289) Updated NPC utility logic.
+
+290) Updated Jedi NPC logic.
+
+291) Updated Seeker NPC behaviour.
+
+292) Updated Boba Fett and AT-ST NPC behaviour paths.
+
+293) Added more null-safety style checks around NPC/client references.
+
+294) Improved force and item behaviour against non-client damageable entities.
+
+295) Improved cleanup for NPC force corruption and confusion effects.
+
+296) Improved cleanup for NPC stasis and insanity effects.
+
+297) Guarded several force paths against dead, missing or invalid targets.
+
+298) Added SP profile loadout preservation helpers.
+
+299) Added SP profile loadout save/restore behaviour.
+
+300) Added SP map progression detection support.
+
+301) Updated script and target/event integration for singleplayer/cooperative style maps.
+
+302) Improved session and active-client handling to reduce stale state problems.
+
+
+P) VEHICLES, EXHAUSTS AND RENDERING
+-----------------------------------
+
+303) Added Open Battlefront Project-specific vehicle parsing behaviour.
+
+304) Allowed .veh files to reference vehicle weapons by internal name keys.
+
+305) Improved vehicle weapon indexing and ordering consistency.
+
+306) Reduced cases where a vehicle spawns with wrong or missing weapons.
+
+307) Added vehicle exhaust bolt handling in cgame.
+
+308) Ensured exhaust bolt references are available before rendering effects.
+
+309) Added support for more vehicle exhaust tag naming patterns.
+
+310) Reduced cases where one missing exhaust tag breaks all exhaust effects.
+
+311) Added simple MD3 NPC rendering support.
+
+312) Added team-power effect arrays with old single-slot compatibility.
+
+313) Added item-power effect arrays with old single-slot compatibility.
+
+314) Added binocular thermal and x-ray shell checks.
+
+315) Improved holstered weapon model bolting.
+
+316) Improved vehicle and attachment rendering consistency.
+
+317) Hardened several client rendering paths against invalid pointers or missing data.
+
+318) Improved vehicle FX registration and lazy-loading behaviour.
+
+319) Improved vehicle missile trail/model/impact registration behaviour.
+
+320) Improved turret muzzle effect loading.
+
+
+Q) MENUS AND USER INTERFACE EXPANSION
+-------------------------------------
+
+321) Added several new menu files to support the SWOBP interface.
+
+322) Added connect, create favorite, error, find player, password and password request menus.
+
+323) Added profile and quick game/bot menus.
+
+324) Added separate rules menus for force, weapons, items, moves and games.
+
+325) Added a server info menu.
+
+326) Added a video driver menu.
+
+327) Added an additional saber menu.
+
+328) Added a siege message menu.
+
+329) Added a siege class menu in the source UI tree.
+
+330) Heavily changed quickgame, ingame music, player force, saber, advanced create server, join server, setup and controls menus.
+
+331) Heavily changed gunnery, gadgets, vehicles, bot creation and in-game add-bot menus.
+
+332) Added Battlefront bot type options in relevant bot menus.
+
+333) Increased menu line count significantly.
+
+334) Improved multiplayer and profile menu organisation.
+
+335) Improved rules presentation and separation by category.
+
+336) Important retest note: duplicated in-game and non-in-game menus should be checked for visual and sound consistency.
+
+
+R) STABILITY, CRASH PREVENTION AND POLISH
+-----------------------------------------
+
+337) Cleaned up many old build artifacts from the source archive.
+
+338) Added safer handling around several client and renderer calls.
+
+339) Added safer handling around invalid NPC, client, owner and activator references.
+
+340) Improved support entity behaviour for seekers, sentries and squad teams.
+
+341) Improved ally/enemy validation in free-for-all, team and mixed situations.
+
+342) Improved projectile and effect registration in large battles.
+
+343) Improved vehicle exhaust and weapon-effect safety.
+
+344) Improved visual state synchronisation for force powers, weapons and items.
+
+345) Improved objective mode AI so modes behave less like simple deathmatch.
+
+346) Improved bot movement safety around cliffs, ceilings and hooks.
+
+347) Improved heat, burst-fire and dual-wield consistency across prediction, server and cgame paths.
+
+348) Rebuilt documentation to make the SWOBP project identity clearer.
+
+349) Important retest note: compile and in-game testing are still required because this update is described from static source comparison and documentation review.
+
+350) Important retest note: the most important gameplay tests are burst-fire weapons, dual muzzle flashes, bot burst usage, bot jetpacks, bot grapple, fall prevention, objective AI, Siege hints, CTF/CTY bots, force blocking, heat HUD, vehicle weapons and duplicated menus.
+
+
+Overall, Update 1 28/07/2026 transforms the project from the old SW OJP Enhanced Universe identity into SW Open Battlefront Project while also adding major gameplay, HUD, bot, force, weapon, vehicle, menu, documentation and stability changes.
+
+============================================================================================================================================
+PLEASE SUBSCRIBE AND RATE THE MOD!!! :)
+============================================================================================================================================
+
+THANK YOU VERY MUCH TO THE CURRENT AND OLD MEMBERS OF THE JK COMMUNITY, OJP, MB2, OpenJK, KOTF AND JKG TEAMS. WITHOUT YOU, STAR WARS OPEN BATTLEFRONT PROJECT WOULD NOT BE A REALITY. ALL OF YOU CAN CONSIDER YOURSELVES TO BE COAUTHORS OF STAR WARS OPEN BATTLEFRONT PROJECT.
+
+============================================================================================================================================
+THIS MODIFICATION IS NOT MADE, DISTRIBUTED, OR SUPPORTED BY ACTIVISION, RAVEN, OR LUCASARTS ENTERTAINMENT COMPANY LLC. ELEMENTS TM & © LUCASARTS ENTERTAINMENT COMPANY LLC AND/OR ITS LICENSORS.
+============================================================================================================================================
+============================================================================================================================================

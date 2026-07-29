@@ -955,7 +955,7 @@
 			name				setcolor
 			group				character
 			style				0	
-			text				@MENUS_TEAM_COLOR
+			text				"Faction"
 			ownerdraw			UI_SKIN_COLOR
 			rect				340 45 160 20
 			textalign			ITEM_ALIGN_RIGHT
@@ -968,7 +968,7 @@
 			forecolor			0.8 0.8 0.8 1
 			border				0
 			bordercolor			0 0 0 0
-			descText			@MENUS_CHOOSE_THE_COLOR_FOR
+			descText			"Choose the character faction skin category"
 			cvarTest			"ui_about_gametype"
 			hideCvar 
 			{ 

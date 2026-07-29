@@ -1198,9 +1198,16 @@ extern	vec4_t		colorLtBlue;
 extern	vec4_t		colorDkBlue;
 
 #define Q_COLOR_ESCAPE	'^'
-// you MUST have the last bit on here about colour strings being less than 7 or taiwanese strings register as colour!!!!
-#define Q_IsColorString(p)	( p && *(p) == Q_COLOR_ESCAPE && *((p)+1) && *((p)+1) != Q_COLOR_ESCAPE && *((p)+1) <= '7' && *((p)+1) >= '0' )
 
+/*
+ * Text colour codes. The original ^0..^7 mappings are unchanged.
+ * Extended colours use the longest valid numeric code, allowing ^10 through ^13.
+ */
+int Q_ColorStringLength( const char *p );
+int Q_ColorStringIndex( const char *p );
+void Q_ColorStringColor( const char *p, vec4_t color );
+void Q_StripColorStrings( const char *in, char *out, int outSize );
+#define Q_IsColorString(p)	( Q_ColorStringLength( (p) ) != 0 )
 
 #define COLOR_BLACK		'0'
 #define COLOR_RED		'1'
@@ -1212,6 +1219,26 @@ extern	vec4_t		colorDkBlue;
 #define COLOR_WHITE		'7'
 #define ColorIndex(c)	( ( (c) - '0' ) & 7 )
 
+#define COLOR_INDEX_BLACK	0
+#define COLOR_INDEX_RED	1
+#define COLOR_INDEX_GREEN	2
+#define COLOR_INDEX_YELLOW	3
+#define COLOR_INDEX_BLUE	4
+#define COLOR_INDEX_CYAN	5
+#define COLOR_INDEX_MAGENTA	6
+#define COLOR_INDEX_WHITE	7
+#define COLOR_INDEX_LIME	8
+#define COLOR_INDEX_WINE	9
+#define COLOR_INDEX_ORANGE	10
+#define COLOR_INDEX_LILAC	11
+#define COLOR_INDEX_GRAY	12
+#define COLOR_INDEX_BROWN	13
+
+/* Backward-compatible aliases for code that used the earlier names. */
+#define COLOR_INDEX_OLIVE	COLOR_INDEX_LIME
+#define COLOR_INDEX_PURPLE	COLOR_INDEX_LILAC
+#define COLOR_INDEX_GREY	COLOR_INDEX_GRAY
+
 #define S_COLOR_BLACK	"^0"
 #define S_COLOR_RED		"^1"
 #define S_COLOR_GREEN	"^2"
@@ -1220,6 +1247,17 @@ extern	vec4_t		colorDkBlue;
 #define S_COLOR_CYAN	"^5"
 #define S_COLOR_MAGENTA	"^6"
 #define S_COLOR_WHITE	"^7"
+#define S_COLOR_LIME	"^8"
+#define S_COLOR_WINE	"^9"
+#define S_COLOR_ORANGE	"^10"
+#define S_COLOR_LILAC	"^11"
+#define S_COLOR_GRAY	"^12"
+#define S_COLOR_BROWN	"^13"
+
+/* Backward-compatible aliases for code that used the earlier names. */
+#define S_COLOR_OLIVE	S_COLOR_LIME
+#define S_COLOR_PURPLE	S_COLOR_LILAC
+#define S_COLOR_GREY	S_COLOR_GRAY
 
 extern vec4_t	g_color_table[8];
 

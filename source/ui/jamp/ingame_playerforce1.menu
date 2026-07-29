@@ -1,4 +1,4 @@
-//[NewMenus]
+﻿//[NewMenus]
 //-----------------------------------
 // SETUP MENU 
 //-----------------------------------
@@ -17,13 +17,13 @@
 		fullscreen					0
 //		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
 		rect						120 45 570 400
-		focusColor					0 0.4 0.8 1								// Focus color for text and items
+		focusColor					0.82 0.84 0.88 1								// Focus color for text and items
 		style						1
 		border						1
-		descX						380
-		descY						422
+		descX						320
+		descY						421
 		descScale					1
-		descColor					0 0.4 0.8 1
+		descColor					0.82 0.84 0.88 1
 		descAlignment				ITEM_ALIGN_CENTER		
 		onOpen  
 		{ 
@@ -53,13 +53,13 @@
 			textalign			ITEM_ALIGN_CENTER		
 			textalignx			255
 			textaligny			0
-			outlinecolor		1 .5 .5 .5
-			backcolor			0 0 0 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
 			font				3
 			textscale			1
-			forecolor			1 1 1 1
+			forecolor			0.82 0.84 0.88 1
 			border				0
-			bordercolor			0 0 0 0
+			bordercolor			.33 .33 .33 1
 			visible				1 
 		}
 		
@@ -68,8 +68,8 @@
 			name				descbackground
 			style				0
 			rect				5 390 520 20
-			backcolor			0 0 0 1
-			forecolor			1 1 1 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
 			border				0
 			visible				1
 		}
@@ -88,7 +88,7 @@
 			textaligny			0
 			font				2
 			textscale			0.7
-			forecolor			1 1 1 1
+			forecolor			0.82 0.84 0.88 1
 			backcolor			0 0 0 0
 			visible				1 
 			decoration
@@ -108,11 +108,11 @@
 			textaligny			0
 			font				2
 			textscale			0.7
-			forecolor			1 1 1 1
-			outlinecolor		1 .5 .5 .5
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
 			backcolor			0 0 0 0
 			border				0
-			bordercolor			0 0 0 0
+			bordercolor			.33 .33 .33 1
 			visible				1 
 			decoration
 		}
@@ -134,11 +134,11 @@
 			textaligny			0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration
 		}
@@ -155,11 +155,11 @@
 			textaligny			0
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration
 		}
@@ -169,21 +169,21 @@
 		{
 			name				notforcesensitive
 			group				"playersettinggroup"
-			text				@OJP_MENUS_NOTFORCESENSITIVE
+			text				@OBP_MENUS_NOTFORCESENSITIVE
 			type				1
 			style				0	
-			rect				70 105 0 0
+			rect				70 135 0 0
 			textalign			ITEM_ALIGN_CENTER	 	
 			textalignx			65
 			textaligny			0
 			font				4
 			textscale			1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			descText			@OJP_MENUS_DESC_NOTFORCESENSITIVE
+			bordercolor				.33 .33 .33 1
+			descText			@OBP_MENUS_DESC_NOTFORCESENSITIVE
 			visible				0 
 			decoration
 		}
@@ -194,10 +194,10 @@
 			name				notforcesensitive
 			group				"playersettinggroup"
 			style				0
-			rect				230 248 175 34
-			forecolor			1 1 1 1
+			rect				230 150 175 34
+			forecolor			0.82 0.84 0.88 1
 			decoration
-			descText			@OJP_MENUS_DESC_NOTFORCESENSITIVE
+			descText			@OBP_MENUS_DESC_NOTFORCESENSITIVE
 			visible				0
 		}
 	
@@ -220,14 +220,40 @@
 			textaligny				0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_jump_labelblink
+			//[ExpSys]
+			//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+			group					"forcehoverblink"
+			//[/ExpSys]
+			style					0	
+			text					@MENUS_FORCE_JUMP
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 	
 		// Force Jump Dots
 		itemDef 
@@ -238,19 +264,25 @@
 			group					neutralpowers
 			//[/ExpSys]
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_LEVITATION
 			rect					80 90 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				@MENUS_LEAP_TO_AMAZING_HEIGHTS
 			visible				1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -258,13 +290,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_jump forecolor 1 1 1 1
+				show			setfp_jump_blink
+				show			setfp_jump_labelblink
+				setitemcolor	setfp_jump forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_jump forecolor 0.8 0.8 0.8 1
+				hide			setfp_jump_blink
+				hide			setfp_jump_labelblink
+				setitemcolor	setfp_jump forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_jump_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_LEVITATION
+			rect				80 90 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 		// Force Speed Title
 		itemDef 
@@ -283,14 +341,40 @@
 			textaligny				0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_speed_labelblink
+			//[ExpSys]
+			//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+			group					"forcehoverblink"
+			//[/ExpSys]
+			style					0	
+			text					@MENUS_FORCE_SPEED
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Force Speed Assign
 		itemDef 
@@ -301,19 +385,25 @@
 			group					neutralpowers
 			//[/ExpSys]
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_SPEED
 			rect					80 105 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
-				outlinecolor			1 .5 .5 .5
+				outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				@MENUS_MOVE_AT_AN_ACCELERATED
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -321,13 +411,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_speed forecolor 1 1 1 1
+				show			setfp_speed_blink
+				show			setfp_speed_labelblink
+				setitemcolor	setfp_speed forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_speed forecolor 0.8 0.8 0.8 1
+				hide			setfp_speed_blink
+				hide			setfp_speed_labelblink
+				setitemcolor	setfp_speed forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_speed_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_SPEED
+			rect				80 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 		// Force Sight title
 		itemDef 
@@ -342,14 +458,36 @@
 			textaligny				0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_see_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					@MENUS_FORCE_SIGHT
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Force Sight assign
 		itemDef 
@@ -357,19 +495,25 @@
 			name					setfp_see
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_SEE
 			rect					80 120 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				@MENUS_SEE_ENEMIES_AT_ALL_TIMES
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -377,13 +521,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_see forecolor 1 1 1 1
+				show			setfp_see_blink
+				show			setfp_see_labelblink
+				setitemcolor	setfp_see forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_see forecolor 0.8 0.8 0.8 1
+				hide			setfp_see_blink
+				hide			setfp_see_labelblink
+				setitemcolor	setfp_see forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_see_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_SEE
+			rect				80 120 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 
 		// Force Ranks title		
@@ -399,11 +569,11 @@
 			textaligny			0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration
 		}
@@ -420,11 +590,11 @@
 			textaligny			0
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration
 		}
@@ -445,14 +615,40 @@
 			textaligny				0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_push_labelblink
+			//[ExpSys]
+			//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+			group					"forcehoverblink"
+			//[/ExpSys]
+			style					0	
+			text					"Repulsion Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					430 90 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Force Push Assign
 		itemDef 
@@ -463,19 +659,25 @@
 			group					neutralpowers
 			//[/ExpSys]
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_PUSH
 			rect					330 90 175 15
 			textalign				ITEM_ALIGN_RIGHT
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				"Repulsion Power"
 			visible				1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -483,13 +685,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_push forecolor 1 1 1 1
+				show			setfp_push_blink
+				show			setfp_push_labelblink
+				setitemcolor	setfp_push forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_push forecolor 0.8 0.8 0.8 1
+				hide			setfp_push_blink
+				hide			setfp_push_labelblink
+				setitemcolor	setfp_push forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_push_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_PUSH
+			rect				330 90 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 		// Force Pusha title
 		itemDef 
 		{
@@ -503,14 +731,36 @@
 			textaligny				0
 			font					4
 			textscale				1
-					outlinecolor			1 .5 .5 .5
+					outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setsk_pusha_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Push / Explode / ..:"
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Force Pusha assign
 		itemDef 
@@ -518,6 +768,7 @@
 			name					setsk_pusha
 			group					neutralpowers
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_PUSHA
 			rect					330 105 175 15
 			textalign				ITEM_ALIGN_RIGHT		
@@ -525,13 +776,18 @@
 			textaligny				-5
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				"Force Push / Force Explode / .."
 			visible				1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -539,13 +795,40 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setsk_pusha forecolor 1 1 1 1
+				show			setsk_pusha_blink
+				show			setsk_pusha_labelblink
+				setitemcolor	setsk_pusha forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setsk_pusha forecolor 0.8 0.8 0.8 1
+				hide			setsk_pusha_blink
+				hide			setsk_pusha_labelblink
+				setitemcolor	setsk_pusha forecolor 0.82 0.84 0.88 1
 			}
-		}			
+		}
+
+		itemDef 
+		{
+			name				setsk_pusha_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_PUSHA
+			rect				330 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+			
 		// Force Pull title
 		itemDef 
 		{
@@ -563,14 +846,40 @@
 			textaligny				0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration	
 		}
+		itemDef 
+		{
+			name					setfp_pull_labelblink
+			//[ExpSys]
+			//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+			group					"forcehoverblink"
+			//[/ExpSys]
+			style					0	
+			text					"Attraction Power:"
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					430 120 110 15 
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration	
+		}
+
 
 		// Force Pull assign
 		itemDef 
@@ -581,19 +890,25 @@
 			group					neutralpowers
 			//[/ExpSys]
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_PULL
 			rect					330 120 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				"Attraction Power"
 			visible				1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -601,13 +916,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_pull forecolor 1 1 1 1
+				show			setfp_pull_blink
+				show			setfp_pull_labelblink
+				setitemcolor	setfp_pull forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_pull forecolor 0.8 0.8 0.8 1
+				hide			setfp_pull_blink
+				hide			setfp_pull_labelblink
+				setitemcolor	setfp_pull forecolor 0.82 0.84 0.88 1
 			}
-		}		
+		}
+
+		itemDef 
+		{
+			name				setfp_pull_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_PULL
+			rect				330 120 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
 		
 
 		// Force Pulla title
@@ -623,14 +964,36 @@
 			textaligny				0
 			font					4
 			textscale				1
-					outlinecolor			1 .5 .5 .5
+					outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setsk_pulla_labelblink
+			group					"forceblinkremoved"
+			style					0	
+			text					"Pull / Implode / ..:"
+			rect					430 135 110 15
+			textalign				ITEM_ALIGN_RIGHT	
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Force Pulla assign
 		itemDef 
@@ -638,6 +1001,7 @@
 			name					setsk_pulla
 			group					neutralpowers
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_PULLA
 			rect					330 135 175 15
 			textalign				ITEM_ALIGN_RIGHT		
@@ -645,13 +1009,18 @@
 			textaligny				-5
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				"Force Pull / Force Implode / .."
 			visible				1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -659,13 +1028,40 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setsk_pulla forecolor 1 1 1 1
+				show			setsk_pulla_blink
+				show			setsk_pulla_labelblink
+				setitemcolor	setsk_pulla forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setsk_pulla forecolor 0.8 0.8 0.8 1
+				hide			setsk_pulla_blink
+				hide			setsk_pulla_labelblink
+				setitemcolor	setsk_pulla forecolor 0.82 0.84 0.88 1
 			}
-		}							
+		}
+
+		itemDef 
+		{
+			name				setsk_pulla_blink
+			group				"forceblinkremoved"
+			style				0
+			ownerdraw			UI_FORCE_RANK_PULLA
+			rect				330 135 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			1
+			font				4
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+							
 		////////////////////////////////////////////////////////////////////////////////
 		// The Lightsaber Skills
 		////////////////////////////////////////////////////////////////////////////////
@@ -677,17 +1073,17 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				"Lightsaber Skills"
-			rect				180 165 0 0
+			rect				180 180 0 0
 			textalign			ITEM_ALIGN_RIGHT		
 			textalignx			0
 			textaligny			0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration
 		}
@@ -698,21 +1094,65 @@
 			group				"playersettingforcegroup"
 			style				0	
 			text				@MENUS_1_2_3
-			rect				130 165 0 0
+			rect				130 180 0 0
 			textalign			ITEM_ALIGN_RIGHT
 			textalignx			115
 			textaligny			0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible				1 
 			decoration
 		}
 		
+		// Lightsaber Powers title
+		itemDef 
+		{
+			name				forceranktitleC
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Lightsaber Powers"
+			rect				430 180 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2C
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				380 180 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+			font					4
+			textscale				1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+		
+
 		// No Lightsaber
 		itemDef 
 		{
@@ -721,47 +1161,22 @@
 			text				@MENUS_NO_LIGHTSABER
 			type				1
 			style				0	
-			rect				80 255 0 0
+			rect				80 210 0 0
 			textalign			ITEM_ALIGN_CENTER	 	
 			textalignx			65
 			textaligny			0
 			font				4
 			textscale			1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				@MENUS_MUST_ACQUIRE_A_MINIMUM
 			visible				0 
 			decoration
 		}
 
-		// Add Saber Attack for saber
-		itemDef 
-		{
-			name					nosaber
-			group					"playersettinggroup"
-			//[StanceSelection]
-			text					@OJP_MENUS_REQUIRES_BLUESTYLE
-			//text					@MENUS__REQUIRES_SABER_ATTACK
-			//[/StanceSelection]
-			type					1
-			style					0	
-			rect					80 270 0 0
-			textalign				ITEM_ALIGN_CENTER		
-			textalignx				65
-			outlinecolor			1 .5 .5 .5
-			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
-			border					0
-			bordercolor				0 0 0 0
-			border					0
-			bordercolor				0 0 0 0
-			descText				@MENUS_MUST_ACQUIRE_A_MINIMUM
-			visible					0  
-			decoration   
-		}
 
 		// Invisible description box
 		itemDef 
@@ -769,8 +1184,8 @@
 			name					nosaber
 			group					"playersettinggroup"
 			style					0
-			rect					230 338 175 34
-			forecolor				1 1 1 1
+			rect					230 245 175 34
+			forecolor				0.82 0.84 0.88 1
 			decoration
 			descText				@MENUS_MUST_ACQUIRE_A_MINIMUM
 			visible					0
@@ -787,20 +1202,46 @@
 			//text					@MENUS_SABER_ATTACK
 			//[/StanceSelection]
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					180 180 110 15
+			rect					180 195 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_saberattack_labelblink
+			group					"forcehoverblink"
+			style					0	
+			//[StanceSelection]
+			text					"Medium/Shii-Cho:"
+			//text					@MENUS_SABER_ATTACK
+			//[/StanceSelection]
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					180 195 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber attack assign
 		itemDef 
@@ -808,22 +1249,28 @@
 			name					setfp_saberattack
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_SABERATTACK
-			rect					80 180 175 15
+			rect					80 195 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
-			outlinecolor			1 .5 .5 .5
+			outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			//[StanceSelection]
-			descText				@OJP_MENUS_DESC_SKILL_YELLOWSTYLE
+			descText				@OBP_MENUS_DESC_SKILL_YELLOWSTYLE
 			//descText				@MENUS_USE_MORE_POWERFUL_LIGHTSABER
 			//[/StanceSelection]
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -831,13 +1278,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_saberattack forecolor 1 1 1 1
+				show			setfp_saberattack_blink
+				show			setfp_saberattack_labelblink
+				setitemcolor	setfp_saberattack forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_saberattack forecolor  0.8 0.8 0.8 1
+				hide			setfp_saberattack_blink
+				hide			setfp_saberattack_labelblink
+				setitemcolor	setfp_saberattack forecolor  0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_saberattack_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_SABERATTACK
+			rect				80 195 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 		
 		//[StanceSelection]
 		// Saber Blue Style title
@@ -847,20 +1320,42 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Fast/Soresu:"
-			rect					180 195 110 15
+			rect					180 210 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_bluestyle_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Fast/Soresu:"
+			rect					180 210 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+						outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Blue Style assign
 		itemDef 
@@ -868,20 +1363,26 @@
 			name					setfp_bluestyle
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_BLUESTYLE
-			rect					80 195 175 15
+			rect					80 210 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
 			background				"forcecirclegray"					
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			descText				@OJP_MENUS_DESC_SKILL_BLUESTYLE
+			bordercolor				.33 .33 .33 1
+			descText				@OBP_MENUS_DESC_SKILL_BLUESTYLE
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -889,13 +1390,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_bluestyle forecolor 1 1 1 1
+				show			setfp_bluestyle_blink
+				show			setfp_bluestyle_labelblink
+				setitemcolor	setfp_bluestyle forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_bluestyle forecolor 0.8 0.8 0.8 1
+				hide			setfp_bluestyle_blink
+				hide			setfp_bluestyle_labelblink
+				setitemcolor	setfp_bluestyle forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_bluestyle_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_BLUESTYLE
+			rect				80 210 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 		// Saber Red Style title
 		itemDef 
@@ -904,20 +1431,42 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Strong/Djem-So:"
-			rect					180 210 110 15
+			rect					180 225 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_redstyle_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Strong/Djem-So:"
+			rect					180 225 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+						outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Red Style assign
 		itemDef 
@@ -925,20 +1474,26 @@
 			name					setfp_redstyle
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_REDSTYLE
-			rect					80 210 175 15
+			rect					80 225 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
 			background				"forcecirclegray"					
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			descText				@OJP_MENUS_DESC_SKILL_REDSTYLE
+			bordercolor				.33 .33 .33 1
+			descText				@OBP_MENUS_DESC_SKILL_REDSTYLE
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -946,13 +1501,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_redstyle forecolor 1 1 1 1
+				show			setfp_redstyle_blink
+				show			setfp_redstyle_labelblink
+				setitemcolor	setfp_redstyle forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_redstyle forecolor 0.8 0.8 0.8 1
+				hide			setfp_redstyle_blink
+				hide			setfp_redstyle_labelblink
+				setitemcolor	setfp_redstyle forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_redstyle_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_REDSTYLE
+			rect				80 225 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 		// Saber Green Style title
 		itemDef 
@@ -961,20 +1542,42 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Fast-Medium/Makashi:"
-			rect					180 225 110 15
+			rect					180 240 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-					outlinecolor			1 .5 .5 .5
+					outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_greenstyle_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Fast-Medium/Makashi:"
+			rect					180 240 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Green Style assign
 		itemDef 
@@ -982,20 +1585,26 @@
 			name					setfp_greenstyle
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_GREENSTYLE
-			rect					80 225 175 15
+			rect					80 240 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
 			background				"forcecirclegray"					
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			descText				@OJP_MENUS_DESC_SKILL_GREENSTYLE
+			bordercolor				.33 .33 .33 1
+			descText				@OBP_MENUS_DESC_SKILL_GREENSTYLE
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -1003,13 +1612,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_greenstyle forecolor 1 1 1 1
+				show			setfp_greenstyle_blink
+				show			setfp_greenstyle_labelblink
+				setitemcolor	setfp_greenstyle forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_greenstyle forecolor 0.8 0.8 0.8 1
+				hide			setfp_greenstyle_blink
+				hide			setfp_greenstyle_labelblink
+				setitemcolor	setfp_greenstyle forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_greenstyle_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_GREENSTYLE
+			rect				80 240 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 		// Saber Purple Style title
 		itemDef 
@@ -1018,20 +1653,42 @@
 			group					"playersettingforcegroup"
 			style					0	
 			text					"Medium-Strong/Juyo:"
-			rect					180 240 110 15
+			rect					180 255 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_purplestyle_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					"Medium-Strong/Juyo:"
+			rect					180 255 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+						outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Purple Style assign
 		itemDef 
@@ -1039,20 +1696,26 @@
 			name					setfp_purplestyle
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_PURPLESTYLE
-			rect					80 240 175 15
+			rect					80 255 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
 			background				"forcecirclegray"					
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			descText				@OJP_MENUS_DESC_SKILL_PURPLESTYLE
+			bordercolor				.33 .33 .33 1
+			descText				@OBP_MENUS_DESC_SKILL_PURPLESTYLE
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -1060,13 +1723,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_purplestyle forecolor 1 1 1 1
+				show			setfp_purplestyle_blink
+				show			setfp_purplestyle_labelblink
+				setitemcolor	setfp_purplestyle forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_purplestyle forecolor 0.8 0.8 0.8 1
+				hide			setfp_purplestyle_blink
+				hide			setfp_purplestyle_labelblink
+				setitemcolor	setfp_purplestyle forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_purplestyle_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_PURPLESTYLE
+			rect				80 255 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 		// Saber Dual Style title
 		itemDef 
@@ -1074,21 +1763,43 @@
 			name					setfp_dualstyle
 			group					"playersettingforcegroup"
 			style					0	
-			text					@OJP_MENUS_SKILL_DUALSTYLE
-			rect					180 255 110 15
+			text					@OBP_MENUS_SKILL_DUALSTYLE
+			rect					180 270 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_dualstyle_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					@OBP_MENUS_SKILL_DUALSTYLE
+			rect					180 270 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+						outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Dual Style assign
 		itemDef 
@@ -1096,20 +1807,26 @@
 			name					setfp_dualstyle
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_DUALSTYLE
-			rect					80 255 175 15
+			rect					80 270 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
 			background				"forcecirclegray"					
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			descText				@OJP_MENUS_DESC_SKILL_DUALSTYLE
+			bordercolor				.33 .33 .33 1
+			descText				@OBP_MENUS_DESC_SKILL_DUALSTYLE
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -1117,13 +1834,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_dualstyle forecolor 1 1 1 1
+				show			setfp_dualstyle_blink
+				show			setfp_dualstyle_labelblink
+				setitemcolor	setfp_dualstyle forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_dualstyle forecolor 0.8 0.8 0.8 1
+				hide			setfp_dualstyle_blink
+				hide			setfp_dualstyle_labelblink
+				setitemcolor	setfp_dualstyle forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_dualstyle_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_DUALSTYLE
+			rect				80 270 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 		// Saber Staff Style title
 		itemDef 
@@ -1131,21 +1874,43 @@
 			name					setfp_staffstyle
 			group					"playersettingforcegroup"
 			style					0	
-			text					@OJP_MENUS_SKILL_STAFFSTYLE
-			rect					180 270 110 15
+			text					@OBP_MENUS_SKILL_STAFFSTYLE
+			rect					180 285 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			visible					1 
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_staffstyle_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					@OBP_MENUS_SKILL_STAFFSTYLE
+			rect					180 285 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+						outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Staff Style assign
 		itemDef 
@@ -1153,20 +1918,26 @@
 			name					setfp_staffstyle
 			group					"playersettingforcegroup"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_STAFFSTYLE
-			rect					80 270 175 15
+			rect					80 285 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
 			background				"forcecirclegray"					
-					outlinecolor			1 .5 .5 .5
+					outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			descText				@OJP_MENUS_DESC_SKILL_STAFFSTYLE
+			bordercolor				.33 .33 .33 1
+			descText				@OBP_MENUS_DESC_SKILL_STAFFSTYLE
 			visible					1 
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -1174,57 +1945,112 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_staffstyle forecolor 1 1 1 1
+				show			setfp_staffstyle_blink
+				show			setfp_staffstyle_labelblink
+				setitemcolor	setfp_staffstyle forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_staffstyle forecolor 0.8 0.8 0.8 1
+				hide			setfp_staffstyle_blink
+				hide			setfp_staffstyle_labelblink
+				setitemcolor	setfp_staffstyle forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_staffstyle_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_STAFFSTYLE
+			rect				80 285 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 		//[/StanceSelection]
 		
 		// Saber Defend title
 		itemDef 
 		{
 			name					setfp_saberdefend
-			group					"playersettingforcegroup"
+			group					"lightsaberpowers"
 			style					0	
 			text					@MENUS_SABER_DEFEND
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					180 285 110 15
+			rect					430 195 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-					outlinecolor			1 .5 .5 .5
+					outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			visible					1 
+			bordercolor				.33 .33 .33 1
+			visible					0
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_saberdefend_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					@MENUS_SABER_DEFEND
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					430 195 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Defend assign
 		itemDef 
 		{
 			name					setfp_saberdefend
-			group					"playersettingforcegroup"
+			group					"lightsaberpowers"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_SABERDEFEND
-			rect					80 285 175 15
+			rect					330 195 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				@MENUS_USE_THE_LIGHTSABER_TO
-			visible					1 
+			visible					0
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -1232,57 +2058,112 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_saberdefend forecolor 1 1 1 1
+				show			setfp_saberdefend_blink
+				show			setfp_saberdefend_labelblink
+				setitemcolor	setfp_saberdefend forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_saberdefend forecolor   0.8 0.8 0.8 1
+				hide			setfp_saberdefend_blink
+				hide			setfp_saberdefend_labelblink
+				setitemcolor	setfp_saberdefend forecolor   0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_saberdefend_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_SABERDEFEND
+			rect					330 195 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 		
 		// Saber Throw title
 		itemDef 
 		{
 			name					setfp_saberthrow
-			group					"playersettingforcegroup"
+			group					"lightsaberpowers"
 			style					0	
 			text					@MENUS_SABER_THROW
 			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
-			rect					180 300 110 15
+			rect					430 210 110 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				0
 			textaligny				0
 			font					4
 			textscale				1
-					outlinecolor			1 .5 .5 .5
+					outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
-			visible					1 
+			bordercolor				.33 .33 .33 1
+			visible					0
 			decoration
 		}
+		itemDef 
+		{
+			name					setfp_saberthrow_labelblink
+			group					"forcehoverblink"
+			style					0	
+			text					@MENUS_SABER_THROW
+			//descText				@MENUS_DESCRIPTION_OF_A_FORCE
+			rect					430 210 110 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			forecolor				0.82 0.84 0.88 1
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+
 
 		// Saber Throw assign
 		itemDef 
 		{
 			name					setfp_saberthrow
-			group					"playersettingforcegroup"
+			group					"lightsaberpowers"
 			style					0	
+			type					1
 			ownerdraw				UI_FORCE_RANK_SABERTHROW
-			rect					80 300 175 15
+			rect					330 210 175 15
 			textalign				ITEM_ALIGN_RIGHT		
 			textalignx				115
 			textaligny				-5
 			textscale				.25        
 			background				"forcecirclegray"					
-						outlinecolor			1 .5 .5 .5
+						outlinecolor			.5 .5 .5 .5
 			backcolor				0 0 0 0
-			forecolor				0.8 0.8 0.8 1
+			forecolor				0.82 0.84 0.88 1
 			border					0
-			bordercolor				0 0 0 0
+			bordercolor				.33 .33 .33 1
 			descText				@MENUS_THROW_YOUR_LIGHTSABER
-			visible					1 
+			visible					0
+			mouseEnter
+			{
+				play "sound/interface/button2.wav" ;
+			}
+
 			action 
 			{ 
 				play			"sound/interface/button1.wav" ;
@@ -1290,13 +2171,39 @@
 
 			mouseenter 
 			{ 
-				setitemcolor	setfp_saberthrow forecolor 1 1 1 1
+				show			setfp_saberthrow_blink
+				show			setfp_saberthrow_labelblink
+				setitemcolor	setfp_saberthrow forecolor 0.82 0.84 0.88 1
 			}
 			mouseexit 
 			{ 
-				setitemcolor	setfp_saberthrow forecolor 0.8 0.8 0.8 1
+				hide			setfp_saberthrow_blink
+				hide			setfp_saberthrow_labelblink
+				setitemcolor	setfp_saberthrow forecolor 0.82 0.84 0.88 1
 			}
 		}
+
+		itemDef 
+		{
+			name				setfp_saberthrow_blink
+			group				"forcehoverblink"
+			style				0
+			ownerdraw			UI_FORCE_RANK_SABERTHROW
+			rect					330 210 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
 
 	
 	}

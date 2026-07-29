@@ -1,4 +1,4 @@
-//bg_vehicleLoad.c
+﻿//bg_vehicleLoad.c
 
 #ifdef _JK2 //SP does not have this preprocessor for game like MP does
 #ifndef _JK2MP
@@ -155,7 +155,7 @@ vehicleInfo_t g_vehicleInfo[MAX_VEHICLES];
 int		numVehicles = 0;//first one is null/default
 
 // cgame may call this to ensure veh weapon assets are registered.
-// In this OJP Enhanced code path, assets are registered during parsing (CGAME),
+// In this Open Battlefront Project code path, assets are registered during parsing (CGAME),
 // so this is a safe no-op that also resolves linker references.
 #ifdef CGAME
 #ifndef QAGAME
@@ -375,7 +375,7 @@ case VF_VECTOR:
 }
 
 
-// --- OJP Enhanced fix: allow .veh to reference vehicle weapons by internal "name" key ---
+// --- Open Battlefront Project fix: allow .veh to reference vehicle weapons by internal "name" key ---
 // Some .vwp files use a block label that differs from the in-block "name" value.
 // Vehicles typically reference the in-block "name". If we only search by block label,
 // we can fail to find the weapon (or load the wrong one), causing missing/wrong vehicle projectiles.

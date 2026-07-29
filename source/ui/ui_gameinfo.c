@@ -17,6 +17,36 @@ static char		*ui_botInfos[MAX_BOTS];
 
 static int		ui_numArenas;
 static char		*ui_arenaInfos[MAX_ARENAS];
+
+
+static qboolean UI_ArenaTypeHasToken( const char *type, const char *token ) {
+	const char *p;
+	int tokenLen;
+
+	if ( !type || !*type || !token || !*token ) {
+		return qfalse;
+	}
+
+	tokenLen = strlen( token );
+	p = type;
+	while ( *p ) {
+		while ( *p && *p <= ' ' ) {
+			p++;
+		}
+		if ( !*p ) {
+			break;
+		}
+		if ( !Q_stricmpn( p, token, tokenLen ) && ( p[tokenLen] <= ' ' || !p[tokenLen] ) ) {
+			return qtrue;
+		}
+		while ( *p && *p > ' ' ) {
+			p++;
+		}
+	}
+
+	return qfalse;
+}
+
 void UI_AllocMem(void **ptr, int sze);
 void UI_FreeMem(void *ptr);
 /*
@@ -173,57 +203,38 @@ void UI_LoadArenas( void ) {
 		type = Info_ValueForKey( ui_arenaInfos[n], "type" );
 		// if no type specified, it will be treated as "ffa"
 		if( *type ) {
-			if( strstr( type, "ffa" ) ) {
+			if( UI_ArenaTypeHasToken( type, "ffa" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_FFA);
-				//[OLDGAMETYPES]
-				//all ffa maps support JediMaster mode with the new code that
-				//adds a info_jedimaster_start to maps that don't have them.
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_JEDIMASTER);
-				//[/OLDGAMETYPES]
 			}
-			//[Asteroids]
-			if( strstr( type, "team" ) ) {
+			if( UI_ArenaTypeHasToken( type, "team" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_TEAM);
 			}
-			//[/Asteroids]
-			//[CoOp]
-			if( strstr( type, "coop" ) ) {
+			if( UI_ArenaTypeHasToken( type, "coop" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_SINGLE_PLAYER);
 			}
-			//[/CoOp]
-			if( strstr( type, "holocron" ) ) {
+			if( UI_ArenaTypeHasToken( type, "holocron" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_HOLOCRON);
 			}
-			if( strstr( type, "jedimaster" ) ) {
+			if( UI_ArenaTypeHasToken( type, "jedimaster" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_JEDIMASTER);
 			}
-			if( strstr( type, "duel" ) ) {
+			if( UI_ArenaTypeHasToken( type, "duel" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_DUEL);
+			}
+			if( UI_ArenaTypeHasToken( type, "power" ) || UI_ArenaTypeHasToken( type, "powerduel" ) || UI_ArenaTypeHasToken( type, "powerfuel" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_POWERDUEL);
 			}
-			if( strstr( type, "powerduel" ) ) {
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_DUEL);
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_POWERDUEL);
-			}
-			if( strstr( type, "siege" ) ) {
+			if( UI_ArenaTypeHasToken( type, "siege" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_SIEGE);
 			}
-			if( strstr( type, "ctf" ) ) {
+			if( UI_ArenaTypeHasToken( type, "ctf" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTF);
-//[OLDGAMETYPES]
-				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTY);
-//[/OLDGAMETYPES]
 			}
-			if( strstr( type, "cty" ) ) {
+			if( UI_ArenaTypeHasToken( type, "cty" ) ) {
 				uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_CTY);
 			}
 		} else {
 			uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_FFA);
-			//[OLDGAMETYPES]
-			//all ffa maps support JediMaster mode with the new code that
-			//adds a info_jedimaster_start to maps that don't have them.
-			uiInfo.mapList[uiInfo.mapCount].typeBits |= (1 << GT_JEDIMASTER);
-			//[/OLDGAMETYPES]
 		}
 
 		uiInfo.mapCount++;

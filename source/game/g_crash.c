@@ -1,4 +1,4 @@
-//[CrashLog]
+﻿//[CrashLog]
 #include "g_local.h"
 
 #if defined __linux__ && !defined GNUC && !defined(_WIN32)
@@ -173,7 +173,7 @@
 
 		if(segvloop < 2) {
 			G_LogPrintf("-8<------- Crash Information ------->8-\n");
-			G_LogPrintf("    Please forward to the OJP team.    \n");
+			G_LogPrintf("    Please forward to the OBP team.    \n");
 			G_LogPrintf("---------------------------------------\n");
 			G_LogPrintf("Version: %s Linux\n", GAMEVERSION);
 			G_LogPrintf("Build Date: %s", __DATE__);
@@ -355,7 +355,7 @@
 		trap_Cvar_VariableStringBuffer("fs_game", gamepath, sizeof(gamepath));
 		pfnSymInitialize(GetCurrentProcess(), va("%s\\%s", basepath, gamepath), TRUE);
 		G_LogPrintf("-8<------- Crash Information ------->8-\n");
-		G_LogPrintf("    Please forward to the OJP team.    \n");
+		G_LogPrintf("    Please forward to the OBP team.    \n");
 		G_LogPrintf("---------------------------------------\n");
 		G_LogPrintf("Version: %s Win32\n", GAMEVERSION);
 		G_LogPrintf("Build Date: %s", __DATE__);

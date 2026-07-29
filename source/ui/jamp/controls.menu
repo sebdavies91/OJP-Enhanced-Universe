@@ -1,4 +1,4 @@
-//--------------------------------------------------------------
+﻿//--------------------------------------------------------------
 //
 // MULTIPLAYER CONTROLS MENU
 //
@@ -107,7 +107,7 @@
 			name				bgpic
 			style				WINDOW_STYLE_SHADER
 			rect				23 98 594 324
-			background			"ojp/menu/1"
+			background			"obp/menu/1"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -130,7 +130,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				115 -40 150 150
-			background			"ojp/menu/bluewire"
+			background			"obp/menu/bluewire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -144,7 +144,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				375 -40 150 150
-			background			"ojp/menu/redwire"
+			background			"obp/menu/redwire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -156,7 +156,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				10 104 26 370
-			background			"ojp/menu/boltblue"
+			background			"obp/menu/boltblue"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -168,7 +168,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				604 104 26 370
-			background			"ojp/menu/boltred"
+			background			"obp/menu/boltred"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -181,7 +181,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				601 85 32 32
-			background			"ojp/menu/red_emitter"
+			background			"obp/menu/red_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -193,7 +193,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				7 85 32 32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -204,7 +204,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				601 450 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -216,7 +216,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				7 450 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -228,7 +228,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 462 640 18
-			background			"ojp/menu/lowbar"
+			background			"obp/menu/lowbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -240,7 +240,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 85 640 18
-			background			"ojp/menu/topbar"
+			background			"obp/menu/topbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -252,7 +252,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 0 320 80
-			background			"ojp/menu/bluebeam"
+			background			"obp/menu/bluebeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -264,7 +264,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				320 1 320 72
-			background			"ojp/menu/redbeam"
+			background			"obp/menu/redbeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -288,7 +288,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/redspin"
+			background			"obp/menu/redspin"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -300,7 +300,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				-1.5 -5 80 80
-			background			"ojp/menu/lightside"
+			background			"obp/menu/lightside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -312,7 +312,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/darkside"
+			background			"obp/menu/darkside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -343,11 +343,11 @@
 		}
 		itemDef 
 		{
-			name				ojplogo
+			name				obplogo
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				220 0 200 90
-			background			"ojp/menu/ojplogo"
+			background			"obp/menu/obplogo"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -2474,7 +2474,7 @@ itemDef
 			name				none
 			group				weaponcontrols
 			type				ITEM_TYPE_BIND
-			text				@OJP_MENUS_THERMAL_DETONATOR_THROW
+			text				@OBP_MENUS_THERMAL_DETONATOR_THROW
 			cvar				"+button13"
 			rect				260 395 340 14
 			textalign			ITEM_ALIGN_RIGHT
@@ -2485,7 +2485,7 @@ itemDef
 			forecolor			.615 .615 .956 1
 			visible			0 
 			// appearance_slot		10
-			descText			@OJP_MENUS_THERMAL_DETONATOR_THROW_AVAILABLE
+			descText			@OBP_MENUS_THERMAL_DETONATOR_THROW_AVAILABLE
 
 			mouseenter 
 			{ 
@@ -2648,7 +2648,7 @@ itemDef
 			name				force4
 			group				forcecontrols
 			type				ITEM_TYPE_BIND
-			text				@OJP_MENUS_FORCE_SABERTHROW
+			text				@OBP_MENUS_FORCE_SABERTHROW
 			cvar				"+button12"
 			rect				260 260 340 14
 			textalign			ITEM_ALIGN_RIGHT
@@ -2658,7 +2658,7 @@ itemDef
 			textscale			1
 			forecolor			.615 .615 .956 1
 			visible				0
-			descText			@OJP_MENUS_USES_FORCE_SABERTHROW_ABILITY
+			descText			@OBP_MENUS_USES_FORCE_SABERTHROW_ABILITY
 
 			mouseenter 
 			{ 

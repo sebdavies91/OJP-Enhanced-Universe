@@ -1,7 +1,99 @@
-//This file contains functions relate to the saber impact behavior of OJP Enhanced's saber system.
+﻿//This file contains functions relate to the saber impact behavior of Open Battlefront Project's saber system.
 #include "g_local.h"
 #include "g_saberbeh.h"
 #include "ai_main.h"
+
+static int SabBeh_StyleClashPower(int saberStyle)
+{
+	switch (saberStyle)
+	{
+	case SS_FAST:
+		// SORESU: clean recovery and defense, low clash pressure.
+		return 0;
+	case SS_MEDIUM:
+		// SHII-CHO: reliable baseline.
+		return 1;
+	case SS_TAVION:
+		// MAKASHI: precise duelist pressure, not raw force.
+		return 2;
+	case SS_STAFF:
+		// NIMAN: stable, controlled staff flow.
+		return 2;
+	case SS_DUAL:
+		// JAR'KAI: repeated pressure from two blades.
+		return 3;
+	case SS_DESANN:
+		// JUYO: aggressive medium-heavy pressure.
+		return 4;
+	case SS_STRONG:
+		// DJEM SO: strongest committed clash pressure.
+		return 5;
+	default:
+		return 1;
+	}
+}
+
+static int SabBeh_StyleClashRecovery(int saberStyle)
+{
+	switch (saberStyle)
+	{
+	case SS_FAST:
+		return 2;
+	case SS_TAVION:
+		return 1;
+	case SS_MEDIUM:
+	case SS_STAFF:
+		return 0;
+	case SS_DUAL:
+		return -1;
+	case SS_DESANN:
+		return -1;
+	case SS_STRONG:
+		return -2;
+	default:
+		return 0;
+	}
+}
+
+static void SabBeh_ApplyStyleClash(gentity_t *self, sabmech_t *mechSelf, gentity_t *otherOwner, sabmech_t *mechOther)
+{
+	int selfStyle, otherStyle;
+	int selfScore, otherScore, diff;
+
+	if (!self || !self->client || !otherOwner || !otherOwner->client || !mechSelf || !mechOther)
+	{
+		return;
+	}
+
+	selfStyle = self->client->ps.fd.saberAnimLevel;
+	otherStyle = otherOwner->client->ps.fd.saberAnimLevel;
+
+	selfScore = SabBeh_StyleClashPower(selfStyle) + SabBeh_StyleClashRecovery(selfStyle);
+	otherScore = SabBeh_StyleClashPower(otherStyle) + SabBeh_StyleClashRecovery(otherStyle);
+	diff = selfScore - otherScore;
+
+	// Clash DP pressure: power forms push guards harder, recovery forms bleed less DP.
+	if (diff > 0)
+	{
+		G_DodgeDrain(otherOwner, self, diff);
+	}
+	else if (diff < 0)
+	{
+		G_DodgeDrain(self, otherOwner, -diff);
+	}
+
+	// Keep rare hard stagger: only clearly superior clash pressure should force a slow bounce.
+	// This makes Djem So/Juyo/Jar'Kai feel forceful without creating constant mishaps.
+	if (diff >= 4 && !mechOther->doSlowBounce && !mechOther->doHeavySlowBounce && !mechOther->doStun && Q_irand(0, 99) < 12)
+	{
+		mechOther->doSlowBounce = qtrue;
+	}
+	else if (diff <= -4 && !mechSelf->doSlowBounce && !mechSelf->doHeavySlowBounce && !mechSelf->doStun && Q_irand(0, 99) < 12)
+	{
+		mechSelf->doSlowBounce = qtrue;
+	}
+}
+
 
 GAME_INLINE void ClearSabMech( sabmech_t *sabmech)
 {
@@ -279,6 +371,8 @@ void SabBeh_AttackVsAttack( gentity_t *self, sabmech_t *mechSelf,
 #ifdef _DEBUG
 		mechOther->behaveMode = SABBEHAVE_ATTACK;
 #endif
+
+		SabBeh_ApplyStyleClash(self, mechSelf, otherOwner, mechOther);
 	}
 }
 
@@ -288,7 +382,7 @@ extern stringID_table_t SaberMoveTable[];
 extern stringID_table_t animTable [MAX_ANIMATIONS+1];
 extern qboolean BG_InSlowBounce(playerState_t *ps);
 extern qboolean G_InAttackParry(gentity_t *self);
-extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 extern qboolean G_BlockIsParry( gentity_t *self, gentity_t *attacker, vec3_t hitLoc );
 extern qboolean G_BlockIsQuickParry( gentity_t *self, gentity_t *attacker, vec3_t hitLoc );
@@ -361,7 +455,18 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 			SabBeh_AddBalance(attacker, mechAttacker, -1, qtrue);
 
 			if(attacker->client->ps.fd.saberAnimLevel == SS_DESANN)
+			{// JUYO: attack fakes carry strong guard pressure if not parried.
 				SabBeh_AddBalance(blocker, mechBlocker, 2, qfalse);
+				G_DodgeDrain(blocker, attacker, 2);
+			}
+			else if(attacker->client->ps.fd.saberAnimLevel == SS_STRONG)
+			{// DJEM SO: punishing if the defender fails to parry.
+				G_DodgeDrain(blocker, attacker, 3);
+			}
+			else if(attacker->client->ps.fd.saberAnimLevel == SS_DUAL)
+			{// JAR_KAI: repeated blade pressure.
+				G_DodgeDrain(blocker, attacker, 1);
+			}
 
 #ifdef _DEBUG
 			mechAttacker->behaveMode = SABBEHAVE_ATTACK;
@@ -434,18 +539,51 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 
 			SabBeh_AddBalance(blocker, mechBlocker, MPCOST_PARRYING, qfalse);
 			BG_AddFatigue(&blocker->client->ps, FPCOST_PARRYING_PURE);
+
+			// Style-specific parry results: precise/defensive forms recover cleaner,
+			// power/aggression forms are punished harder when cleanly read.
+			switch(attacker->client->ps.fd.saberAnimLevel)
+			{
+			case SS_STRONG:
+			case SS_DESANN:
+				G_DodgeDrain(attacker, blocker, 3);
+				break;
+			case SS_DUAL:
+				G_DodgeDrain(attacker, blocker, 2);
+				break;
+			case SS_TAVION:
+				G_DodgeDrain(attacker, blocker, 1);
+				break;
+			default:
+				break;
+			}
 			
 		}
 		else
 		{//blocked values
 			SabBeh_AddBalance(attacker, mechAttacker, -1, qtrue);
 			if(attacker->client->ps.fd.saberAnimLevel == SS_TAVION)
-			{//aqua styles deals MP to players that don't parry it.
+			{// MAKASHI: precise pressure against an ordinary block, but not raw knockback.
+				SabBeh_AddBalance(blocker, mechBlocker, 1, qfalse);
+				G_DodgeDrain(blocker, attacker, 1);
+			}
+			else if(attacker->client->ps.fd.saberAnimLevel == SS_DESANN)
+			{// JUYO: aggressive guard pressure when not cleanly parried.
 				SabBeh_AddBalance(blocker, mechBlocker, 2, qfalse);
+				G_DodgeDrain(blocker, attacker, 2);
 			}
 			else if(attacker->client->ps.fd.saberAnimLevel == SS_STRONG)
-			{
+			{// DJEM SO: heavy counter-pressure, but only on failed parries/ordinary blocks.
 				blocker->client->ps.fd.forcePower -= 2;
+				G_DodgeDrain(blocker, attacker, 3);
+			}
+			else if(attacker->client->ps.fd.saberAnimLevel == SS_DUAL)
+			{// JAR_KAI: dual-blade pressure stacks through repeated contacts.
+				G_DodgeDrain(blocker, attacker, 1);
+			}
+			else if(attacker->client->ps.fd.saberAnimLevel == SS_STAFF)
+			{// NIMAN: stable, controlled staff pressure.
+				G_DodgeDrain(blocker, attacker, 1);
 			}
 			
 #ifdef _DEBUG
@@ -475,13 +613,13 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 
 	/*
 	// debugger message.
-	G_Printf("%i: %i: Saber Block Cost: %i atk: %s %s blk: %s %s\n", level.time, blocker->s.number, OJP_SaberBlockCost(blocker, attacker, hitLoc), 
+	G_Printf("%i: %i: Saber Block Cost: %i atk: %s %s blk: %s %s\n", level.time, blocker->s.number, OBP_SaberBlockCost(blocker, attacker, hitLoc), 
 		GetStringForID( animTable, attacker->client->ps.torsoAnim ), GetStringForID( SaberMoveTable, attacker->client->ps.saberMove ), 
 		GetStringForID( animTable, blocker->client->ps.torsoAnim ), GetStringForID( SaberMoveTable, blocker->client->ps.saberMove ) );
 	*/
 
 	//[ExpSys] -- [DUALRAWR]
-	G_DodgeDrain(blocker, attacker, OJP_SaberBlockCost(blocker, attacker, hitLoc));
+	G_DodgeDrain(blocker, attacker, OBP_SaberBlockCost(blocker, attacker, hitLoc));
 	//[/ExpSys]
 
 	//costs FP as well.
@@ -489,7 +627,7 @@ void SabBeh_AttackVsBlock( gentity_t *attacker, sabmech_t *mechAttacker,
 }
 
 
-extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
 void SabBeh_RunSaberBehavior( gentity_t *self, sabmech_t *mechSelf, 
 								gentity_t *otherOwner, sabmech_t *mechOther, vec3_t hitLoc, 
 								qboolean *didHit, qboolean otherHitSaberBlade )
@@ -514,7 +652,7 @@ void SabBeh_RunSaberBehavior( gentity_t *self, sabmech_t *mechSelf,
 		{//and otherOwner is attacking
 			SabBeh_AttackVsAttack(self, mechSelf, otherOwner, mechOther, &selfMishap, &otherMishap);
 		}
-		else if(OJP_SaberCanBlock(otherOwner, self, qfalse, hitLoc, -1, -1))
+		else if(OBP_SaberCanBlock(otherOwner, self, qfalse, hitLoc, -1, -1))
 		{//and otherOwner is blocking or parrying
 			//this is called with dual with both sabers[DUALRAWR]
 			SabBeh_AttackVsBlock(self, mechSelf, otherOwner, mechOther, hitLoc, otherHitSaberBlade,
@@ -526,14 +664,14 @@ void SabBeh_RunSaberBehavior( gentity_t *self, sabmech_t *mechSelf,
 			//no mishaps for this at the moment.
 		}
 	}
-	else if( OJP_SaberCanBlock(self, otherOwner, qfalse, hitLoc, -1, -1) )
+	else if( OBP_SaberCanBlock(self, otherOwner, qfalse, hitLoc, -1, -1) )
 	{//self is blocking or parrying
 		if(BG_SaberInNonIdleDamageMove(&otherOwner->client->ps, otherOwner->localAnimIndex))
 		{//and otherOwner is attacking
 			SabBeh_AttackVsBlock(otherOwner, mechOther, self, mechSelf, hitLoc, qtrue,
 				&otherMishap, &selfMishap);
 		}
-		else if(OJP_SaberCanBlock(otherOwner, self, qfalse, hitLoc, -1, -1))
+		else if(OBP_SaberCanBlock(otherOwner, self, qfalse, hitLoc, -1, -1))
 		{//and otherOwner is blocking or parrying
 		}
 		else

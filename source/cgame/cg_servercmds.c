@@ -7,7 +7,7 @@
 #include "cg_local.h"
 //[SVN]
 //rearraigned repository to make it easier to initially compile.
-#include "../../ojpenhanced/ui/jamp/menudef.h"
+#include "../ui/jamp/menudef.h"
 //#include "../../ui/menudef.h"
 //[/SVN]
 #if !defined(CL_LIGHT_H_INC)
@@ -341,21 +341,36 @@ void CG_ShaderStateChanged(void) {
 	while (o && *o) {
 		n = strstr(o, "=");
 		if (n && *n) {
-			strncpy(originalShader, o, n-o);
-			originalShader[n-o] = 0;
+			int len;
+
+			len = n - o;
+			if (len >= sizeof(originalShader))
+			{
+				len = sizeof(originalShader) - 1;
+			}
+			Q_strncpyz(originalShader, o, len + 1);
+
 			n++;
 			t = strstr(n, ":");
 			if (t && *t) {
-				strncpy(newShader, n, t-n);
-				newShader[t-n] = 0;
+				len = t - n;
+				if (len >= sizeof(newShader))
+				{
+					len = sizeof(newShader) - 1;
+				}
+				Q_strncpyz(newShader, n, len + 1);
 			} else {
 				break;
 			}
 			t++;
 			o = strstr(t, "@");
 			if (o) {
-				strncpy(timeOffset, t, o-t);
-				timeOffset[o-t] = 0;
+				len = o - t;
+				if (len >= sizeof(timeOffset))
+				{
+					len = sizeof(timeOffset) - 1;
+				}
+				Q_strncpyz(timeOffset, t, len + 1);
 				o++;
 				trap_R_RemapShader( originalShader, newShader, timeOffset );
 			}
@@ -1051,8 +1066,10 @@ void CG_KillCEntityInstances(void)
 		cent->weapon = 0;
 		cent->teamPowerEffectTime = 0;
 		cent->teamPowerType = 0;
+		memset( cent->teamPowerEffectTimes, 0, sizeof( cent->teamPowerEffectTimes ) );
 		cent->itemPowerEffectTime = 0;
 		cent->itemPowerType = 0;
+		memset( cent->itemPowerEffectTimes, 0, sizeof( cent->itemPowerEffectTimes ) );
 		cent->numLoopingSounds = 0;
 
 		cent->localAnimIndex = 0;
@@ -1192,14 +1209,14 @@ void CG_CheckSVStringEdRef(char *buf, const char *str)
 					//RAFIXME - this only fixes the problem if the player has the client plugin.
 					//Which won't happen if the mod is server only.  Maybe rename the .str file again?
 					if(buf[0] && buf[0] == '?' && buf[1] && buf[1] == '?')
-					{//couldn't find the string in MP_SVGAME, try the OJP_MENUS.str
+					{//couldn't find the string in MP_SVGAME, try the OBP_MENUS.str
 						buf[b] = 0;
-						Q_strcat(buf, MAX_STRINGED_SV_STRING, CG_GetStringEdString("OJP_MENUS", stringRef));
+						Q_strcat(buf, MAX_STRINGED_SV_STRING, CG_GetStringEdString("OBP_MENUS", stringRef));
 					}
 					//[UITweaks]
 					//[CoOp]
 					if(buf[0] && buf[0] == '?' && buf[1] && buf[1] == '?')
-					{//couldn't find the string in MP_SVGAME or OJP_MENUS, try the OJP_MENUS.str
+					{//couldn't find the string in MP_SVGAME or OBP_MENUS, try the OBP_MENUS.str
 						buf[b] = 0;
 						Q_strcat(buf, MAX_STRINGED_SV_STRING, CG_GetStringEdString("SP_INGAME", stringRef));
 					}
@@ -1411,8 +1428,18 @@ static void CG_ServerCommand( void ) {
 
 	if ( !strcmp( cmd, "scl" ) )
 	{
-		//if (!( trap_Key_GetCatcher() & KEYCATCH_UI ))
-		//Well, I want it to come up even if the briefing display is up.
+		qboolean forceOpen = qfalse;
+
+		if (trap_Argc() > 1 && atoi(CG_Argv(1)))
+		{
+			forceOpen = qtrue;
+		}
+
+		// Plain "scl" is treated as an automatic/server-side hint and is
+		// ignored while spectating so the menu does not pop up at map start.
+		// "scl 1" is an explicit join-flow request and may open the menu
+		// for a spectator who selected a Siege team but still needs a class.
+		if (forceOpen || (cg.snap && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR))
 		{
 			trap_OpenUIMenu(UIMENU_CLASSSEL); //UIMENU_CLASSSEL
 		}
@@ -1433,7 +1460,11 @@ static void CG_ServerCommand( void ) {
 	if ( !strcmp( cmd, "spc" ) )
 	{
 		trap_Cvar_Set("ui_myteam", "3");
-		trap_OpenUIMenu(UIMENU_PLAYERCONFIG); //UIMENU_CLASSSEL
+		// Do not auto-open the profile menu for spectators at map start.
+		if (cg.snap && cg.snap->ps.persistant[PERS_TEAM] != TEAM_SPECTATOR)
+		{
+			trap_OpenUIMenu(UIMENU_PLAYERCONFIG); //UIMENU_CLASSSEL
+		}
 		return;
 	}
 
@@ -1459,7 +1490,7 @@ static void CG_ServerCommand( void ) {
 
 		trap_Cvar_Set("ui_myteam", va("%i", setTeam));
 
-		if (!( trap_Key_GetCatcher() & KEYCATCH_UI ) && doMenu)
+		if (!( trap_Key_GetCatcher() & KEYCATCH_UI ) && doMenu && setTeam != TEAM_SPECTATOR)
 		{
 			trap_OpenUIMenu(UIMENU_PLAYERCONFIG);
 		}

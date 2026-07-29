@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_weapons.c -- events and effects dealing with weapons
 #include "cg_local.h"
@@ -8,6 +8,7 @@
 extern void BG_EnsureVehWeaponAssetsLoaded( int weaponIndex );
 
 extern vec4_t	bluehudtint;
+extern void CG_InvalidateHolsteredWeaponModelsForClient( int clientNum );
 
 // ------------------------------------------------------------
 // Dual view-weapon recoil sync helpers
@@ -18,6 +19,472 @@ extern vec4_t	bluehudtint;
 static int s_dualMuzzleFlashTime[MAX_GENTITIES][2]; // [entnum][0]=right, [entnum][1]=left
 static byte s_dualFireSide[MAX_GENTITIES];          // toggles 0/1 for alternating
 static int s_dualAltMuzzleFlashTime[MAX_GENTITIES][2]; // per-hand alt-fire muzzle flash timing
+
+static int s_weaponOptionFlags[MAX_GENTITIES][MAX_WEAPONS];
+static qboolean s_weaponOptionFlagsValid[MAX_GENTITIES][MAX_WEAPONS];
+static qboolean s_dualWeaponFlags[MAX_GENTITIES][MAX_WEAPONS];
+static qboolean s_dualWeaponFlagsValid[MAX_GENTITIES][MAX_WEAPONS];
+
+#define CG_WEAPON_OPTION_FLAG_MASK (EF_WP_OPTION_2|EF_WP_OPTION_3|EF_WP_OPTION_4)
+
+
+static int CG_WeaponOptionFlagsFromIndexChar( char c )
+{
+	switch (c)
+	{
+	case '1':
+		return EF_WP_OPTION_2;
+	case '2':
+		return EF_WP_OPTION_3;
+	case '3':
+		return EF_WP_OPTION_4;
+	case '4':
+		return (EF_WP_OPTION_2|EF_WP_OPTION_3);
+	case '5':
+		return (EF_WP_OPTION_2|EF_WP_OPTION_4);
+	default:
+		return 0;
+	}
+}
+
+void CG_SetWeaponOptionFlagsFromConfigString( int clientNum, const char *weaponFlags )
+{
+	int weapon;
+	qboolean changed = qfalse;
+
+	if (clientNum < 0 || clientNum >= MAX_GENTITIES || !weaponFlags)
+	{
+		return;
+	}
+
+	for (weapon = WP_NONE + 1; weapon < MAX_WEAPONS; weapon++)
+	{
+		int flags;
+		int index = weapon - 1;
+
+		if (!weaponFlags[index])
+		{
+			break;
+		}
+
+		flags = CG_WeaponOptionFlagsFromIndexChar(weaponFlags[index]);
+
+		if (!s_weaponOptionFlagsValid[clientNum][weapon] || s_weaponOptionFlags[clientNum][weapon] != flags)
+		{
+			s_weaponOptionFlags[clientNum][weapon] = flags;
+			s_weaponOptionFlagsValid[clientNum][weapon] = qtrue;
+			changed = qtrue;
+		}
+	}
+
+	if (changed)
+	{
+		CG_InvalidateHolsteredWeaponModelsForClient(clientNum);
+	}
+}
+
+void CG_SetDualWeaponFlagsFromConfigString( int clientNum, const char *dualFlags )
+{
+	int weapon;
+	qboolean changed = qfalse;
+
+	if (clientNum < 0 || clientNum >= MAX_GENTITIES || !dualFlags)
+	{
+		return;
+	}
+
+	for (weapon = WP_NONE + 1; weapon < MAX_WEAPONS; weapon++)
+	{
+		qboolean dualEnabled;
+		int index = weapon - 1;
+
+		if (!dualFlags[index])
+		{
+			break;
+		}
+
+		dualEnabled = (dualFlags[index] == '1') ? qtrue : qfalse;
+
+		if (!s_dualWeaponFlagsValid[clientNum][weapon] || s_dualWeaponFlags[clientNum][weapon] != dualEnabled)
+		{
+			s_dualWeaponFlags[clientNum][weapon] = dualEnabled;
+			s_dualWeaponFlagsValid[clientNum][weapon] = qtrue;
+			changed = qtrue;
+		}
+	}
+
+	if (changed)
+	{
+		CG_InvalidateHolsteredWeaponModelsForClient(clientNum);
+	}
+}
+
+qboolean CG_DualWeaponEnabledForClientWeapon( int clientNum, int weapon )
+{
+	if (clientNum < 0 || clientNum >= MAX_GENTITIES || weapon <= WP_NONE || weapon >= MAX_WEAPONS)
+	{
+		return qfalse;
+	}
+
+	if (!s_dualWeaponFlagsValid[clientNum][weapon])
+	{
+		return qfalse;
+	}
+
+	return s_dualWeaponFlags[clientNum][weapon];
+}
+
+
+static int CG_SkillLevelFromForceInfo( const char *forceInfo, int skill )
+{
+	int index;
+	char levelChar;
+
+	if (!forceInfo || skill < 0 || skill >= NUM_SKILLS)
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	index = NUM_FORCE_POWERS + skill + 4;
+	if (index < 0 || index >= (int)strlen(forceInfo))
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	levelChar = forceInfo[index];
+	if (levelChar < '0' || levelChar > '3')
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	return levelChar - '0';
+}
+
+static qboolean CG_WeaponSkillIndices( int weapon, int *baseSkill, int *optionASkill, int *optionBSkill )
+{
+	if (!baseSkill || !optionASkill || !optionBSkill)
+	{
+		return qfalse;
+	}
+
+	switch (weapon)
+	{
+	case WP_BRYAR_PISTOL:
+		*baseSkill = SK_PISTOL;
+		*optionASkill = SK_PISTOLA;
+		*optionBSkill = SK_PISTOLB;
+		return qtrue;
+	case WP_BLASTER:
+		*baseSkill = SK_BLASTER;
+		*optionASkill = SK_BLASTERA;
+		*optionBSkill = SK_BLASTERB;
+		return qtrue;
+	case WP_DISRUPTOR:
+		*baseSkill = SK_DISRUPTOR;
+		*optionASkill = SK_DISRUPTORA;
+		*optionBSkill = SK_DISRUPTORB;
+		return qtrue;
+	case WP_BOWCASTER:
+		*baseSkill = SK_BOWCASTER;
+		*optionASkill = SK_BOWCASTERA;
+		*optionBSkill = SK_BOWCASTERB;
+		return qtrue;
+	case WP_REPEATER:
+		*baseSkill = SK_REPEATER;
+		*optionASkill = SK_REPEATERA;
+		*optionBSkill = SK_REPEATERB;
+		return qtrue;
+	case WP_DEMP2:
+		*baseSkill = SK_DEMP2;
+		*optionASkill = SK_DEMP2A;
+		*optionBSkill = SK_DEMP2B;
+		return qtrue;
+	case WP_FLECHETTE:
+		*baseSkill = SK_FLECHETTE;
+		*optionASkill = SK_FLECHETTEA;
+		*optionBSkill = SK_FLECHETTEB;
+		return qtrue;
+	case WP_CONCUSSION:
+		*baseSkill = SK_CONCUSSION;
+		*optionASkill = SK_CONCUSSIONA;
+		*optionBSkill = SK_CONCUSSIONB;
+		return qtrue;
+	case WP_ROCKET_LAUNCHER:
+		*baseSkill = SK_ROCKET;
+		*optionASkill = SK_ROCKETA;
+		*optionBSkill = SK_ROCKETB;
+		return qtrue;
+	case WP_THERMAL:
+		*baseSkill = SK_THERMAL;
+		*optionASkill = SK_THERMALA;
+		*optionBSkill = SK_THERMALB;
+		return qtrue;
+	case WP_TRIP_MINE:
+		*baseSkill = SK_TRIPMINE;
+		*optionASkill = SK_TRIPMINEA;
+		*optionBSkill = SK_TRIPMINEB;
+		return qtrue;
+	case WP_DET_PACK:
+		*baseSkill = SK_DETPACK;
+		*optionASkill = SK_DETPACKA;
+		*optionBSkill = SK_DETPACKB;
+		return qtrue;
+	case WP_BRYAR_OLD:
+		*baseSkill = SK_OLD;
+		*optionASkill = SK_OLDA;
+		*optionBSkill = SK_OLDB;
+		return qtrue;
+	default:
+		return qfalse;
+	}
+}
+
+static qboolean CG_WeaponOptionFlagsFromClientInfoDirect( const clientInfo_t *ci, int weapon, int *optionFlags )
+{
+	int baseSkill, optionASkill, optionBSkill;
+	int baseLevel, optionALevel, optionBLevel;
+
+	if (optionFlags)
+	{
+		*optionFlags = 0;
+	}
+
+	if (!ci || !ci->infoValid || !optionFlags || weapon <= WP_NONE || weapon >= MAX_WEAPONS)
+	{
+		return qfalse;
+	}
+
+	if (!CG_WeaponSkillIndices(weapon, &baseSkill, &optionASkill, &optionBSkill))
+	{
+		return qfalse;
+	}
+
+	baseLevel = CG_SkillLevelFromForceInfo(ci->forcePowers, baseSkill);
+	if (baseLevel < FORCE_LEVEL_1)
+	{
+		return qfalse;
+	}
+
+	optionALevel = CG_SkillLevelFromForceInfo(ci->forcePowers, optionASkill);
+	optionBLevel = CG_SkillLevelFromForceInfo(ci->forcePowers, optionBSkill);
+
+	// Mirror the QAGAME/bg_pmove weapon option priority exactly:
+	// A level 2, A level 3, B level 1, B level 2, B level 3.
+	if (optionALevel == FORCE_LEVEL_2)
+	{
+		*optionFlags = EF_WP_OPTION_2;
+	}
+	else if (optionALevel == FORCE_LEVEL_3)
+	{
+		*optionFlags = EF_WP_OPTION_3;
+	}
+	else if (optionBLevel == FORCE_LEVEL_1)
+	{
+		*optionFlags = EF_WP_OPTION_4;
+	}
+	else if (optionBLevel == FORCE_LEVEL_2)
+	{
+		*optionFlags = (EF_WP_OPTION_2|EF_WP_OPTION_3);
+	}
+	else if (optionBLevel == FORCE_LEVEL_3)
+	{
+		*optionFlags = (EF_WP_OPTION_2|EF_WP_OPTION_4);
+	}
+	else
+	{
+		*optionFlags = 0;
+	}
+
+	// qtrue means the weapon/skill data was valid.  A zero flag is a valid base variant.
+	return qtrue;
+}
+
+static qboolean CG_WeaponOptionFlagsFromClientInfo( const centity_t *cent, int weapon, int *optionFlags )
+{
+	clientInfo_t *ci = NULL;
+
+	if (!cent || weapon <= WP_NONE || weapon >= MAX_WEAPONS)
+	{
+		if (optionFlags)
+		{
+			*optionFlags = 0;
+		}
+		return qfalse;
+	}
+
+	if (cent->currentState.eType == ET_NPC)
+	{
+		ci = cent->npcClient;
+	}
+	else if (cent->currentState.number >= 0 && cent->currentState.number < MAX_CLIENTS)
+	{
+		ci = &cgs.clientinfo[cent->currentState.number];
+	}
+
+	return CG_WeaponOptionFlagsFromClientInfoDirect(ci, weapon, optionFlags);
+}
+
+static void CG_RememberWeaponOptionFlags( const centity_t *cent, int weapon )
+{
+	int entNum;
+	int optionFlags;
+	int skillFlags = 0;
+
+	if (!cent || weapon <= WP_NONE || weapon >= MAX_WEAPONS)
+	{
+		return;
+	}
+
+	entNum = cent->currentState.number;
+	if (entNum < 0 || entNum >= MAX_GENTITIES)
+	{
+		return;
+	}
+
+	// If the server/clientinfo already tells cgame the correct skill-derived
+	// variant, never let transient hover/selection eFlags overwrite it.
+	// This prevents one-frame base/intermediate models while moving through
+	// the weapon list.
+	if (CG_WeaponOptionFlagsFromClientInfo(cent, weapon, &skillFlags))
+	{
+		if (!s_weaponOptionFlagsValid[entNum][weapon] || s_weaponOptionFlags[entNum][weapon] != skillFlags)
+		{
+			s_weaponOptionFlags[entNum][weapon] = skillFlags;
+			s_weaponOptionFlagsValid[entNum][weapon] = qtrue;
+			CG_InvalidateHolsteredWeaponModelsForClient(entNum);
+		}
+		return;
+	}
+
+	// Only remember live option flags for the weapon currently represented by
+	// this entity, and only as a fallback when skill-derived flags are not known.
+	if (cent->currentState.weapon != weapon)
+	{
+		return;
+	}
+
+	optionFlags = (cent->currentState.eFlags & CG_WEAPON_OPTION_FLAG_MASK);
+
+	if (!s_weaponOptionFlagsValid[entNum][weapon] || s_weaponOptionFlags[entNum][weapon] != optionFlags)
+	{
+		s_weaponOptionFlags[entNum][weapon] = optionFlags;
+		s_weaponOptionFlagsValid[entNum][weapon] = qtrue;
+		CG_InvalidateHolsteredWeaponModelsForClient(entNum);
+	}
+}
+
+static int CG_RememberedWeaponOptionFlags( const centity_t *cent, int weapon )
+{
+	int entNum;
+	int liveFlags = 0;
+	int skillFlags = 0;
+
+	if (!cent || weapon <= WP_NONE || weapon >= MAX_WEAPONS)
+	{
+		return 0;
+	}
+
+	entNum = cent->currentState.number;
+	if (entNum < 0 || entNum >= MAX_GENTITIES)
+	{
+		return 0;
+	}
+
+	// Skill/clientinfo-derived flags are authoritative for model variants.
+	// This fixes spawn holsters: they no longer depend on hovering/selecting the
+	// weapon once to populate EF_WP_OPTION_* for that weapon.
+	if (CG_WeaponOptionFlagsFromClientInfo(cent, weapon, &skillFlags))
+	{
+		if (!s_weaponOptionFlagsValid[entNum][weapon] || s_weaponOptionFlags[entNum][weapon] != skillFlags)
+		{
+			s_weaponOptionFlags[entNum][weapon] = skillFlags;
+			s_weaponOptionFlagsValid[entNum][weapon] = qtrue;
+			CG_InvalidateHolsteredWeaponModelsForClient(entNum);
+		}
+		return skillFlags;
+	}
+
+	if (cent->currentState.weapon == weapon)
+	{
+		liveFlags = (cent->currentState.eFlags & CG_WEAPON_OPTION_FLAG_MASK);
+		s_weaponOptionFlags[entNum][weapon] = liveFlags;
+		s_weaponOptionFlagsValid[entNum][weapon] = qtrue;
+		return liveFlags;
+	}
+
+	if (s_weaponOptionFlagsValid[entNum][weapon])
+	{
+		return s_weaponOptionFlags[entNum][weapon];
+	}
+
+	return 0;
+}
+
+static void CG_InitWeaponOptionFlagsForClientNum( int clientNum )
+{
+	int weapon;
+	qboolean changed = qfalse;
+	clientInfo_t *ci;
+
+	if (clientNum < 0 || clientNum >= MAX_CLIENTS)
+	{
+		return;
+	}
+
+	ci = &cgs.clientinfo[clientNum];
+	if (!ci->infoValid)
+	{
+		return;
+	}
+
+	for (weapon = WP_NONE + 1; weapon < MAX_WEAPONS; weapon++)
+	{
+		int skillFlags = 0;
+
+		if (!CG_WeaponOptionFlagsFromClientInfoDirect(ci, weapon, &skillFlags))
+		{
+			continue;
+		}
+
+		// A zero/base variant is still a valid remembered variant.
+		if (!s_weaponOptionFlagsValid[clientNum][weapon] || s_weaponOptionFlags[clientNum][weapon] != skillFlags)
+		{
+			s_weaponOptionFlags[clientNum][weapon] = skillFlags;
+			s_weaponOptionFlagsValid[clientNum][weapon] = qtrue;
+			changed = qtrue;
+		}
+	}
+
+	if (changed)
+	{
+		CG_InvalidateHolsteredWeaponModelsForClient(clientNum);
+	}
+}
+
+void CG_InitWeaponOptionFlagsForClient( centity_t *cent )
+{
+	int entNum;
+
+	if (!cent)
+	{
+		return;
+	}
+
+	// Prefer pointer position over currentState.number for early clientinfo loads.
+	// currentState.number may still be unset/stale when CG_NewClientInfo() seeds
+	// model flags at spawn, which made holsters cache wrong models until hover.
+	if (cent >= cg_entities && cent < cg_entities + MAX_CLIENTS)
+	{
+		CG_InitWeaponOptionFlagsForClientNum((int)(cent - cg_entities));
+		return;
+	}
+
+	entNum = cent->currentState.number;
+	if (entNum >= 0 && entNum < MAX_CLIENTS)
+	{
+		CG_InitWeaponOptionFlagsForClientNum(entNum);
+	}
+}
 
 static int CG_GetWeaponOptionIndex( int eFlags )
 {
@@ -59,17 +526,84 @@ static qboolean CG_DualAltFiresBoth( const centity_t *cent )
 	const entityState_t *ent = &cent->currentState;
 	const int opt = CG_GetWeaponOptionIndex( ent->eFlags );
 
-	// Patterns provided by user:
-	// WP_BRYAR_PISTOL / WP_BRYAR_OLD
-	//   opt 1,2,6: alt fires both
-	//   opt 3,4,5: alt alternates
-	if ( ent->weapon == WP_BRYAR_PISTOL || ent->weapon == WP_BRYAR_OLD )
+	/*
+	Keep cgame synchronized with the actual QAGAME firing functions and the
+	charging rules in bg_pmove.c:
+
+	WP_BRYAR_PISTOL
+	  1 (base) and 6 are charged alternate fire and discharge both pistols.
+	  2 and 5 are three-round burst; 3 and 4 are fully automatic.
+	  All four non-charged variants alternate hands per round.
+
+	WP_BRYAR_OLD
+	  1 (base) is charged and discharges both pistols.
+	  2 and 4 are three-round burst; 3, 5 and 6 are fully automatic.
+	  All non-charged variants alternate hands per round.
+	*/
+	if ( ent->weapon == WP_BRYAR_PISTOL )
 	{
-		return (opt == 1 || opt == 2 || opt == 6) ? qtrue : qfalse;
+		return (opt == 1 || opt == 6) ? qtrue : qfalse;
 	}
 
-	// WP_STUN_BATON: no options (and we don't force "both" on alt unless game actually does)
+	if ( ent->weapon == WP_BRYAR_OLD )
+	{
+		return (opt == 1) ? qtrue : qfalse;
+	}
+
+	// WP_STUN_BATON alternates; it never forces both hands for one event.
 	return qfalse;
+}
+
+static qboolean CG_UsesTrackedDualMuzzleFlash( const centity_t *cent )
+{
+	if ( !cent || !(cent->currentState.eFlags & EF_DUAL_WEAPONS) )
+	{
+		return qfalse;
+	}
+
+	return (cent->currentState.weapon == WP_BRYAR_PISTOL ||
+		cent->currentState.weapon == WP_BRYAR_OLD ||
+		cent->currentState.weapon == WP_STUN_BATON) ? qtrue : qfalse;
+}
+
+static qboolean CG_DualMuzzleFlashActive( const centity_t *cent, qboolean leftHand )
+{
+	const int entnum = cent ? cent->currentState.number : -1;
+	const int side = leftHand ? 1 : 0;
+	int flashTime;
+
+	if ( entnum < 0 || entnum >= MAX_GENTITIES )
+	{
+		return qfalse;
+	}
+
+	flashTime = s_dualMuzzleFlashTime[entnum][side];
+	if ( flashTime <= 0 || cg.time < flashTime )
+	{
+		return qfalse;
+	}
+
+	return (cg.time - flashTime <= MUZZLE_FLASH_TIME) ? qtrue : qfalse;
+}
+
+static qboolean CG_DualAltMuzzleFlashActive( const centity_t *cent, qboolean leftHand )
+{
+	const int entnum = cent ? cent->currentState.number : -1;
+	const int side = leftHand ? 1 : 0;
+	int flashTime;
+
+	if ( entnum < 0 || entnum >= MAX_GENTITIES )
+	{
+		return qfalse;
+	}
+
+	flashTime = s_dualAltMuzzleFlashTime[entnum][side];
+	if ( flashTime <= 0 || cg.time < flashTime )
+	{
+		return qfalse;
+	}
+
+	return (cg.time - flashTime <= MUZZLE_FLASH_TIME + 10) ? qtrue : qfalse;
 }
 
 static int CG_DualViewWeaponRecoilFrame( const playerState_t *ps, const centity_t *cent, qboolean leftHand )
@@ -2053,9 +2587,24 @@ Ghoul2 Insert End
 		&& ( nonPredictedCent->currentState.eFlags & EF_FIRING ) ) 
 	{
 		// continuous flash
-	} else {
+	}
+	else if ( CG_UsesTrackedDualMuzzleFlash( cent ) )
+	{
+		/*
+		The entity-wide muzzleFlashTime is shared by both view/world models.
+		For dual pistols it must not authorize the other hand: only the hand
+		stamped by CG_FireWeapon may render this event's flash.
+		*/
+		if ( !CG_DualMuzzleFlashActive( cent, leftweap ) )
+		{
+			return;
+		}
+	}
+	else
+	{
 		// impulse flash
-		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME) {
+		if ( cg.time - cent->muzzleFlashTime > MUZZLE_FLASH_TIME )
+		{
 			return;
 		}
 	}
@@ -2104,19 +2653,17 @@ Ghoul2 Insert End
 			BG_GiveMeVectorFromMatrix(&boltMatrix, POSITIVE_X, flashdir);
 		}
 
-		// Determine whether this flash is alt-fire. For remote players, rely on EF_ALT_FIRING.
-		// For the local player (especially duals), EF_ALT_FIRING can be a frame late; use the
-		// actual fire event timing we captured in CG_FireWeapon for perfect sync.
+		// EF_ALT_FIRING can lag the fire event by a frame.  Dual weapons use the
+		// per-hand event timestamps captured in CG_FireWeapon for local and remote
+		// entities, so the correct hand also receives the correct primary/alt effect.
 		qboolean isAltFlash = (cent->currentState.eFlags & EF_ALT_FIRING) ? qtrue : qfalse;
-		if ( ps && cent->currentState.number == ps->clientNum && (ps->eFlags & EF_DUAL_WEAPONS) )
+		if ( CG_UsesTrackedDualMuzzleFlash( cent ) )
 		{
-			const int entnum = cent->currentState.number;
-			const int handIdx = leftweap ? 1 : 0; // 0=right, 1=left
-			if ( cg.time - s_dualAltMuzzleFlashTime[entnum][handIdx] <= MUZZLE_FLASH_TIME + 10 )
+			if ( CG_DualAltMuzzleFlashActive( cent, leftweap ) )
 			{
 				isAltFlash = qtrue;
 			}
-			else if ( cg.time - s_dualMuzzleFlashTime[entnum][handIdx] <= MUZZLE_FLASH_TIME + 10 )
+			else if ( CG_DualMuzzleFlashActive( cent, leftweap ) )
 			{
 				isAltFlash = qfalse;
 			}
@@ -2406,6 +2953,11 @@ void CG_AddViewWeapon( playerState_t *ps ) {
 		fovOffset = -0.2 * ( cgFov - 90 );
 	} else {
 		fovOffset = 0;
+	}
+
+	if ( ps->weapon <= WP_NONE || ps->weapon >= MAX_WEAPONS )
+	{
+		return;
 	}
 
 	cent = &cg_entities[cg.predictedPlayerState.clientNum];
@@ -2900,6 +3452,40 @@ static qboolean CG_WeaponSelectable( int i ) {
 	return qtrue;
 }
 
+
+static qhandle_t CG_SaberTypeWeaponIcon( const playerState_t *ps )
+{
+	int saberStyle;
+
+	if (!ps)
+	{
+		return cgs.media.weaponIcons[WP_SABER];
+	}
+
+	/*
+		saberAnimLevelBase identifies the actual saber type.
+		SS_DUAL means two sabers, SS_STAFF means saberstaff, and
+		all normal single-saber styles should keep the base lightsaber icon.
+		Use saberDrawAnimLevel as a fallback during short transition frames.
+	*/
+	saberStyle = ps->fd.saberAnimLevelBase;
+	if (saberStyle != SS_DUAL && saberStyle != SS_STAFF)
+	{
+		saberStyle = ps->fd.saberDrawAnimLevel;
+	}
+
+	if (saberStyle == SS_DUAL && cgs.media.weaponIcons2[WP_SABER])
+	{
+		return cgs.media.weaponIcons2[WP_SABER];
+	}
+	if (saberStyle == SS_STAFF && cgs.media.weaponIcons3[WP_SABER])
+	{
+		return cgs.media.weaponIcons3[WP_SABER];
+	}
+
+	return cgs.media.weaponIcons[WP_SABER];
+}
+
 /*
 ===================
 CG_DrawWeaponSelect
@@ -2935,6 +3521,17 @@ void CG_DrawWeaponSelect( void ) {
 
 	// showing weapon select clears pickup item display, but not the blend blob
 	cg.itemPickupTime = 0;
+
+	//[IconFlagSync]
+	// Weapon alternate icons are chosen from EF_WP_* flags. Do not draw the
+	// weapon selection icon while weaponSelect is only a local pending choice;
+	// wait until the snapshot/predicted state has the weapon applied, so the
+	// EF_WP_* flags belong to the weapon being drawn.
+	if (cg.weaponSelect != cg.predictedPlayerState.weapon)
+	{
+		return;
+	}
+	//[/IconFlagSync]
 
 	bits = cg.predictedPlayerState.stats[ STAT_WEAPONS ];
 
@@ -3094,7 +3691,16 @@ void CG_DrawWeaponSelect( void ) {
 		weaponInfo = &cg_weapons[cg.weaponSelect];
 
 		trap_R_SetColor( colorTable[CT_WHITE]);
-		if (!CG_WeaponCheck(cg.weaponSelect))
+		if ( cg.weaponSelect == WP_SABER )
+		{
+			qhandle_t saberIcon = CG_SaberTypeWeaponIcon( &cg.predictedPlayerState );
+
+			if ( saberIcon )
+			{
+				CG_DrawPic( x-(bigIconSize/2), (y-((bigIconSize-smallIconSize)/2))+10+yOffset, bigIconSize, bigIconSize, saberIcon );
+			}
+		}
+		else if (!CG_WeaponCheck(cg.weaponSelect))
 		{
 				if(cg.snap->ps.eFlags & EF_WP_OPTION_2 && cg.snap->ps.eFlags & EF_WP_OPTION_4)
 				{
@@ -3490,10 +4096,10 @@ void CG_Weapon_f( void ) {
 	if (num == 1 && cg.snap->ps.weapon == WP_SABER)
 	{
 		//[MELEE]
-		//Switch to melee when blade is toggled if ojp_sabermelee is on
+		//Switch to melee when blade is toggled if obp_sabermelee is on
 		if (cg.snap->ps.weaponTime < 1)
 		{
-			if(ojp_sabermelee.integer && !cg.snap->ps.saberHolstered && CG_WeaponSelectable(WP_MELEE))
+			if(obp_sabermelee.integer && !cg.snap->ps.saberHolstered && CG_WeaponSelectable(WP_MELEE))
 			{
 				num = WP_MELEE;
 
@@ -3828,8 +4434,7 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 //	if(!altFire && ent->weapon == WP_FLECHETTE && cg.predictedPlayerState.weaponTime != 100000)
 //		return;
 
-	if ( ent->weapon >= WP_NUM_WEAPONS ) {
-		CG_Error( "CG_FireWeapon: ent->weapon >= WP_NUM_WEAPONS" );
+	if ( ent->weapon <= WP_NONE || ent->weapon >= MAX_WEAPONS ) {
 		return;
 	}
 	weap = &cg_weapons[ ent->weapon ];
@@ -3838,42 +4443,45 @@ void CG_FireWeapon( centity_t *cent, qboolean altFire ) {
 	// append the flash to the weapon model
 	cent->muzzleFlashTime = cg.time;
 
-	// If this is the local player and they are using dual weapons, keep per-hand
-	// timestamps so the 1st-person viewmodels can recoil in sync with actual firing
-	// (events are driven by fireTime/altFireTime in game).
-	if ( cg.predictedPlayerState.clientNum == cent->currentState.number &&
-		 (ent->eFlags & EF_DUAL_WEAPONS) )
+	/*
+	Track the firing hand for every rendered dual-wield entity, not only the
+	predicted player.  The entity-wide muzzleFlashTime cannot distinguish the
+	two weapon models.
+	*/
+	if ( CG_UsesTrackedDualMuzzleFlash( cent ) )
 	{
 		qboolean firesBoth = qfalse;
 		const int entnum = cent->currentState.number;
 
-		if ( altFire )
+		if ( entnum >= 0 && entnum < MAX_GENTITIES )
 		{
-			firesBoth = CG_DualAltFiresBoth( cent );
-		}
-
-		if ( firesBoth )
-		{
-			s_dualMuzzleFlashTime[entnum][0] = cg.time;
-			s_dualMuzzleFlashTime[entnum][1] = cg.time;
-			if ( altFire ) {
-				s_dualAltMuzzleFlashTime[entnum][0] = cg.time;
-				s_dualAltMuzzleFlashTime[entnum][1] = cg.time;
-			}
-		}
-		else
-		{
-			// Alternate each firing event.
-			// IMPORTANT: side 0 must correspond to the *right-hand* viewweapon draw
-			// (CG_AddPlayerWeapon(..., leftweap=qfalse)), and side 1 to the left-hand.
-			// We stamp the current side first, then toggle for the next event.
+			if ( altFire )
 			{
+				firesBoth = CG_DualAltFiresBoth( cent );
+			}
+
+			if ( firesBoth )
+			{
+				s_dualMuzzleFlashTime[entnum][0] = cg.time;
+				s_dualMuzzleFlashTime[entnum][1] = cg.time;
+				s_dualAltMuzzleFlashTime[entnum][0] = altFire ? cg.time : 0;
+				s_dualAltMuzzleFlashTime[entnum][1] = altFire ? cg.time : 0;
+			}
+			else
+			{
+				/*
+				Alternate each firing event.  Clear the opposite hand first so a fast
+				automatic sequence can never leave both muzzle effects active together.
+				side 0 is the right-hand model; side 1 is the left-hand model.
+				*/
 				const int side = (s_dualFireSide[entnum] & 1);
-				s_dualMuzzleFlashTime[entnum][ side ] = cg.time;
-					if ( altFire ) {
-						s_dualAltMuzzleFlashTime[entnum][ side ] = cg.time;
-					}
-					s_dualFireSide[entnum] ^= 1;
+				const int otherSide = side ^ 1;
+
+				s_dualMuzzleFlashTime[entnum][otherSide] = 0;
+				s_dualAltMuzzleFlashTime[entnum][otherSide] = 0;
+				s_dualMuzzleFlashTime[entnum][side] = cg.time;
+				s_dualAltMuzzleFlashTime[entnum][side] = altFire ? cg.time : 0;
+				s_dualFireSide[entnum] ^= 1;
 			}
 		}
 	}
@@ -5524,12 +6132,25 @@ static void *g2WeaponInstances11[MAX_WEAPONS];//[Option5]
 static void *g2WeaponInstances12[MAX_WEAPONS];//[Option3DualPistols]
 //[VisualWeapons]
 void *g2HolsterWeaponInstances[MAX_WEAPONS];
+void *g2HolsterWeaponInstances2[MAX_WEAPONS];
+void *g2HolsterWeaponInstances3[MAX_WEAPONS];
+void *g2HolsterWeaponInstances4[MAX_WEAPONS];
+void *g2HolsterWeaponInstances5[MAX_WEAPONS];
+void *g2HolsterWeaponInstances6[MAX_WEAPONS];
+void *g2HolsterWeaponInstances7[MAX_WEAPONS];
+void *g2HolsterWeaponInstances8[MAX_WEAPONS];
+void *g2HolsterWeaponInstances9[MAX_WEAPONS];
+void *g2HolsterWeaponInstances10[MAX_WEAPONS];
+void *g2HolsterWeaponInstances11[MAX_WEAPONS];
+void *g2HolsterWeaponInstances12[MAX_WEAPONS];
 //[/VisualWeapons]
 void CG_InitG2Weapons(void)
 {
 	int i = 0;
 	gitem_t		*item;
 	memset(g2WeaponInstances, 0, sizeof(g2WeaponInstances));
+	memset(s_weaponOptionFlags, 0, sizeof(s_weaponOptionFlags));
+	memset(s_weaponOptionFlagsValid, 0, sizeof(s_weaponOptionFlagsValid));
 	memset(g2WeaponInstances2, 0, sizeof(g2WeaponInstances2));//[DualPistols]
 	memset(g2WeaponInstances3, 0, sizeof(g2WeaponInstances3));//[Option1]
 	memset(g2WeaponInstances4, 0, sizeof(g2WeaponInstances4));//[Option1DualPistols]
@@ -5541,6 +6162,18 @@ void CG_InitG2Weapons(void)
 	memset(g2WeaponInstances10, 0, sizeof(g2WeaponInstances10));//[Option2DualPistols]
 	memset(g2WeaponInstances11, 0, sizeof(g2WeaponInstances11));//[Option2DualPistols]
 	memset(g2WeaponInstances12, 0, sizeof(g2WeaponInstances12));//[Option2DualPistols]
+	memset(g2HolsterWeaponInstances, 0, sizeof(g2HolsterWeaponInstances));
+	memset(g2HolsterWeaponInstances2, 0, sizeof(g2HolsterWeaponInstances2));
+	memset(g2HolsterWeaponInstances3, 0, sizeof(g2HolsterWeaponInstances3));
+	memset(g2HolsterWeaponInstances4, 0, sizeof(g2HolsterWeaponInstances4));
+	memset(g2HolsterWeaponInstances5, 0, sizeof(g2HolsterWeaponInstances5));
+	memset(g2HolsterWeaponInstances6, 0, sizeof(g2HolsterWeaponInstances6));
+	memset(g2HolsterWeaponInstances7, 0, sizeof(g2HolsterWeaponInstances7));
+	memset(g2HolsterWeaponInstances8, 0, sizeof(g2HolsterWeaponInstances8));
+	memset(g2HolsterWeaponInstances9, 0, sizeof(g2HolsterWeaponInstances9));
+	memset(g2HolsterWeaponInstances10, 0, sizeof(g2HolsterWeaponInstances10));
+	memset(g2HolsterWeaponInstances11, 0, sizeof(g2HolsterWeaponInstances11));
+	memset(g2HolsterWeaponInstances12, 0, sizeof(g2HolsterWeaponInstances12));
 	for ( item = bg_itemlist + 1 ; item->classname ; item++ ) 
 	{
 		if ( item->giType == IT_WEAPON )
@@ -5572,6 +6205,7 @@ void CG_InitG2Weapons(void)
 			
 			//[DualPistols]
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances2[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 //			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
 			if (g2WeaponInstances2[/*i*/item->giTag])
 			{
@@ -5607,50 +6241,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], PISTOL2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], PISTOL2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], BLASTER2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], BLASTER2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], DISRUPTOR2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], DISRUPTOR2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], BOWCASTER2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], BOWCASTER2_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], REPEATER2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], REPEATER2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], DEMP22_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], DEMP22_MODEL, 0, 0, 0, 0, 0);
 			}				
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], FLECHETTE2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], FLECHETTE2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], CONCUSSION2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], CONCUSSION2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], ROCKETS2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], ROCKETS2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], THERMAL2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], THERMAL2_MODEL, 0, 0, 0, 0, 0);
 			}			
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], OLD2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], OLD2_MODEL, 0, 0, 0, 0, 0);
 			}			
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances3[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances3[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 			//[VisualWeapons]
 			//[/VisualWeapons]
@@ -5676,50 +6322,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], PISTOL2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], PISTOL2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], BLASTER2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], BLASTER2_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], DISRUPTOR2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], DISRUPTOR2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], BOWCASTER2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], BOWCASTER2_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], REPEATER2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], REPEATER2_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], DEMP22_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], DEMP22_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], FLECHETTE2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], FLECHETTE2_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], CONCUSSION2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], CONCUSSION2_MODEL, 0, 0, 0, 0, 0);
 			}		
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], ROCKETS2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], ROCKETS2_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], THERMAL2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], THERMAL2_MODEL, 0, 0, 0, 0, 0);
 			}			
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], OLD2_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], OLD2_MODEL, 0, 0, 0, 0, 0);
 			}				
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances4[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances4[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 //			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
 			if (g2WeaponInstances4[/*i*/item->giTag])
@@ -5757,50 +6415,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], PISTOL3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], PISTOL3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], BLASTER3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], BLASTER3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], DISRUPTOR3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], DISRUPTOR3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], BOWCASTER3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], BOWCASTER3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], REPEATER3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], REPEATER3_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], DEMP23_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], DEMP23_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], FLECHETTE3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], FLECHETTE3_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], CONCUSSION3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], CONCUSSION3_MODEL, 0, 0, 0, 0, 0);
 			}		
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], ROCKETS3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], ROCKETS3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], THERMAL3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], THERMAL3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], OLD3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], OLD3_MODEL, 0, 0, 0, 0, 0);
 			}			
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances5[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances5[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 			//[VisualWeapons]
 			//[/VisualWeapons]
@@ -5826,50 +6496,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], PISTOL3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], PISTOL3_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], BLASTER3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], BLASTER3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], DISRUPTOR3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], DISRUPTOR3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], BOWCASTER3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], BOWCASTER3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], REPEATER3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], REPEATER3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], DEMP23_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], DEMP23_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], FLECHETTE3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], FLECHETTE3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], CONCUSSION3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], CONCUSSION3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], ROCKETS3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], ROCKETS3_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], THERMAL3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], THERMAL3_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], OLD3_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], OLD3_MODEL, 0, 0, 0, 0, 0);
 			}				
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances6[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances6[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 //			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
 			if (g2WeaponInstances6[/*i*/item->giTag])
@@ -5909,50 +6591,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], PISTOL4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], PISTOL4_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], BLASTER4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], BLASTER4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], DISRUPTOR4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], DISRUPTOR4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], BOWCASTER4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], BOWCASTER4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], REPEATER4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], REPEATER4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], DEMP24_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], DEMP24_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], FLECHETTE4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], FLECHETTE4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], CONCUSSION4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], CONCUSSION4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], ROCKETS4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], ROCKETS4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], THERMAL4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], THERMAL4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], OLD4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], OLD4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances7[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances7[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 			//[VisualWeapons]
 			//[/VisualWeapons]
@@ -5977,50 +6671,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], PISTOL4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], PISTOL4_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], BLASTER4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], BLASTER4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], DISRUPTOR4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], DISRUPTOR4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], BOWCASTER4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], BOWCASTER4_MODEL, 0, 0, 0, 0, 0);
 			}						
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], REPEATER4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], REPEATER4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], DEMP24_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], DEMP24_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], FLECHETTE4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], FLECHETTE4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], CONCUSSION4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], CONCUSSION4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], ROCKETS4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], ROCKETS4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], THERMAL4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], THERMAL4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], OLD4_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], OLD4_MODEL, 0, 0, 0, 0, 0);
 			}
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances8[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances8[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 //			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
 			if (g2WeaponInstances8[/*i*/item->giTag])
@@ -6059,50 +6765,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], PISTOL5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], PISTOL5_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], BLASTER5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], BLASTER5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], DISRUPTOR5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], DISRUPTOR5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], BOWCASTER5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], BOWCASTER5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], REPEATER5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], REPEATER5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], DEMP25_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], DEMP25_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], FLECHETTE5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], FLECHETTE5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], CONCUSSION5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], CONCUSSION5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], ROCKETS5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], ROCKETS5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], THERMAL5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], THERMAL5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], OLD5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], OLD5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances9[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances9[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 			//[VisualWeapons]
 			//[/VisualWeapons]
@@ -6127,50 +6845,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], PISTOL5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], PISTOL5_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], BLASTER5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], BLASTER5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], DISRUPTOR5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], DISRUPTOR5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], BOWCASTER5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], BOWCASTER5_MODEL, 0, 0, 0, 0, 0);
 			}						
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], REPEATER5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], REPEATER5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], DEMP25_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], DEMP25_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], FLECHETTE5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], FLECHETTE5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], CONCUSSION5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], CONCUSSION5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], ROCKETS5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], ROCKETS5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], THERMAL5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], THERMAL5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], OLD5_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], OLD5_MODEL, 0, 0, 0, 0, 0);
 			}
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances10[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances10[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 //			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
 			if (g2WeaponInstances10[/*i*/item->giTag])
@@ -6207,50 +6937,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], PISTOL6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], PISTOL6_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], BLASTER6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], BLASTER6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], DISRUPTOR6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], DISRUPTOR6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], BOWCASTER6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], BOWCASTER6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], REPEATER6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], REPEATER6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], DEMP26_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], DEMP26_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], FLECHETTE6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], FLECHETTE6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], CONCUSSION6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], CONCUSSION6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], ROCKETS6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], ROCKETS6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], THERMAL6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], THERMAL6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], OLD6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], OLD6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances11[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances11[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 			//[VisualWeapons]
 			//[/VisualWeapons]
@@ -6275,50 +7017,62 @@ void CG_InitG2Weapons(void)
 			if (item->giTag == WP_BRYAR_PISTOL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], PISTOL6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], PISTOL6_MODEL, 0, 0, 0, 0, 0);
 			}	
 			else if (item->giTag == WP_BLASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], BLASTER6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], BLASTER6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DISRUPTOR)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], DISRUPTOR6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], DISRUPTOR6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BOWCASTER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], BOWCASTER6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], BOWCASTER6_MODEL, 0, 0, 0, 0, 0);
 			}						
 			else if (item->giTag == WP_REPEATER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], REPEATER6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], REPEATER6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_DEMP2)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], DEMP26_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], DEMP26_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_FLECHETTE)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], FLECHETTE6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], FLECHETTE6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_CONCUSSION)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], CONCUSSION6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], CONCUSSION6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_ROCKET_LAUNCHER)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], ROCKETS6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], ROCKETS6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_THERMAL)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], THERMAL6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], THERMAL6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else if (item->giTag == WP_BRYAR_OLD)
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], OLD6_MODEL, 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], OLD6_MODEL, 0, 0, 0, 0, 0);
 			}
 			else
 			{
 			trap_G2API_InitGhoul2Model(&g2WeaponInstances12[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
+			trap_G2API_InitGhoul2Model(&g2HolsterWeaponInstances12[/*i*/item->giTag], item->world_model[0], 0, 0, 0, 0, 0);
 			}
 //			trap_G2API_InitGhoul2Model(&g2WeaponInstances2[i], item->world_model[0],G_ModelIndex( item->world_model[0] ) , 0, 0, 0, 0);
 			if (g2WeaponInstances12[/*i*/item->giTag])
@@ -6365,6 +7119,17 @@ void CG_ShutDownG2Weapons(void)
 		trap_G2API_CleanGhoul2Models(&g2WeaponInstances[i]);
 		//[VisualWeapons]
 		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances2[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances3[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances4[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances5[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances6[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances7[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances8[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances9[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances10[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances11[i]);
+		trap_G2API_CleanGhoul2Models(&g2HolsterWeaponInstances12[i]);
 		//[/VisualWeapons]
 		trap_G2API_CleanGhoul2Models(&g2WeaponInstances2[i]);//[DualPistols]
 		trap_G2API_CleanGhoul2Models(&g2WeaponInstances3[i]);//[Option1]
@@ -6380,66 +7145,67 @@ void CG_ShutDownG2Weapons(void)
 	}
 }
 
+static void *CG_G2WeaponInstanceForFlags(int weapon, int optionFlags, qboolean secondWeapon)
+{
+	void *selected = NULL;
+	void *fallback = NULL;
+
+	if (weapon <= WP_NONE || weapon >= MAX_WEAPONS)
+	{
+		return NULL;
+	}
+
+	/*
+	 * Make variant selection atomic.  During weapon switching the correct
+	 * option flags can arrive before this weapon has been registered locally.
+	 * If we simply fall back to the base instance in that case, the player sees
+	 * a base/intermediate model for a frame until hovering/selection registers
+	 * the variant.  Ensure the weapon is registered before choosing/falling back.
+	 */
+	CG_RegisterWeapon(weapon);
+
+	if (secondWeapon)
+	{
+		fallback = g2WeaponInstances2[weapon] ? g2WeaponInstances2[weapon] : g2WeaponInstances[weapon];
+
+		if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_4)) selected = g2WeaponInstances12[weapon];
+		else if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_3)) selected = g2WeaponInstances10[weapon];
+		else if (optionFlags & EF_WP_OPTION_4) selected = g2WeaponInstances8[weapon];
+		else if (optionFlags & EF_WP_OPTION_3) selected = g2WeaponInstances6[weapon];
+		else if (optionFlags & EF_WP_OPTION_2) selected = g2WeaponInstances4[weapon];
+		else selected = g2WeaponInstances2[weapon];
+	}
+	else
+	{
+		fallback = g2WeaponInstances[weapon];
+
+		if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_4)) selected = g2WeaponInstances11[weapon];
+		else if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_3)) selected = g2WeaponInstances9[weapon];
+		else if (optionFlags & EF_WP_OPTION_4) selected = g2WeaponInstances7[weapon];
+		else if (optionFlags & EF_WP_OPTION_3) selected = g2WeaponInstances5[weapon];
+		else if (optionFlags & EF_WP_OPTION_2) selected = g2WeaponInstances3[weapon];
+		else selected = g2WeaponInstances[weapon];
+	}
+
+	return selected ? selected : fallback;
+}
+
 void *CG_G2WeaponInstance(centity_t *cent, int weapon)
 {
 	clientInfo_t *ci = NULL;
+	int optionFlags;
+
+	CG_RememberWeaponOptionFlags(cent, weapon);
+	optionFlags = CG_RememberedWeaponOptionFlags(cent, weapon);
 
 	if (weapon != WP_SABER)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances11[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances9[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances7[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances5[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances3[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances[weapon];
-		}
+		return CG_G2WeaponInstanceForFlags(weapon, optionFlags, qfalse);
 	}
 
-	if (cent->currentState.eType != ET_PLAYER &&
-		cent->currentState.eType != ET_NPC)
+	if (!cent || (cent->currentState.eType != ET_PLAYER && cent->currentState.eType != ET_NPC))
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances11[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances9[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances7[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances5[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances3[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances[weapon];
-		}
-		
+		return CG_G2WeaponInstanceForFlags(weapon, optionFlags, qfalse);
 	}
 
 	if (cent->currentState.eType == ET_NPC)
@@ -6451,127 +7217,31 @@ void *CG_G2WeaponInstance(centity_t *cent, int weapon)
 		ci = &cgs.clientinfo[cent->currentState.number];
 	}
 
-	if (!ci)
-	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances11[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances9[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances7[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances5[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances3[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances[weapon];
-		}
-	}
-
-	//Try to return the custom saber instance if we can.
-	if (ci->saber[0].model[0] && ci->ghoul2Weapons[0])
+	if (ci && ci->saber[0].model[0] && ci->ghoul2Weapons[0])
 	{
 		return ci->ghoul2Weapons[0];
 	}
 
-	//If no custom then just use the default.
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances11[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances9[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances7[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances5[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances3[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances[weapon];
-		}
+	return CG_G2WeaponInstanceForFlags(weapon, optionFlags, qfalse);
 }
 
 //[DualPistols]
 void *CG_G2WeaponInstance2(centity_t *cent, int weapon)
 {
 	clientInfo_t *ci = NULL;
+	int optionFlags;
+
+	CG_RememberWeaponOptionFlags(cent, weapon);
+	optionFlags = CG_RememberedWeaponOptionFlags(cent, weapon);
 
 	if (weapon != WP_SABER)
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances12[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances10[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances8[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances6[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances4[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances2[weapon];
-		}
+		return CG_G2WeaponInstanceForFlags(weapon, optionFlags, qtrue);
 	}
 
-	if (cent->currentState.eType != ET_PLAYER &&
-		cent->currentState.eType != ET_NPC)
+	if (!cent || (cent->currentState.eType != ET_PLAYER && cent->currentState.eType != ET_NPC))
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances12[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances10[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances8[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances6[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances4[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances2[weapon];
-		}
+		return CG_G2WeaponInstanceForFlags(weapon, optionFlags, qtrue);
 	}
 
 	if (cent->currentState.eType == ET_NPC)
@@ -6583,85 +7253,110 @@ void *CG_G2WeaponInstance2(centity_t *cent, int weapon)
 		ci = &cgs.clientinfo[cent->currentState.number];
 	}
 
-	if (!ci)
+	if (ci && ci->saber[1].model[0] && ci->ghoul2Weapons[1])
 	{
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances12[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances10[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances8[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances6[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances4[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances2[weapon];
-		}
+		return ci->ghoul2Weapons[1];
 	}
 
-	//Try to return the custom saber instance if we can.
-	if (ci->saber[0].model[0] &&
-		ci->ghoul2Weapons[0])
-	{
-		return ci->ghoul2Weapons[0];
-	}
-
-	//If no custom then just use the default.
-		if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances12[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2 && cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances10[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_4)
-		{
-		return g2WeaponInstances8[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_3)
-		{
-		return g2WeaponInstances6[weapon];
-		}
-		else if(cent->currentState.eFlags  & EF_WP_OPTION_2)
-		{
-		return g2WeaponInstances4[weapon];
-		}
-		else
-		{
-		return g2WeaponInstances2[weapon];
-		}
+	return CG_G2WeaponInstanceForFlags(weapon, optionFlags, qtrue);
 }
+
 //[/DualPistols]
 
 
 
 //[VisualWeapons]
+static void *CG_G2HolsterWeaponInstanceForFlags(int weapon, int optionFlags, qboolean secondWeapon)
+{
+	void *fallback;
+	void *selected = NULL;
+
+	if (weapon <= WP_NONE || weapon >= MAX_WEAPONS)
+	{
+		return NULL;
+	}
+
+	CG_RegisterWeapon(weapon);
+
+	fallback = g2HolsterWeaponInstances[weapon];
+
+	if (secondWeapon)
+	{
+		if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_4))
+		{
+			selected = g2HolsterWeaponInstances12[weapon];
+		}
+		else if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_3))
+		{
+			selected = g2HolsterWeaponInstances10[weapon];
+		}
+		else if (optionFlags & EF_WP_OPTION_4)
+		{
+			selected = g2HolsterWeaponInstances8[weapon];
+		}
+		else if (optionFlags & EF_WP_OPTION_3)
+		{
+			selected = g2HolsterWeaponInstances6[weapon];
+		}
+		else if (optionFlags & EF_WP_OPTION_2)
+		{
+			selected = g2HolsterWeaponInstances4[weapon];
+		}
+		else
+		{
+			selected = g2HolsterWeaponInstances2[weapon];
+		}
+	}
+	else
+	{
+		if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_4))
+		{
+			selected = g2HolsterWeaponInstances11[weapon];
+		}
+		else if ((optionFlags & EF_WP_OPTION_2) && (optionFlags & EF_WP_OPTION_3))
+		{
+			selected = g2HolsterWeaponInstances9[weapon];
+		}
+		else if (optionFlags & EF_WP_OPTION_4)
+		{
+			selected = g2HolsterWeaponInstances7[weapon];
+		}
+		else if (optionFlags & EF_WP_OPTION_3)
+		{
+			selected = g2HolsterWeaponInstances5[weapon];
+		}
+		else if (optionFlags & EF_WP_OPTION_2)
+		{
+			selected = g2HolsterWeaponInstances3[weapon];
+		}
+		else
+		{
+			selected = g2HolsterWeaponInstances[weapon];
+		}
+	}
+
+	return selected ? selected : fallback;
+}
+
 void *CG_G2HolsterWeaponInstance(centity_t *cent, int weapon, qboolean secondSaber)
 {
 	clientInfo_t *ci = NULL;
+	int optionFlags = CG_RememberedWeaponOptionFlags(cent, weapon);
 
 	if (weapon != WP_SABER)
 	{
-		return g2HolsterWeaponInstances[weapon];
+		return CG_G2HolsterWeaponInstanceForFlags(weapon, optionFlags, secondSaber);
+	}
+
+	if (!cent)
+	{
+		return CG_G2HolsterWeaponInstanceForFlags(weapon, optionFlags, secondSaber);
 	}
 
 	if (cent->currentState.eType != ET_PLAYER &&
 		cent->currentState.eType != ET_NPC)
 	{
-		return g2HolsterWeaponInstances[weapon];
+		return CG_G2HolsterWeaponInstanceForFlags(weapon, optionFlags, secondSaber);
 	}
 
 	if (cent->currentState.eType == ET_NPC)
@@ -6675,7 +7370,7 @@ void *CG_G2HolsterWeaponInstance(centity_t *cent, int weapon, qboolean secondSab
 
 	if (!ci)
 	{
-		return g2HolsterWeaponInstances[weapon];
+		return CG_G2HolsterWeaponInstanceForFlags(weapon, optionFlags, secondSaber);
 	}
 
 	//Try to return the custom saber instance if we can.
@@ -6696,8 +7391,8 @@ void *CG_G2HolsterWeaponInstance(centity_t *cent, int weapon, qboolean secondSab
 		}
 	}
 
-	//If no custom then just use the default.
-	return g2HolsterWeaponInstances[weapon];
+	//If no custom then just use the default/optioned holster instance.
+	return CG_G2HolsterWeaponInstanceForFlags(weapon, optionFlags, secondSaber);
 }
 //[/VisualWeapons]
 
@@ -6781,17 +7476,17 @@ void CG_CopyG2WeaponInstance(centity_t *cent, int weaponNum, void *toGhoul2)
 				trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, weaponNum/*-1*/), 0, toGhoul2, 1); 
 				//[DualPistols]
 				if ( (cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
-					(cent->currentState.weapon == WP_BRYAR_PISTOL) )
+					(weaponNum == WP_BRYAR_PISTOL) )
 				{
 					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance2(cent, weaponNum/*-1*/), 0, toGhoul2, 2);
 				}
 				else if ( (cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
-					(cent->currentState.weapon == WP_BRYAR_OLD) )
+					(weaponNum == WP_BRYAR_OLD) )
 				{
 					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance2(cent, weaponNum/*-1*/), 0, toGhoul2, 2);
 				}
 				else if ( (cent->currentState.eFlags & EF_DUAL_WEAPONS) &&
-					(cent->currentState.weapon == WP_STUN_BATON) )
+					(weaponNum == WP_STUN_BATON) )
 				{
 					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance2(cent, weaponNum/*-1*/), 0, toGhoul2, 2);
 				}
@@ -6868,10 +7563,10 @@ void CG_CheckPlayerG2Weapons(playerState_t *ps, centity_t *cent)
 
 
 	if (cent->ghoul2 && ((cent->ghoul2weapon != CG_G2WeaponInstance(cent, ps->weapon)) || 
-			((( cent->ghoul2weapon2 != CG_G2WeaponInstance2(cent, cent->currentState.weapon)) &&
+			((( cent->ghoul2weapon2 != CG_G2WeaponInstance2(cent, ps->weapon)) &&
 			//WeaponMod FIXME?
-			(cent->currentState.eFlags & EF_DUAL_WEAPONS )&& (cent->currentState.weapon != WP_SABER))) ||
-		(cent->ghoul2weapon2 != NULL && ((!(cent->currentState.eFlags & EF_DUAL_WEAPONS)) || (cent->currentState.weapon == WP_SABER)))) &&
+			(cent->currentState.eFlags & EF_DUAL_WEAPONS )&& (ps->weapon != WP_SABER))) ||
+		(cent->ghoul2weapon2 != NULL && ((!(cent->currentState.eFlags & EF_DUAL_WEAPONS)) || (ps->weapon == WP_SABER)))) &&
 		ps->clientNum == cent->currentState.number) //don't want spectator mode forcing one client's weapon instance over another's
 	//[/DualPistols]
 	{

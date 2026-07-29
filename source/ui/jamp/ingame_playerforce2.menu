@@ -1,4 +1,4 @@
-//[NewMenus]
+﻿//[NewMenus]
 //-----------------------------------
 // SETUP MENU 
 //-----------------------------------
@@ -117,12 +117,12 @@
 			decoration
 		}
 		
-		//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+		//Force Seeing Level 1 gates real Force powers. Saber offense/styles remain available without FP_SEE.
 		itemDef 
 		{
 			name				notforcesensitive
 			group				"playersettinggroup"
-			text				@OJP_MENUS_NOTFORCESENSITIVE
+			text				@OBP_MENUS_NOTFORCESENSITIVE
 			type				1
 			style				0	
 			rect				43 115 0 0
@@ -136,7 +136,7 @@
 			forecolor				0.8 0.8 0.8 1
 			border					0
 			bordercolor				0 0 0 0
-			descText			@OJP_MENUS_DESC_NOTFORCESENSITIVE
+			descText			@OBP_MENUS_DESC_NOTFORCESENSITIVE
 			visible				0 
 			decoration
 		}
@@ -150,7 +150,7 @@
 			rect				220 248 175 34
 			forecolor			1 1 1 1
 			decoration
-			descText			@OJP_MENUS_DESC_NOTFORCESENSITIVE
+			descText			@OBP_MENUS_DESC_NOTFORCESENSITIVE
 			visible				0
 		}
 	// Second Column

@@ -1,4 +1,4 @@
-//--------------------------------------------------------------
+﻿//--------------------------------------------------------------
 //
 // MULTIPLAYER SETUP MENU
 //
@@ -104,7 +104,7 @@
 			name				bgpic
 			style				WINDOW_STYLE_SHADER
 			rect				23 98 594 324
-			background			"ojp/menu/1"
+			background			"obp/menu/1"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -127,7 +127,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				115 -40 150 150
-			background			"ojp/menu/bluewire"
+			background			"obp/menu/bluewire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -141,7 +141,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				375 -40 150 150
-			background			"ojp/menu/redwire"
+			background			"obp/menu/redwire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -153,7 +153,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				10 104 26 370
-			background			"ojp/menu/boltblue"
+			background			"obp/menu/boltblue"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -165,7 +165,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				604 104 26 370
-			background			"ojp/menu/boltred"
+			background			"obp/menu/boltred"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -178,7 +178,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				601 85 32 32
-			background			"ojp/menu/red_emitter"
+			background			"obp/menu/red_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -190,7 +190,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				7 85 32 32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -201,7 +201,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				601 450 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -213,7 +213,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				7 450 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -225,7 +225,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 462 640 18
-			background			"ojp/menu/lowbar"
+			background			"obp/menu/lowbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -237,7 +237,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 85 640 18
-			background			"ojp/menu/topbar"
+			background			"obp/menu/topbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -249,7 +249,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 0 320 80
-			background			"ojp/menu/bluebeam"
+			background			"obp/menu/bluebeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -261,7 +261,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				320 1 320 72
-			background			"ojp/menu/redbeam"
+			background			"obp/menu/redbeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -285,7 +285,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/redspin"
+			background			"obp/menu/redspin"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -297,7 +297,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				-1.5 -5 80 80
-			background			"ojp/menu/lightside"
+			background			"obp/menu/lightside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -309,7 +309,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/darkside"
+			background			"obp/menu/darkside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -340,11 +340,11 @@
 		}
 		itemDef 
 		{
-			name				ojplogo
+			name				obplogo
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				220 0 200 90
-			background			"ojp/menu/ojplogo"
+			background			"obp/menu/obplogo"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -967,7 +967,7 @@
 		{
 			name				advancemenubutton
 			group				setup_submenu
-			text				@OJP_MENUS_ADVANCED
+			text				@OBP_MENUS_ADVANCED
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				80 325 170 24
@@ -979,7 +979,7 @@
 			textstyle			0
 			forecolor			1 .682 0 1
 			visible				1
-			descText			@OJP_MENUS_ADVANCED_DESC
+			descText			@OBP_MENUS_ADVANCED_DESC
 
 			mouseEnter 
 			{ 
@@ -2493,7 +2493,7 @@
 			forecolor			0.65 0.65 1 1
 			visible				0
 			//[UITweaks]
-			descText			@OJP_MENUS_DRAWCROSSHAIR_DESC
+			descText			@OBP_MENUS_DRAWCROSSHAIR_DESC
 			//descText			@MENUS_TOGGLE_TO_SHOW_OR_HIDE
 			//[/UITweaks]
 			action
@@ -2548,13 +2548,13 @@
 			name				crosshairsize
 			group				options
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_CROSSHAIRSIZE
+			text				@OBP_MENUS_CROSSHAIRSIZE
 			cvar				"cg_crosshairSize"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_SMALL		12
-				@OJP_MENUS_NORMAL		24
-				@OJP_MENUS_LARGE		36
+				@OBP_MENUS_SMALL		12
+				@OBP_MENUS_NORMAL		24
+				@OBP_MENUS_LARGE		36
 			}
 			rect				260 230 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -2564,7 +2564,7 @@
 			textscale 			1
 			forecolor			.615 .615 .956 1
 			visible				0
-			descText			@OJP_MENUS_CROSSHAIRSIZE_DESC
+			descText			@OBP_MENUS_CROSSHAIRSIZE_DESC
 			action
 			{
 				play			"sound/interface/button1.wav"
@@ -3298,8 +3298,8 @@
 			name				drawframerate
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_SHOWFRAMERATE
-			descText			@OJP_MENUS_SHOWFRAMERATE_DESC
+			text				@OBP_MENUS_SHOWFRAMERATE
+			descText			@OBP_MENUS_SHOWFRAMERATE_DESC
 			cvar				"cg_drawFPS"
 			cvarFloatList		
 			{ 
@@ -3334,8 +3334,8 @@
 			name				lagometer
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_LAGOMETER
-			descText			@OJP_MENUS_LAGOMETER_DESC
+			text				@OBP_MENUS_LAGOMETER
+			descText			@OBP_MENUS_LAGOMETER_DESC
 			cvar				"cg_lagometer"
 			cvarFloatList		
 			{ 
@@ -3414,14 +3414,14 @@
 			name				teamrgbsabers
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_TEAMRGBSABERS
-			descText			@OJP_MENUS_TEAMRGBSABERS_DESC
-			cvar				"ojp_teamrgbsabers"
+			text				@OBP_MENUS_TEAMRGBSABERS
+			descText			@OBP_MENUS_TEAMRGBSABERS_DESC
+			cvar				"obp_teamrgbsabers"
 			cvarFloatList		
 			{ 
 				@MENUS_OFF		0
-				@OJP_MENUS_TEAMRGBSABERSPLAYER	 	1
-				@OJP_MENUS_TEAMRGBSABERSALL	 		2
+				@OBP_MENUS_TEAMRGBSABERSPLAYER	 	1
+				@OBP_MENUS_TEAMRGBSABERSALL	 		2
 			}
 			rect				260 245 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -3453,14 +3453,14 @@
 			name				holsteredweapons
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_HOLSTEREDWEAPONS
-			descText			@OJP_MENUS_HOLSTEREDWEAPONS_DESC
-			cvar				"ojp_holsteredweapons"
+			text				@OBP_MENUS_HOLSTEREDWEAPONS
+			descText			@OBP_MENUS_HOLSTEREDWEAPONS_DESC
+			cvar				"obp_holsteredweapons"
 			cvarFloatList		
 			{ 
 				@MENUS_OFF		0
-				@OJP_MENUS_HOLSTEREDWEAPONSPLAYER	 	1
-				@OJP_MENUS_HOLSTEREDWEAPONSALL	 	2
+				@OBP_MENUS_HOLSTEREDWEAPONSPLAYER	 	1
+				@OBP_MENUS_HOLSTEREDWEAPONSALL	 	2
 			}
 			rect				260 260 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -3492,14 +3492,14 @@
 			name				trueinvertsaber
 			group				advanced
       		type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_TRUEINVERTSABER
-			descText			@OJP_MENUS_TRUEINVERTSABER_DESC
+			text				@OBP_MENUS_TRUEINVERTSABER
+			descText			@OBP_MENUS_TRUEINVERTSABER_DESC
 			cvar				"cg_trueinvertsaber"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_TRUEINVERTSABERSAME			0
-				@OJP_MENUS_TRUEINVERTSABERINVERT 		1
-				@OJP_MENUS_TRUEINVERTSABERALWAYSTHIRDPERSON	2
+				@OBP_MENUS_TRUEINVERTSABERSAME			0
+				@OBP_MENUS_TRUEINVERTSABERINVERT 		1
+				@OBP_MENUS_TRUEINVERTSABERALWAYSTHIRDPERSON	2
 			}
 			rect				260 275 340 14
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -3533,13 +3533,13 @@
 			name				trueguns
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_TRUEGUNSVIEW
-			descText			@OJP_MENUS_TRUEGUNSVIEWDESC
+			text				@OBP_MENUS_TRUEGUNSVIEW
+			descText			@OBP_MENUS_TRUEGUNSVIEWDESC
 			cvar				"cg_trueguns"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_TRUEGUNSVIEW2D	0
-				@OJP_MENUS_TRUEGUNSVIEW3D	1
+				@OBP_MENUS_TRUEGUNSVIEW2D	0
+				@OBP_MENUS_TRUEGUNSVIEW3D	1
 				
 			}
 			rect				260 290 340 14

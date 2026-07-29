@@ -150,8 +150,96 @@ int G_SoundIndex( const char *name ) {
 	return G_FindConfigstringIndex (name, CS_SOUNDS, MAX_SOUNDS, qtrue);
 }
 
+
+/*
+=================
+G_SoundSetExists
+
+JA/MP can load JK2 single-player BSPs that reference ambient soundSets not
+present in the active sound/sound.txt.  Do not publish those missing names into
+CS_AMBIENT_SET, because the client ambient parser treats missing precache
+entries as fatal during loading.
+=================
+*/
+static qboolean G_SoundSetExists( const char *name )
+{
+	static char		*soundText = NULL;
+	static int		soundTextLoaded = 0;
+	fileHandle_t	f;
+	int				len;
+	const char		*p;
+	char			*token;
+
+	if ( !name || !name[0] )
+	{
+		return qfalse;
+	}
+
+	if ( !soundTextLoaded )
+	{
+		soundTextLoaded = 1;
+
+		len = trap_FS_FOpenFile( "sound/sound.txt", &f, FS_READ );
+		if ( !f || len <= 0 )
+		{
+			if ( f )
+			{
+				trap_FS_FCloseFile( f );
+			}
+
+			// Preserve original behavior if sound.txt cannot be inspected.
+			return qtrue;
+		}
+
+		soundText = (char *)G_Alloc( len + 1 );
+		if ( !soundText )
+		{
+			trap_FS_FCloseFile( f );
+			return qtrue;
+		}
+
+		trap_FS_Read( soundText, len, f );
+		soundText[len] = '\0';
+		trap_FS_FCloseFile( f );
+	}
+
+	if ( !soundText )
+	{
+		return qtrue;
+	}
+
+	p = soundText;
+	while ( 1 )
+	{
+		token = COM_ParseExt( &p, qtrue );
+		if ( !token || !token[0] )
+		{
+			break;
+		}
+
+		if ( !Q_stricmp( token, "generalSet" ) ||
+			 !Q_stricmp( token, "localSet" ) ||
+			 !Q_stricmp( token, "bmodelSet" ) )
+		{
+			token = COM_ParseExt( &p, qtrue );
+			if ( token && token[0] && !Q_stricmp( token, name ) )
+			{
+				return qtrue;
+			}
+		}
+	}
+
+	return qfalse;
+}
+
 int G_SoundSetIndex(const char *name)
 {
+	if ( !G_SoundSetExists( name ) )
+	{
+		G_Printf( S_COLOR_YELLOW "WARNING: skipping missing ambient soundSet '%s'\n", name ? name : "<NULL>" );
+		return 0;
+	}
+
 	return G_FindConfigstringIndex (name, CS_AMBIENT_SET, MAX_AMBIENT_SETS, qtrue);
 }
 

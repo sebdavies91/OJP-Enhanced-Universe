@@ -1004,7 +1004,7 @@ FX_DestructionHitWall
 */
 void FX_DestructionHitWall( vec3_t origin, vec3_t normal )
 {
-	trap_FX_PlayEffectID( cgs.effects.concussionImpactEffect2, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.forceDestructionExplosion, origin, normal, -1, -1 );
 }
 
 /*
@@ -1014,7 +1014,7 @@ FX_DestructionHitPlayer
 */
 void FX_DestructionHitPlayer( vec3_t origin, vec3_t normal, qboolean humanoid )
 {
-	trap_FX_PlayEffectID( cgs.effects.concussionImpactEffect2, origin, normal, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.forceDestructionExplosion, origin, normal, -1, -1 );
 }
 
 /*
@@ -1036,5 +1036,5 @@ void FX_DestructionProjectileThink(  centity_t *cent, const struct weaponInfo_s 
 		return;
 	}
 
-	trap_FX_PlayEffectID( cgs.effects.concussionShotEffect2, cent->lerpOrigin, forward, -1, -1 );
+	trap_FX_PlayEffectID( cgs.effects.forceDestructionShot, cent->lerpOrigin, forward, -1, -1 );
 }

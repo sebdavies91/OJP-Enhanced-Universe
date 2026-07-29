@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // g_combat.c
 
@@ -28,17 +28,23 @@ void ThrowSaberToAttacker(gentity_t *self, gentity_t *attacker);
 extern void SP_item_security_key(gentity_t *self);
 void G_DropKey( gentity_t *self )
 {//drop whatever security key I was holding
-	gentity_t	*dropped = G_Spawn();
+	gentity_t	*dropped;
 
-	G_SetOrigin(dropped, self->client->ps.origin);
+	if ( !self || !self->client || !self->client->securityKey[0] )
+	{
+		return;
+	}
+
+	dropped = G_Spawn();
+	G_SetOrigin( dropped, self->client->ps.origin );
 
 	//set up the ent
-	SP_item_security_key(self);
+	SP_item_security_key( dropped );
 
 	//Don't throw the key
 	VectorClear( dropped->s.pos.trDelta );
-	dropped->message = self->message;
-	self->message = NULL;
+	dropped->message = G_NewString( self->client->securityKey );
+	self->client->securityKey[0] = '\0';
 }
 //[/CoOp]
 static gentity_t *G_CreateStatusEffectEvent( gentity_t *targ, int event, const vec3_t dir )
@@ -2849,12 +2855,12 @@ void player_die( gentity_t *self, gentity_t *inflictor, gentity_t *attacker, int
 
 	//[LastManStanding]
 	//[Coop]
-	if (g_gametype.integer == GT_SINGLE_PLAYER && ojp_lms.integer == 1)
+	if (g_gametype.integer == GT_SINGLE_PLAYER && obp_lms.integer == 1)
 	{
 			gentity_t *murderer = NULL;
 			murderer = &g_entities[self->client->ps.otherKiller];
 			murderer->liveExp++;
-			if (murderer->liveExp >= ojp_liveExp.integer)
+			if (murderer->liveExp >= obp_liveExp.integer)
 			{
 				murderer->lives++;
 				murderer->liveExp = 0;
@@ -5917,7 +5923,7 @@ extern qboolean gSiegeRoundBegun;
 int gPainMOD = 0;
 int gPainHitLoc = -1;
 vec3_t gPainPoint;
-extern qboolean OJP_BlockFocus(gentity_t *attacker, gentity_t *defender, int dpBlockCost, forcePowers_t forcePower, qboolean forcePowerVariation);
+extern qboolean OBP_BlockFocus(gentity_t *attacker, gentity_t *defender, int dpBlockCost, forcePowers_t forcePower, qboolean forcePowerVariation);
 extern int WP_AbsorbConversion(gentity_t *attacked, int atdAbsLevel, gentity_t *attacker, int atPower, int atPowerLevel, int atForceSpent);
 extern int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS];
 //[CloakingVehicles]
@@ -5925,6 +5931,37 @@ extern void G_ToggleVehicleCloak(playerState_t *ps);
 //[/CloakingVehicles]
 extern qboolean ButterFingers(gentity_t *saberent, gentity_t *saberOwner, gentity_t *other, trace_t *tr);
 
+
+
+static gentity_t *G_SkillOwnerForEntity(gentity_t *ent)
+{
+	if (!ent)
+	{
+		return NULL;
+	}
+
+	if (ent->m_pVehicle && ent->m_pVehicle->m_pPilot)
+	{
+		return (gentity_t *)ent->m_pVehicle->m_pPilot;
+	}
+
+	if (ent->client && ent->client->ps.m_iVehicleNum > 0 && ent->client->ps.m_iVehicleNum < ENTITYNUM_NONE)
+	{
+		gentity_t *veh = &g_entities[ent->client->ps.m_iVehicleNum];
+
+		if (veh->inuse && veh->m_pVehicle && veh->m_pVehicle->m_pPilot)
+		{
+			return (gentity_t *)veh->m_pVehicle->m_pPilot;
+		}
+	}
+
+	if (ent->client)
+	{
+		return ent;
+	}
+
+	return NULL;
+}
 
 void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			   vec3_t dir, vec3_t point, int damage, int dflags, int mod ) {
@@ -5946,6 +5983,12 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		return;
 	}
 
+	if (attacker && attacker->client && attacker != targ && G_HasSpawnProtection(attacker))
+	{
+		// Delayed/projectile damage from a protected player still counts as aggression.
+		G_ClearSpawnProtection(attacker);
+	}
+
 	if(mod != MOD_STUN_BATON && mod != MOD_UNKNOWN && mod != MOD_MELEE && mod != MOD_SABER
 		&& mod != MOD_VEHICLE && mod != MOD_WATER && mod != MOD_SLIME && mod != MOD_LAVA
 		&& mod != MOD_CRUSH && mod != MOD_TELEFRAG && mod != MOD_FALLING)
@@ -5954,7 +5997,38 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 			&& targ->client->ps.fd.forceGripEntityNum == attacker->client->ps.clientNum)
 			WP_ForcePowerStop(targ,FP_GRIP);
 	}
+
+	// Ysalamiri/CTY carriers should be protected from all Force damage mods,
+	// not only Force Destruction. Most powers are blocked earlier by
+	// ForcePowerUsableOn(), but delayed/area damage can still arrive here.
+	if (targ && targ->client && BG_HasYsalamiri(g_gametype.integer, &targ->client->ps) &&
+		(mod == MOD_FORCE_DARK || mod == MOD_FORCE_DESTRUCTION))
+	{
+		return;
+	}
 	
+	if (g_gametype.integer == GT_HOLOCRON && g_holocronDropOnDamage.integer &&
+		targ && targ->client && targ->health > 0 && damage >= 10 &&
+		attacker && attacker != targ && attacker->client &&
+		!(dflags & DAMAGE_NO_PROTECTION))
+	{
+		int chance = g_holocronDropChance.integer;
+
+		if (chance < 0)
+		{
+			chance = 0;
+		}
+		else if (chance > 100)
+		{
+			chance = 100;
+		}
+
+		if (chance > 0 && Q_irand(1, 100) <= chance)
+		{
+			G_DropHolocronFromClient(targ, qtrue);
+		}
+	}
+
 	if (targ && targ->client && targ->client->ps.powerups[PW_SPHERESHIELDED] ) 
 	{
 			if (attacker && attacker->client && (mod == MOD_FORCE_DARK || mod == MOD_FORCE_DESTRUCTION))
@@ -5990,7 +6064,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 						targ->client->forcePowerSoundDebounce = level.time + 400;
 					}
 				}
-				if (attacker && attacker->client && (mod == MOD_FORCE_DARK || mod == MOD_FORCE_DESTRUCTION))
+				if (mod == MOD_FORCE_DARK || mod == MOD_FORCE_DESTRUCTION)
 				{
 				
 				}
@@ -6034,7 +6108,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			return;			
 		}
-		if (OJP_BlockFocus(attacker,targ,forcePowerNeeded[attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE]][FP_TEAM_FORCE],FP_TEAM_FORCE,qtrue))
+		if (OBP_BlockFocus(attacker,targ,forcePowerNeeded[attacker->client->ps.fd.forcePowerLevel[FP_TEAM_FORCE]][FP_TEAM_FORCE],FP_TEAM_FORCE,qtrue))
 		{	
 			return;
 		}	
@@ -6068,32 +6142,35 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		}
 
 
-		if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_3))
 		{
-			damage = damage * 5 / 10;
-		}
-		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_2))
-		{
-			damage = damage * 7 / 10;
-		}
-		else if (targ && targ->client && (targ->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_1))
-		{
-			damage = damage * 9 / 10;
-		}		
-		
-		
-		
-		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_3))
-		{
-			damage = damage * 10 / 5;				
-		}
-		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_2))
-		{
-			damage = damage * 10 / 7;				
-		}
-		if (attacker && attacker->client && (attacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_1))
-		{
-			damage = damage * 10 / 9;				
+			gentity_t *skillTarg = G_SkillOwnerForEntity(targ);
+			gentity_t *skillAttacker = G_SkillOwnerForEntity(attacker);
+
+			if (skillTarg && skillTarg->client && (skillTarg->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_3))
+			{
+				damage = damage * 5 / 10;
+			}
+			else if (skillTarg && skillTarg->client && (skillTarg->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_2))
+			{
+				damage = damage * 7 / 10;
+			}
+			else if (skillTarg && skillTarg->client && (skillTarg->client->skillLevel[SK_RESISTANCE] == FORCE_LEVEL_1))
+			{
+				damage = damage * 9 / 10;
+			}
+
+			if (skillAttacker && skillAttacker->client && (skillAttacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_3))
+			{
+				damage = damage * 10 / 5;
+			}
+			else if (skillAttacker && skillAttacker->client && (skillAttacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_2))
+			{
+				damage = damage * 10 / 7;
+			}
+			else if (skillAttacker && skillAttacker->client && (skillAttacker->client->skillLevel[SK_POWER] == FORCE_LEVEL_1))
+			{
+				damage = damage * 10 / 9;
+			}
 		}
 
 		
@@ -6231,17 +6308,14 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 	}
 
 	//[BryarSecondary]
-	if ( (mod == MOD_BRYAR_PISTOL_ALT || mod == MOD_SEEKER) && targ && targ->inuse && targ->client )
+	if ( mod == MOD_BRYAR_PISTOL_ALT && targ && targ->inuse && targ->client )
 	{//doesn't do actual damage to the target, instead it acts like a stun hit that increases MP/DP and tries to knock
 		//the player over like a kick.
 		
 		//int mpDamage = (float) inflictor->s.generic1/BRYAR_MAX_CHARGE*MISHAPLEVEL_MAX;
 		int mpDamage = (float) inflictor->s.generic1/BRYAR_MAX_CHARGE*7;
 		//deal DP damage
-		if(mod != MOD_SEEKER)
-		{
-			G_DodgeDrain(targ, attacker, damage);
-		}
+		G_DodgeDrain(targ, attacker, damage);
 		
 		//G_Printf("%i: %i: Bryar MP Damage %i, Charge %i\n", level.time, targ->s.number, mpDamage, inflictor->s.generic1);
 
@@ -6763,7 +6837,7 @@ void G_Damage( gentity_t *targ, gentity_t *inflictor, gentity_t *attacker,
 		{
 			if (targ->client->invulnerableTimer <= level.time)
 			{
-				targ->client->ps.eFlags &= ~EF_INVULNERABLE;
+				G_ClearSpawnProtection(targ);
 			}
 			else
 			{

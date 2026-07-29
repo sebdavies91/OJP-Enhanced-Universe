@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // g_weapon.c 
 // perform the server side effects of a weapon firing
@@ -324,7 +324,7 @@ static void WP_FireBryarPistolMain(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -375,7 +375,7 @@ static void WP_FireBryarPistolAlt(gentity_t*ent)
 	int count;
 
 	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qtrue );
-	gentity_t   *missile2;
+	gentity_t   *missile2 = NULL;
 	float boxSize = 0;
 
 	//[DualPistols]
@@ -503,7 +503,7 @@ static void WP_FireBryarPistol2Main(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -547,99 +547,32 @@ static void WP_FireBryarPistol2Main(gentity_t*ent)
 
 static void WP_FireBryarPistol2Alt(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*7/8;
-	int count;
+	int damage = BRYAR_PISTOL_DAMAGE*7/24; /* Three-round burst: preserve the former total alt-fire damage. */
+	gentity_t	*missile;
 
-	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qtrue );
-	gentity_t   *missile2;
-	float boxSize = 0;
-
-	//[DualPistols]
-	if ((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	{
-		missile2 = CreateMissile(muzzle2, forward, BRYAR_PISTOL_VEL, 10000, ent, qtrue);
-	}
-	//[/DualPistols]
+		if(ent->client->leftPistol)
+			missile = CreateMissile(muzzle2, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse);
+		else
+			missile = CreateMissile(muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse);
 
-	//if(ent->client->skillLevel[SK_PISTOL] != FORCE_LEVEL_3)
-	//{
-		//return;
-	//}
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+	{
+		missile = CreateMissile(muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse);
+	}
 
 	missile->classname = "bryar_proj";
 	missile->s.weapon = WP_BRYAR_PISTOL;
 	missile->s.eFlags |= EF_WP_OPTION_2;
 
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-	missile2->classname = "bryar_proj";
-	missile2->s.weapon = WP_BRYAR_PISTOL;
-	missile2->s.eFlags |= EF_WP_OPTION_2;
-	}
-	//[/DualPistols]
-	//[/DualPistols]
-
-//	else if(ent->client->skillLevel[SK_OLD] != FORCE_LEVEL_3)
-	//{
-		//return;
-	//}
-
-
-
-	count = ( level.time - ent->client->ps.weaponChargeTime ) / BRYAR_CHARGE_UNIT;
-
-	if ( count < 1 )
-	{
-		count = 1;
-	}
-	//[BryarSecondary]
-	else if ( count > BRYAR_MAX_CHARGE )
-	{
-		count = BRYAR_MAX_CHARGE;
-	}
-
-	damage = BRYAR_PISTOL_ALT_DPDAMAGE + (float)count/BRYAR_MAX_CHARGE*(BRYAR_PISTOL_ALT_DPMAXDAMAGE-BRYAR_PISTOL_ALT_DPDAMAGE);
-
-	//[/BryarSecondary]
-
-	missile->s.generic1 = count; // The missile will then render according to the charge level.
-
-	boxSize = BRYAR_ALT_SIZE*(count*0.5);
-
-	VectorSet( missile->r.maxs, boxSize, boxSize, boxSize );
-	VectorSet( missile->r.mins, -boxSize, -boxSize, -boxSize );
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->s.generic1 = count;
-		VectorSet( missile2->r.maxs, boxSize, boxSize, boxSize );
-		VectorSet( missile2->r.mins, -boxSize, -boxSize, -boxSize );
-	}
-	//[/DualPistols]
-
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_BRYAR_PISTOL_ALT;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
 	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-	// we don't want it to bounce forever
 	missile->bounceCount = 8;
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->damage = damage;
-		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
-		missile2->methodOfDeath = MOD_BRYAR_PISTOL_ALT;
-		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-		// we don't want it to bounce forever
-		missile2->bounceCount = 8;
-	}
-	//[/DualPistols]
 }
 
 //----------------------------------------------
@@ -677,7 +610,7 @@ static void WP_FireBryarPistol3Main(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -738,7 +671,7 @@ static void WP_FireBryarPistol3Alt(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -819,7 +752,7 @@ static void WP_FireBryarPistol4Main(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -881,7 +814,7 @@ static void WP_FireBryarPistol4Alt(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -960,7 +893,7 @@ static void WP_FireBryarPistol5Main(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -1006,63 +939,32 @@ static void WP_FireBryarPistol5Main(gentity_t*ent)
 
 static void WP_FireBryarPistol5Alt(gentity_t*ent)
 {
-	int damage = BRYAR_PISTOL_DAMAGE*6/8;
+	int damage = BRYAR_PISTOL_DAMAGE*6/24; /* Three-round burst: preserve the former total alt-fire damage. */
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	{
 		if(ent->client->leftPistol)
-			missile=CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,qfalse);
+			missile = CreateMissile(muzzle2, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse);
 		else
-			missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
-		
+			missile = CreateMissile(muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse);
+
 		ent->client->leftPistol = !ent->client->leftPistol;
 	}
 	else
-		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
-	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
-	
-	//[DualPistols]
-	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
-	//[/DualPistols]
+	{
+		missile = CreateMissile(muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse);
+	}
 
 	missile->classname = "bryar_proj";
-
 	missile->s.weapon = WP_BRYAR_PISTOL;
-	missile->s.eFlags |= EF_WP_OPTION_2;
-	missile->s.eFlags |= EF_WP_OPTION_3;
-	//[DualPistols]
-	/*
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->classname = "bryar_proj";
-		missile2->s.weapon = WP_BRYAR_PISTOL;
-	}*/
-	//[/DualPistols]
+	missile->s.eFlags |= (EF_WP_OPTION_2|EF_WP_OPTION_3);
 
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_BRYAR_PISTOL;
 	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-	// we don't want it to bounce forever
 	missile->bounceCount = 8;
-
-	//[DualPistols]
-	/*
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->damage = damage;
-		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
-		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
-		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-		// we don't want it to bounce forever
-		missile2->bounceCount = 8;
-	}*/
-	//[/DualPistols]
 }
 
 //----------------------------------------------
@@ -1103,7 +1005,7 @@ static void WP_FireBryarPistol6Main(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -1152,7 +1054,7 @@ static void WP_FireBryarPistol6Alt(gentity_t*ent)
 	int count;
 
 	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, qtrue );
-	gentity_t   *missile2;
+	gentity_t   *missile2 = NULL;
 	float boxSize = 0;
 
 	//[DualPistols]
@@ -1270,12 +1172,33 @@ void WP_FireTurretMissile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean al
 	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
 
 	missile->classname = "generic_proj";
-	missile->s.weapon = WP_TURRET;
-	if(ent->client->skillLevel[SK_SENTRY] == FORCE_LEVEL_3)
+
+	/*
+	 * HI_SENTRY bolts should use the same WP_BOWCASTER color-variant path
+	 * as HI_EWEB.  Keep other turret users, such as AT-ST turret fire, on
+	 * WP_TURRET so their existing FX are untouched.
+	 */
+	if (mod == MOD_SENTRY)
+	{
+		missile->classname = "bowcaster_alt_proj";
+		missile->s.weapon = WP_BOWCASTER;
+
+		if (g_gametype.integer >= GT_TEAM && ent && ent->client &&
+			ent->client->sess.sessionTeam == TEAM_RED)
+		{
+			missile->s.eFlags |= (EF_WP_OPTION_2|EF_WP_OPTION_4);
+		}
+	}
+	else
+	{
+		missile->s.weapon = WP_TURRET;
+	}
+
+	if (ent && ent->client && ent->client->skillLevel[SK_SENTRY] == FORCE_LEVEL_3)
 	{
 		missile->damage = 3*damage;
 	}
-	else if(ent->client->skillLevel[SK_SENTRY] == FORCE_LEVEL_2)
+	else if (ent && ent->client && ent->client->skillLevel[SK_SENTRY] == FORCE_LEVEL_2)
 	{
 		missile->damage = 2*damage;
 	}	
@@ -1469,7 +1392,7 @@ void WP_FireBlaster2Missile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean 
 //---------------------------------------------------------
 {
 	int velocity	= BLASTER_VELOCITY;
-	int	damage		= BLASTER_DAMAGE*13/9;
+	int	damage		= BLASTER_DAMAGE*13/27; /* Both fire modes are three-round bursts. */
 	gentity_t *missile;
 
 
@@ -1477,7 +1400,9 @@ void WP_FireBlaster2Missile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean 
 	{
 		damage *= 2.0;
 	}
-	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
+	/* Keep the existing Blaster projectile/effect classification.  Primary and
+	   alternate fire now share balanced per-round burst damage; cadence differs. */
+	missile = CreateMissile( start, dir, velocity, 10000, ent, qfalse );
 	missile->classname = "blaster_proj";
 
 	missile->s.weapon = WP_BLASTER;
@@ -1681,7 +1606,7 @@ void WP_FireBlaster5Missile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean 
 //---------------------------------------------------------
 {
 	int velocity	= BLASTER_VELOCITY;
-	int	damage		= BLASTER_DAMAGE*15/9;
+	int	damage		= BLASTER_DAMAGE*15/27; /* Both fire modes are three-round bursts. */
 	gentity_t *missile;
 
 
@@ -1689,7 +1614,9 @@ void WP_FireBlaster5Missile( gentity_t *ent, vec3_t start, vec3_t dir, qboolean 
 	{
 		damage *= 2.0;
 	}
-	missile = CreateMissile( start, dir, velocity, 10000, ent, altFire );
+	/* Keep the existing Blaster projectile/effect classification.  Primary and
+	   alternate fire now share balanced per-round burst damage; cadence differs. */
+	missile = CreateMissile( start, dir, velocity, 10000, ent, qfalse );
 	missile->classname = "blaster_proj";
 
 	missile->s.weapon = WP_BLASTER;
@@ -1821,8 +1748,8 @@ DISRUPTOR
 */
 //[DodgeSys]
 extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
-extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
-extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 //[/DodgeSys]
 //---------------------------------------------------------
@@ -1906,7 +1833,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 
 		//[BoltBlockSys]
 		//players can block or dodge disruptor shots.
-		if(OJP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
+		if(OBP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
 		{//saber can be used to block the shot.
 
 			//broadcast shot blocked effect
@@ -1929,7 +1856,7 @@ static void WP_DisruptorMainFire( gentity_t *ent )
 
 			//reduce DP cost of the block
 			//[ExpSys]
-			G_DodgeDrain(traceEnt, ent, OJP_SaberBlockCost(traceEnt, ent, tr.endpos));
+			G_DodgeDrain(traceEnt, ent, OBP_SaberBlockCost(traceEnt, ent, tr.endpos));
 			//[/ExpSys]
 
 			//force player into a projective block move.
@@ -2349,8 +2276,8 @@ DISRUPTOR2
 */
 //[DodgeSys]
 extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
-extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
-extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 //[/DodgeSys]
 //---------------------------------------------------------
@@ -2434,7 +2361,7 @@ static void WP_Disruptor2MainFire( gentity_t *ent )
 
 		//[BoltBlockSys]
 		//players can block or dodge disruptor shots.
-		if(OJP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
+		if(OBP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
 		{//saber can be used to block the shot.
 
 			//broadcast shot blocked effect
@@ -2458,7 +2385,7 @@ static void WP_Disruptor2MainFire( gentity_t *ent )
 
 			//reduce DP cost of the block
 			//[ExpSys]
-			G_DodgeDrain(traceEnt, ent, OJP_SaberBlockCost(traceEnt, ent, tr.endpos));
+			G_DodgeDrain(traceEnt, ent, OBP_SaberBlockCost(traceEnt, ent, tr.endpos));
 			//[/ExpSys]
 
 			//force player into a projective block move.
@@ -2830,8 +2757,8 @@ DISRUPTOR3
 */
 //[DodgeSys]
 extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
-extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
-extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 //[/DodgeSys]
 //---------------------------------------------------------
@@ -2915,7 +2842,7 @@ static void WP_Disruptor3MainFire( gentity_t *ent )
 
 		//[BoltBlockSys]
 		//players can block or dodge disruptor shots.
-		if(OJP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
+		if(OBP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
 		{//saber can be used to block the shot.
 
 			//broadcast shot blocked effect
@@ -2939,7 +2866,7 @@ static void WP_Disruptor3MainFire( gentity_t *ent )
 
 			//reduce DP cost of the block
 			//[ExpSys]
-			G_DodgeDrain(traceEnt, ent, OJP_SaberBlockCost(traceEnt, ent, tr.endpos));
+			G_DodgeDrain(traceEnt, ent, OBP_SaberBlockCost(traceEnt, ent, tr.endpos));
 			//[/ExpSys]
 
 			//force player into a projective block move.
@@ -3311,8 +3238,8 @@ DISRUPTOR4
 */
 //[DodgeSys]
 extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
-extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
-extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 //[/DodgeSys]
 //---------------------------------------------------------
@@ -3396,7 +3323,7 @@ static void WP_Disruptor4MainFire( gentity_t *ent )
 
 		//[BoltBlockSys]
 		//players can block or dodge disruptor shots.
-		if(OJP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
+		if(OBP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
 		{//saber can be used to block the shot.
 
 			//broadcast shot blocked effect
@@ -3420,7 +3347,7 @@ static void WP_Disruptor4MainFire( gentity_t *ent )
 
 			//reduce DP cost of the block
 			//[ExpSys]
-			G_DodgeDrain(traceEnt, ent, OJP_SaberBlockCost(traceEnt, ent, tr.endpos));
+			G_DodgeDrain(traceEnt, ent, OBP_SaberBlockCost(traceEnt, ent, tr.endpos));
 			//[/ExpSys]
 
 			//force player into a projective block move.
@@ -3792,8 +3719,8 @@ DISRUPTOR5
 */
 //[DodgeSys]
 extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
-extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
-extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 //[/DodgeSys]
 //---------------------------------------------------------
@@ -3900,8 +3827,8 @@ DISRUPTOR6
 */
 //[DodgeSys]
 extern qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod );
-extern int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
-extern int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
+extern int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc);
+extern int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum);
 extern void WP_SaberBlockNonRandom( gentity_t *self, vec3_t hitloc, qboolean missileBlock );
 //[/DodgeSys]
 //---------------------------------------------------------
@@ -3985,7 +3912,7 @@ static void WP_Disruptor6MainFire( gentity_t *ent )
 
 		//[BoltBlockSys]
 		//players can block or dodge disruptor shots.
-		if(OJP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
+		if(OBP_SaberCanBlock(traceEnt, ent, qfalse, tr.endpos, -1, -1) )
 		{//saber can be used to block the shot.
 
 			//broadcast shot blocked effect
@@ -4010,7 +3937,7 @@ static void WP_Disruptor6MainFire( gentity_t *ent )
 
 			//reduce DP cost of the block
 			//[ExpSys]
-			G_DodgeDrain(traceEnt, ent, OJP_SaberBlockCost(traceEnt, ent, tr.endpos));
+			G_DodgeDrain(traceEnt, ent, OBP_SaberBlockCost(traceEnt, ent, tr.endpos));
 			//[/ExpSys]
 
 			//force player into a projective block move.
@@ -6799,7 +6726,7 @@ void WP_Explode( gentity_t *self )
 	}
 	*/
 	
-	if ( self->s.owner )
+	if ( self->s.owner > 0 && self->s.owner < ENTITYNUM_WORLD )
 	{
 		attacker = &g_entities[self->s.owner];
 	}
@@ -7799,7 +7726,18 @@ void rocketThink( gentity_t *ent )
 	{//time's up, we're done, remove us
 		if ( ent->genericValue2 )
 		{//explode when die
-			RocketDie( ent, &g_entities[ent->r.ownerNum], &g_entities[ent->r.ownerNum], 0, MOD_UNKNOWN );
+			gentity_t *owner = ent->parent;
+
+			if (ent->r.ownerNum >= 0 && ent->r.ownerNum < ENTITYNUM_WORLD)
+			{
+				owner = &g_entities[ent->r.ownerNum];
+			}
+			if (!owner)
+			{
+				owner = ent;
+			}
+
+			RocketDie( ent, owner, owner, 0, MOD_UNKNOWN );
 		}
 		else
 		{//just remove when die
@@ -8238,7 +8176,7 @@ else if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && !altFire )
 	
 	if(ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3 && altFire)
 		{
-	gentity_t *missile2;
+	gentity_t *missile2 = NULL;
 
 //	if ( altFire )
 //	{
@@ -8429,7 +8367,9 @@ void GrenadeLauncherExplode( gentity_t *ent )
 		ent->freeAfterEvent = qtrue;
 
 		if (G_RadiusDamage( ent->r.currentOrigin, ent->parent,  ent->splashDamage, ent->splashRadius, 
-				ent, ent, ent->splashMethodOfDeath))
+				ent, ent, ent->splashMethodOfDeath) &&
+			ent->r.ownerNum >= 0 && ent->r.ownerNum < MAX_CLIENTS &&
+			g_entities[ent->r.ownerNum].client)
 		{
 			g_entities[ent->r.ownerNum].client->accuracy_hits++;
 		}
@@ -8997,7 +8937,9 @@ void thermalDetonatorExplode( gentity_t *ent )
 		ent->freeAfterEvent = qtrue;
 
 		if (G_RadiusDamage( ent->r.currentOrigin, ent->parent,  ent->splashDamage, ent->splashRadius, 
-				ent, ent, ent->splashMethodOfDeath))
+				ent, ent, ent->splashMethodOfDeath) &&
+			ent->r.ownerNum >= 0 && ent->r.ownerNum < MAX_CLIENTS &&
+			g_entities[ent->r.ownerNum].client)
 		{
 			g_entities[ent->r.ownerNum].client->accuracy_hits++;
 		}
@@ -10847,7 +10789,7 @@ void proxMineThink(gentity_t *ent)
 	gentity_t *cl;
 	gentity_t *owner = NULL;
 
-	if (ent->r.ownerNum < ENTITYNUM_WORLD)
+	if (ent->r.ownerNum >= 0 && ent->r.ownerNum < ENTITYNUM_WORLD)
 	{
 		owner = &g_entities[ent->r.ownerNum];
 	}
@@ -12168,7 +12110,17 @@ void charge_stick (gentity_t *self, gentity_t *other, trace_t *trace)
 
 void DetPackBlow(gentity_t *self)
 {
-	vec3_t v;
+	gentity_t *attacker = self->parent ? self->parent : self;
+	vec3_t v = {0, 0, 1};
+
+	if (self->r.ownerNum >= 0 && self->r.ownerNum < ENTITYNUM_WORLD)
+	{
+		attacker = &g_entities[self->r.ownerNum];
+	}
+	if (self->count == -1)
+	{
+		VectorCopy(self->pos2, v);
+	}
 
 	self->pain = 0;
 	self->die = 0;
@@ -12178,27 +12130,27 @@ void DetPackBlow(gentity_t *self)
 	{//we were attached to something, do *direct* damage to it!
 	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_FLASH_EXPLOSION_SPLASH );
+		G_Damage( self->target_ent, self, attacker, v, self->r.currentOrigin, self->damage, 0, MOD_FLASH_EXPLOSION_SPLASH );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_3)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_SONIC_EXPLOSION_SPLASH );
+		G_Damage( self->target_ent, self, attacker, v, self->r.currentOrigin, self->damage, 0, MOD_SONIC_EXPLOSION_SPLASH );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_4)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_ION_EXPLOSION_SPLASH );
+		G_Damage( self->target_ent, self, attacker, v, self->r.currentOrigin, self->damage, 0, MOD_ION_EXPLOSION_SPLASH );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_3)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_DIOXIS_EXPLOSION_SPLASH );
+		G_Damage( self->target_ent, self, attacker, v, self->r.currentOrigin, self->damage, 0, MOD_DIOXIS_EXPLOSION_SPLASH );
 	}
 	else if (self->s.eFlags & EF_WP_OPTION_2)
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_FLAME_EXPLOSION_SPLASH );
+		G_Damage( self->target_ent, self, attacker, v, self->r.currentOrigin, self->damage, 0, MOD_FLAME_EXPLOSION_SPLASH );
 	}
 	else
 	{
-		G_Damage( self->target_ent, self, &g_entities[self->r.ownerNum], v, self->r.currentOrigin, self->damage, 0, MOD_DET_PACK_SPLASH );
+		G_Damage( self->target_ent, self, attacker, v, self->r.currentOrigin, self->damage, 0, MOD_DET_PACK_SPLASH );
 	}
 
 	}
@@ -12226,15 +12178,6 @@ void DetPackBlow(gentity_t *self)
 	{
 		G_RadiusDamage( self->r.currentOrigin, self->parent, self->splashDamage, self->splashRadius, self, self, MOD_DET_PACK_SPLASH );
 	}
-	v[0] = 0;
-	v[1] = 0;
-	v[2] = 1;
-
-	if (self->count == -1)
-	{
-		VectorCopy(self->pos2, v);
-	}
-
 	if (self->s.eFlags & EF_WP_OPTION_2 && self->s.eFlags & EF_WP_OPTION_4)
 	{
 		G_PlayEffect(EFFECT_EXPLOSION_DETPACK6, self->r.currentOrigin, v);
@@ -13794,7 +13737,7 @@ static void WP_FireConcussion2Alt( gentity_t *ent )
 	missile->bounceCount = 0;
 	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
 	{
-	gentity_t *missile2;
+	gentity_t *missile2 = NULL;
 
 	//hold us still for a bit
 	//ent->client->ps.pm_time = 300;
@@ -13957,7 +13900,7 @@ static void WP_FireConcussion3Alt( gentity_t *ent )
 	missile->bounceCount = 0;
 	if(ent->client->skillLevel[SK_CONCUSSION] == FORCE_LEVEL_3)
 	{
-	gentity_t *missile2;
+	gentity_t *missile2 = NULL;
 
 	//hold us still for a bit
 	//ent->client->ps.pm_time = 300;
@@ -14448,7 +14391,7 @@ static void WP_FireBryarOldMain(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -14497,7 +14440,7 @@ static void WP_FireBryarOldAlt(gentity_t*ent)
 	int count;
 
 	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qtrue );
-	gentity_t   *missile2;
+	gentity_t   *missile2 = NULL;
 	float boxSize = 0;
 
 	//[DualPistols]
@@ -14625,7 +14568,7 @@ static void WP_FireBryarOld2Main(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -14670,99 +14613,32 @@ static void WP_FireBryarOld2Main(gentity_t*ent)
 
 static void WP_FireBryarOld2Alt(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*6/8;
-	int count;
+	int damage = BRYAR_OLD_DAMAGE*6/24; /* Three-round burst: preserve the former total alt-fire damage. */
+	gentity_t	*missile;
 
-	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qtrue );
-	gentity_t   *missile2;
-	float boxSize = 0;
-
-	//[DualPistols]
-	if ((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	{
-		missile2 = CreateMissile(muzzle2, forward, BRYAR_OLD_VEL, 10000, ent, qtrue);
+		if(ent->client->leftPistol)
+			missile = CreateMissile(muzzle2, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
+		else
+			missile = CreateMissile(muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
 
+		ent->client->leftPistol = !ent->client->leftPistol;
 	}
-	//[/DualPistols]
-
-	//if(ent->client->skillLevel[SK_PISTOL] != FORCE_LEVEL_3)
-	//{
-		//return;
-	//}
-
-
-	//[/DualPistols]
-	//[/DualPistols]
-
-//	else if(ent->client->skillLevel[SK_OLD] != FORCE_LEVEL_3)
-	//{
-		//return;
-	//}
+	else
+	{
+		missile = CreateMissile(muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
+	}
 
 	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_OLD;	
+	missile->s.weapon = WP_BRYAR_OLD;
 	missile->s.eFlags |= EF_WP_OPTION_2;
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-	missile2->classname = "bryar_proj";
-	missile2->s.weapon = WP_BRYAR_OLD;	
-	missile2->s.eFlags |= EF_WP_OPTION_2;
-	}
-	//[/DualPistols]
-	count = ( level.time - ent->client->ps.weaponChargeTime ) / BRYAR_CHARGE_UNIT;
-
-	if ( count < 1 )
-	{
-		count = 1;
-	}
-	//[BryarSecondary]
-	else if ( count > BRYAR_MAX_CHARGE )
-	{
-		count = BRYAR_MAX_CHARGE;
-	}
-
-	damage = BRYAR_PISTOL_ALT_DPDAMAGE + (float)count/BRYAR_MAX_CHARGE*(BRYAR_PISTOL_ALT_DPMAXDAMAGE-BRYAR_PISTOL_ALT_DPDAMAGE);
-
-	//[/BryarSecondary]
-
-	missile->s.generic1 = count; // The missile will then render according to the charge level.
-
-	boxSize = BRYAR_OLD_ALT_SIZE*(count*0.5);
-
-	VectorSet( missile->r.maxs, boxSize, boxSize, boxSize );
-	VectorSet( missile->r.mins, -boxSize, -boxSize, -boxSize );
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->s.generic1 = count;
-		VectorSet( missile2->r.maxs, boxSize, boxSize, boxSize );
-		VectorSet( missile2->r.mins, -boxSize, -boxSize, -boxSize );
-	}
-	//[/DualPistols]
 
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
-	missile->methodOfDeath = MOD_BRYAR_PISTOL_ALT;
+	missile->methodOfDeath = MOD_BRYAR_PISTOL;
 	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-	// we don't want it to bounce forever
 	missile->bounceCount = 8;
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->damage = damage;
-		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
-		missile2->methodOfDeath = MOD_BRYAR_PISTOL_ALT;
-		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-		// we don't want it to bounce forever
-		missile2->bounceCount = 8;
-	}
-	//[/DualPistols]
 }
 
 //----------------------------------------------
@@ -14800,7 +14676,7 @@ static void WP_FireBryarOld3Main(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -14861,7 +14737,7 @@ static void WP_FireBryarOld3Alt(gentity_t*ent)
 	else
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 	
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -14945,7 +14821,7 @@ static void WP_FireBryarOld4Main(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -14990,64 +14866,32 @@ static void WP_FireBryarOld4Main(gentity_t*ent)
 
 static void WP_FireBryarOld4Alt(gentity_t*ent)
 {
-	int damage = BRYAR_OLD_DAMAGE*4/8;
+	int damage = BRYAR_OLD_DAMAGE*4/24; /* Three-round burst: preserve the former total alt-fire damage. */
 	gentity_t	*missile;
 
 	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	{
 		if(ent->client->leftPistol)
-			missile=CreateMissile(muzzle2,forward,BRYAR_OLD_VEL,10000,ent,qfalse);
+			missile = CreateMissile(muzzle2, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
 		else
-			missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
-		
+			missile = CreateMissile(muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
+
 		ent->client->leftPistol = !ent->client->leftPistol;
 	}
 	else
 	{
-		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
+		missile = CreateMissile(muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
 	}
-	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
-
-	//[DualPistols]
-	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	//	missile2 = CreateMissile(muzzle2,forward,BRYAR_PISTOL_VEL,10000,ent,altFire);
-	//[/DualPistols]
 
 	missile->classname = "bryar_proj";
 	missile->s.weapon = WP_BRYAR_OLD;
 	missile->s.eFlags |= EF_WP_OPTION_4;
-	
-	//[DualPistols]
-	/*
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->classname = "bryar_proj";
-		missile2->s.weapon = WP_BRYAR_PISTOL;
-	}*/
-	//[/DualPistols]
 
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_BRYAR_PISTOL;
 	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-	// we don't want it to bounce forever
 	missile->bounceCount = 8;
-
-	//[DualPistols]
-	/*
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->damage = damage;
-		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
-		missile2->methodOfDeath = MOD_BRYAR_PISTOL;
-		missile2->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;
-
-		// we don't want it to bounce forever
-		missile2->bounceCount = 8;
-	}*/
-	//[/DualPistols]
 }
 
 //----------------------------------------------
@@ -15086,7 +14930,7 @@ static void WP_FireBryarOld5Main(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -15148,7 +14992,7 @@ static void WP_FireBryarOld5Alt(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -15205,7 +15049,7 @@ static void WP_FireBryarOld6Main(gentity_t*ent)
 		missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
 	}
 	//gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_PISTOL_VEL, 10000, ent, altFire );
-	//gentity_t   *missile2;
+	//gentity_t   *missile2 = NULL;
 
 	//[DualPistols]
 	//if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
@@ -15251,102 +15095,52 @@ static void WP_FireBryarOld6Main(gentity_t*ent)
 static void WP_FireBryarOld6Alt(gentity_t*ent)
 {
 	int damage = BRYAR_OLD_DAMAGE*45/8;
+	gentity_t *missile;
 
-
-	gentity_t	*missile = CreateMissile( muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse );
-	gentity_t   *missile2;
-	float boxSize = 0;
-
-	//[DualPistols]
-	if ((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
+	/*
+	Variant 6 is non-charged automatic alternate fire.  Dual pistols therefore
+	fire one projectile per event and alternate hands, exactly like the other
+	non-charged Bryar Old variants.
+	*/
+	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
 	{
-		missile2 = CreateMissile(muzzle2, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
-	}
-	//[/DualPistols]
+		if(ent->client->leftPistol)
+		{
+			missile = CreateMissile(muzzle2, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
+		}
+		else
+		{
+			missile = CreateMissile(muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
+		}
 
-	//if(ent->client->skillLevel[SK_PISTOL] != FORCE_LEVEL_3)
-	//{
-		//return;
-	//}
+		ent->client->leftPistol = !ent->client->leftPistol;
+	}
+	else
+	{
+		missile = CreateMissile(muzzle, forward, BRYAR_OLD_VEL, 10000, ent, qfalse);
+	}
 
 	missile->classname = "rocket_proj";
 	missile->s.weapon = WP_ROCKET_LAUNCHER;
 
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->classname = "rocket_proj";
-		missile2->s.weapon = WP_ROCKET_LAUNCHER;
-	}
-	//[/DualPistols]
-	//[/DualPistols]
-//[/DualPistols]
-
-
-	//[/BryarSecondary]
-
-
-
-	VectorSet( missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile->r.maxs, -1, missile->r.mins );
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-	VectorSet( missile2->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE );
-	VectorScale( missile2->r.maxs, -1, missile2->r.mins );
-	}
-	//[/DualPistols]
-//	else if(ent->client->skillLevel[SK_OLD] != FORCE_LEVEL_3)
-	//{
-		//return;
-	//}
-
-
-
-
-	//[DualPistols]
-
-	//[/DualPistols]
+	VectorSet(missile->r.maxs, ROCKET_SIZE, ROCKET_SIZE, ROCKET_SIZE);
+	VectorScale(missile->r.maxs, -1, missile->r.mins);
 
 	missile->damage = damage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_ROCKET;
 	missile->splashMethodOfDeath = MOD_ROCKET_SPLASH;
 	missile->clipmask = MASK_SHOT;
-//===testing being able to shoot rockets out of the air==================================
+
+	// Allow the projectile to be shot out of the air.
 	missile->health = 10;
 	missile->takedamage = qtrue;
 	missile->r.contents = MASK_SHOT;
 	missile->die = RocketDie;
-//===testing being able to shoot rockets out of the air==================================
-	
+
 	missile->splashDamage = ROCKET_SPLASH_DAMAGE;
 	missile->splashRadius = ROCKET_SPLASH_RADIUS;
-	// we don't want it to bounce forever
 	missile->bounceCount = 0;
-
-	//[DualPistols]
-	if((ent->client->ps.eFlags & EF_DUAL_WEAPONS))
-	{
-		missile2->damage = damage;
-		missile2->dflags = DAMAGE_DEATH_KNOCKBACK;
-		missile2->methodOfDeath = MOD_ROCKET;
-		missile2->splashMethodOfDeath = MOD_ROCKET_SPLASH;
-		missile2->clipmask = MASK_SHOT;
-//===testing being able to shoot rockets out of the air==================================
-		missile2->health = 10;
-		missile2->takedamage = qtrue;
-		missile2->r.contents = MASK_SHOT;
-		missile2->die = RocketDie;
-//===testing being able to shoot rockets out of the air==================================
-	
-		missile2->splashDamage = ROCKET_SPLASH_DAMAGE;
-		missile2->splashRadius = ROCKET_SPLASH_RADIUS;
-	// we don't want it to bounce forever
-		missile2->bounceCount = 0;
-	}
-	//[/DualPistols]
 }
 
 //----------------------------------------------
@@ -15976,7 +15770,7 @@ gentity_t *WP_FireVehicleWeapon( gentity_t *ent, vec3_t start, vec3_t dir, vehWe
 	gentity_t	*missile = NULL;
 
 	//FIXME: add some randomness...?  Inherent inaccuracy stat of weapon?  Pilot skill?
-	if ( !vehWeapon )
+	if ( !ent || !vehWeapon )
 	{//invalid vehicle weapon
 		return NULL;
 	}
@@ -15993,13 +15787,26 @@ gentity_t *WP_FireVehicleWeapon( gentity_t *ent, vec3_t start, vec3_t dir, vehWe
 		//FIXME: CUSTOM MODEL?
 		//QUERY: alt_fire true or not?  Does it matter?
 		missile = CreateMissile( start, dir, vehWeapon->fSpeed, 10000, ent, qfalse );
+		if ( !missile )
+		{
+			return NULL;
+		}
 
 		missile->classname = "vehicle_proj";
 		
-		missile->s.genericenemyindex = ent->s.number+MAX_GENTITIES;
-		missile->damage = vehWeapon->iDamage;
-		missile->splashDamage = vehWeapon->iSplashDamage;
-		missile->splashRadius = vehWeapon->fSplashRadius;
+		{
+			int mult = 1;
+
+			if (ent && ent->genericValue15 > 1)
+			{
+				mult = ent->genericValue15;
+			}
+
+			missile->s.genericenemyindex = ent->s.number+MAX_GENTITIES;
+			missile->damage = vehWeapon->iDamage * mult;
+			missile->splashDamage = vehWeapon->iSplashDamage * mult;
+			missile->splashRadius = vehWeapon->fSplashRadius;
+		}
 
 		//FIXME: externalize some of these properties?
 		missile->dflags = DAMAGE_DEATH_KNOCKBACK;
@@ -16962,42 +16769,25 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 		else if (ent && ent->client && ent->client->skillLevel[SK_ROCKET] == FORCE_LEVEL_3)
 			CalcMuzzlePoint2 ( ent, forward, vright, up, muzzle2 );
 	//[WeapAccuracy]
-		//bump accuracy based on MP level.
-		if(ent && ent->client)
+		// Weapon inaccuracy is tied to heat.  Higher heat produces more spread.
+		// This must not touch MISHAP_VARIABLE, because that aliases fd.forcePower.
+		if (ent && ent->client &&
+			ent->s.weapon != WP_SABER &&
+			ent->s.weapon != WP_STUN_BATON &&
+			ent->s.weapon != WP_MELEE)
 		{
-			vec3_t angs; //used for adding in mishap inaccuracy.
-			float slopFactor = MISHAP_MAXINACCURACY * (1 - (ent->client->ps.MISHAP_VARIABLE/(float)MISHAPLEVEL_LIGHT));
-			slopFactor = Com_Clamp(0, MISHAP_MAXINACCURACY, slopFactor);
+			vec3_t angs;
+			float slopFactor;
 
-			vectoangles( forward, angs );
-			angs[PITCH] += flrand(-slopFactor, slopFactor);
-			angs[YAW] += flrand(-slopFactor, slopFactor);
-			AngleVectors( angs, forward, NULL, NULL );
+			slopFactor = MISHAP_MAXINACCURACY * BG_HeatAccuracyScale(&ent->client->ps);
+			slopFactor = Com_Clamp(0.0f, MISHAP_MAXINACCURACY, slopFactor);
 
-			//increase mishap level
-			if(!Q_irand(0, SkillLevelforWeapon(ent, ent->s.weapon)-1) && ent->s.weapon != WP_EMPLACED_GUN )//Sorry but the mishap meter needs to go up more that before.
-			{//failed skill roll, add mishap.
-				if(ent->s.weapon == WP_DISRUPTOR && ent->client->ps.zoomMode == 0)
-					G_AddMercBalance(ent, Q_irand(2, 3));// 1 was not enough
-				else if(ent->s.weapon == WP_FLECHETTE)
-					G_AddMercBalance(ent,1);
-				else if(ent->s.weapon == WP_BRYAR_PISTOL)
-					G_AddMercBalance(ent,Q_irand(2,3));
-				else if(ent->s.weapon == WP_REPEATER)
-				{
-					ent->client->cloneFired++;
-					if(ent->client->cloneFired == 2)
-					{
-						if(ent->client->pers.cmd.forwardmove == 0 && ent->client->pers.cmd.rightmove ==0)
-							G_AddMercBalance(ent,1);
-						else
-							G_AddMercBalance(ent,2);
-
-						ent->client->cloneFired=0;
-					}
-				}
-				else
-					G_AddMercBalance(ent, Q_irand(1, 2));// 1 was not enough
+			if (slopFactor > 0.0f)
+			{
+				vectoangles(forward, angs);
+				angs[PITCH] += flrand(-slopFactor, slopFactor);
+				angs[YAW] += flrand(-slopFactor, slopFactor);
+				AngleVectors(angs, forward, NULL, NULL);
 			}
 		}
 		//[/WeapAccuracy]
@@ -17246,14 +17036,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			}
 			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2 && ent->client->ps.eFlags & EF_WP_OPTION_3)
 			{	
-				if ( altFire )
-				{
-					WP_FireBlaster5( ent, qfalse );
-				}
-				else
-				{
-					WP_FireBlaster5( ent, qfalse );
-				}
+				WP_FireBlaster5( ent, altFire );
 			}
 			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_4)
 			{	
@@ -17279,14 +17062,7 @@ void FireWeapon( gentity_t *ent, qboolean altFire )
 			}
 			else if(ent && ent->client && ent->client->ps.eFlags & EF_WP_OPTION_2)
 			{	
-				if ( altFire )
-				{
-					WP_FireBlaster2( ent, qfalse );
-				}
-				else
-				{
-					WP_FireBlaster2( ent, qfalse );
-				}
+				WP_FireBlaster2( ent, altFire );
 			}
 			else 
 			{	

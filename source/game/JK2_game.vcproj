@@ -78,7 +78,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="..\..\ojpenhanced\jampgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\jampgamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\JK2_game.def"
@@ -180,7 +180,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="../../ojpenhanced/jampgamex86.dll"
+				OutputFile="../../openbattlefrontproject/jampgamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\JK2_game.def"
@@ -279,7 +279,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="..\..\ojpenhanced\jampgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\jampgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\JK2_game.def"
@@ -376,7 +376,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="..\..\ojpenhanced\jampgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\jampgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="true"
 				ModuleDefinitionFile=".\JK2_game.def"
@@ -688,6 +688,9 @@
 			</File>
 			<File
 				RelativePath=".\NPC.c"
+			/>
+			<File
+				RelativePath=".\NPC_AI_BobaFett.c"
 				>
 			</File>
 			<File
@@ -1036,7 +1039,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\ojpenhanced\ui\jamp\menudef.h"
+				RelativePath="..\ui\jamp\menudef.h"
 				>
 			</File>
 			<File

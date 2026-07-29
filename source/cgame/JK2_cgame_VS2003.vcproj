@@ -50,7 +50,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="..\..\ojpenhanced\cgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\cgamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_cgame.def"
@@ -128,7 +128,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="..\..\ojpenhanced\cgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\cgamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_cgame.def"
@@ -200,7 +200,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="..\..\ojpenhanced\cgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\cgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_cgame.def"
@@ -270,7 +270,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="odbc32.lib odbccp32.lib"
-				OutputFile="..\..\ojpenhanced\cgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\cgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_cgame.def"
@@ -561,7 +561,7 @@
 				RelativePath="..\ui\keycodes.h">
 			</File>
 			<File
-				RelativePath="..\..\ojpenhanced\ui\jamp\menudef.h">
+				RelativePath="..\ui\jamp\menudef.h">
 			</File>
 			<File
 				RelativePath="..\game\q_shared.h">

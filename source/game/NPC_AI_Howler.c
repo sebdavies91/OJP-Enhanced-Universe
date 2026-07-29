@@ -22,6 +22,7 @@ static void Howler_Attack( float enemyDist, qboolean howl );
 extern qboolean NPC_TryJump_Gent(gentity_t *goal,	float max_xy_dist, float max_z_diff);
 extern void G_GetBoltPosition( gentity_t *self, int boltIndex, vec3_t pos, int modelIndex ); //NPC_utils.c
 extern qboolean NAV_DirSafe( gentity_t *self, vec3_t dir, float dist );
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 //[/CoOp]
 
 /*
@@ -160,7 +161,7 @@ static void Howler_Patrol( void )
 		NPC_Howler_Move( 100 );
 	}
 
-	if(ClosestPlayer)
+	if(ClosestPlayer && G_ValidEnemy( NPC, ClosestPlayer ))
 	{//attack enemy players that are close.
 		/* Distance() returns a non-squared distance.
 		 * The old comparison against (256*256) effectively made this

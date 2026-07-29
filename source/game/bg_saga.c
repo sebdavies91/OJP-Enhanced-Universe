@@ -11,6 +11,7 @@
 #include "bg_public.h"
 
 #define SIEGECHAR_TAB 9 //perhaps a bit hacky, but I don't think there's any define existing for "tab"
+#define SIEGE_FILELIST_SIZE 32768
 
 //Could use strap stuff but I don't particularly care at the moment anyway.
 
@@ -1029,6 +1030,12 @@ void BG_SiegeParseClassFile(const char *filename, siegeClassDesc_t *descBuffer)
 	char classInfo[4096];
 	char parseBuf[4096];
 
+	if (bgNumSiegeClasses >= MAX_SIEGE_CLASSES)
+	{
+		Com_Printf("WARNING: MAX_SIEGE_CLASSES (%i) reached; skipping %s\n", MAX_SIEGE_CLASSES, filename);
+		return;
+	}
+
 	len = trap_FS_FOpenFile(filename, &f, FS_READ);
 
 	if (!f || len >= 4096)
@@ -1463,15 +1470,27 @@ void BG_SiegeLoadClasses(siegeClassDesc_t *descBuffer)
 {
 	int numFiles;
 	int filelen;
-	char filelist[4096];
+	char *filelist;
 	char filename[MAX_QPATH];
 	char* fileptr;
 	int i;
 
 	bgNumSiegeClasses = 0;
 
-	numFiles = trap_FS_GetFileList("ext_data/Siege/Classes", ".scl", filelist, 4096 );
+	filelist = (char *)BG_TempAlloc(SIEGE_FILELIST_SIZE);
+	if (!filelist)
+	{
+		return;
+	}
+
+	numFiles = trap_FS_GetFileList("ext_data/Siege/Classes", ".scl", filelist, SIEGE_FILELIST_SIZE );
 	fileptr = filelist;
+
+	if (numFiles > MAX_SIEGE_CLASSES)
+	{
+		Com_Printf("WARNING: Found %i Siege class files, but MAX_SIEGE_CLASSES is %i; extra class files will be skipped.\n", numFiles, MAX_SIEGE_CLASSES);
+		numFiles = MAX_SIEGE_CLASSES;
+	}
 
 	for (i = 0; i < numFiles; i++, fileptr += filelen+1)
 	{
@@ -1488,6 +1507,8 @@ void BG_SiegeLoadClasses(siegeClassDesc_t *descBuffer)
 			BG_SiegeParseClassFile(filename, NULL);
 		}
 	}
+
+	BG_TempFree(SIEGE_FILELIST_SIZE);
 }
 //======================================
 //End class loading functions
@@ -1522,6 +1543,12 @@ void BG_SiegeParseTeamFile(const char *filename)
 	char lookString[256];
 	int i = 1;
 	qboolean success = qtrue;
+
+	if (bgNumSiegeTeams >= MAX_SIEGE_TEAMS)
+	{
+		Com_Printf("WARNING: MAX_SIEGE_TEAMS (%i) reached; skipping %s\n", MAX_SIEGE_TEAMS, filename);
+		return;
+	}
 
 	len = trap_FS_FOpenFile(filename, &f, FS_READ);
 
@@ -1559,8 +1586,8 @@ void BG_SiegeParseTeamFile(const char *filename)
 
 	if (BG_SiegeGetValueGroup(teamInfo, "Classes", teamInfo))
 	{
-		while (success && i < MAX_SIEGE_CLASSES)
-		{ //keep checking for group values named class# up to MAX_SIEGE_CLASSES until we can't find one.
+		while (success && i <= MAX_SIEGE_CLASSES_PER_TEAM)
+		{ //keep checking for group values named class# up to MAX_SIEGE_CLASSES_PER_TEAM until we can't find one.
 			Com_sprintf(lookString, sizeof(lookString), "class%i", i);
 
 			success = BG_SiegeGetPairedValue(teamInfo, lookString, parseBuf);
@@ -1574,7 +1601,7 @@ void BG_SiegeParseTeamFile(const char *filename)
 
 			if (!bgSiegeTeams[bgNumSiegeTeams].classes[bgSiegeTeams[bgNumSiegeTeams].numClasses])
 			{
-				Com_Error(ERR_DROP, "Invalid class specified: '%s'", parseBuf);
+				Com_Error(ERR_DROP, "Invalid class specified: '%s' in team file '%s' (loaded %i classes)", parseBuf, filename, bgNumSiegeClasses);
 			}
 
 			bgSiegeTeams[bgNumSiegeTeams].numClasses++;
@@ -1596,15 +1623,27 @@ void BG_SiegeLoadTeams(void)
 {
 	int numFiles;
 	int filelen;
-	char filelist[4096];
+	char *filelist;
 	char filename[MAX_QPATH];
 	char* fileptr;
 	int i;
 
 	bgNumSiegeTeams = 0;
 
-	numFiles = trap_FS_GetFileList("ext_data/Siege/Teams", ".team", filelist, 4096 );
+	filelist = (char *)BG_TempAlloc(SIEGE_FILELIST_SIZE);
+	if (!filelist)
+	{
+		return;
+	}
+
+	numFiles = trap_FS_GetFileList("ext_data/Siege/Teams", ".team", filelist, SIEGE_FILELIST_SIZE );
 	fileptr = filelist;
+
+	if (numFiles > MAX_SIEGE_TEAMS)
+	{
+		Com_Printf("WARNING: Found %i Siege team files, but MAX_SIEGE_TEAMS is %i; extra team files will be skipped.\n", numFiles, MAX_SIEGE_TEAMS);
+		numFiles = MAX_SIEGE_TEAMS;
+	}
 
 	for (i = 0; i < numFiles; i++, fileptr += filelen+1)
 	{
@@ -1613,6 +1652,8 @@ void BG_SiegeLoadTeams(void)
 		Q_strcat(filename, sizeof(filename), fileptr);
 		BG_SiegeParseTeamFile(filename);
 	}
+
+	BG_TempFree(SIEGE_FILELIST_SIZE);
 }
 //======================================
 //End team loading functions

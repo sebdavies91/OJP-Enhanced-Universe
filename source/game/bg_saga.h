@@ -9,10 +9,10 @@
 
 #define		SIEGE_ROUND_BEGIN_TIME				5000 //delay 5 secs after players are in game.
 
-#define		MAX_SIEGE_CLASSES					256 //up to 128 classes
+#define		MAX_SIEGE_CLASSES					512 // OBP: allow expanded class packs plus compatibility classes
 #define		MAX_SIEGE_CLASSES_PER_TEAM			16
 
-#define		MAX_SIEGE_TEAMS						16 //up to 16 diffent teams
+#define		MAX_SIEGE_TEAMS						64 // OBP: allow renamed teams to coexist with legacy/vanilla team files
 
 #define		MAX_EXDATA_ENTS_TO_SEND				MAX_CLIENTS //max number of extended data for ents to send
 

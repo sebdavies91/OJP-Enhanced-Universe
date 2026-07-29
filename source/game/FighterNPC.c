@@ -1,4 +1,4 @@
-// leave this line at the top for all g_xxxx.cpp files...
+﻿// leave this line at the top for all g_xxxx.cpp files...
 #include "g_headers.h"
 
 //seems to be a compiler bug, it doesn't clean out the #ifdefs between dif-compiles
@@ -1932,7 +1932,7 @@ static void AnimateVehicle( Vehicle_t *pVeh )
 #endif
 
 	// Detect fighters/models that don't define BOTH_WINGS_OPEN/CLOSE in animation.cfg.
-	// Many OJP/OJP-EU fighter models (e.g. v-wing, slave1-beta) only provide BOTH_GEARS_OPEN/CLOSE.
+	// Many OBP/OBP-EU fighter models (e.g. v-wing, slave1-beta) only provide BOTH_GEARS_OPEN/CLOSE.
 	// In that case we drive "wing" transitions by using the gear anims as the closest available fallback.
 #ifdef _JK2MP
 	{

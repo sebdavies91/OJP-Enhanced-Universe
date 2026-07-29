@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // g_bot.c
 
@@ -235,7 +235,6 @@ int G_GetMapTypeBits(char *type)
 qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 {
 	int			typeBits = 0;
-	int			thisLevel = -1;
 	int			n = 0;
 	char		*type = NULL;
 
@@ -249,28 +248,25 @@ qboolean G_DoesMapSupportGametype(const char *mapname, int gametype)
 		return qfalse;
 	}
 
+	// OBP: A map can be listed in more than one .arena file with different
+	// type strings.  Do not stop on the first matching map entry, or a CTF/FFA
+	// copy can incorrectly hide the later TEAM copy and make map votes fail.
 	for( n = 0; n < g_numArenas; n++ )
 	{
 		type = Info_ValueForKey( g_arenaInfos[n], "map" );
 
-		if (Q_stricmp(mapname, type) == 0)
+		if (Q_stricmp(mapname, type) != 0)
 		{
-			thisLevel = n;
-			break;
+			continue;
 		}
-	}
 
-	if (thisLevel == -1)
-	{
-		return qfalse;
-	}
+		type = Info_ValueForKey(g_arenaInfos[n], "type");
 
-	type = Info_ValueForKey(g_arenaInfos[thisLevel], "type");
-
-	typeBits = G_GetMapTypeBits(type);
-	if (typeBits & (1 << gametype))
-	{ //the map in question supports the gametype in question, so..
-		return qtrue;
+		typeBits = G_GetMapTypeBits(type);
+		if (typeBits & (1 << gametype))
+		{ //the map in question supports the gametype in question, so..
+			return qtrue;
+		}
 	}
 
 	return qfalse;
@@ -284,7 +280,9 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 	int			desiredMap = 0;
 	int			n = 0;
 	char		*type = NULL;
+	char		*mapName = NULL;
 	qboolean	loopingUp = qfalse;
+	qboolean	bypassGametype = qfalse;
 	//[RawMapName]
 	//vmCvar_t	mapname;
 	//[/RawMapName]
@@ -299,16 +297,28 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 		return NULL;
 	}
 
+	/*
+	OBP: Normal automatic map cycling is a map rotation, not a gametype
+	rotation.  Let it advance to the next arena entry even when that entry is
+	listed for another gametype; the nextmap/callvote-nextmap path simply
+	executes the prepared map command and should not be trapped in one type.
+
+	Keep forced refreshes gametype-filtered.  Those are used after a successful
+	g_gametype vote to find a map that actually supports the newly voted
+	gametype.
+	*/
+	bypassGametype = (g_autoMapCycle.integer && !forced);
+
 	//[RawMapName]
 	//trap_Cvar_Register( &mapname, "mapname", "", CVAR_SERVERINFO | CVAR_ROM );
 	//[/RawMapName]
 	for( n = 0; n < g_numArenas; n++ )
 	{
-		type = Info_ValueForKey( g_arenaInfos[n], "map" );
+		mapName = Info_ValueForKey( g_arenaInfos[n], "map" );
 
 		//[RawMapName]
-		if (Q_stricmp(level.rawmapname, type) == 0)
-		//if (Q_stricmp(mapname.string, type) == 0)
+		if (Q_stricmp(level.rawmapname, mapName) == 0)
+		//if (Q_stricmp(mapname.string, mapName) == 0)
 		//[/RawMapName]
 		{
 			thisLevel = n;
@@ -320,8 +330,8 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 
 	n = thisLevel+1;
 	while (n != thisLevel)
-	{ //now cycle through the arena list and find the next map that matches the gametype we're in
-		if (!g_arenaInfos[n] || n >= g_numArenas)
+	{
+		if (n >= g_numArenas || !g_arenaInfos[n])
 		{
 			if (loopingUp)
 			{ //this shouldn't happen, but if it does we have a null entry break in the arena file
@@ -330,6 +340,32 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 			}
 			n = 0;
 			loopingUp = qtrue;
+			continue;
+		}
+
+		mapName = Info_ValueForKey( g_arenaInfos[n], "map" );
+		if (!mapName || !mapName[0])
+		{
+			n++;
+			continue;
+		}
+
+		/*
+		Avoid cycling to another .arena entry for the same BSP when using the
+		automatic cross-gametype rotation.  OBP can list a map in multiple
+		arena categories, and choosing the duplicate would look like the
+		auto-cycle restarted the current map instead of advancing.
+		*/
+		if (bypassGametype && Q_stricmp(level.rawmapname, mapName) == 0)
+		{
+			n++;
+			continue;
+		}
+
+		if (bypassGametype)
+		{
+			desiredMap = n;
+			break;
 		}
 
 		type = Info_ValueForKey(g_arenaInfos[n], "type");
@@ -351,8 +387,8 @@ const char *G_RefreshNextMap(int gametype, qboolean forced)
 	}
 	else
 	{ //otherwise we have a valid nextmap to cycle to, so use it.
-		type = Info_ValueForKey( g_arenaInfos[desiredMap], "map" );
-		trap_Cvar_Set( "nextmap", va("map %s", type));
+		mapName = Info_ValueForKey( g_arenaInfos[desiredMap], "map" );
+		trap_Cvar_Set( "nextmap", va("map %s", mapName));
 	}
 
 	return Info_ValueForKey( g_arenaInfos[desiredMap], "map" );
@@ -920,7 +956,7 @@ G_CheckMinimumPlayers
 extern	vmCvar_t	g_allowBotLimit;
 extern	vmCvar_t	g_minHumans;
 extern	vmCvar_t	g_maxBots;
-extern int OJP_PointSpread(void);
+extern int OBP_PointSpread(void);
 //[/BotTweaks]
 //RACC - Adds/removes bots to maintain the minimum player limit.
 void G_CheckMinimumPlayers( void ) {
@@ -1618,9 +1654,9 @@ static void G_AddBot( const char *name, float skill, const char *team, int delay
 	//[/RGBSabers]
 
 	//[ClientPlugInDetect]
-	//set it so that the bots are assumed to have the OJP client plugin
-	//this should be CURRENT_OJPENHANCED_CLIENTVERSION
-	Info_SetValueForKey( userinfo, "ojp_clientplugin", CURRENT_OJPENHANCED_CLIENTVERSION );
+	//set it so that the bots are assumed to have the OBP client plugin
+	//this should be CURRENT_OPENBATTLEFRONTPROJECT_CLIENTVERSION
+	Info_SetValueForKey( userinfo, "obp_clientplugin", CURRENT_OPENBATTLEFRONTPROJECT_CLIENTVERSION );
 	//[/ClientPlugInDetect]
 
 	// have the server allocate a client slot
@@ -1788,19 +1824,28 @@ if( (!team || !*team) && g_gametype.integer >= GT_TEAM )
 	if (g_gametype.integer == GT_DUEL ||
 		g_gametype.integer == GT_POWERDUEL)
 	{
-		int loners = 0;
-		int doubles = 0;
-
-		bot->client->sess.duelTeam = 0;
-		G_PowerDuelCount(&loners, &doubles, qtrue);
-
-		if (!doubles || loners > (doubles/2))
+		if (g_gametype.integer == GT_POWERDUEL)
 		{
-            bot->client->sess.duelTeam = DUELTEAM_DOUBLE;
+			// Power Duel spectators should remain unassigned until the rotation
+			// code actually promotes them into an active LONE/DOUBLE slot.
+			bot->client->sess.duelTeam = DUELTEAM_FREE;
 		}
 		else
 		{
-            bot->client->sess.duelTeam = DUELTEAM_LONE;
+			int loners = 0;
+			int doubles = 0;
+
+			bot->client->sess.duelTeam = 0;
+			G_PowerDuelCount(&loners, &doubles, qtrue);
+
+			if (!doubles || loners > (doubles/2))
+			{
+				bot->client->sess.duelTeam = DUELTEAM_DOUBLE;
+			}
+			else
+			{
+				bot->client->sess.duelTeam = DUELTEAM_LONE;
+			}
 		}
 
 		bot->client->sess.sessionTeam = TEAM_SPECTATOR;

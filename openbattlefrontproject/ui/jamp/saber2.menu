@@ -1,0 +1,869 @@
+//----------------------------------------------------------------------------------------------
+// MP SABER RGB MENU - second saber menu page, modeled after player/player2 flow
+//----------------------------------------------------------------------------------------------
+{
+	menuDef 
+	{
+		name					"saberMenu2"
+		fullScreen				1
+		rect					0 0 640 480
+		visible					1
+		focusColor			0.82 0.84 0.88 1
+		descX					320
+		descY					421
+		descScale				1		
+		descColor				0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER
+	
+		onOpen
+		{ 
+			uiScript			setsaberboxesandhilts			
+			uiScript  			"getsabercvars"
+			setcvar 		ui_saber_color	 "rgb"
+			setcvar 		ui_saber2_color	 "rgb"
+			uiScript  			"saber_hilt"
+			uiScript  			"saber_color"
+			uiScript  			"saber2_hilt"
+			uiScript  			"saber2_color"
+			uiScript			getsaberhiltinfo
+			show 			rgboptions
+		}
+									
+		onESC 
+		{ 
+				
+				close			saberMenu2
+				open			profileMenu
+		}
+
+
+		//----------------------------------------------------------------------------------------------
+		//
+		//	MENU BACKGROUND
+		//
+		//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				really_background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				156 154 320 240
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text_b
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				480 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}	
+
+		itemDef
+		{
+			name				bgpic
+			style				WINDOW_STYLE_SHADER
+			rect				0 127 640 314
+			background			"obp/menu/jedha"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef
+		{
+			name				mainbackground
+			style				WINDOW_STYLE_FILLED
+			rect				0 127 640 314
+			backcolor			0 0 0 0.8
+			visible				1
+			decoration
+		}
+
+	
+
+
+		itemdef
+		{
+			name				lowbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 428 640 18
+			background			"obp/menu/lowbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 85 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar2
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 114 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+
+		itemDef 
+		{
+			name				obplogo
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				220 0 200 90
+			background			"obp/menu/obplogo"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+
+
+		//----------------------------------------------------------------------------------------------
+		//
+		//	TOP MENU BUTTONS
+		//
+		//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				playerbutton_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			4 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerbutton
+			group				topbut
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect			4 100 124 24
+			text				"CHARACTER"
+
+			descText			"Choose your character"
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{  
+				show			playerbutton_glow 
+			}
+			mouseExit 
+			{ 
+				hide			playerbutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+
+				close			all ; 
+				open			playermenu 
+			}
+		}
+
+		itemDef 
+		{
+			name				lightsaberbutton_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			512 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				lightsaberbutton
+			group				toprow
+			text				"LIGHTSABER"
+
+			descText			"Choose your lightsaber"
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect			512 100 124 24
+			textaligny			0
+			font				3
+			textscale			0.85
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{  
+				show			lightsaberbutton_glow 
+			}
+			mouseExit 
+			{ 
+				hide			lightsaberbutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+
+
+				close			all
+				open			sabermenu
+			}
+		}
+
+
+
+//----------------------------------------------------------------------------------------------
+//	OTHER MAIN MENU BUTTONS
+//----------------------------------------------------------------------------------------------
+		// Credits hidden button
+		itemDef 
+		{
+			name				creditsbutton
+			group				othermain
+//			text				@CREDITS
+			descText			@MENUS_SHOW_GAME_CREDITS
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				200 144 256 256
+			font				2
+			textscale			1
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			46
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+
+			mouseEnter
+			{ 
+			}		
+			mouseExit
+			{
+			}		
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			all ; 
+				open			creditsMenu 
+			}
+		}
+
+
+// BACK button in lower left corner
+
+
+// LIGHTSABER button in lower center
+		itemDef 
+		{
+			name				exitgamebutton_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect			258 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			// appearance_slot		1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				exitgamebutton
+			group				exit
+			text				"LIGHTSABER"
+			descText			"Return to saber menu"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			258 445 124 32
+			font				3
+			textscale			0.9
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			textalignx			62
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+
+			mouseEnter 
+			{  
+				show			exitgamebutton_glow 
+			}
+			mouseExit 
+			{ 
+				hide			exitgamebutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			saberMenu2
+				open			saberMenu
+			}
+		}
+
+		//----------------------------------------------------------------------------------------------
+		// RGB SABER CONTROLS
+		//----------------------------------------------------------------------------------------------
+		itemDef
+		{
+			name				rgb_title
+			group				rgboptions
+			text				"RGB SABER COLORS"
+			descText			"Adjust custom RGB saber colors"
+			style				WINDOW_STYLE_EMPTY
+			rect			55 130 300 20
+			font				3
+			textscale			0.8
+			textalign			ITEM_ALIGN_LEFT
+			textalignx			0
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef
+		{
+			name				rgb_saber1_title
+			group				rgboptions
+			text				"SABER 1"
+			style				WINDOW_STYLE_EMPTY
+			rect			83 265 140 20
+			font				3
+			textscale			0.7
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			70
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef
+		{
+			name				rgb_saber2_title
+			group				rgboptions
+			text				"SABER 2"
+			style				WINDOW_STYLE_EMPTY
+			rect			425 265 140 20
+			font				3
+			textscale			0.7
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			70
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			decoration
+		}
+
+		itemDef 
+		{
+			name				red_bar1
+			group				rgboptions
+			//[INTSLIDER]
+			type				ITEM_TYPE_INTSLIDER
+			text				"Sab1 R"
+
+			cvarint				"ui_sab1_r" 255 1 255
+			//[/INTSLIDER]
+			rect				55 160 105 30
+	   		textalign			ITEM_ALIGN_LEFT
+			textalignx			0
+			textaligny			-4
+			font 				2
+			textscale 			0.8
+			forecolor			0.82 0.84 0.88 1
+			visible			0
+			// appearance_slot	1
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_RED1"
+			action
+			{ 
+				
+			}
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			type 				ITEM_TYPE_EDITFIELD
+			style 0
+			text 				"R:"
+			cvar 				"ui_sab1_r"
+			maxchars 3
+			maxPaintChars 3 
+			rect 				220 160 30 20
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			-5
+			font				0
+			textscale			0.75
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor 0.38 0.41 0.46 .5
+			backcolor 0 0 0 0
+			border 1
+			bordercolor 0 0 0 0
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_RED1_DESC"
+			visible 1 
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			//[INTSLIDER]
+			type				ITEM_TYPE_INTSLIDER
+			text				"Sab1 G"
+
+			cvarint				"ui_sab1_g" 255 1 255
+			//[/INTSLIDER]
+			rect				55 195 105 30
+	   		textalign			ITEM_ALIGN_LEFT
+			textalignx			0
+			textaligny			-4
+			font 				2
+			textscale 			0.8
+			forecolor			0.82 0.84 0.88 1
+			visible			0
+			// appearance_slot	1
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN1"
+			action
+			{ 
+				
+			}
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			type 				ITEM_TYPE_EDITFIELD
+			style 0
+			text 				"G:"
+			cvar 				"ui_sab1_g"
+			maxchars 3
+			maxPaintChars 3 
+			rect 				220 195 30 20
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			-5
+			font				0
+			textscale			0.75
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor 0.38 0.41 0.46 .5
+			backcolor 0 0 0 0
+			border 1
+			bordercolor 0 0 0 0
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_GREEN1_DESC"
+			visible 1 
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			//[INTSLIDER]
+			type				ITEM_TYPE_INTSLIDER
+			text				"Sab1 B"
+
+			cvarint				"ui_sab1_b" 255 1 255
+			//[/INTSLIDER]
+			rect				55 230 105 30
+	   		textalign			ITEM_ALIGN_LEFT
+			textalignx			0
+			textaligny			-4
+			font 				2
+			textscale 			0.8
+			forecolor			0.82 0.84 0.88 1
+			visible			0
+			// appearance_slot	1
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE1"
+			action
+			{ 
+				
+			}
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			type 				ITEM_TYPE_EDITFIELD
+			style 0
+			text 				"B:"
+			cvar 				"ui_sab1_b"
+			maxchars 3
+			maxPaintChars 3 
+			rect 				220 230 30 20
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			-5
+			font				0
+			textscale			0.75
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor 0.38 0.41 0.46 .5
+			backcolor 0 0 0 0
+			border 1
+			bordercolor 0 0 0 0
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_BLUE1_DESC"
+			visible 1 
+		}
+
+//-------------------------------SABER 2
+
+		itemDef 
+		{
+			group				rgboptions
+			//[INTSLIDER]
+			type				ITEM_TYPE_INTSLIDER
+			text				"Sab2 R"
+
+			cvarint				"ui_sab2_r" 255 1 255
+			//[/INTSLIDER]
+			rect				425 160 105 30
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			-4
+			font 				2
+			textscale 			0.8
+			forecolor			0.82 0.84 0.88 1
+			visible			0
+			// appearance_slot	1
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_RED2"
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			action
+			{ 
+				
+			}
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			type 				ITEM_TYPE_EDITFIELD
+			style 0
+			text 				"R:"
+			cvar 				"ui_sab2_r"
+			maxchars 3
+			maxPaintChars 3 
+			rect 				535 160 30 20
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			-5
+			font				0
+			textscale			0.75
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor 0.38 0.41 0.46 .5
+			backcolor 0 0 0 0
+			border 1
+			bordercolor 0 0 0 0
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_RED2_DESC"
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			visible 1 
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			//[INTSLIDER]
+			type				ITEM_TYPE_INTSLIDER
+			text				"Sab2 G"
+
+			cvarint				"ui_sab2_g" 255 1 255
+			//[/INTSLIDER]
+			rect				425 195 105 30
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			-4
+			font 				2
+			textscale 			0.8
+			forecolor			0.82 0.84 0.88 1
+			visible			0
+			// appearance_slot	1
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN2"
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			action
+			{ 
+				
+			}
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			type 				ITEM_TYPE_EDITFIELD
+			style 0
+			text 				"G:"
+			cvar 				"ui_sab2_g"
+			maxchars 3
+			maxPaintChars 3 
+			rect 				535 195 30 20
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			-5
+			font				0
+			textscale			0.75
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor 0.38 0.41 0.46 .5
+			backcolor 0 0 0 0
+			border 1
+			bordercolor 0 0 0 0
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_GREEN2_DESC"
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			visible 1 
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			//[INTSLIDER]
+			type				ITEM_TYPE_INTSLIDER
+			text				"Sab2 B"
+
+			cvarint				"ui_sab2_b" 255 1 255
+			//[/INTSLIDER]
+			rect				425 230 105 30
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			-4
+			font 				2
+			textscale 			0.8
+			forecolor			0.82 0.84 0.88 1
+			visible			0
+			// appearance_slot	1
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE2"
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+			action
+			{ 
+				
+			}
+		}
+
+		itemDef 
+		{
+			group				rgboptions
+			type 				ITEM_TYPE_EDITFIELD
+			style 0
+			text 				"B:"
+			cvar 				"ui_sab2_b"
+			maxchars 3
+			maxPaintChars 3 
+			rect 				535 230 30 20
+			textalign			ITEM_ALIGN_LEFT		
+			textalignx 			0
+			textaligny 			-5
+			font				0
+			textscale			0.75
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor 0.38 0.41 0.46 .5
+			backcolor 0 0 0 0
+			border 1
+			bordercolor 0 0 0 0
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_BLUE2_DESC"
+			visible 1 
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+		}
+////////////////////////
+//SABER MODELS
+////////////////////////
+
+		//FIRST SABER
+		itemDef
+		{
+			name				saber
+			group				models
+			type 				ITEM_TYPE_MODEL
+			rect				0 -70 640 615
+			asset_model			"models/weapons2/saber_reborn/saber_w.glm"
+			isSaber			1
+			model_angle			180
+			model_rotation		20
+			model_g2mins		0 0 0
+			model_g2maxs		20 20 20
+			model_fovx			75
+			model_fovy			75
+			visible			1
+			decoration
+		}
+
+		//SECOND SABER
+		itemDef
+		{
+			name				saber2
+			group				models
+			type 				ITEM_TYPE_MODEL
+			rect				0 0 640 615
+			asset_model			"models/weapons2/saber_reborn/saber_w.glm"
+			isSaber2			1
+			model_angle			180
+			model_rotation		20
+			model_g2mins		0 0 0
+			model_g2maxs		20 20 20
+			model_fovx			75
+			model_fovy			75
+			visible			1
+			cvarTest			ui_saber_type
+			hideCvar			{ "single"; "staff" }
+
+			decoration
+		}
+
+		// BACK BUTTON
+		itemDef 
+		{
+			name				bottom_backbutton_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect			4 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				bottom_backbutton
+			group				none
+			text				@MENUS_BACK
+			descText			"Return to profile without applying changes"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			4 445 124 32
+			font				3
+			textscale			0.9
+			textalignx			62
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			saberMenu2
+				open			profileMenu
+			}
+			mouseEnter 
+			{  
+				show			bottom_backbutton_glow
+			}
+			mouseExit 
+			{ 
+				hide			bottom_backbutton_glow
+			}	  
+		}
+
+		// RGB BUTTON
+
+
+		//APPLY BUTTON
+		itemDef 
+		{
+			name				applybutton_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect			512 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				applybutton
+			group				none
+			text				@MENUS_APPLY
+			descText			"Apply RGB saber colors and return to profile"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			512 445 124 32
+			font				3
+			textscale			0.9
+			textalignx			62
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+	      	action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				uiScript 		"updatesabercvars"
+				uiScript  		"saber_color"
+				uiScript  		"saber2_color"
+				
+				close			saberMenu2
+				open			profileMenu
+			}
+			mouseEnter 
+			{  
+				show			applybutton_glow
+			}
+			mouseExit 
+			{ 
+				hide			applybutton_glow
+			}	  	  
+		}
+
+	}
+}

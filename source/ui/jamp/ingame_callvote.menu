@@ -1,4 +1,4 @@
-//[NewMenus]
+﻿//[NewMenus]
 \\ CALL VOTE MENU \\
 {
 	menuDef  
@@ -244,8 +244,8 @@
 		{
 			name				kickallybutton
 			group				grpbutton
-			text				@OJP_MENUS_KICKALLY
-			descText			@OJP_MENUS_BANISH_AN_ALLY_FROM
+			text				@OBP_MENUS_KICKALLY
+			descText			@OBP_MENUS_BANISH_AN_ALLY_FROM
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				75 195 103 30
@@ -599,7 +599,7 @@
 		{
 			name				kickally
 			group				grpCallVote
-			text				@OJP_MENUS_KICK_ALLY
+			text				@OBP_MENUS_KICK_ALLY
 			ownerdraw			UI_PLAYERNAME
 			rect				285 75 230 20
 			textalign			0
@@ -621,7 +621,7 @@
 		{
 			name				kickally
 			group				grpCallVote
-			descText			@OJP_MENUS_SELECT_ALLY_TO_KICK
+			descText			@OBP_MENUS_SELECT_ALLY_TO_KICK
 			rect				275 95 200 200
 			style				WINDOW_STYLE_FILLED
 			type				ITEM_TYPE_LISTBOX
@@ -659,7 +659,7 @@
 		{
 			name				kickally
 			text				@MENUS_OKAY
-			descText			@OJP_MENUS_BEGIN_VOTE_TO_BANISH_ALLY
+			descText			@OBP_MENUS_BEGIN_VOTE_TO_BANISH_ALLY
 			type				1
 			group				grpCallVote
 			style				WINDOW_STYLE_FILLED

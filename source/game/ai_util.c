@@ -828,8 +828,15 @@ if (len >= 131072)
 	i = 4;
 	for(i = 4; (i - 4) < NUM_FORCE_POWERS; i++)
 	{
+		int forcePower = i - 4;
+
+		if(forcePower == FP_SABER_OFFENSE)
+		{//saber offense is physical saber training, not Force sensitivity.
+			continue;
+		}
+
 		if(bs->forceinfo[i] != '0')
-		{//bot is using force power, make sure that they have at least one rank of force seeing
+		{//bot is using a real force power, make sure that they have at least one rank of force seeing
 			if(bs->forceinfo[FP_SEE + 4] == '0')
 			{//bot file doesn't normally have force seeing, give them some
 				bs->forceinfo[FP_SEE + 4] = '1';

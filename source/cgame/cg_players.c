@@ -1,4 +1,4 @@
-
+﻿
 // Copyright (C) 1999-2000 Id Software, Inc.
 //
 // cg_players.c -- handle the media and animation for player entities
@@ -10,6 +10,58 @@
 
 // Deterministic exhaust bolt lookup helper (forward declare; definition near vehicle FX code).
 static int CG_VehicleAddExhaustBolt( void *ghoul2, int modelIndex, int exhaustNum );
+
+static int CG_TeamPowerEffectEndTime( const centity_t *cent, int type )
+{
+	if ( !cent )
+	{
+		return 0;
+	}
+
+	if ( type >= 0 && type < 11 && cent->teamPowerEffectTimes[type] > 0 )
+	{
+		return cent->teamPowerEffectTimes[type];
+	}
+
+	/* Compatibility with old single-slot effect state. */
+	if ( cent->teamPowerType == type )
+	{
+		return cent->teamPowerEffectTime;
+	}
+
+	return 0;
+}
+
+static qboolean CG_TeamPowerEffectActive( const centity_t *cent, int type )
+{
+	return (qboolean)( CG_TeamPowerEffectEndTime( cent, type ) > cg.time );
+}
+
+static int CG_ItemPowerEffectEndTime( const centity_t *cent, int type )
+{
+	if ( !cent )
+	{
+		return 0;
+	}
+
+	if ( type >= 0 && type < 5 && cent->itemPowerEffectTimes[type] > 0 )
+	{
+		return cent->itemPowerEffectTimes[type];
+	}
+
+	/* Compatibility with old single-slot effect state. */
+	if ( cent->itemPowerType == type )
+	{
+		return cent->itemPowerEffectTime;
+	}
+
+	return 0;
+}
+
+static qboolean CG_ItemPowerEffectActive( const centity_t *cent, int type )
+{
+	return (qboolean)( CG_ItemPowerEffectEndTime( cent, type ) > cg.time );
+}
 
 //[TrueView]
 //True View Camera Position Check Function
@@ -28,7 +80,86 @@ extern void CG_AddRadarEnt(centity_t *cent);	//cg_ents.c
 extern void CG_AddBracketedEnt(centity_t *cent);	//cg_ents.c
 extern qboolean CG_InFighter( void );
 extern qboolean WP_SaberBladeUseSecondBladeStyle( saberInfo_t *saber, int bladeNum );
+extern void CG_InitWeaponOptionFlagsForClient( centity_t *cent );
+extern void CG_SetWeaponOptionFlagsFromConfigString( int clientNum, const char *weaponFlags );
+extern void CG_SetDualWeaponFlagsFromConfigString( int clientNum, const char *dualFlags );
+extern qboolean CG_DualWeaponEnabledForClientWeapon( int clientNum, int weapon );
 
+void CG_InvalidateHolsteredWeaponModelsForClient( int clientNum )
+{
+	clientInfo_t *ci;
+
+	if (clientNum < 0 || clientNum >= MAX_CLIENTS)
+	{
+		return;
+	}
+
+	ci = &cgs.clientinfo[clientNum];
+
+	// Force both active and holstered weapon G2 attachments to be recopied
+	// immediately when weapon option/dual flags change.  This prevents a
+	// one-frame base/intermediate model while hovering through weapon variants.
+	cg_entities[clientNum].ghoul2weapon = NULL;
+	cg_entities[clientNum].ghoul2weapon2 = NULL;
+
+	if (cg_entities[clientNum].ghoul2 &&
+		cg_entities[clientNum].currentState.weapon > WP_NONE &&
+		cg_entities[clientNum].currentState.weapon < MAX_WEAPONS &&
+		!(cg_entities[clientNum].currentState.eFlags & EF_DEAD) &&
+		!cg_entities[clientNum].torsoBolt)
+	{
+		// Re-copy now, in the same call that updates/invalidates the flags.
+		// Otherwise the old/base model can remain visible until the normal
+		// player update path reaches this entity.
+		CG_CopyG2WeaponInstance(&cg_entities[clientNum],
+			cg_entities[clientNum].currentState.weapon,
+			cg_entities[clientNum].ghoul2);
+		cg_entities[clientNum].ghoul2weapon = CG_G2WeaponInstance(&cg_entities[clientNum],
+			cg_entities[clientNum].currentState.weapon);
+		if ((cg_entities[clientNum].currentState.eFlags & EF_DUAL_WEAPONS) &&
+			CG_DualWeaponEnabledForClientWeapon(clientNum, cg_entities[clientNum].currentState.weapon))
+		{
+			cg_entities[clientNum].ghoul2weapon2 = CG_G2WeaponInstance2(&cg_entities[clientNum],
+				cg_entities[clientNum].currentState.weapon);
+		}
+	}
+
+	ci->blaster_holstered = 0;
+	ci->blaster2_holstered = 0;
+	ci->launcher_holstered = 0;
+	ci->golan_holstered = qfalse;
+}
+
+
+static qboolean CG_BinocularThermalShellActive( void )
+{
+	if ( cg.predictedPlayerState.zoomMode == 3 && !cg.predictedPlayerState.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	if ( cg.snap && cg.snap->ps.zoomMode == 3 && !cg.snap->ps.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static qboolean CG_BinocularXRayShellActive( void )
+{
+	if ( cg.predictedPlayerState.zoomMode == 3 && cg.predictedPlayerState.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	if ( cg.snap && cg.snap->ps.zoomMode == 3 && cg.snap->ps.zoomLocked )
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
 
 //for g2 surface routines
 #define TURN_ON				0x00000000
@@ -2620,7 +2751,6 @@ void CG_ParseScriptedSaber(char *script, clientInfo_t *ci, int snum);
 //[/RGBSabers]
 
 void WP_SetSaber( int entNum, saberInfo_t *sabers, int saberNum, const char *saberName );
-extern void *CG_G2WeaponInstance2(centity_t *cent, int weapon);
 void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 	clientInfo_t *ci;
 	clientInfo_t newInfo;
@@ -3043,6 +3173,17 @@ void CG_NewClientInfo( int clientNum, qboolean entitiesInitialized ) {
 		trap_G2API_CleanGhoul2Models(&ci->ghoul2Model);
 	}
 	*ci = newInfo;
+
+	v = Info_ValueForKey( configstring, "wpf" );
+	if (clientNum >= 0 && clientNum < MAX_GENTITIES)
+	{
+		CG_SetWeaponOptionFlagsFromConfigString(clientNum, v);
+
+		v = Info_ValueForKey( configstring, "wdp" );
+		CG_SetDualWeaponFlagsFromConfigString(clientNum, v);
+
+		CG_InitWeaponOptionFlagsForClient(&cg_entities[clientNum]);
+	}
 
 	//force a weapon change anyway, for all clients being rendered to the current client
 	while (i < MAX_CLIENTS)
@@ -6190,6 +6331,29 @@ static void CG_PlayerSplash( centity_t *cent ) {
 #define REFRACT_EFFECT_DURATION		200
 static void CG_ForcePushBlur( vec3_t org, centity_t *cent )
 {
+	vec3_t fxDir;
+
+	if (cent)
+	{
+		if (cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson)
+		{
+			VectorCopy(cg.refdef.viewaxis[0], fxDir);
+		}
+		else
+		{
+			AngleVectors(cent->lerpAngles, fxDir, NULL, NULL);
+		}
+	}
+	else
+	{
+		VectorCopy(cg.refdef.viewaxis[0], fxDir);
+	}
+
+	if ( cgs.effects.forcePushBlur )
+	{
+		trap_FX_PlayEffectID( cgs.effects.forcePushBlur, org, fxDir, -1, -1 );
+	}
+
 	if (!cent || !cg_renderToTextureFX.integer)
 	{
 		localEntity_t	*ex;
@@ -6251,14 +6415,15 @@ static void CG_ForcePushBlur( vec3_t org, centity_t *cent )
 			VectorCopy(org, cent->pushEffectOrigin);
 		}
 
-		//scale from 1.0f to 0.1f then hold at 0.1 for the rest of the duration
+		// Push should expand outward, while Pull should contract inward.
+		// PW_PULL marks the pull case here; the non-pull case is Force Push.
 		if (cent->currentState.powerups & (1 << PW_PULL))
 		{
-			scale = (float)(REFRACT_EFFECT_DURATION-tDif)*0.003f;
+			scale = (float)(tDif)*0.003f;
 		}
 		else
 		{
-			scale = (float)(tDif)*0.003f;
+			scale = (float)(REFRACT_EFFECT_DURATION-tDif)*0.003f;
 		}
 
 		if (scale > 1.0f)
@@ -6337,6 +6502,39 @@ static void CG_ForcePushBlur( vec3_t org, centity_t *cent )
 		trap_R_AddRefEntityToScene( &ent );
 	}
 }
+
+static void CG_ForcePushPullEffect( vec3_t org, centity_t *cent )
+{
+	vec3_t fxDir;
+
+	if (cent)
+	{
+		if (cent->currentState.number == cg.snap->ps.clientNum && !cg.renderingThirdPerson)
+		{
+			VectorCopy(cg.refdef.viewaxis[0], fxDir);
+		}
+		else
+		{
+			AngleVectors(cent->lerpAngles, fxDir, NULL, NULL);
+		}
+	}
+	else
+	{
+		VectorCopy(cg.refdef.viewaxis[0], fxDir);
+	}
+
+	// FP_PULL uses the same effect as FP_PUSH, but played in the opposite direction.
+	if (cent && (cent->currentState.powerups & (1 << PW_PULL)))
+	{
+		VectorScale(fxDir, -1.0f, fxDir);
+	}
+
+	if ( cgs.effects.forcePushBlur )
+	{
+		trap_FX_PlayEffectID( cgs.effects.forcePushBlur, org, fxDir, -1, -1 );
+	}
+}
+
 static void CG_ForceExplodeBlur( vec3_t org, centity_t *cent )
 {
 	if (!cent || !cg_renderToTextureFX.integer)
@@ -6400,14 +6598,15 @@ static void CG_ForceExplodeBlur( vec3_t org, centity_t *cent )
 			VectorCopy(org, cent->pushEffectOrigin);
 		}
 
-		//scale from 1.0f to 0.1f then hold at 0.1 for the rest of the duration
+		// Push should expand outward, while Pull should contract inward.
+		// PW_PULL marks the pull case here; the non-pull case is Force Push.
 		if (cent->currentState.powerups & (1 << PW_PULL))
 		{
-			scale = (float)(REFRACT_EFFECT_DURATION-tDif)*0.003f;
+			scale = (float)(tDif)*0.003f;
 		}
 		else
 		{
-			scale = (float)(tDif)*0.003f;
+			scale = (float)(REFRACT_EFFECT_DURATION-tDif)*0.003f;
 		}
 
 		if (scale > 1.0f)
@@ -11182,7 +11381,7 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 	float diff;
 	clientInfo_t *client;
 	centity_t *saberEnt;
-	saberTrail_t *saberTrail;
+	saberTrail_t *saberTrail = NULL;
 	mdxaBone_t	boltMatrix;
 	vec3_t futureAngles;
 	effectTrailArgStruct_t fx;
@@ -11280,8 +11479,8 @@ void CG_AddSaberBlade( centity_t *cent, centity_t *scent, refEntity_t *saber, in
 	}
 
 	//[RGBSabers]
-	if(((ojp_teamrgbsabers.integer < 1) 
-		|| (ojp_teamrgbsabers.integer == 1 && cg.snap && cg.snap->ps.clientNum != cent->currentState.number)) &&
+	if(((obp_teamrgbsabers.integer < 1) 
+		|| (obp_teamrgbsabers.integer == 1 && cg.snap && cg.snap->ps.clientNum != cent->currentState.number)) &&
 		cgs.gametype >= GT_TEAM &&
 		cgs.gametype != GT_SIEGE &&
 		!cgs.jediVmerc &&
@@ -12053,7 +12252,7 @@ JustDoIt:
 */
 	//[/Movie Sabers]
 					
-		if ( cg.time > saberTrail->inAction )
+		if ( cg_saberTrail.integer && saberTrail && cg.time > saberTrail->inAction )
 		{
 			saberTrail->inAction = cg.time;
 
@@ -14492,6 +14691,39 @@ static int CG_VehicleAddExhaustBolt( void *ghoul2, int modelIndex, int exhaustNu
     return -1;
 }
 
+//[VehicleEngineFXFix]
+// Vehicle exhaust bolts can be missing if the clientside vehicle object is
+// created before the Ghoul2 model is fully ready, or after a model reload.
+// Retry bolt setup from the render/effects path so engine FX recover cleanly.
+static qboolean CG_EnsureVehicleExhaustBolts( centity_t *cent )
+{
+	int i;
+	qboolean haveBolt = qfalse;
+
+	if ( !cent || !cent->m_pVehicle || !cent->ghoul2 )
+	{
+		return qfalse;
+	}
+
+	for ( i = 0; i < MAX_VEHICLE_EXHAUSTS; i++ )
+	{
+		if ( cent->m_pVehicle->m_iExhaustTag[i] != -1 )
+		{
+			haveBolt = qtrue;
+			continue;
+		}
+
+		cent->m_pVehicle->m_iExhaustTag[i] = CG_VehicleAddExhaustBolt( cent->ghoul2, 0, i + 1 );
+		if ( cent->m_pVehicle->m_iExhaustTag[i] != -1 )
+		{
+			haveBolt = qtrue;
+		}
+	}
+
+	return haveBolt;
+}
+//[/VehicleEngineFXFix]
+
 // Some mods/servers do not send "$vehName" as the model configstring for vehicle NPCs.
 // In those cases the client never creates cent->m_pVehicle, which causes *all* vehicle FX
 // (exhaust, trails, etc) to be skipped. Create a best-effort clientside vehicle object
@@ -14649,6 +14881,14 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 	}
 
 	pVehNPC = cent->m_pVehicle;
+	if ( !pVehNPC->m_pVehicleInfo )
+	{
+		return;
+	}
+
+	//[VehicleEngineFXFix]
+	CG_EnsureVehicleExhaustBolts( cent );
+	//[/VehicleEngineFXFix]
 
 	if ( cent->currentState.clientNum == cg.predictedPlayerState.m_iVehicleNum//my vehicle
 		&& (cent->currentState.eFlags2&EF2_HYPERSPACE) )//hyperspacing
@@ -14766,11 +15006,19 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 			float nextFXDelay = 50;
 			VectorSet(flat, 0, cent->lerpAngles[1], cent->lerpAngles[2]);
 			AngleVectors( flat, fwd, rt, up );
+			qboolean engineActive;
+
 			// entityState_t::speed is frequently 0 for vehicle NPCs in MP (TR_INTERPOLATE).
-			// Use a client-side estimate so exhaust/trail FX don't get suppressed.
+			// Use a client-side estimate, but do not require movement for engine exhaust:
+			// idling/ridden vehicles can have visible engine FX while stationary.
 			vehSpeed = CG_VehicleSpeedEstimate( cent );
-			if ( vehSpeed > 1.0f )
-			{//FIXME: only do this when accelerator is being pressed! (must have a driver?)
+			engineActive = (vehSpeed > 1.0f) ||
+				(cent->currentState.loopSound != 0) ||
+				(pVehNPC->m_pVehicleInfo && pVehNPC->m_pVehicleInfo->speedIdle > 1.0f) ||
+				(cent->currentState.clientNum == cg.predictedPlayerState.m_iVehicleNum);
+
+			if ( engineActive )
+			{
 				vec3_t	org;
 				qboolean doExhaust = qfalse;
 				VectorMA( cent->lerpOrigin, -16, up, org );
@@ -14808,9 +15056,25 @@ CGAME_INLINE void CG_VehicleEffects(centity_t *cent)
 
 					for ( i = 0; i < MAX_VEHICLE_EXHAUSTS; i++ )
 					{
-						// We hit an invalid tag, we quit (they should be created in order so tough luck if not).
 						if ( pVehNPC->m_iExhaustTag[i] == -1 )
 						{
+							// If the model has no explicit exhaust bolt, draw one fallback
+							// engine plume behind the vehicle instead of losing all engine FX.
+							if ( i == 0 )
+							{
+								vec3_t fallbackOrg;
+								VectorMA( cent->lerpOrigin, -16, up, fallbackOrg );
+								VectorMA( fallbackOrg, -42, fwd, fallbackOrg );
+
+								if ( (cent->currentState.eFlags&EF_JETPACK_ACTIVE) && pVehNPC->m_pVehicleInfo->iTurboFX )
+								{
+									trap_FX_PlayEffectID( pVehNPC->m_pVehicleInfo->iTurboFX, fallbackOrg, fwd, -1, -1 );
+								}
+								else if ( pVehNPC->m_pVehicleInfo->iExhaustFX )
+								{
+									trap_FX_PlayEffectID( pVehNPC->m_pVehicleInfo->iExhaustFX, fallbackOrg, fwd, -1, -1 );
+								}
+							}
 							continue;
 						}
 
@@ -15636,13 +15900,13 @@ void CG_HolsteredWeaponRender( centity_t *cent, clientInfo_t *ci, int holsterTyp
 	}
 
 	//debugger override for editting the holster positions
-	if(ojp_holsterdebug.integer == holsterType)
+	if(obp_holsterdebug.integer == holsterType)
 	{//debug has been set for this holsterType, use the debug overrides
-		boneIndex = ojp_holsterdebug_boneindex.integer;
-		if (sscanf(ojp_holsterdebug_posoffset.string, "%f %f %f", &PosOffset[0], &PosOffset[1], &PosOffset[2]) != 3) {
+		boneIndex = obp_holsterdebug_boneindex.integer;
+		if (sscanf(obp_holsterdebug_posoffset.string, "%f %f %f", &PosOffset[0], &PosOffset[1], &PosOffset[2]) != 3) {
 			VectorClear(PosOffset); // fallback if sscanf fails
 		}
-		if (sscanf(ojp_holsterdebug_angoffset.string, "%f %f %f", &AngOffset[0], &AngOffset[1], &AngOffset[2]) != 3) {
+		if (sscanf(obp_holsterdebug_angoffset.string, "%f %f %f", &AngOffset[0], &AngOffset[1], &AngOffset[2]) != 3) {
 			VectorClear(AngOffset); // fallback if sscanf fails
 		}
 	}
@@ -15781,6 +16045,92 @@ void CG_HolsteredWeaponRender( centity_t *cent, clientInfo_t *ci, int holsterTyp
 #define		G2MODEL_GOLAN_HOLSTERED			10
 
 
+
+
+static qboolean CG_BoltHolsteredWeaponModel( centity_t *cent, int weapon, qboolean secondWeap, int modelIndex, qhandle_t holsterBolt, int *holsteredWeapon )
+{
+	if (!cent || !cent->ghoul2 || !holsteredWeapon || holsterBolt == -1)
+	{
+		return qfalse;
+	}
+
+	if (*holsteredWeapon != weapon)
+	{
+		if (*holsteredWeapon != 0)
+		{
+			if (trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), modelIndex))
+			{
+				trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), modelIndex);
+			}
+			*holsteredWeapon = 0;
+		}
+
+		trap_G2API_CopySpecificGhoul2Model(CG_G2HolsterWeaponInstance(cent, weapon, secondWeap), 0, cent->ghoul2, modelIndex);
+		trap_G2API_SetBoltInfo(cent->ghoul2, modelIndex, holsterBolt);
+		*holsteredWeapon = weapon;
+	}
+
+	return qtrue;
+}
+
+static int CG_HolsterSkillLevelFromForceInfo( const char *forceInfo, int skill )
+{
+	int index;
+	char levelChar;
+
+	if (!forceInfo || skill < 0 || skill >= NUM_SKILLS)
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	index = NUM_FORCE_POWERS + skill + 4;
+	if (index < 0 || index >= (int)strlen(forceInfo))
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	levelChar = forceInfo[index];
+	if (levelChar < '0' || levelChar > '3')
+	{
+		return FORCE_LEVEL_0;
+	}
+
+	return levelChar - '0';
+}
+
+static qboolean CG_ShouldDualHolsterWeapon( const centity_t *cent, const clientInfo_t *ci, int weapon )
+{
+	int clientNum = -1;
+
+	if (!cent || !ci || !ci->infoValid)
+	{
+		return qfalse;
+	}
+
+	if (cent->currentState.eType == ET_NPC)
+	{
+		// NPCs do not receive the per-client dual weapon configstring.
+		// Keep the old skill-based fallback for NPC/clientInfo data.
+		switch (weapon)
+		{
+		case WP_BRYAR_PISTOL:
+			return (CG_HolsterSkillLevelFromForceInfo(ci->forcePowers, SK_PISTOL) >= FORCE_LEVEL_3) ? qtrue : qfalse;
+		case WP_BRYAR_OLD:
+			return (CG_HolsterSkillLevelFromForceInfo(ci->forcePowers, SK_OLD) >= FORCE_LEVEL_3) ? qtrue : qfalse;
+		default:
+			return qfalse;
+		}
+	}
+
+	clientNum = cent->currentState.number;
+	if (clientNum < 0 || clientNum >= MAX_CLIENTS)
+	{
+		return qfalse;
+	}
+
+	return CG_DualWeaponEnabledForClientWeapon(clientNum, weapon);
+}
+
 void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 {//renders holstered weapons on players.
 	//flag to indicate that 
@@ -15789,10 +16139,12 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 	int rightHipInUse = 0; //the weapon currently holstered on the right hip.
 	int leftHipInUse = 0;
 	int weapInv;
+	qboolean dualBryarHolster = qfalse;
+	qboolean dualOldHolster = qfalse;
 
 	if(cg.snap && cg.snap->ps.clientNum == cent->currentState.number)
 	{//this cent is the client, use playerstate data
-		if(ojp_holsteredweapons.integer < 1)
+		if(obp_holsteredweapons.integer < 1)
 		{//no holstered weapon rendering
 			return;
 		}
@@ -15800,8 +16152,8 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		weapInv = cg.snap->ps.stats[STAT_WEAPONS];
 	}
 	else
-	{//use event generated data.  Note that this data won't be updated if not all of the clients have the OJP client plugin.
-		if(ojp_holsteredweapons.integer < 2)
+	{//use event generated data.  Note that this data won't be updated if not all of the clients have the OBP client plugin.
+		if(obp_holsteredweapons.integer < 2)
 		{//no rendering holstered weapons on other players.
 			return;
 		}
@@ -15816,6 +16168,14 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 
 		weapInv = cent->weapons;
 	}
+
+	dualBryarHolster = ((weapInv & (1 << WP_BRYAR_PISTOL))
+		&& cent->currentState.weapon != WP_BRYAR_PISTOL
+		&& CG_ShouldDualHolsterWeapon(cent, ci, WP_BRYAR_PISTOL)) ? qtrue : qfalse;
+	dualOldHolster = (!dualBryarHolster
+		&& (weapInv & (1 << WP_BRYAR_OLD))
+		&& cent->currentState.weapon != WP_BRYAR_OLD
+		&& CG_ShouldDualHolsterWeapon(cent, ci, WP_BRYAR_OLD)) ? qtrue : qfalse;
 
 	if (cent->ghoul2 && 
 	(cent->currentState.eType != ET_NPC 
@@ -15955,7 +16315,8 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 
 		//Handle Blaster Holster on right hip
 		if( !(weapInv & (1 << WP_BLASTER))  //don't have blaster 
-			|| cent->currentState.weapon == WP_BLASTER) //or are currently using blaster
+			|| cent->currentState.weapon == WP_BLASTER  //or are currently using blaster
+			|| dualBryarHolster || dualOldHolster) //or dual pistols need both hip holsters
 		{//don't need holstered blaster rendered
 			if(ci->holster_blaster != -1 && ci->blaster_holstered == WP_BLASTER)
 			{
@@ -15970,22 +16331,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//need holstered blaster to be rendered
 			if(ci->holster_blaster != -1)
 			{//have specialized bolt
-				if(ci->blaster_holstered != WP_BLASTER)
-				{//don't already have the blaster bolted.
-					if(ci->blaster_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_BLASTER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_BLASTER_HOLSTERED);
-						}
-						ci->blaster_holstered = 0;
-					}
-
-					//now add the blaster
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_BLASTER), 0, cent->ghoul2, G2MODEL_BLASTER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_BLASTER_HOLSTERED, ci->holster_blaster);
-					ci->blaster_holstered = WP_BLASTER;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_BLASTER, qfalse, G2MODEL_BLASTER_HOLSTERED, ci->holster_blaster, &ci->blaster_holstered);
 			}
 			else
 			{//manually render the blaster
@@ -16012,23 +16358,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render WP_BRYAR_PISTOL on right hip
 			if(ci->holster_blaster != -1)
 			{//have specialized bolt
-				if(ci->blaster_holstered != WP_BRYAR_PISTOL)
-				{//don't already have the WP_BRYAR_PISTOL bolted.
-					if(ci->blaster_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_BLASTER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_BLASTER_HOLSTERED);
-						}
-						ci->blaster_holstered = 0;
-					}
-
-					//now add the WP_BRYAR_PISTOL
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_BRYAR_PISTOL), 0, cent->ghoul2, 
-						G2MODEL_BLASTER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_BLASTER_HOLSTERED, ci->holster_blaster);
-					ci->blaster_holstered = WP_BRYAR_PISTOL;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_BRYAR_PISTOL, qfalse, G2MODEL_BLASTER_HOLSTERED, ci->holster_blaster, &ci->blaster_holstered);
 			}
 			else
 			{//manually render the pistol
@@ -16055,23 +16385,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render WP_BRYAR_OLD on right hip
 			if(ci->holster_blaster != -1)
 			{//have specialized bolt
-				if(ci->blaster_holstered != WP_BRYAR_OLD)
-				{//don't already have the WP_BRYAR_OLD bolted.
-					if(ci->blaster_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_BLASTER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_BLASTER_HOLSTERED);
-						}
-						ci->blaster_holstered = 0;
-					}
-
-					//now add the WP_BRYAR_OLD
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_BRYAR_OLD), 0, cent->ghoul2, 
-						G2MODEL_BLASTER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_BLASTER_HOLSTERED, ci->holster_blaster);
-					ci->blaster_holstered = WP_BRYAR_OLD;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_BRYAR_OLD, qfalse, G2MODEL_BLASTER_HOLSTERED, ci->holster_blaster, &ci->blaster_holstered);
 			}
 			else
 			{//manually render the pistol
@@ -16088,7 +16402,8 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		//Handle Blaster Holster on left hip
 		if( !(weapInv & (1 << WP_BLASTER))  //don't have blaster 
 			|| cent->currentState.weapon == WP_BLASTER  //or are currently using blaster
-			|| rightHipInUse == WP_BLASTER)  //or the blaster is already on the right hip. 
+			|| rightHipInUse == WP_BLASTER  //or the blaster is already on the right hip.
+			|| dualBryarHolster || dualOldHolster)  //or dual pistols need both hip holsters. 
 
 		{//don't need holstered blaster on left hip rendered
 			if(ci->holster_blaster2 != -1 && ci->blaster2_holstered == WP_BLASTER)
@@ -16104,22 +16419,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//need holstered blaster to be rendered
 			if(ci->holster_blaster2 != -1)
 			{//have specialized bolt
-				if(ci->blaster2_holstered != WP_BLASTER)
-				{//don't already have the blaster bolted.
-					if(ci->blaster2_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_BLASTER2_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_BLASTER2_HOLSTERED);
-						}
-						ci->blaster2_holstered = 0;
-					}
-
-					//now add the blaster
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_BLASTER), 0, cent->ghoul2, G2MODEL_BLASTER2_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_BLASTER2_HOLSTERED, ci->holster_blaster2);
-					ci->blaster2_holstered = WP_BLASTER;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_BLASTER, qtrue, G2MODEL_BLASTER2_HOLSTERED, ci->holster_blaster2, &ci->blaster2_holstered);
 			}
 			else
 			{//manually render the blaster
@@ -16132,7 +16432,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		if( leftHipInUse
 			|| !(weapInv & (1 << WP_BRYAR_PISTOL))  //don't have pistol 
 			|| cent->currentState.weapon == WP_BRYAR_PISTOL  //or are currently using pistol
-			|| rightHipInUse == WP_BRYAR_PISTOL)  //or the pistol is already on the right hip. 
+			|| (rightHipInUse == WP_BRYAR_PISTOL && !dualBryarHolster))  //or the pistol is already on the right hip and is not dual-holstered. 
 		{//don't need holstered pistol on left hip rendered
 			if(ci->holster_blaster2 != -1 && ci->blaster2_holstered == WP_BRYAR_PISTOL)
 			{//remove bolted holster instance.
@@ -16147,22 +16447,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//need holstered pistol to be rendered
 			if(ci->holster_blaster2 != -1)
 			{//have specialized bolt
-				if(ci->blaster2_holstered != WP_BRYAR_PISTOL)
-				{//don't already have the pistol bolted.
-					if(ci->blaster2_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_BLASTER2_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_BLASTER2_HOLSTERED);
-						}
-						ci->blaster2_holstered = 0;
-					}
-
-					//now add the blaster
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_BRYAR_PISTOL), 0, cent->ghoul2, G2MODEL_BLASTER2_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_BLASTER2_HOLSTERED, ci->holster_blaster2);
-					ci->blaster2_holstered = WP_BRYAR_PISTOL;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_BRYAR_PISTOL, qtrue, G2MODEL_BLASTER2_HOLSTERED, ci->holster_blaster2, &ci->blaster2_holstered);
 			}
 			else
 			{//manually render the pistol
@@ -16175,7 +16460,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		if( leftHipInUse
 			|| !(weapInv & (1 << WP_BRYAR_OLD))  //don't have pistol 
 			|| cent->currentState.weapon == WP_BRYAR_OLD  //or are currently using pistol
-			|| rightHipInUse == WP_BRYAR_OLD)  //or the pistol is already on the right hip. 
+			|| (rightHipInUse == WP_BRYAR_OLD && !dualOldHolster))  //or the pistol is already on the right hip and is not dual-holstered. 
 		{//don't need holstered pistol on left hip rendered
 			if(ci->holster_blaster2 != -1 && ci->blaster2_holstered == WP_BRYAR_OLD)
 			{//remove bolted holster instance.
@@ -16190,22 +16475,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//need holstered pistol to be rendered
 			if(ci->holster_blaster2 != -1)
 			{//have specialized bolt
-				if(ci->blaster2_holstered != WP_BRYAR_OLD)
-				{//don't already have the pistol bolted.
-					if(ci->blaster2_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_BLASTER2_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_BLASTER2_HOLSTERED);
-						}
-						ci->blaster2_holstered = 0;
-					}
-
-					//now add the blaster
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_BRYAR_OLD), 0, cent->ghoul2, G2MODEL_BLASTER2_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_BLASTER2_HOLSTERED, ci->holster_blaster2);
-					ci->blaster2_holstered = WP_BRYAR_OLD;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_BRYAR_OLD, qtrue, G2MODEL_BLASTER2_HOLSTERED, ci->holster_blaster2, &ci->blaster2_holstered);
 			}
 			else
 			{//manually render the pistol
@@ -16231,7 +16501,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 			{//need to render holstered rocket launcher
 				if( ci->holster_golan != -1 && !ci->golan_holstered)
 				{//we have a valid holster bolt for this weapon and we haven't bolted
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_ROCKET_LAUNCHER), 0, cent->ghoul2, G2MODEL_GOLAN_HOLSTERED);
+					trap_G2API_CopySpecificGhoul2Model(CG_G2HolsterWeaponInstance(cent, WP_ROCKET_LAUNCHER, qfalse), 0, cent->ghoul2, G2MODEL_GOLAN_HOLSTERED);
 					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_GOLAN_HOLSTERED, ci->holster_golan);
 					ci->golan_holstered = qtrue;
 				}
@@ -16277,23 +16547,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render concussion on right hip
 			if(ci->holster_launcher != -1)
 			{//have specialized bolt
-				if(ci->launcher_holstered != WP_CONCUSSION)
-				{//don't already have the concussion bolted.
-					if(ci->launcher_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED);
-						}
-						ci->launcher_holstered = 0;
-					}
-
-					//now add the concussion
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_CONCUSSION), 0, cent->ghoul2, 
-						G2MODEL_LAUNCHER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher);
-					ci->launcher_holstered = WP_CONCUSSION;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_CONCUSSION, qfalse, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher, &ci->launcher_holstered);
 			}
 			else
 			{//manually render the blaster
@@ -16320,23 +16574,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render weapon on back
 			if(ci->holster_launcher != -1)
 			{//have specialized bolt
-				if(ci->launcher_holstered != WP_REPEATER)
-				{//don't already have the concussion bolted.
-					if(ci->launcher_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED);
-						}
-						ci->launcher_holstered = 0;
-					}
-
-					//now bolt the weapon
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_REPEATER), 0, cent->ghoul2, 
-						G2MODEL_LAUNCHER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher);
-					ci->launcher_holstered = WP_REPEATER;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_REPEATER, qfalse, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher, &ci->launcher_holstered);
 			}
 			else
 			{//manually render the weapon
@@ -16363,23 +16601,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render weapon on back
 			if(ci->holster_launcher != -1)
 			{//have specialized bolt
-				if(ci->launcher_holstered != WP_FLECHETTE)
-				{//don't already have the weapon bolted.
-					if(ci->launcher_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED);
-						}
-						ci->launcher_holstered = 0;
-					}
-
-					//now bolt the weapon
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_FLECHETTE), 0, cent->ghoul2, 
-						G2MODEL_LAUNCHER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher);
-					ci->launcher_holstered = WP_FLECHETTE;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_FLECHETTE, qfalse, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher, &ci->launcher_holstered);
 			}
 			else
 			{//manually render the weapon
@@ -16406,23 +16628,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render weapon on back
 			if(ci->holster_launcher != -1)
 			{//have specialized bolt
-				if(ci->launcher_holstered != WP_DISRUPTOR)
-				{//don't already have the weapon bolted.
-					if(ci->launcher_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED);
-						}
-						ci->launcher_holstered = 0;
-					}
-
-					//now bolt the weapon
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_DISRUPTOR), 0, cent->ghoul2, 
-						G2MODEL_LAUNCHER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher);
-					ci->launcher_holstered = WP_DISRUPTOR;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_DISRUPTOR, qfalse, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher, &ci->launcher_holstered);
 			}
 			else
 			{//manually render the weapon
@@ -16449,23 +16655,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render weapon on back
 			if(ci->holster_launcher != -1)
 			{//have specialized bolt
-				if(ci->launcher_holstered != WP_BOWCASTER)
-				{//don't already have the weapon bolted.
-					if(ci->launcher_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED);
-						}
-						ci->launcher_holstered = 0;
-					}
-
-					//now bolt the weapon
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_BOWCASTER), 0, cent->ghoul2, 
-						G2MODEL_LAUNCHER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher);
-					ci->launcher_holstered = WP_BOWCASTER;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_BOWCASTER, qfalse, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher, &ci->launcher_holstered);
 			}
 			else
 			{//manually render the weapon
@@ -16492,23 +16682,7 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 		{//render demp 2 on right hip
 			if(ci->holster_launcher != -1)
 			{//have specialized bolt
-				if(ci->launcher_holstered != WP_DEMP2)
-				{//don't already have the demp2 bolted.
-					if(ci->launcher_holstered != 0)
-					{//we have something else bolted there, remove it first.
-						if(trap_G2API_HasGhoul2ModelOnIndex(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED))
-						{
-							trap_G2API_RemoveGhoul2Model(&(cent->ghoul2), G2MODEL_LAUNCHER_HOLSTERED);
-						}
-						ci->launcher_holstered = 0;
-					}
-
-					//now add the demp2
-					trap_G2API_CopySpecificGhoul2Model(CG_G2WeaponInstance(cent, WP_DEMP2), 0, cent->ghoul2, 
-						G2MODEL_LAUNCHER_HOLSTERED);
-					trap_G2API_SetBoltInfo(cent->ghoul2, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher);
-					ci->launcher_holstered = WP_DEMP2;
-				}
+				CG_BoltHolsteredWeaponModel(cent, WP_DEMP2, qfalse, G2MODEL_LAUNCHER_HOLSTERED, ci->holster_launcher, &ci->launcher_holstered);
 			}
 			else
 			{//manually render the blaster
@@ -16526,6 +16700,45 @@ void CG_VisualWeaponsUpdate( centity_t *cent, clientInfo_t *ci )
 }
 //[/VisualWeapons]
 
+
+static qboolean CG_DrawSimpleMD3NPC( centity_t *cent )
+{
+	refEntity_t ent;
+	const char *modelPath;
+
+	if ( cent->currentState.eType != ET_NPC )
+	{
+		return qfalse;
+	}
+
+	if ( !cent->currentState.modelindex )
+	{
+		return qfalse;
+	}
+
+	modelPath = CG_ConfigString( CS_MODELS + cent->currentState.modelindex );
+	if ( !modelPath || !modelPath[0] || !strstr( modelPath, ".md3" ) )
+	{
+		return qfalse;
+	}
+
+	memset( &ent, 0, sizeof( ent ) );
+	VectorCopy( cent->lerpOrigin, ent.origin );
+	VectorCopy( cent->lerpOrigin, ent.oldorigin );
+	AnglesToAxis( cent->lerpAngles, ent.axis );
+	ent.reType = RT_MODEL;
+	ent.hModel = cgs.gameModels[cent->currentState.modelindex];
+	ent.renderfx = RF_LIGHTING_ORIGIN;
+	VectorCopy( cent->lerpOrigin, ent.lightingOrigin );
+
+	if ( !ent.hModel )
+	{
+		return qfalse;
+	}
+
+	trap_R_AddRefEntityToScene( &ent );
+	return qtrue;
+}
 
 void CG_Player( centity_t *cent ) {
 	clientInfo_t	*ci;
@@ -16799,6 +17012,10 @@ void CG_Player( centity_t *cent ) {
 
 	if (!cent->ghoul2)
 	{ //not ready yet?
+		if ( CG_DrawSimpleMD3NPC( cent ) )
+		{
+			return;
+		}
 #ifdef _DEBUG
 		Com_Printf("WARNING: Client %i has a null ghoul2 instance\n", cent->currentState.number);
 #endif
@@ -16971,221 +17188,97 @@ void CG_Player( centity_t *cent ) {
 
 			while (n < 2)
 			{
-				//Get the position/dir of the flame bolt on the jetpack model bolted to the player
-			
-			if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
+				qboolean rocketBoots = ((cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) &&
+					(cent->currentState.userInt3 & (1 << FLAG_JETPACK4))) ? qtrue : qfalse;
+				qboolean classicBobaPack = (!(cent->currentState.userInt3 & (1 << FLAG_JETPACK2)) &&
+					!(cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) &&
+					!(cent->currentState.userInt3 & (1 << FLAG_JETPACK4)) &&
+					!(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))) ? qtrue : qfalse;
+				qboolean classicBluePack = ((cent->currentState.userInt3 & (1 << FLAG_JETPACK2)) &&
+					!(cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) &&
+					!(cent->currentState.userInt3 & (1 << FLAG_JETPACK4)) &&
+					!(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))) ? qtrue : qfalse;
+
+				if (rocketBoots)
 				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, -16.5f, flameDir, flamePos);
+					int footBolt = trap_G2API_AddBolt(cent->ghoul2, 0, (n == 0) ? "*l_leg_foot" : "*r_leg_foot");
 
-
+					if (footBolt != -1)
+					{
+						trap_G2API_GetBoltMatrix(cent->ghoul2, 0, footBolt, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+						BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+						BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Z, flameDir);
+						VectorMA(flamePos, 2.0f, flameDir, flamePos);
+					}
+					else
+					{
+						VectorCopy(cent->lerpOrigin, flamePos);
+						flamePos[2] -= 24.0f;
+						flamePos[0] += (n == 0) ? -5.0f : 5.0f;
+						VectorSet(flameDir, 0.0f, 0.0f, -1.0f);
+					}
+				}
+				else if (classicBobaPack || classicBluePack)
+				{
+					// The stock Boba jetpack and blue variant were already visually correct
+					// with their original JA/OBP tag layout. Preserve that proven placement
+					// and direction instead of forcing them through the new authored-tag path.
+					trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+					BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
+					if (n == 0)
+					{
+						BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
+						VectorMA(flamePos, -9.5f, flameDir, flamePos);
+						BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+						VectorMA(flamePos, -13.5f, flameDir, flamePos);
+					}
+					else
+					{
+						BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+						VectorMA(flamePos, -9.5f, flameDir, flamePos);
+						BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
+						VectorMA(flamePos, -13.5f, flameDir, flamePos);
+					}
 				}
 				else
 				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, -16.5f, flameDir, flamePos);					
+					// New backpack models use corrected GLM exhaust tags. Their tag origin is
+					// the exhaust coordinate, so do not add visual-compensation offsets here.
+					trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+					BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
 
+					if (
+						// b_jetpack: FLAG_JETPACK3 only.
+						((cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK2)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK4)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))) ||
+						// jetpack_metal: FLAG_JETPACK4 only. In-game test showed its flame vector is inverted
+						// relative to the corrected jetpack_white, so flip only this variant.
+						((cent->currentState.userInt3 & (1 << FLAG_JETPACK4)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK2)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))) ||
+						// spacejet: FLAG_JETPACK2 + FLAG_JETPACK4. Match the now-good
+						// spacejetw exhaust direction.
+						((cent->currentState.userInt3 & (1 << FLAG_JETPACK2)) &&
+						(cent->currentState.userInt3 & (1 << FLAG_JETPACK4)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))) ||
+						// spacejetw: FLAG_JETPACK2 + FLAG_JETPACK5. Keep the good-looking
+						// direction confirmed in-game.
+						((cent->currentState.userInt3 & (1 << FLAG_JETPACK2)) &&
+						(cent->currentState.userInt3 & (1 << FLAG_JETPACK5)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK3)) &&
+						!(cent->currentState.userInt3 & (1 << FLAG_JETPACK4))))
+					{
+						BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
+					}
+					else
+					{
+						BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_X, flameDir);
+					}
 				}
-			}			
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK5))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, -5.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -5.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-
-
-
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, -6.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, -5.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -5.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-
-
-
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, -6.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2) && cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -4.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
-					VectorMA(flamePos, -16.0f, flameDir, flamePos);
-
-
-
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_X, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-
-
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK5))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -5.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, 10.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 17.5f, flameDir, flamePos);
-
-
-
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, 5.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, 10.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 17.5f, flameDir, flamePos);
-
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK4))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -5.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, 10.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 17.5f, flameDir, flamePos);
-
-
-
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, 5.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Y, flameDir);
-					VectorMA(flamePos, 10.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 17.5f, flameDir, flamePos);	
-
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK3))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_X, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-
-
-				}
-				else
-				{
-
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_Z, flameDir);
-					VectorMA(flamePos, 0.0f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_X, flameDir);
-					VectorMA(flamePos, -8.0f, flameDir, flamePos);
-
-				}
-			}
-			else if(cent->currentState.userInt3 & (1 << FLAG_JETPACK2))
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
-					VectorMA(flamePos, -9.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -13.5f, flameDir, flamePos);
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -9.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
-					VectorMA(flamePos, -13.5f, flameDir, flamePos);
-				}				
-			}				
-			else
-			{
-				trap_G2API_GetBoltMatrix(cent->ghoul2, 3, n, &mat, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
-				BG_GiveMeVectorFromMatrix(&mat, ORIGIN, flamePos);
-				if (n == 0)
-				{
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
-					VectorMA(flamePos, -9.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -13.5f, flameDir, flamePos);
-				}
-				else
-				{
-					BG_GiveMeVectorFromMatrix(&mat, POSITIVE_X, flameDir);
-					VectorMA(flamePos, -9.5f, flameDir, flamePos);
-					BG_GiveMeVectorFromMatrix(&mat, NEGATIVE_Y, flameDir);
-					VectorMA(flamePos, -13.5f, flameDir, flamePos);
-				}				
-			}
 
 
 				if (cent->currentState.eFlags & EF_JETPACK_FLAMING)
@@ -17708,9 +17801,16 @@ void CG_Player( centity_t *cent ) {
 		else if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_SPECTATOR &&
 			cent->currentState.number < MAX_CLIENTS &&
 			!(cent->currentState.eFlags & EF_DEAD) &&
+			ci->duelTeam == DUELTEAM_LONE)
+		{
+			CG_PlayerFloatSprite( cent, cgs.media.powerDuelLoneShader);
+		}
+		else if (cg.predictedPlayerState.persistant[PERS_TEAM] == TEAM_SPECTATOR &&
+			cent->currentState.number < MAX_CLIENTS &&
+			!(cent->currentState.eFlags & EF_DEAD) &&
 			ci->duelTeam == DUELTEAM_DOUBLE)
 		{
-			CG_PlayerFloatSprite( cent, cgs.media.powerDuelAllyShader);
+			CG_PlayerFloatSprite( cent, cgs.media.powerDuelDoubleShader);
 		}
 	}
 
@@ -18181,6 +18281,8 @@ SkipTrueView:
 	if (cent->currentState.userInt3 & (1 << FLAG_DRAIN2))
 	{
 		vec3_t axis[3];
+		vec3_t axisL[3];
+		vec3_t axisR[3];
 		vec3_t tAng, fAng, fxDir;
 		vec3_t efOrgL; //origin left hand
 		vec3_t efOrgR; //origin right hand
@@ -18230,6 +18332,63 @@ SkipTrueView:
 		}
 
 		AnglesToAxis(fAng, axis);
+
+		/*
+		 * OBP: the Force beam EFX are not perfectly symmetric in local space.
+		 * Use normal torso orientation for the left hand, and mirror the local
+		 * side axis for the right hand. This keeps left-hand arcs oriented left
+		 * and right-hand arcs oriented right without rotating/orbiting origins.
+		 */
+		AxisCopy(axis, axisL);
+		AxisCopy(axis, axisR);
+		VectorScale(axisR[1], -1.0f, axisR[1]);
+
+		/*
+		 * OBP: the *hand bolt is close to the palm.  Move the beam start
+		 * slightly forward along the casting direction so Lightning/Judgement
+		 * and Drain/Sever appear to leave the fingers instead of the palms.
+		 */
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			VectorMA(efOrgR, 7.0f, axis[0], efOrgR);
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+		else
+		{
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+
+		if (cent->currentState.forcePowersActive & (1 << FP_LIGHTNING))
+		{
+			/*
+			 * OBP: simultaneous Drain/Sever plus Lightning/Judgement uses fixed,
+			 * non-rotating vertical lanes.  Do not orbit the hand origins; that
+			 * makes the powers look like they are rotating around the hands.
+			 * Drain/Sever is kept slightly below the electric lane.
+			 */
+			float drainSide = 0.0f;
+			float drainUp = -4.0f;
+
+			if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{
+				VectorMA(efOrgR, drainSide, axis[1], efOrgR);
+				VectorMA(efOrgR, drainUp, axis[2], efOrgR);
+				VectorMA(efOrgL, -drainSide, axis[1], efOrgL);
+				VectorMA(efOrgL, drainUp, axis[2], efOrgL);
+			}
+			else
+			{
+				VectorMA(efOrgL, drainSide, axis[1], efOrgL);
+				VectorMA(efOrgL, drainUp, axis[2], efOrgL);
+			}
+		}
+
  
 		if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
 			{//arc
@@ -18241,30 +18400,32 @@ SkipTrueView:
 		 
 																	  
 																																																								 
-				trap_FX_PlayEntityEffectID(cgs.effects.forceSeverWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSeverWide, efOrgR, axisR, -1, -1, -1, -1);
    
 
-				trap_FX_PlayEntityEffectID(cgs.effects.forceSeverWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSeverWide, efOrgL, axisL, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceSever, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSever, efOrgL, axisL, -1, -1, -1, -1);
 			}
 			}
 		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)) )
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceSever, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceSever, efOrgL, axisL, -1, -1, -1, -1);
 			}
 		
-		if (cent->bolt4 < cg.time)
+		if (cent->forceSeverSoundTime < cg.time)
 		{
-			cent->bolt4 = cg.time + 100;
+			cent->forceSeverSoundTime = cg.time + 100;
 			trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/sever.wav") );
 		}
 	}
 	else
 	{
 			vec3_t axis[3];
+		vec3_t axisL[3];
+		vec3_t axisR[3];
 		vec3_t tAng, fAng, fxDir;
 		vec3_t efOrgL; //origin left hand
 		vec3_t efOrgR; //origin right hand
@@ -18314,6 +18475,63 @@ SkipTrueView:
 		}
 
 		AnglesToAxis(fAng, axis);
+
+		/*
+		 * OBP: the Force beam EFX are not perfectly symmetric in local space.
+		 * Use normal torso orientation for the left hand, and mirror the local
+		 * side axis for the right hand. This keeps left-hand arcs oriented left
+		 * and right-hand arcs oriented right without rotating/orbiting origins.
+		 */
+		AxisCopy(axis, axisL);
+		AxisCopy(axis, axisR);
+		VectorScale(axisR[1], -1.0f, axisR[1]);
+
+		/*
+		 * OBP: the *hand bolt is close to the palm.  Move the beam start
+		 * slightly forward along the casting direction so Lightning/Judgement
+		 * and Drain/Sever appear to leave the fingers instead of the palms.
+		 */
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			VectorMA(efOrgR, 7.0f, axis[0], efOrgR);
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+		else
+		{
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+
+		if (cent->currentState.forcePowersActive & (1 << FP_LIGHTNING))
+		{
+			/*
+			 * OBP: simultaneous Drain/Sever plus Lightning/Judgement uses fixed,
+			 * non-rotating vertical lanes.  Do not orbit the hand origins; that
+			 * makes the powers look like they are rotating around the hands.
+			 * Drain/Sever is kept slightly below the electric lane.
+			 */
+			float drainSide = 0.0f;
+			float drainUp = -4.0f;
+
+			if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+			{
+				VectorMA(efOrgR, drainSide, axis[1], efOrgR);
+				VectorMA(efOrgR, drainUp, axis[2], efOrgR);
+				VectorMA(efOrgL, -drainSide, axis[1], efOrgL);
+				VectorMA(efOrgL, drainUp, axis[2], efOrgL);
+			}
+			else
+			{
+				VectorMA(efOrgL, drainSide, axis[1], efOrgL);
+				VectorMA(efOrgL, drainUp, axis[2], efOrgL);
+			}
+		}
+
  
 		if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
 			{//arc
@@ -18325,24 +18543,24 @@ SkipTrueView:
 		 
 																	  
 																																																								 
-				trap_FX_PlayEntityEffectID(cgs.effects.forceDrainWide, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDrainWide, efOrgR, axisR, -1, -1, -1, -1);
    
 
-				trap_FX_PlayEntityEffectID(cgs.effects.forceDrainWide, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDrainWide, efOrgL, axisL, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceDrain, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDrain, efOrgL, axisL, -1, -1, -1, -1);
 			}
 			}
 		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)) )
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceDrain, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceDrain, efOrgL, axisL, -1, -1, -1, -1);
 			}
 		
-		if (cent->bolt4 < cg.time)
+		if (cent->forceDrainSoundTime < cg.time)
 		{
-			cent->bolt4 = cg.time + 100;
+			cent->forceDrainSoundTime = cg.time + 100;
 			trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/drain.wav") );
 		}
 	}	
@@ -18354,6 +18572,8 @@ SkipTrueView:
 		if (cent->currentState.userInt3 & (1 << FLAG_LIGHTNING2))
 		{//doing the electrocuting
 			vec3_t axis[3];
+		vec3_t axisL[3];
+		vec3_t axisR[3];
 			vec3_t tAng, fAng, fxDir;
 			vec3_t efOrgL; //origin left hand
 			vec3_t efOrgR; //origin right hand
@@ -18405,6 +18625,62 @@ SkipTrueView:
 
 			AnglesToAxis(fAng, axis);
 
+		/*
+		 * OBP: the Force beam EFX are not perfectly symmetric in local space.
+		 * Use normal torso orientation for the left hand, and mirror the local
+		 * side axis for the right hand. This keeps left-hand arcs oriented left
+		 * and right-hand arcs oriented right without rotating/orbiting origins.
+		 */
+		AxisCopy(axis, axisL);
+		AxisCopy(axis, axisR);
+		VectorScale(axisR[1], -1.0f, axisR[1]);
+
+		/*
+		 * OBP: the *hand bolt is close to the palm.  Move the beam start
+		 * slightly forward along the casting direction so Lightning/Judgement
+		 * and Drain/Sever appear to leave the fingers instead of the palms.
+		 */
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			VectorMA(efOrgR, 7.0f, axis[0], efOrgR);
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+		else
+		{
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+
+			if (cent->currentState.forcePowersActive & (1 << FP_DRAIN))
+			{
+				/*
+				 * OBP: simultaneous Lightning/Judgement plus Drain/Sever uses fixed,
+				 * non-rotating vertical lanes.  Do not orbit the hand origins.
+				 * Lightning/Judgement is kept slightly above the absorb/cut lane.
+				 */
+				float electricSide = 0.0f;
+				float electricUp = 4.0f;
+
+				if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+				{
+					VectorMA(efOrgR, electricSide, axis[1], efOrgR);
+					VectorMA(efOrgR, electricUp, axis[2], efOrgR);
+					VectorMA(efOrgL, -electricSide, axis[1], efOrgL);
+					VectorMA(efOrgL, electricUp, axis[2], efOrgL);
+				}
+				else
+				{
+					VectorMA(efOrgL, electricSide, axis[1], efOrgL);
+					VectorMA(efOrgL, electricUp, axis[2], efOrgL);
+				}
+			}
+
+
 			if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
 			{//arc
 				if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
@@ -18412,14 +18688,14 @@ SkipTrueView:
 					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 				{
-					trap_FX_PlayEntityEffectID(cgs.effects.forceJudgementWide, efOrgR, axis, -1, -1, -1, -1);
+					trap_FX_PlayEntityEffectID(cgs.effects.forceJudgementWide, efOrgR, axisR, -1, -1, -1, -1);
 
-					trap_FX_PlayEntityEffectID(cgs.effects.forceJudgementWide, efOrgL, axis, -1, -1, -1, -1);
+					trap_FX_PlayEntityEffectID(cgs.effects.forceJudgementWide, efOrgL, axisL, -1, -1, -1, -1);
 				}
 				else if (((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD) || (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)))
 
 				{
-					trap_FX_PlayEntityEffectID(cgs.effects.forceJudgement, efOrgL, axis, -1, -1, -1, -1);
+					trap_FX_PlayEntityEffectID(cgs.effects.forceJudgement, efOrgL, axisL, -1, -1, -1, -1);
 				}
 
 
@@ -18430,12 +18706,12 @@ SkipTrueView:
 			else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD) || (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)))
 
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceJudgement, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceJudgement, efOrgL, axisL, -1, -1, -1, -1);
 			}
 
-			if (cent->bolt4 < cg.time)
+			if (cent->forceJudgementSoundTime < cg.time)
 			{
-				cent->bolt4 = cg.time + 100;
+				cent->forceJudgementSoundTime = cg.time + 100;
 				trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/judgement.wav"));
 			}
 
@@ -18444,6 +18720,8 @@ SkipTrueView:
 		{
 			//doing the electrocuting
 			vec3_t axis[3];
+		vec3_t axisL[3];
+		vec3_t axisR[3];
 			vec3_t tAng, fAng, fxDir;
 			vec3_t efOrgL; //origin left hand
 			vec3_t efOrgR; //origin right hand
@@ -18495,6 +18773,62 @@ SkipTrueView:
 
 			AnglesToAxis(fAng, axis);
 
+		/*
+		 * OBP: the Force beam EFX are not perfectly symmetric in local space.
+		 * Use normal torso orientation for the left hand, and mirror the local
+		 * side axis for the right hand. This keeps left-hand arcs oriented left
+		 * and right-hand arcs oriented right without rotating/orbiting origins.
+		 */
+		AxisCopy(axis, axisL);
+		AxisCopy(axis, axisR);
+		VectorScale(axisR[1], -1.0f, axisR[1]);
+
+		/*
+		 * OBP: the *hand bolt is close to the palm.  Move the beam start
+		 * slightly forward along the casting direction so Lightning/Judgement
+		 * and Drain/Sever appear to leave the fingers instead of the palms.
+		 */
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			VectorMA(efOrgR, 7.0f, axis[0], efOrgR);
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+		else
+		{
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+
+			if (cent->currentState.forcePowersActive & (1 << FP_DRAIN))
+			{
+				/*
+				 * OBP: simultaneous Lightning/Judgement plus Drain/Sever uses fixed,
+				 * non-rotating vertical lanes.  Do not orbit the hand origins.
+				 * Lightning/Judgement is kept slightly above the absorb/cut lane.
+				 */
+				float electricSide = 0.0f;
+				float electricUp = 4.0f;
+
+				if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+				{
+					VectorMA(efOrgR, electricSide, axis[1], efOrgR);
+					VectorMA(efOrgR, electricUp, axis[2], efOrgR);
+					VectorMA(efOrgL, -electricSide, axis[1], efOrgL);
+					VectorMA(efOrgL, electricUp, axis[2], efOrgL);
+				}
+				else
+				{
+					VectorMA(efOrgL, electricSide, axis[1], efOrgL);
+					VectorMA(efOrgL, electricUp, axis[2], efOrgL);
+				}
+			}
+
+
 			if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
 			{//arc
 				if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
@@ -18502,14 +18836,14 @@ SkipTrueView:
 					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 					|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 				{
-					trap_FX_PlayEntityEffectID(cgs.effects.forceLightningWide, efOrgR, axis, -1, -1, -1, -1);
+					trap_FX_PlayEntityEffectID(cgs.effects.forceLightningWide, efOrgR, axisR, -1, -1, -1, -1);
 
-					trap_FX_PlayEntityEffectID(cgs.effects.forceLightningWide, efOrgL, axis, -1, -1, -1, -1);
+					trap_FX_PlayEntityEffectID(cgs.effects.forceLightningWide, efOrgL, axisL, -1, -1, -1, -1);
 				}
 				else if (((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD) || (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)))
 
 				{
-					trap_FX_PlayEntityEffectID(cgs.effects.forceLightning, efOrgL, axis, -1, -1, -1, -1);
+					trap_FX_PlayEntityEffectID(cgs.effects.forceLightning, efOrgL, axisL, -1, -1, -1, -1);
 				}
 
 
@@ -18520,12 +18854,12 @@ SkipTrueView:
 			else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD) || (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)))
 
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.forceLightning, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.forceLightning, efOrgL, axisL, -1, -1, -1, -1);
 			}
 
-			if (cent->bolt4 < cg.time)
+			if (cent->forceLightningSoundTime < cg.time)
 			{
-				cent->bolt4 = cg.time + 100;
+				cent->forceLightningSoundTime = cg.time + 100;
 				trap_S_StartSound(NULL, cent->currentState.number, CHAN_AUTO, trap_S_RegisterSound("sound/weapons/force/lightning.wav"));
 			}
 
@@ -18533,6 +18867,130 @@ SkipTrueView:
 
 	}
 	
+
+	/*
+	 * OBP: draw Drain/Sever again after Lightning/Judgement when both beam
+	 * families are active.  The normal Drain/Sever block is above the electric
+	 * block, so the later additive Lightning/Judgement FX can visually cover it
+	 * even when both powers are active.
+	 *
+	 * The main beam blocks above use fixed, non-rotating vertical lanes:
+	 * Lightning/Judgement slightly above, Drain/Sever slightly below.  This
+	 * post-electric pass redraws only the Drain/Sever lane after the electric
+	 * lane, so the absorb/cut rays cannot be buried by the later additive
+	 * Lightning/Judgement effect.
+	 */
+	if (cent->currentState.activeForcePass
+		&& (cent->currentState.forcePowersActive & (1 << FP_DRAIN))
+		&& (cent->currentState.forcePowersActive & (1 << FP_LIGHTNING))
+		&& cent->currentState.NPC_class != CLASS_VEHICLE)
+	{
+		vec3_t axis[3];
+		vec3_t axisL[3];
+		vec3_t axisR[3];
+		vec3_t fAng;
+		vec3_t efOrgL;
+		vec3_t efOrgR;
+		float drainSide;
+		float drainUp;
+
+		VectorSet(fAng, cent->pe.torso.pitchAngle, cent->pe.torso.yawAngle, 0);
+		AnglesToAxis(fAng, axis);
+
+		/*
+		 * OBP: the Force beam EFX are not perfectly symmetric in local space.
+		 * Use normal torso orientation for the left hand, and mirror the local
+		 * side axis for the right hand. This keeps left-hand arcs oriented left
+		 * and right-hand arcs oriented right without rotating/orbiting origins.
+		 */
+		AxisCopy(axis, axisL);
+		AxisCopy(axis, axisR);
+		VectorScale(axisR[1], -1.0f, axisR[1]);
+
+		/*
+		 * OBP: the *hand bolt is close to the palm.  Move the beam start
+		 * slightly forward along the casting direction so Lightning/Judgement
+		 * and Drain/Sever appear to leave the fingers instead of the palms.
+		 */
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			VectorMA(efOrgR, 7.0f, axis[0], efOrgR);
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+		else
+		{
+			VectorMA(efOrgL, 7.0f, axis[0], efOrgL);
+		}
+
+		drainSide = 0.0f;
+		drainUp = -4.0f;
+
+		if (cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_START
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
+			|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
+		{
+			if (!gotRHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_rhand, &rHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotRHandMatrix = qtrue;
+			}
+			efOrgR[0] = rHandMatrix.matrix[0][3];
+			efOrgR[1] = rHandMatrix.matrix[1][3];
+			efOrgR[2] = rHandMatrix.matrix[2][3];
+
+			if (!gotLHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_lhand, &lHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotLHandMatrix = qtrue;
+			}
+			efOrgL[0] = lHandMatrix.matrix[0][3];
+			efOrgL[1] = lHandMatrix.matrix[1][3];
+			efOrgL[2] = lHandMatrix.matrix[2][3];
+
+			/*
+			 * Drain/Sever uses the fixed lower lane.  There is no lateral orbit,
+			 * so both hands stay symmetric and the origins do not rotate.
+			 */
+			VectorMA(efOrgR, drainSide, axis[1], efOrgR);
+			VectorMA(efOrgR, drainUp, axis[2], efOrgR);
+			VectorMA(efOrgR, 1.75f, axis[0], efOrgR);
+			VectorMA(efOrgL, -drainSide, axis[1], efOrgL);
+			VectorMA(efOrgL, drainUp, axis[2], efOrgL);
+			VectorMA(efOrgL, 1.75f, axis[0], efOrgL);
+
+			if (cent->currentState.activeForcePass > FORCE_LEVEL_2)
+			{
+				trap_FX_PlayEntityEffectID((cent->currentState.userInt3 & (1 << FLAG_DRAIN2)) ? cgs.effects.forceSeverWide : cgs.effects.forceDrainWide, efOrgR, axisR, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID((cent->currentState.userInt3 & (1 << FLAG_DRAIN2)) ? cgs.effects.forceSeverWide : cgs.effects.forceDrainWide, efOrgL, axisL, -1, -1, -1, -1);
+			}
+		}
+		else if (cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD)
+		{
+			if (!gotLHandMatrix)
+			{
+				trap_G2API_GetBoltMatrix(cent->ghoul2, 0, ci->bolt_lhand, &lHandMatrix, cent->turAngles, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale);
+				gotLHandMatrix = qtrue;
+			}
+			efOrgL[0] = lHandMatrix.matrix[0][3];
+			efOrgL[1] = lHandMatrix.matrix[1][3];
+			efOrgL[2] = lHandMatrix.matrix[2][3];
+
+			/*
+			 * One-handed simultaneous beam: Drain/Sever stays on the fixed lower
+			 * lane while Lightning/Judgement is on the fixed upper lane.
+			 */
+			VectorMA(efOrgL, drainSide, axis[1], efOrgL);
+			VectorMA(efOrgL, drainUp, axis[2], efOrgL);
+			VectorMA(efOrgL, 1.75f, axis[0], efOrgL);
+
+			trap_FX_PlayEntityEffectID((cent->currentState.userInt3 & (1 << FLAG_DRAIN2)) ? cgs.effects.forceSever : cgs.effects.forceDrain, efOrgL, axisL, -1, -1, -1, -1);
+		}
+	}
+
 	if (cent->currentState.activeForcePass && cent->currentState.forcePowersActive & (1 << FP_TEAM_FORCE)
 		&& cent->currentState.NPC_class != CLASS_VEHICLE)
 	{
@@ -18981,9 +19439,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrike, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrikeWide, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrike, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.orbitalstrikeWide, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -19057,9 +19515,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.lasersupport, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.lasersupportWide, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.lasersupport, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.lasersupportWide, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -19132,9 +19590,9 @@ SkipTrueView:
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_HOLD
 				|| cent->currentState.torsoAnim == BOTH_FORCE_2HANDEDLIGHTNING_RELEASE)
 			{
-				trap_FX_PlayEntityEffectID(cgs.effects.electroshocker, efOrgR, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.electroshockerWide, efOrgR, axis, -1, -1, -1, -1);
 
-				trap_FX_PlayEntityEffectID(cgs.effects.electroshocker, efOrgL, axis, -1, -1, -1, -1);
+				trap_FX_PlayEntityEffectID(cgs.effects.electroshockerWide, efOrgL, axis, -1, -1, -1, -1);
 			}
 			else if ((cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)||(cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD))
 
@@ -19282,7 +19740,7 @@ SkipTrueView:
 		}
 															   
 
-		else if (cent->currentState.powerups & (1 << PW_PULL))
+		else if ((cent->currentState.powerups & (1 << PW_PULL)) || (cent->currentState.userInt3 & (1 << FLAG_PULL2)))
 		{
 		if( cent->currentState.userInt3 & (1 << FLAG_PULL2))
 		{
@@ -19309,6 +19767,11 @@ SkipTrueView:
  			axis[2][0] = boltMatrix.matrix[0][2];
  			axis[2][1] = boltMatrix.matrix[1][2];
 		 	axis[2][2] = boltMatrix.matrix[2][2];
+
+			// Force Implode uses the same shockwave effect as Force Explode,
+			// but played in the opposite direction.
+			VectorScale(axis[0], -1.0f, axis[0]);
+			VectorScale(axis[1], -1.0f, axis[1]);
 
 			//trap_FX_PlayEntityEffectID(trap_FX_RegisterEffect("force/confusion.efx"), efOrg, axis, cent->boltInfo, cent->currentState.number);
 			trap_FX_PlayEntityEffectID(cgs.effects.forceExplode, efOrg, axis, -1, -1, -1, -1);
@@ -19348,15 +19811,25 @@ SkipTrueView:
 									   
 											  
 			}
-			else if (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)
+			else if (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL)
 			{
-			//use refractive effect
+			// Normal Force Push/Pull use one clean registered effect only.
+			CG_ForcePushPullEffect( efOrgL, cent );
+			}
+			else if (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)
+			{
+			// Preserve the old blur path for other Force powers.
 			CG_ForcePushBlur( efOrgL, cent );
 			}
 			}
-		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD))
+		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL))
 			{
-			//use refractive effect
+			// Normal Force Push/Pull use one clean registered effect only.
+			CG_ForcePushPullEffect( efOrgL, cent );
+			}
+		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD))
+			{
+			// Preserve the old blur path for other Force powers.
 			CG_ForcePushBlur( efOrgL, cent );
 			}	
 		
@@ -19416,15 +19889,25 @@ SkipTrueView:
 			//use refractive effect
 			CG_ForcePushBlur( efOrgL, cent );
 			}
-			else if (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)
+			else if (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL)
 			{
-			//use refractive effect
+			// Normal Force Push/Pull use one clean registered effect only.
+			CG_ForcePushPullEffect( efOrgL, cent );
+			}
+			else if (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD)
+			{
+			// Preserve the old blur path for other Force powers.
 			CG_ForcePushBlur( efOrgL, cent );
 			}
 			}
-		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL || cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD))
+		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEPUSH || cent->currentState.torsoAnim == BOTH_FORCEPULL))
 			{
-			//use refractive effect
+			// Normal Force Push/Pull use one clean registered effect only.
+			CG_ForcePushPullEffect( efOrgL, cent );
+			}
+		else if (cent->currentState.activeForcePass <= FORCE_LEVEL_2 && (cent->currentState.torsoAnim == BOTH_FORCEGRIP_HOLD || cent->currentState.torsoAnim == BOTH_FORCELIGHTNING_HOLD))
+			{
+			// Preserve the old blur path for other Force powers.
 			CG_ForcePushBlur( efOrgL, cent );
 			}	
 		
@@ -19493,89 +19976,76 @@ SkipTrueView:
 		}
 	}
 
-	if (cent->teamPowerEffectTime > cg.time)
 	{
-		if (cent->teamPowerType == 6 || cent->teamPowerType == 7 || cent->teamPowerType == 2 || cent->teamPowerType == 3 || cent->teamPowerType == 4)
-		{ //absorb is a somewhat different effect entirely
-			//Guess I'll take care of it where it's always been, just checking these values instead.
-		}
-		else
+		const int shellTypes[4] = { 0, 1, 5, 8 };
+		int shellIndex;
+
+		for ( shellIndex = 0; shellIndex < 4; shellIndex++ )
 		{
-			vec4_t preCol;
-			int preRFX;
+			int teamPowerType = shellTypes[shellIndex];
+			int effectEndTime = CG_TeamPowerEffectEndTime( cent, teamPowerType );
 
-			preRFX = legs.renderfx;
+			if ( effectEndTime > cg.time )
+			{
+				vec4_t preCol;
+				int preRFX;
 
-			legs.renderfx |= RF_RGB_TINT;
-			legs.renderfx |= RF_FORCE_ENT_ALPHA;
+				preRFX = legs.renderfx;
 
-			preCol[0] = legs.shaderRGBA[0];
-			preCol[1] = legs.shaderRGBA[1];
-			preCol[2] = legs.shaderRGBA[2];
-			preCol[3] = legs.shaderRGBA[3];
-/*
-			if (cent->teamPowerType == 0)
-			{ //regen
-				legs.shaderRGBA[0] = 0;
-				legs.shaderRGBA[1] = 0;
-				legs.shaderRGBA[2] = 255;
-			}
-			if (cent->teamPowerType == 1)
-			{ //heal
-				legs.shaderRGBA[0] = 0;
-				legs.shaderRGBA[1] = 255;
-				legs.shaderRGBA[2] = 0;
-			}
-*/
-			if (cent->teamPowerType == 0)
-			{ //drain
-				legs.shaderRGBA[0] = 255;
-				legs.shaderRGBA[1] = 0;
-				legs.shaderRGBA[2] = 0;
-			}
-			if (cent->teamPowerType == 1)
-			{ //sever
-				legs.shaderRGBA[0] = 255;
-				legs.shaderRGBA[1] = 255;
-				legs.shaderRGBA[2] = 255;
-				legs.shaderRGBA[3] = 255;
-			}
-			if (cent->teamPowerType == 5)
-			{ //deathsight
-				legs.shaderRGBA[0] = 255;
-				legs.shaderRGBA[1] = 128;
-				legs.shaderRGBA[2] = 0;
-			}
-			if (cent->teamPowerType == 8)
-			{ //blinding
-				legs.shaderRGBA[0] = 255;
-				legs.shaderRGBA[1] = 255;
-				legs.shaderRGBA[2] = 255;
-			}
-			legs.shaderRGBA[3] = ((cent->teamPowerEffectTime - cg.time)/8);
+				legs.renderfx |= RF_RGB_TINT;
+				legs.renderfx |= RF_FORCE_ENT_ALPHA;
 
-			legs.customShader = trap_R_RegisterShader( "powerups/ysalimarishell" );
-			
-											
-							   
-	  
-			trap_R_AddRefEntityToScene(&legs);
+				preCol[0] = legs.shaderRGBA[0];
+				preCol[1] = legs.shaderRGBA[1];
+				preCol[2] = legs.shaderRGBA[2];
+				preCol[3] = legs.shaderRGBA[3];
 
-			legs.customShader = 0;
-			legs.renderfx = preRFX;
-			legs.shaderRGBA[0] = preCol[0];
-			legs.shaderRGBA[1] = preCol[1];
-			legs.shaderRGBA[2] = preCol[2];
-			legs.shaderRGBA[3] = preCol[3];
+				if ( teamPowerType == 0 )
+				{ //drain
+					legs.shaderRGBA[0] = 255;
+					legs.shaderRGBA[1] = 0;
+					legs.shaderRGBA[2] = 0;
+				}
+				else if ( teamPowerType == 1 )
+				{ //sever
+					legs.shaderRGBA[0] = 255;
+					legs.shaderRGBA[1] = 255;
+					legs.shaderRGBA[2] = 255;
+					legs.shaderRGBA[3] = 255;
+				}
+				else if ( teamPowerType == 5 )
+				{ //deathsight
+					legs.shaderRGBA[0] = 255;
+					legs.shaderRGBA[1] = 128;
+					legs.shaderRGBA[2] = 0;
+				}
+				else if ( teamPowerType == 8 )
+				{ //blinding
+					legs.shaderRGBA[0] = 255;
+					legs.shaderRGBA[1] = 255;
+					legs.shaderRGBA[2] = 255;
+				}
+
+				legs.shaderRGBA[3] = ((effectEndTime - cg.time)/8);
+				legs.customShader = trap_R_RegisterShader( "powerups/ysalimarishell" );
+				trap_R_AddRefEntityToScene(&legs);
+
+				legs.customShader = 0;
+				legs.renderfx = preRFX;
+				legs.shaderRGBA[0] = preCol[0];
+				legs.shaderRGBA[1] = preCol[1];
+				legs.shaderRGBA[2] = preCol[2];
+				legs.shaderRGBA[3] = preCol[3];
+			}
 		}
 	}
 
 
 
-	if (cent->itemPowerEffectTime > cg.time)
+	if ( CG_ItemPowerEffectActive( cent, 0 ) || CG_ItemPowerEffectActive( cent, 1 ) || CG_ItemPowerEffectActive( cent, 2 ) )
 	{
 
-		if (cent->itemPowerType == 0)
+		if ( CG_ItemPowerEffectActive( cent, 0 ) )
 		{
 
 		vec3_t tempAngles;
@@ -19609,8 +20079,8 @@ SkipTrueView:
 		
 		
 		
-		if (cent->itemPowerType == 1)
-		{ //absorb is a somewhat different effect entirely
+		if ( CG_ItemPowerEffectActive( cent, 1 ) )
+		{ //cryo item effect
 
 		vec3_t tempAngles;
 
@@ -19641,8 +20111,8 @@ SkipTrueView:
 		CG_ForceCryo( cent, legs.origin, tempAngles, cgs.media.boltShader, qfalse );
 		}
 		
-		if (cent->itemPowerType == 2)
-		{ //absorb is a somewhat different effect entirely
+		if ( CG_ItemPowerEffectActive( cent, 2 ) )
+		{ //shock item effect
 		vec3_t tempAngles;
 
 		if (random() > 0.4f )
@@ -21298,7 +21768,7 @@ stillDoSaber:
 	}
 	}
 
-	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 6)
+	if ( cent && CG_TeamPowerEffectActive( cent, 6 ) )
 	{ //aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 255;
@@ -21312,7 +21782,7 @@ stillDoSaber:
 		trap_R_AddRefEntityToScene( &legs );
 	}
 	
-	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 7)
+	if ( cent && CG_TeamPowerEffectActive( cent, 7 ) )
 	{ //aborb is represented by blue..
 		legs.shaderRGBA[0] = 255;
 		legs.shaderRGBA[1] = 128;
@@ -21327,6 +21797,64 @@ stillDoSaber:
 	}
 	
 
+
+
+	if ( cent && (cent->currentState.eFlags & EF_DEAD) )
+	{
+		cent->teamPowerEffectTimes[9] = 0;
+		cent->teamPowerEffectTimes[10] = 0;
+		if ( cent->teamPowerType == 9 || cent->teamPowerType == 10 )
+		{
+			cent->teamPowerEffectTime = 0;
+		}
+	}
+
+	if ( cent && ( CG_TeamPowerEffectActive( cent, 9 ) || CG_TeamPowerEffectActive( cent, 10 ) ) )
+	{
+		int mindFxType;
+
+		for ( mindFxType = 9; mindFxType <= 10; mindFxType++ )
+		{
+			fxHandle_t fxID;
+
+			if ( !CG_TeamPowerEffectActive( cent, mindFxType ) )
+			{
+				continue;
+			}
+
+			fxID = (mindFxType == 9) ? cgs.effects.forceConfusion : cgs.effects.forceCorruption;
+			if ( fxID )
+			{
+				vec3_t fxOrg;
+				vec3_t fxDir = { 0.0f, 0.0f, 1.0f };
+
+				// Keep Confusion/Corruption centered on the victim's head instead of using
+				// a fixed body-height offset.  The old legs.origin + 58 placement could sit
+				// too low/high on differently-scaled models and made the particles feel like
+				// a full-body aura.  Prefer the head bolt, with the old position only as a
+				// safe fallback.
+				if ( cent->ghoul2 && ci && ci->bolt_head != -1 )
+				{
+					vec3_t tAng;
+
+					VectorSet( tAng, cent->turAngles[PITCH], cent->turAngles[YAW], cent->turAngles[ROLL] );
+					trap_G2API_GetBoltMatrix( cent->ghoul2, 0, ci->bolt_head, &boltMatrix,
+						tAng, cent->lerpOrigin, cg.time, cgs.gameModels, cent->modelScale );
+					BG_GiveMeVectorFromMatrix( &boltMatrix, ORIGIN, fxOrg );
+				}
+				else
+				{
+					VectorCopy( legs.origin, fxOrg );
+					fxOrg[2] += 58.0f;
+				}
+
+				// Slightly lift the center so the reduced EFX volume stays around the head
+				// and face, not the neck/chest.
+				fxOrg[2] += 4.0f;
+				trap_FX_PlayEffectID( fxID, fxOrg, fxDir, -1, -1 );
+			}
+		}
+	}
 
 
 	if(cent && cent->currentState.powerups & ( 1 << PW_OVERLOADED ))
@@ -21553,10 +22081,58 @@ stillDoSaber:
 		legs.renderfx &= ~RF_NODEPTH;
 	}
 
-	if (cg.snap && cent && cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE) && cg.snap->ps.clientNum != cent->currentState.number && cg_auraShell.integer)
+	if (cg.snap && cent &&
+		(((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) &&
+		  cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_1) ||
+		 CG_BinocularThermalShellActive() ||
+		 CG_BinocularXRayShellActive()) &&
+		cg.snap->ps.clientNum != cent->currentState.number && cg_auraShell.integer)
 	{
+		qboolean binocularThermal = CG_BinocularThermalShellActive();
+		qboolean binocularXRay = CG_BinocularXRayShellActive();
+		qboolean forceSeeShellAllowed = qtrue;
+		vec3_t forceSeeDiff;
+		float forceSeeDist = 0.0f;
+
+		if ((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) &&
+			!binocularThermal && !binocularXRay)
+		{
+			if (cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_3)
+			{
+				forceSeeDist = 1024.0f;
+			}
+			else if (cg.snap->ps.fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_2)
+			{
+				forceSeeDist = 512.0f;
+			}
+			else if (cg.snap->ps.fd.forcePowerLevel[FP_SEE] == FORCE_LEVEL_1)
+			{
+				forceSeeDist = 256.0f;
+			}
+
+			VectorSubtract(cent->lerpOrigin, cg.refdef.vieworg, forceSeeDiff);
+			if (VectorLength(forceSeeDiff) > forceSeeDist)
+			{
+				forceSeeShellAllowed = qfalse;
+			}
+		}
+
+		if (forceSeeShellAllowed)
+		{
+		if ( binocularXRay )
+		{
+			legs.shaderRGBA[0] = 195;
+			legs.shaderRGBA[1] = 70;
+			legs.shaderRGBA[2] = 255;
+		}
+		else if ( binocularThermal )
+		{
+			legs.shaderRGBA[0] = 255;
+			legs.shaderRGBA[1] = 105;
+			legs.shaderRGBA[2] = 20;
+		}
 		//[Enhanced sight] - colors imperial officers with keys with a blue hue like in sp
-		if( cent->currentState.NPC_class == CLASS_IMPERIAL && cent->currentState.generic1 == 100 )
+		else if( cent->currentState.NPC_class == CLASS_IMPERIAL && cent->currentState.generic1 == 100 )
 		{
 			legs.shaderRGBA[0] = 255;
 			legs.shaderRGBA[1] = 255;
@@ -21613,16 +22189,17 @@ stillDoSaber:
 			legs.shaderRGBA[2] = 0;
 		}
 
-/*		if (cg.snap->ps.fd.forcePowerLevel[FP_SEE] <= FORCE_LEVEL_1)
-		{
-			legs.renderfx |= RF_MINLIGHT;
-		}
-		else
-*/		{	// See through walls.
-			legs.renderfx |= RF_MINLIGHT | RF_NODEPTH;
+		{	// Only Force See level 3 and binocular x-ray can see through walls.
+			qboolean forceSeeThroughWalls = (qboolean)((cg.snap->ps.fd.forcePowersActive & (1 << FP_SEE)) &&
+				cg.snap->ps.fd.forcePowerLevel[FP_SEE] >= FORCE_LEVEL_3);
 
-			if (cg.snap->ps.fd.forcePowerLevel[FP_SEE] < FORCE_LEVEL_2)
-			{ //only level 2+ can see players through walls
+			legs.renderfx |= RF_MINLIGHT;
+			if ( forceSeeThroughWalls || binocularXRay )
+			{
+				legs.renderfx |= RF_NODEPTH;
+			}
+			else
+			{
 				legs.renderfx &= ~RF_NODEPTH;
 			}
 		}
@@ -21636,11 +22213,12 @@ stillDoSaber:
 							  
 	  
 		trap_R_AddRefEntityToScene( &legs );
+		}
 	}
 
 
 
-	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 2)
+	if ( cent && CG_TeamPowerEffectActive( cent, 2 ) )
 	{
 		vec3_t tempAngles;
 
@@ -21682,7 +22260,7 @@ stillDoSaber:
 		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader2, qfalse );
 	}
 
-	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 3)
+	if ( cent && CG_TeamPowerEffectActive( cent, 3 ) )
 	{
 		vec3_t tempAngles;
 
@@ -21723,7 +22301,7 @@ stillDoSaber:
 		CG_ForceElectrocution( cent, legs.origin, tempAngles, cgs.media.boltShader3, qfalse );
 	}
 	
-	if(cent && cent->teamPowerEffectTime > cg.time && cent->teamPowerType == 4)
+	if ( cent && CG_TeamPowerEffectActive( cent, 4 ) )
 	{
 		vec3_t tempAngles;
 

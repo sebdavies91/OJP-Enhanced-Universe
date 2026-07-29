@@ -1,4 +1,4 @@
-//[NewMenus]
+﻿//[NewMenus]
 //--------------------------------------------------------------
 //
 // SETUP MENU
@@ -287,7 +287,7 @@
 		{
 			name				advancedmenubutton
 			group				setup_submenu
-			text				@OJP_MENUS_ADVANCED
+			text				@OBP_MENUS_ADVANCED
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				5 195 170 30
@@ -299,7 +299,7 @@
 			textstyle			3
 			forecolor			0.8 0.8 0.8 1
 			visible				1
-			descText			@OJP_MENUS_ADVANCED_DESC
+			descText			@OBP_MENUS_ADVANCED_DESC
 			mouseEnter 
 			{ 
 			}
@@ -1448,7 +1448,7 @@
 			visible			0
 			// appearance_slot		1
 			//[UITweaks]
-			descText			@OJP_MENUS_DRAWCROSSHAIR_DESC
+			descText			@OBP_MENUS_DRAWCROSSHAIR_DESC
 			//descText			@MENUS_TOGGLE_TO_SHOW_OR_HIDE
 			//[/UITweaks]
 			action 
@@ -1507,13 +1507,13 @@
 			name				crosshairsize
 			group				options
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_CROSSHAIRSIZE
+			text				@OBP_MENUS_CROSSHAIRSIZE
 			cvar				"cg_crosshairSize"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_SMALL 			12
-				@OJP_MENUS_NORMAL			24
-				@OJP_MENUS_LARGE			36
+				@OBP_MENUS_SMALL 			12
+				@OBP_MENUS_NORMAL			24
+				@OBP_MENUS_LARGE			36
 			}
 			rect				206 115 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -1523,7 +1523,7 @@
 			textscale 			1
 			forecolor			.615 .615 .956 1
 			visible				0
-			descText			@OJP_MENUS_CROSSHAIRSIZE_DESC
+			descText			@OBP_MENUS_CROSSHAIRSIZE_DESC
 			action
 			{
 				play			"sound/interface/button1.wav"
@@ -2129,8 +2129,8 @@
 			name				drawframerate
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_SHOWFRAMERATE
-			descText			@OJP_MENUS_SHOWFRAMERATE_DESC
+			text				@OBP_MENUS_SHOWFRAMERATE
+			descText			@OBP_MENUS_SHOWFRAMERATE_DESC
 			cvar				"cg_drawFPS"
 			cvarFloatList		
 			{ 
@@ -2162,8 +2162,8 @@
 			name				lagometer
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_LAGOMETER
-			descText			@OJP_MENUS_LAGOMETER_DESC
+			text				@OBP_MENUS_LAGOMETER
+			descText			@OBP_MENUS_LAGOMETER_DESC
 			cvar				"cg_lagometer"
 			cvarFloatList		
 			{ 
@@ -2197,8 +2197,8 @@
 			name				sfxsabers
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_SFXSABERS
-			descText			@OJP_MENUS_SFXSABERS_DESC
+			text				@OBP_MENUS_SFXSABERS
+			descText			@OBP_MENUS_SFXSABERS_DESC
 			cvar				"sfx_sabers"
 			cvarFloatList		
 			{ 
@@ -2232,14 +2232,14 @@
 			name				teamrgbsabers
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_TEAMRGBSABERS
-			descText			@OJP_MENUS_TEAMRGBSABERS_DESC
-			cvar				"ojp_teamrgbsabers"
+			text				@OBP_MENUS_TEAMRGBSABERS
+			descText			@OBP_MENUS_TEAMRGBSABERS_DESC
+			cvar				"obp_teamrgbsabers"
 			cvarFloatList		
 			{ 
 				@MENUS_OFF		0
-				@OJP_MENUS_TEAMRGBSABERSPLAYER	 	1
-				@OJP_MENUS_TEAMRGBSABERSALL	 	2
+				@OBP_MENUS_TEAMRGBSABERSPLAYER	 	1
+				@OBP_MENUS_TEAMRGBSABERSALL	 	2
 			}
 			rect				206 135 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -2268,14 +2268,14 @@
 			name				holsteredweapons
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_HOLSTEREDWEAPONS
-			descText			@OJP_MENUS_HOLSTEREDWEAPONS_DESC
-			cvar				"ojp_holsteredweapons"
+			text				@OBP_MENUS_HOLSTEREDWEAPONS
+			descText			@OBP_MENUS_HOLSTEREDWEAPONS_DESC
+			cvar				"obp_holsteredweapons"
 			cvarFloatList		
 			{ 
 				@MENUS_OFF		0
-				@OJP_MENUS_HOLSTEREDWEAPONSPLAYER	 	1
-				@OJP_MENUS_HOLSTEREDWEAPONSALL		 	2
+				@OBP_MENUS_HOLSTEREDWEAPONSPLAYER	 	1
+				@OBP_MENUS_HOLSTEREDWEAPONSALL		 	2
 			}
 			rect				206 155 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -2304,14 +2304,14 @@
 			name				trueinvertsaber
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_TRUEINVERTSABER
-			descText			@OJP_MENUS_TRUEINVERTSABER_DESC
+			text				@OBP_MENUS_TRUEINVERTSABER
+			descText			@OBP_MENUS_TRUEINVERTSABER_DESC
 			cvar				"cg_trueinvertsaber"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_TRUEINVERTSABERSAME				0
-				@OJP_MENUS_TRUEINVERTSABERINVERT 			1
-				@OJP_MENUS_TRUEINVERTSABERALWAYSTHIRDPERSON		2
+				@OBP_MENUS_TRUEINVERTSABERSAME				0
+				@OBP_MENUS_TRUEINVERTSABERINVERT 			1
+				@OBP_MENUS_TRUEINVERTSABERALWAYSTHIRDPERSON		2
 			}
 			rect				206 175 300 20
 	   		textalign			ITEM_ALIGN_RIGHT
@@ -2381,13 +2381,13 @@
 			name				trueguns
 			group				advanced
       			type				ITEM_TYPE_MULTI
-			text				@OJP_MENUS_TRUEGUNSVIEW
-			descText			@OJP_MENUS_TRUEGUNSVIEWDESC
+			text				@OBP_MENUS_TRUEGUNSVIEW
+			descText			@OBP_MENUS_TRUEGUNSVIEWDESC
 			cvar				"cg_trueguns"
 			cvarFloatList		
 			{ 
-				@OJP_MENUS_TRUEGUNSVIEW2D	0
-				@OJP_MENUS_TRUEGUNSVIEW3D	1
+				@OBP_MENUS_TRUEGUNSVIEW2D	0
+				@OBP_MENUS_TRUEGUNSVIEW3D	1
 				
 			}
 			rect				206 215 300 20

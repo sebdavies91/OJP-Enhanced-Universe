@@ -44,8 +44,15 @@ size_t strlen( const char *string );
 char *strcat( char *strDestination, const char *strSource );
 char *strcpy( char *strDestination, const char *strSource );
 int strcmp( const char *string1, const char *string2 );
+#ifdef __cplusplus
+char *strchr( char *string, int c );
+const char *strchr( const char *string, int c );
+char *strstr( char *string, const char *strCharSet );
+const char *strstr( const char *string, const char *strCharSet );
+#else
 char *strchr( const char *string, int c );
 char *strstr( const char *string, const char *strCharSet );
+#endif
 //[Linux]
 #ifndef __linux__
 char *strncpy( char *strDest, const char *strSource, size_t count );

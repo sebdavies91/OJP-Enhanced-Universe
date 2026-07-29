@@ -344,6 +344,8 @@ qboolean Seeker_Fire( void )
 
 	vec3_t		dir, enemy_org, muzzle;
 	gentity_t	*missile;
+	gentity_t	*seekerOwner = NULL;
+	int			missileDamage;
 	trace_t tr;
 	int randomnum = irand(1,5);
 
@@ -403,10 +405,43 @@ qboolean Seeker_Fire( void )
 
 	G_PlayEffectID( G_EffectIndex("blaster/muzzle_flash"), muzzle, dir );
 
-	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_PISTOL;
-	missile->s.eFlags |= EF_WP_OPTION_4;
-	missile->damage = 40;
+	if (NPC->originalactivator && NPC->originalactivator->client)
+	{
+		seekerOwner = NPC->originalactivator;
+	}
+	else if (NPC->activator && NPC->activator->client)
+	{
+		seekerOwner = NPC->activator;
+	}
+
+	missile->classname = "bowcaster_alt_proj";
+	missile->s.weapon = WP_BOWCASTER;
+
+	/*
+	 * HI_SEEKER now uses the same WP_BOWCASTER projectile color path as
+	 * HI_EWEB/HI_SENTRY: default and TEAM_BLUE stay green, TEAM_RED uses
+	 * option 6 for orange.  Do not set EF_WP_OPTION_4 here; that was the
+	 * old yellow bryar/electro-looking seeker bolt.
+	 */
+	if (g_gametype.integer >= GT_TEAM && seekerOwner &&
+		seekerOwner->client->sess.sessionTeam == TEAM_RED)
+	{
+		missile->s.eFlags |= (EF_WP_OPTION_2|EF_WP_OPTION_4);
+	}
+
+	missileDamage = (NPC->damage > 0) ? NPC->damage : 40;
+	if (seekerOwner && seekerOwner->client &&
+		seekerOwner->client->skillLevel[SK_SEEKER] == FORCE_LEVEL_3)
+	{
+		missileDamage *= 3;
+	}
+	else if (seekerOwner && seekerOwner->client &&
+		seekerOwner->client->skillLevel[SK_SEEKER] == FORCE_LEVEL_2)
+	{
+		missileDamage *= 2;
+	}
+
+	missile->damage = missileDamage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 
 	//[SeekerItemNPC]
@@ -441,6 +476,8 @@ qboolean Seeker_Fire( void )
 #else
 	vec3_t		dir, enemy_org, muzzle;
 	gentity_t	*missile;
+	gentity_t	*seekerOwner = NULL;
+	int			missileDamage;
 
 	CalcEntitySpot( NPC->enemy, SPOT_HEAD, enemy_org );
 	VectorSubtract( enemy_org, NPC->r.currentOrigin, dir );
@@ -453,10 +490,36 @@ qboolean Seeker_Fire( void )
 
 	G_PlayEffectID( G_EffectIndex("blaster/muzzle_flash"), NPC->r.currentOrigin, dir );
 
-	missile->classname = "bryar_proj";
-	missile->s.weapon = WP_BRYAR_PISTOL;
-	missile->s.eFlags |= EF_WP_OPTION_4;
-	missile->damage = 40;
+	if (NPC->originalactivator && NPC->originalactivator->client)
+	{
+		seekerOwner = NPC->originalactivator;
+	}
+	else if (NPC->activator && NPC->activator->client)
+	{
+		seekerOwner = NPC->activator;
+	}
+
+	missile->classname = "bowcaster_alt_proj";
+	missile->s.weapon = WP_BOWCASTER;
+	if (g_gametype.integer >= GT_TEAM && seekerOwner &&
+		seekerOwner->client->sess.sessionTeam == TEAM_RED)
+	{
+		missile->s.eFlags |= (EF_WP_OPTION_2|EF_WP_OPTION_4);
+	}
+
+	missileDamage = (NPC->damage > 0) ? NPC->damage : 40;
+	if (seekerOwner && seekerOwner->client &&
+		seekerOwner->client->skillLevel[SK_SEEKER] == FORCE_LEVEL_3)
+	{
+		missileDamage *= 3;
+	}
+	else if (seekerOwner && seekerOwner->client &&
+		seekerOwner->client->skillLevel[SK_SEEKER] == FORCE_LEVEL_2)
+	{
+		missileDamage *= 2;
+	}
+
+	missile->damage = missileDamage;
 	missile->dflags = DAMAGE_DEATH_KNOCKBACK;
 	missile->methodOfDeath = MOD_SEEKER;
 	missile->clipmask = MASK_SHOT | CONTENTS_LIGHTSABER;

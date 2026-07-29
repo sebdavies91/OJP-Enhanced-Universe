@@ -1,0 +1,327 @@
+//____________________
+// VIEW MENU 
+//____________________
+{
+	menuDef  
+	{
+		name					"ingame_view"
+		visible					0
+		fullscreen				0
+		outOfBoundsClick							// this closes the window if it gets a click out of the rectangle
+		rect					0 45 640 440
+		focusColor			0.82 0.84 0.88 1
+		style					1
+		border					1
+            descX						320
+		descY					421
+		descScale					1
+		descColor			0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER	
+	// Overall window backdrop
+		itemDef 
+		{
+			name				background_pic
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 3 639 437
+			border				1
+			bordercolor			.33 .33 .33 1
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerconfigtitle
+			style				WINDOW_STYLE_FILLED
+			text				"View"
+			rect				3 6 633 21
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			316
+			textaligny			-2
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
+			font				3
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+		}
+
+		
+/*		itemDef 
+		{
+			name				setup_background
+			style				WINDOW_STYLE_SHADER
+			rect				112 45 245 135	
+			background			"gfx/menus/menu_box1"					// Frame
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+	*/	
+	
+	
+		itemDef 
+		{
+			name				setup_background2
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				195 45 360 330
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			border				1
+			bordercolor			.33 .33 .33 1
+			visible				1
+			decoration
+		}
+
+
+
+
+		itemDef 
+		{
+			name				ThirdPersonRange
+			group				video2
+			type				ITEM_TYPE_SLIDER
+			text				"Third Person Range:"
+			cvarfloat			"cg_thirdPersonRange" 1 -200 200
+			rect				190 95 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			ThirdPersonRange
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				
+			}
+
+			mouseenter 
+			{ 
+				show 			button_glow
+				setitemrect		button_glow	190 95 340 14
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+		itemDef 
+		{
+			name				ThirdPersonPitch
+			group				video2
+			type				ITEM_TYPE_SLIDER
+			text				"Pitch Off Set:"	
+			cvarfloat			"cg_thirdPersonPitchOffset" -125 -125 125
+			rect				190 115 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			ThirdPersonPitch
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				
+			}
+
+			mouseenter 
+			{ 
+				show 			button_glow
+				setitemrect		button_glow	190 115 340 14
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+
+		itemDef 
+		{
+			name				defa
+			group				none
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON 
+			rect				305 240 375 14 
+			text				"Default:" 
+			descText			defa
+			font				4
+			textscale			1
+			textalignx			60
+			textalign			ITEM_ALIGN_RIGHT
+			forecolor			0.82 0.84 0.88 1
+			visible			1  	  
+			mouseEnter 
+			{  
+				show			button_glow
+				setitemrect		button_glow	305 240 375 14
+			}
+			mouseExit 
+			{ 
+				hide			button_glow 
+			}	  	  
+						
+ 	            action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				setcvar			cg_thirdPersonVertOffSet	"16"
+				setcvar			cg_thirdPersonPitchOffSet	"0"
+				setcvar			cg_thirdPersonRange		"80"
+				setcvar			cg_fov	 			"100"
+			      setcvar			cg_thirdPersonAngle		"0"
+
+
+			}
+		}
+
+		
+		itemDef 
+		{
+			name				Fov
+			group				video3
+			type				ITEM_TYPE_SLIDER
+			text				"Fov:"
+			cvarfloat			"cg_fov" 1 0 100
+			rect				190 75 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			Fov
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				
+			}
+
+			mouseenter 
+			{ 
+				show 			button_glow
+				setitemrect		button_glow	190 75 340 14
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+		itemDef 
+		{
+			name				ThirdPersonVert
+			group				video3
+			type				ITEM_TYPE_SLIDER
+			text				"Vert Off Set:"	
+			cvarfloat			"cg_thirdPersonVertOffSet"	1 -52 100
+			rect				190 135 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			ThirdPersonVert
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				
+			}
+
+			mouseenter 
+			{ 
+				show 			button_glow
+				setitemrect		button_glow	190 135 340 14
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+		}
+
+		itemDef 
+		{
+			name				thirdpersonangle
+			group				video2
+			type				ITEM_TYPE_SLIDER
+			text				"Person Angle:"	
+			cvarfloat			"cg_thirdPersonAngle" -180 -180 180
+			rect				190 155 340 14
+	   		textalign			ITEM_ALIGN_RIGHT
+			textalignx			174
+			textaligny			0
+			font 				4
+			textscale 			1
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			descText			thirdpersonangle
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				
+			}
+
+			mouseenter 
+			{ 
+				show 			button_glow
+				setitemrect		button_glow	190 155 340 14
+			}
+			mouseexit 
+			{ 
+				hide			button_glow
+			} 
+			
+		}
+
+	
+
+		// Shared hover glow for text buttons that use dynamic setitemrect.
+		itemDef
+		{
+			name				button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 0 0 0
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+}
+}

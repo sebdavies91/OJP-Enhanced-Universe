@@ -1,4 +1,4 @@
-//
+﻿//
 /*
 =======================================================================
 
@@ -180,6 +180,59 @@ void UI_UpdateClientForcePowers(const char *teamArg)
 
 	gTouchedForce = qfalse;
 }
+
+//[ForceTypeVisibility]
+// Keep Force type rows hidden until their corresponding base Force power has
+// actually been acquired. This mirrors the weapon-type UI behavior below where
+// setsk_pistola/setsk_pistolb etc. depend on SK_PISTOL being owned.
+//
+// This is intentionally separated from UpdateForceUsed because ingame force
+// side/group refreshes can call Menu_ShowItemByName on broad groups later,
+// making individual type rows visible again unless we re-apply this filter.
+typedef struct forceTypeVisibility_s
+{
+	const char *menuName;
+	const char *itemName;
+	int basePower;
+	int typeSkill;
+} forceTypeVisibility_t;
+
+void UI_UpdateForceTypeVisibility(void)
+{
+	static const forceTypeVisibility_t forceTypeVisibility[] =
+	{
+		{ "ingame_playerforce1", "setsk_pusha",        FP_PUSH,        SK_PUSHA },
+		{ "ingame_playerforce1", "setsk_pulla",        FP_PULL,        SK_PULLA },
+		{ "ingame_playerforce2", "setsk_heala",        FP_HEAL,        SK_HEALA },
+		{ "ingame_playerforce2", "setsk_protecta",     FP_PROTECT,     SK_PROTECTA },
+		{ "ingame_playerforce2", "setsk_absorba",      FP_ABSORB,      SK_ABSORBA },
+		{ "ingame_playerforce2", "setsk_telepathya",   FP_TELEPATHY,   SK_TELEPATHYA },
+		{ "ingame_playerforce2", "setsk_stasisa",      FP_TEAM_HEAL,   SK_STASISA },
+		{ "ingame_playerforce2", "setsk_gripa",        FP_GRIP,        SK_GRIPA },
+		{ "ingame_playerforce2", "setsk_lightninga",   FP_LIGHTNING,   SK_LIGHTNINGA },
+		{ "ingame_playerforce2", "setsk_draina",       FP_DRAIN,       SK_DRAINA },
+		{ "ingame_playerforce2", "setsk_ragea",        FP_RAGE,        SK_RAGEA },
+		{ "ingame_playerforce2", "setsk_destructiona", FP_TEAM_FORCE,  SK_DESTRUCTIONA }
+	};
+	int i;
+
+	for (i = 0; i < (int)(sizeof(forceTypeVisibility) / sizeof(forceTypeVisibility[0])); i++)
+	{
+		menuDef_t *menu = Menus_FindByName(forceTypeVisibility[i].menuName);
+		qboolean show = (uiRank[forceTypeVisibility[i].basePower].uiForcePowersRank >= FORCE_LEVEL_1) ? qtrue : qfalse;
+
+		if (!show)
+		{
+			uiRank[NUM_FORCE_POWERS + forceTypeVisibility[i].typeSkill].uiForcePowersRank = 0;
+		}
+
+		if (menu)
+		{
+			Menu_ShowItemByName(menu, forceTypeVisibility[i].itemName, show);
+		}
+	}
+}
+//[/ForceTypeVisibility]
 
 int UI_TranslateFCFIndex(int index)
 {
@@ -394,15 +447,21 @@ void UpdateForceUsed()
 		{
 			uiRank[FP_SABER_OFFENSE].uiForcePowersRank=1;
 		}
-		if (uiRank[FP_SABER_DEFENSE].uiForcePowersRank<1)
+		if (uiRank[FP_SEE].uiForcePowersRank >= FORCE_LEVEL_1
+			&& uiRank[FP_SABER_DEFENSE].uiForcePowersRank<1)
 		{
 			uiRank[FP_SABER_DEFENSE].uiForcePowersRank=1;
+		}
+		else if (uiRank[FP_SEE].uiForcePowersRank <= FORCE_LEVEL_0)
+		{
+			uiRank[FP_SABER_DEFENSE].uiForcePowersRank=0;
+			uiRank[FP_SABERTHROW].uiForcePowersRank=0;
 		}
 
 		if (menu)
 		{
 				Menu_ShowItemByName(menu, "setfp_saberattack", qtrue);
-				Menu_ShowItemByName(menu, "setfp_saberdefend", qtrue);
+				Menu_ShowItemByName(menu, "lightsaberpowers", (uiRank[FP_SEE].uiForcePowersRank >= FORCE_LEVEL_1 && uiRank[FP_SABER_OFFENSE].uiForcePowersRank >= FORCE_LEVEL_1));
 				Menu_ShowItemByName(menu, "setfp_bluestyle", qtrue); // soresu
 				Menu_ShowItemByName(menu, "setfp_redstyle", qtrue);//djem so
 				Menu_ShowItemByName(menu, "setfp_greenstyle", qtrue);//makashi
@@ -411,7 +470,7 @@ void UpdateForceUsed()
 				Menu_ShowItemByName(menu, "setfp_staffstyle", qtrue);//Staff
 
 
-				Menu_ShowItemByName(menu, "setfp_saberthrow", qtrue);
+				Menu_ShowItemByName(menu, "lightsaberpowers", (uiRank[FP_SEE].uiForcePowersRank >= FORCE_LEVEL_1 && uiRank[FP_SABER_OFFENSE].uiForcePowersRank >= FORCE_LEVEL_1));
 				Menu_ShowItemByName(menu, "effectentry", qtrue);
 				Menu_ShowItemByName(menu, "effectfield", qtrue);
 				Menu_ShowItemByName(menu, "nosaber", qfalse);
@@ -434,51 +493,34 @@ void UpdateForceUsed()
 		//bgForcePowerCost[FP_SABER_OFFENSE][FORCE_LEVEL_1] = 1;
 		//bgForcePowerCost[FP_SABER_DEFENSE][FORCE_LEVEL_1] = 1;	
 
-		//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+
+		//Made Force Seeing Level 1 a pre-req to taking real Force powers.
+		// Saber offense and saber styles are physical saber training, so they
+		// remain legal for non-Force users. Saber defense/throw still require FP_SEE.
 		if(uiRank[FP_SEE].uiForcePowersRank <= FORCE_LEVEL_0)
-		{//can't use a saber if we're not Force sensitive!
-			uiRank[FP_SABER_OFFENSE].uiForcePowersRank=0;
-			//[StanceSelection]
-			uiRank[NUM_FORCE_POWERS+SK_BLUESTYLE].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_REDSTYLE].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_PURPLESTYLE].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_GREENSTYLE].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_DUALSTYLE].uiForcePowersRank=0;
-			uiRank[NUM_FORCE_POWERS+SK_STAFFSTYLE].uiForcePowersRank=0;
-			//[/StanceSelection]
+		{//can't use Force-based saber abilities if we aren't Force sensitive.
 			uiRank[FP_SABERTHROW].uiForcePowersRank=0;
 			uiRank[FP_SABER_DEFENSE].uiForcePowersRank=0;
 
-			
-			if (menu  )
+			if (menu)
 			{
-				Menu_ShowItemByName(menu, "setfp_saberattack", qfalse);
+				Menu_ShowItemByName(menu, "setfp_saberattack", qtrue);
 				//[StanceSelection]
-				Menu_ShowItemByName(menu, "setfp_bluestyle", qfalse);
-				Menu_ShowItemByName(menu, "setfp_redstyle", qfalse);
-				Menu_ShowItemByName(menu, "setfp_greenstyle", qfalse);
-				Menu_ShowItemByName(menu, "setfp_purplestyle", qfalse);
-				Menu_ShowItemByName(menu, "setfp_dualstyle", qfalse);
-				Menu_ShowItemByName(menu, "setfp_staffstyle", qfalse);
+				Menu_ShowItemByName(menu, "setfp_bluestyle", qtrue);
+				Menu_ShowItemByName(menu, "setfp_redstyle", qtrue);
+				Menu_ShowItemByName(menu, "setfp_greenstyle", qtrue);
+				Menu_ShowItemByName(menu, "setfp_purplestyle", qtrue);
+				Menu_ShowItemByName(menu, "setfp_dualstyle", qtrue);
+				Menu_ShowItemByName(menu, "setfp_staffstyle", qtrue);
 				//[/StanceSelection]
-				Menu_ShowItemByName(menu, "setfp_saberdefend", qfalse);
-				Menu_ShowItemByName(menu, "setfp_saberthrow", qfalse);
-				Menu_ShowItemByName(menu, "effectentry", qfalse);
-				Menu_ShowItemByName(menu, "effectfield", qfalse);
-				Menu_ShowItemByName(menu, "nosaber", qtrue);
-
-
-				
-			}
-			if ( menu2 )
-			{
-			
-
-
+				Menu_ShowItemByName(menu, "lightsaberpowers", qfalse);
+				Menu_ShowItemByName(menu, "effectentry", qtrue);
+				Menu_ShowItemByName(menu, "effectfield", qtrue);
+				Menu_ShowItemByName(menu, "nosaber", qfalse);
 			}
 		}
 		// Also, check if there is no saberattack.  If there isn't, there had better not be any defense or throw!
-		else if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank<1)
+		if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank<1)
 		//if (uiRank[FP_SABER_OFFENSE].uiForcePowersRank<1)
 		{
 			Menu_ShowItemByName(menu, "setfp_saberattack", qtrue);
@@ -503,8 +545,7 @@ void UpdateForceUsed()
 				Menu_ShowItemByName(menu, "setfp_dualstyle", qfalse);
 				Menu_ShowItemByName(menu, "setfp_staffstyle", qfalse);
 				//[/StanceSelection]
-				Menu_ShowItemByName(menu, "setfp_saberdefend", qfalse);
-				Menu_ShowItemByName(menu, "setfp_saberthrow", qfalse);
+				Menu_ShowItemByName(menu, "lightsaberpowers", qfalse);
 				Menu_ShowItemByName(menu, "effectentry", qfalse);
 				Menu_ShowItemByName(menu, "effectfield", qfalse);
 				Menu_ShowItemByName(menu, "nosaber", qtrue);
@@ -524,7 +565,7 @@ void UpdateForceUsed()
 		{
 			if (menu  )
 			{
-				Menu_ShowItemByName(menu, "setfp_saberdefend", qtrue);
+				Menu_ShowItemByName(menu, "lightsaberpowers", (uiRank[FP_SEE].uiForcePowersRank >= FORCE_LEVEL_1 && uiRank[FP_SABER_OFFENSE].uiForcePowersRank >= FORCE_LEVEL_1));
 				Menu_ShowItemByName(menu, "setfp_bluestyle", qtrue); // soresu
 				Menu_ShowItemByName(menu, "setfp_redstyle", qtrue);//djem so
 				Menu_ShowItemByName(menu, "setfp_greenstyle", qtrue);//makashi
@@ -533,7 +574,7 @@ void UpdateForceUsed()
 				Menu_ShowItemByName(menu, "setfp_staffstyle", qtrue);//Staff
 
 
-				Menu_ShowItemByName(menu, "setfp_saberthrow", qtrue);
+				Menu_ShowItemByName(menu, "lightsaberpowers", (uiRank[FP_SEE].uiForcePowersRank >= FORCE_LEVEL_1 && uiRank[FP_SABER_OFFENSE].uiForcePowersRank >= FORCE_LEVEL_1));
 				Menu_ShowItemByName(menu, "effectentry", qtrue);
 				Menu_ShowItemByName(menu, "effectfield", qtrue);
 				Menu_ShowItemByName(menu, "nosaber", qfalse);
@@ -654,7 +695,7 @@ void UpdateForceUsed()
 	//[ExpSys]
 	menu = Menus_FindByName("ingame_playerforce1");
 	menu2 = Menus_FindByName("ingame_playerforce2");
-	//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+	//Made Force Seeing Level 1 a pre-req to taking real Force powers; saber offense/styles are physical saber training.
 	if(uiRank[FP_SEE].uiForcePowersRank <= FORCE_LEVEL_0)
 	{//can't use the force if we aren't Force sensitive.
 		int i;
@@ -662,6 +703,8 @@ void UpdateForceUsed()
 		{
 			uiRank[i].uiForcePowersRank = 0;
 		}
+		uiRank[FP_SABER_DEFENSE].uiForcePowersRank = 0;
+		uiRank[FP_SABERTHROW].uiForcePowersRank = 0;
 			uiRank[NUM_FORCE_POWERS+SK_PUSHA].uiForcePowersRank=0;
 			uiRank[NUM_FORCE_POWERS+SK_PULLA].uiForcePowersRank=0;
 			uiRank[NUM_FORCE_POWERS+SK_HEALA].uiForcePowersRank=0;
@@ -679,6 +722,7 @@ void UpdateForceUsed()
 		{
 			Menu_ShowItemByName(menu, "notforcesensitive", qtrue);
 			Menu_ShowItemByName(menu, "neutralpowers", qfalse);
+			Menu_ShowItemByName(menu, "lightsaberpowers", qfalse);
 
 			
 			
@@ -696,6 +740,7 @@ void UpdateForceUsed()
 		{
 			Menu_ShowItemByName(menu, "notforcesensitive", qfalse);
 			Menu_ShowItemByName(menu, "neutralpowers", qtrue);
+			Menu_ShowItemByName(menu, "lightsaberpowers", (uiRank[FP_SEE].uiForcePowersRank >= FORCE_LEVEL_1 && uiRank[FP_SABER_OFFENSE].uiForcePowersRank >= FORCE_LEVEL_1));
 
 			
 
@@ -711,7 +756,11 @@ void UpdateForceUsed()
 	
 	
 	
-	if(uiRank[FP_PUSH].uiForcePowersRank<FORCE_LEVEL_1)
+	//[ForceTypeVisibility]
+	// Force type rows follow the exact same pattern as weapon type rows below:
+	// if the base power is not acquired, clear the dependent type rank and hide
+	// all menu items with that name. If the base power is acquired, show them.
+	if(uiRank[FP_PUSH].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_PUSHA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce1");
@@ -725,7 +774,7 @@ void UpdateForceUsed()
 		Menu_ShowItemByName(menu, "setsk_pusha", qtrue);
 	}
 
-	if(uiRank[FP_PULL].uiForcePowersRank<FORCE_LEVEL_1)
+	if(uiRank[FP_PULL].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_PULLA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce1");
@@ -738,9 +787,8 @@ void UpdateForceUsed()
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_pulla", qtrue);
 	}
-	
-	
-	if(uiRank[FP_HEAL].uiForcePowersRank<FORCE_LEVEL_1)
+
+	if(uiRank[FP_HEAL].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_HEALA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -753,22 +801,8 @@ void UpdateForceUsed()
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_heala", qtrue);
 	}
-	
-	if(uiRank[FP_ABSORB].uiForcePowersRank<FORCE_LEVEL_1)
-	{
-		uiRank[NUM_FORCE_POWERS+SK_ABSORBA].uiForcePowersRank = 0;
-		menu = Menus_FindByName("ingame_playerforce2");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_absorba", qfalse);
-	}
-	else
-	{
-		menu = Menus_FindByName("ingame_playerforce2");
-		if(menu)
-		Menu_ShowItemByName(menu, "setsk_absorba", qtrue);
-	}	
-	
-	if(uiRank[FP_PROTECT].uiForcePowersRank<FORCE_LEVEL_1)
+
+	if(uiRank[FP_PROTECT].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_PROTECTA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -780,9 +814,23 @@ void UpdateForceUsed()
 		menu = Menus_FindByName("ingame_playerforce2");
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_protecta", qtrue);
-	}		
-	
-	if(uiRank[FP_TELEPATHY].uiForcePowersRank<FORCE_LEVEL_1)
+	}
+
+	if(uiRank[FP_ABSORB].uiForcePowersRank < FORCE_LEVEL_1)
+	{
+		uiRank[NUM_FORCE_POWERS+SK_ABSORBA].uiForcePowersRank = 0;
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_absorba", qfalse);
+	}
+	else
+	{
+		menu = Menus_FindByName("ingame_playerforce2");
+		if(menu)
+		Menu_ShowItemByName(menu, "setsk_absorba", qtrue);
+	}
+
+	if(uiRank[FP_TELEPATHY].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_TELEPATHYA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -794,9 +842,9 @@ void UpdateForceUsed()
 		menu = Menus_FindByName("ingame_playerforce2");
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_telepathya", qtrue);
-	}	
+	}
 
-	if(uiRank[FP_TEAM_HEAL].uiForcePowersRank<FORCE_LEVEL_1)
+	if(uiRank[FP_TEAM_HEAL].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_STASISA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -810,7 +858,7 @@ void UpdateForceUsed()
 		Menu_ShowItemByName(menu, "setsk_stasisa", qtrue);
 	}
 
-	if(uiRank[FP_GRIP].uiForcePowersRank<FORCE_LEVEL_1)
+	if(uiRank[FP_GRIP].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_GRIPA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -822,9 +870,9 @@ void UpdateForceUsed()
 		menu = Menus_FindByName("ingame_playerforce2");
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_gripa", qtrue);
-	}	
-	
-	if(uiRank[FP_LIGHTNING].uiForcePowersRank<FORCE_LEVEL_1)
+	}
+
+	if(uiRank[FP_LIGHTNING].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_LIGHTNINGA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -837,8 +885,8 @@ void UpdateForceUsed()
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_lightninga", qtrue);
 	}
-	
-	if(uiRank[FP_DRAIN].uiForcePowersRank<FORCE_LEVEL_1)
+
+	if(uiRank[FP_DRAIN].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_DRAINA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -851,8 +899,8 @@ void UpdateForceUsed()
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_draina", qtrue);
 	}
-	
-	if(uiRank[FP_RAGE].uiForcePowersRank<FORCE_LEVEL_1)
+
+	if(uiRank[FP_RAGE].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_RAGEA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -865,8 +913,8 @@ void UpdateForceUsed()
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_ragea", qtrue);
 	}
-	
-	if(uiRank[FP_TEAM_FORCE].uiForcePowersRank<FORCE_LEVEL_1)
+
+	if(uiRank[FP_TEAM_FORCE].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_DESTRUCTIONA].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce2");
@@ -878,17 +926,9 @@ void UpdateForceUsed()
 		menu = Menus_FindByName("ingame_playerforce2");
 		if(menu)
 		Menu_ShowItemByName(menu, "setsk_destructiona", qtrue);
-	}					
+	}
+	//[/ForceTypeVisibility]
 
-
-
-
-
-
-
-
-
-	
 	if(uiRank[NUM_FORCE_POWERS+SK_OLD].uiForcePowersRank < FORCE_LEVEL_1)
 	{
 		uiRank[NUM_FORCE_POWERS+SK_OLDA].uiForcePowersRank = 0;
@@ -1959,14 +1999,14 @@ void UpdateForceUsed()
 		uiRank[FP_SABER_DEFENSE].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce1");
 		if(menu)
-		Menu_ShowItemByName(menu, "setfp_saberdefend", qfalse);		
+		Menu_ShowItemByName(menu, "lightsaberpowers", qfalse);		
 
 
 
 		uiRank[FP_SABERTHROW].uiForcePowersRank = 0;
 		menu = Menus_FindByName("ingame_playerforce1");
 		if(menu)
-		Menu_ShowItemByName(menu, "setfp_saberthrow", qfalse);	
+		Menu_ShowItemByName(menu, "lightsaberpowers", qfalse);	
 
 
 
@@ -2302,10 +2342,10 @@ void UpdateForceUsed()
 		}		
 	}
 	//menu = Menus_FindByName("ingame_playergunnery1");
-	//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+	//Made Force Seeing Level 1 a pre-req to taking real Force powers; saber offense/styles are physical saber training.
 
 	/*
-	if(uiMaxRank <= 100 && uiRank[FP_SEE].uiForcePowersRank && (int)(trap_Cvar_VariableValue("ojp_trueBalance")) == 1)
+	if(uiMaxRank <= 100 && uiRank[FP_SEE].uiForcePowersRank && (int)(trap_Cvar_VariableValue("obp_trueBalance")) == 1)
 	{
 		if(uiMaxRank <= 75)
 		{
@@ -2352,7 +2392,7 @@ void UpdateForceUsed()
 			}
 		}
 	}
-	else if ((int)(trap_Cvar_VariableValue("ojp_trueBalance") == 1))
+	else if ((int)(trap_Cvar_VariableValue("obp_trueBalance") == 1))
 	{
 			menu = Menus_FindByName("ingame_playerforce");
 			if(menu && uiRank[FP_SEE].uiForcePowersRank)
@@ -2994,19 +3034,14 @@ qboolean UI_ForcePowerRank_HandleKey(int flags, float *special, int key, int num
 		}
 
 		//[ExpSys]
-		//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
-		//[StanceSelection]
+		//Made Force Seeing Level 1 a pre-req to taking real Force powers.
+		// Saber offense and saber styles are physical saber training, so they
+		// can be bought without FP_SEE. Saber defense/throw still require it.
 		if (forcepower != FP_SEE 
-			&& (forcepower < NUM_FORCE_POWERS 
-				|| forcepower == NUM_FORCE_POWERS+SK_BLUESTYLE
-				|| forcepower == NUM_FORCE_POWERS+SK_REDSTYLE
-				|| forcepower == NUM_FORCE_POWERS+SK_PURPLESTYLE
-				|| forcepower == NUM_FORCE_POWERS+SK_GREENSTYLE
-				|| forcepower == NUM_FORCE_POWERS+SK_DUALSTYLE
-				|| forcepower == NUM_FORCE_POWERS+SK_STAFFSTYLE)
-			)
-		//if (forcepower < NUM_FORCE_POWERS && forcepower != FP_SEE)
-		//[/StanceSelection]
+			&& forcepower != FP_SABER_OFFENSE
+			&& !(forcepower >= NUM_FORCE_POWERS+SK_BLUESTYLE
+				&& forcepower <= NUM_FORCE_POWERS+SK_STAFFSTYLE)
+			&& forcepower < NUM_FORCE_POWERS)
 		{//force powers can't be bought without being force sensitive
 			if (uiRank[FP_SEE].uiForcePowersRank < 1)
 			{

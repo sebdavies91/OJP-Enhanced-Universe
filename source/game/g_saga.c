@@ -56,6 +56,9 @@ char gObjectiveCfgStr[1024];
 //static char gObjectiveCfgStr[1024];
 //[/TABBot]
 
+static int gSiegeNextObjectiveHintTime = 0;
+static char gSiegeLastObjectiveHintCfg[sizeof(gObjectiveCfgStr)];
+
 //go through all classes on a team and register their
 //weapons and items for precaching.
 void G_SiegeRegisterWeaponsAndHoldables(int team)
@@ -211,13 +214,29 @@ memset(objecStr, 0, 8192);
 
     if (BG_SiegeGetValueGroup(siege_info, "Teams", teams))
     {
+        char defaultTeam1[512];
+        char defaultTeam2[512];
+
+        defaultTeam1[0] = '\0';
+        defaultTeam2[0] = '\0';
+        BG_SiegeGetPairedValue(teams, "team1", defaultTeam1);
+        BG_SiegeGetPairedValue(teams, "team2", defaultTeam2);
+
         if (g_siegeTeam1.string[0] && Q_stricmp(g_siegeTeam1.string, "none"))
         {
             Q_strncpyz(team1, g_siegeTeam1.string, sizeof(team1));
         }
         else
         {
-            BG_SiegeGetPairedValue(teams, "team1", team1);
+            Q_strncpyz(team1, defaultTeam1, sizeof(team1));
+        }
+
+        /* OBP: g_siegeTeam1/g_siegeTeam2 can persist from another Siege map.
+         * If the requested team block does not exist in this map's .siege
+         * file, fall back to the default block from the Teams group. */
+        if (!BG_SiegeGetValueGroup(siege_info, team1, gParseObjectives) && defaultTeam1[0])
+        {
+            Q_strncpyz(team1, defaultTeam1, sizeof(team1));
         }
 
         if (g_siegeTeam2.string[0] && Q_stricmp(g_siegeTeam2.string, "none"))
@@ -226,7 +245,12 @@ memset(objecStr, 0, 8192);
         }
         else
         {
-            BG_SiegeGetPairedValue(teams, "team2", team2);
+            Q_strncpyz(team2, defaultTeam2, sizeof(team2));
+        }
+
+        if (!BG_SiegeGetValueGroup(siege_info, team2, gParseObjectives) && defaultTeam2[0])
+        {
+            Q_strncpyz(team2, defaultTeam2, sizeof(team2));
         }
     }
     else
@@ -393,6 +417,9 @@ memset(objecStr, 0, 8192);
     // Set the actual config string
     trap_SetConfigstring(CS_SIEGE_OBJECTIVES, gObjectiveCfgStr);
 
+    gSiegeLastObjectiveHintCfg[0] = '\0';
+    gSiegeNextObjectiveHintTime = level.time + 7000;
+
     // Precache saber data for classes that use sabers on both teams
     BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM1);
     BG_PrecacheSabersForSiegeTeam(SIEGETEAM_TEAM2);
@@ -524,6 +551,436 @@ qboolean G_SiegeGetCompletionStatus(int team, int objective)
 	}
 
 	return qfalse;
+}
+
+
+static qboolean G_SiegeObjectiveDependenciesMet(int team, int objective)
+{
+	int i;
+
+	if (objective <= 0 || objective > MAX_OBJECTIVES)
+	{
+		return qfalse;
+	}
+
+	for (i = 0; i < MAX_OBJECTIVEDEPENDANCY; i++)
+	{
+		int dep = ObjectiveDependancy[objective - 1][i];
+
+		if (!dep)
+		{
+			continue;
+		}
+
+		if (!G_SiegeGetCompletionStatus(team, dep))
+		{
+			return qfalse;
+		}
+	}
+
+	return qtrue;
+}
+
+static qboolean G_SiegeObjectiveExists(int team, int objective)
+{
+	char *teamName;
+	char objName[64];
+	char *teamObjectives;
+	char *objectiveData;
+	qboolean result = qfalse;
+
+	if (team == SIEGETEAM_TEAM1)
+	{
+		teamName = team1;
+	}
+	else if (team == SIEGETEAM_TEAM2)
+	{
+		teamName = team2;
+	}
+	else
+	{
+		return qfalse;
+	}
+
+	teamObjectives = (char *)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);
+	objectiveData = (char *)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);
+	if (!teamObjectives || !objectiveData)
+	{
+		if (teamObjectives)
+		{
+			BG_TempFree(MAX_SIEGE_INFO_SIZE);
+		}
+		if (objectiveData)
+		{
+			BG_TempFree(MAX_SIEGE_INFO_SIZE);
+		}
+		return qfalse;
+	}
+
+	Com_sprintf(objName, sizeof(objName), "Objective%i", objective);
+	if (BG_SiegeGetValueGroup(siege_info, teamName, teamObjectives) &&
+		BG_SiegeGetValueGroup(teamObjectives, objName, objectiveData))
+	{
+		result = qtrue;
+	}
+
+	BG_TempFree(MAX_SIEGE_INFO_SIZE);
+	BG_TempFree(MAX_SIEGE_INFO_SIZE);
+	return result;
+}
+
+static qboolean G_SiegeFindCurrentObjective(int team, int *objective)
+{
+	int i;
+
+	if (!objective)
+	{
+		return qfalse;
+	}
+
+	for (i = 1; i <= MAX_OBJECTIVES; i++)
+	{
+		if (!G_SiegeObjectiveExists(team, i))
+		{
+			break;
+		}
+
+		if (!G_SiegeGetCompletionStatus(team, i) &&
+			G_SiegeObjectiveDependenciesMet(team, i))
+		{
+			*objective = i;
+			return qtrue;
+		}
+	}
+
+	return qfalse;
+}
+
+static void G_SiegeSanitizeMessage(char *dst, int dstSize, const char *src)
+{
+	int i = 0;
+	int o = 0;
+
+	if (!dst || dstSize <= 0)
+	{
+		return;
+	}
+
+	dst[0] = '\0';
+
+	if (!src)
+	{
+		return;
+	}
+
+	while (src[i] && o < dstSize - 1)
+	{
+		if (src[i] == '"')
+		{
+			dst[o++] = '\'';
+		}
+		else if (src[i] == '\n' || src[i] == '\r')
+		{
+			dst[o++] = ' ';
+		}
+		else
+		{
+			dst[o++] = src[i];
+		}
+		i++;
+	}
+
+	dst[o] = '\0';
+}
+
+static qboolean G_SiegeGetObjectiveDescription(int team, int objective, char *buffer, int bufferSize)
+{
+	char *teamName;
+	char objName[64];
+	char *teamObjectives;
+	char *objectiveData;
+	char raw[MAX_STRING_CHARS];
+	qboolean result = qfalse;
+
+	if (!buffer || bufferSize <= 0)
+	{
+		return qfalse;
+	}
+
+	buffer[0] = '\0';
+
+	if (team == SIEGETEAM_TEAM1)
+	{
+		teamName = team1;
+	}
+	else if (team == SIEGETEAM_TEAM2)
+	{
+		teamName = team2;
+	}
+	else
+	{
+		return qfalse;
+	}
+
+	teamObjectives = (char *)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);
+	objectiveData = (char *)BG_TempAlloc(MAX_SIEGE_INFO_SIZE);
+	if (!teamObjectives || !objectiveData)
+	{
+		if (teamObjectives)
+		{
+			BG_TempFree(MAX_SIEGE_INFO_SIZE);
+		}
+		if (objectiveData)
+		{
+			BG_TempFree(MAX_SIEGE_INFO_SIZE);
+		}
+		return qfalse;
+	}
+
+	Com_sprintf(objName, sizeof(objName), "Objective%i", objective);
+	if (BG_SiegeGetValueGroup(siege_info, teamName, teamObjectives) &&
+		BG_SiegeGetValueGroup(teamObjectives, objName, objectiveData))
+	{
+		if (BG_SiegeGetPairedValue(objectiveData, "objdesc", raw) ||
+			BG_SiegeGetPairedValue(objectiveData, "briefing", raw))
+		{
+			G_SiegeSanitizeMessage(buffer, bufferSize, raw);
+			result = qtrue;
+		}
+	}
+
+	BG_TempFree(MAX_SIEGE_INFO_SIZE);
+	BG_TempFree(MAX_SIEGE_INFO_SIZE);
+	return result;
+}
+
+static const char *G_SiegeClassRoleName(const siegeClass_t *scl)
+{
+	if (!scl)
+	{
+		return "class";
+	}
+
+	switch (scl->playerClass)
+	{
+	case SPC_INFANTRY:
+		return "infantry";
+	case SPC_VANGUARD:
+		return "vanguard";
+	case SPC_SUPPORT:
+		return "support";
+	case SPC_JEDI:
+		return "Jedi";
+	case SPC_DEMOLITIONIST:
+		return "demolition";
+	case SPC_HEAVY_WEAPONS:
+		return "heavy weapons";
+	default:
+		return "class";
+	}
+}
+
+static const char *G_SiegeClassObjectiveAdvice(const siegeClass_t *scl, int team)
+{
+	if (!scl)
+	{
+		return "Choose a valid Siege class for the current objective.";
+	}
+
+	switch (scl->playerClass)
+	{
+	case SPC_SUPPORT:
+		return "support/escort teammates.";
+	case SPC_DEMOLITIONIST:
+		return "handle demolition targets.";
+	case SPC_HEAVY_WEAPONS:
+		return "clear defenders.";
+	case SPC_JEDI:
+		return "protect objective players.";
+	case SPC_VANGUARD:
+		return "lead/escort the push.";
+	case SPC_INFANTRY:
+		return "fight near the objective.";
+	default:
+		break;
+	}
+
+	if (team == SIEGETEAM_TEAM1 || team == SIEGETEAM_TEAM2)
+	{
+		return "stay with your team.";
+	}
+
+	return "help your team.";
+}
+
+static void G_SiegeBuildClassObjectiveHint(gentity_t *ent, char *buffer, int bufferSize)
+{
+	siegeClass_t *scl = NULL;
+
+	if (!buffer || bufferSize <= 0)
+	{
+		return;
+	}
+
+	buffer[0] = '\0';
+
+	if (!g_siegeClassObjectiveHints.integer || !ent || !ent->client)
+	{
+		return;
+	}
+
+	if (ent->client->siegeClass >= 0 && ent->client->siegeClass < bgNumSiegeClasses)
+	{
+		scl = &bgSiegeClasses[ent->client->siegeClass];
+	}
+	else if (ent->client->sess.siegeClass[0] && Q_stricmp(ent->client->sess.siegeClass, "none"))
+	{
+		int classIndex = BG_SiegeFindClassIndexByName(ent->client->sess.siegeClass);
+
+		if (classIndex >= 0 && classIndex < bgNumSiegeClasses)
+		{
+			scl = &bgSiegeClasses[classIndex];
+		}
+	}
+
+	if (!scl)
+	{
+		return;
+	}
+
+	Com_sprintf(buffer, bufferSize, "\nClass: %s - %s",
+		G_SiegeClassRoleName(scl),
+		G_SiegeClassObjectiveAdvice(scl, ent->client->sess.sessionTeam));
+}
+
+void G_SiegeSendObjectiveHint(gentity_t *ent, qboolean force)
+{
+	int objective = 0;
+	char objectiveText[MAX_STRING_CHARS];
+	char objectiveShort[128];
+	char hint[MAX_STRING_CHARS];
+	char classHint[MAX_STRING_CHARS];
+	int team;
+
+	if (!g_siegeObjectiveHints.integer || g_gametype.integer != GT_SIEGE)
+	{
+		return;
+	}
+
+	if (!ent || !ent->inuse || !ent->client || (ent->r.svFlags & SVF_BOT))
+	{
+		return;
+	}
+
+	team = ent->client->sess.sessionTeam;
+	if (team != SIEGETEAM_TEAM1 && team != SIEGETEAM_TEAM2)
+	{
+		return;
+	}
+
+	if (!force && g_siegeObjectiveHints.integer < 2)
+	{
+		return;
+	}
+
+	if (G_SiegeFindCurrentObjective(team, &objective))
+	{
+		if (!G_SiegeGetObjectiveDescription(team, objective, objectiveText, sizeof(objectiveText)) || !objectiveText[0])
+		{
+			Com_sprintf(objectiveText, sizeof(objectiveText), "Objective %i", objective);
+		}
+	}
+	else
+	{
+		// Some Siege scripts do not expose a clean active objective through the
+		// parsed objective dependency table at the exact moment the first player
+		// spawns.  Still send a useful, visible hint instead of failing silently.
+		Com_sprintf(objectiveText, sizeof(objectiveText),
+			"Check briefing/objectives.");
+
+		if (g_debugSiegeObjectives.integer)
+		{
+			G_Printf("Siege objective hint: no active objective found for %s on team %i; using fallback hint\n",
+				ent->client->pers.netname, team);
+		}
+	}
+
+	if (strlen(objectiveText) > 72)
+	{
+		Com_sprintf(objectiveShort, sizeof(objectiveShort), "%.72s...", objectiveText);
+	}
+	else
+	{
+		Q_strncpyz(objectiveShort, objectiveText, sizeof(objectiveShort));
+	}
+
+	G_SiegeBuildClassObjectiveHint(ent, classHint, sizeof(classHint));
+	Com_sprintf(hint, sizeof(hint), "Siege objective: %s%s", objectiveShort, classHint);
+
+	// Keep this short enough for centerprint.  Console/debug output is only
+	// emitted when explicitly requested, to avoid spam.
+	trap_SendServerCommand(ent - g_entities, va("cp \"%s\n\"", hint));
+	if (g_debugSiegeObjectives.integer)
+	{
+		trap_SendServerCommand(ent - g_entities, va("print \"%s\n\"", hint));
+	}
+}
+
+static void G_SiegeBroadcastObjectiveHints(qboolean force)
+{
+	int i;
+
+	for (i = 0; i < level.maxclients; i++)
+	{
+		G_SiegeSendObjectiveHint(&g_entities[i], force);
+	}
+}
+
+void G_SiegeObjectiveHintsThink(void)
+{
+	int interval;
+	qboolean objectiveStateChanged = qfalse;
+
+	if (!g_siegeObjectiveHints.integer || g_gametype.integer != GT_SIEGE)
+	{
+		return;
+	}
+
+	if (Q_stricmp(gSiegeLastObjectiveHintCfg, gObjectiveCfgStr))
+	{
+		objectiveStateChanged = qtrue;
+		Q_strncpyz(gSiegeLastObjectiveHintCfg, gObjectiveCfgStr, sizeof(gSiegeLastObjectiveHintCfg));
+	}
+
+	interval = g_siegeObjectiveHintInterval.integer;
+	if (interval < 10)
+	{
+		interval = 10;
+	}
+	else if (interval > 120)
+	{
+		interval = 120;
+	}
+
+	if (objectiveStateChanged)
+	{
+		if (g_debugSiegeObjectives.integer)
+		{
+			G_Printf("Siege objective state changed: %s\n", gObjectiveCfgStr);
+		}
+
+		G_SiegeBroadcastObjectiveHints(qtrue);
+		gSiegeNextObjectiveHintTime = level.time + interval * 1000;
+		return;
+	}
+
+	// g_siegeObjectiveHints 1 = spawn/objective-change hints only.
+	// g_siegeObjectiveHints 2 = also repeat periodically.
+	if (g_siegeObjectiveHints.integer >= 2 && level.time >= gSiegeNextObjectiveHintTime)
+	{
+		G_SiegeBroadcastObjectiveHints(qtrue);
+		gSiegeNextObjectiveHintTime = level.time + interval * 1000;
+	}
 }
 
 void UseSiegeTarget(gentity_t *other, gentity_t *en, char *target)
@@ -841,6 +1298,16 @@ void SetTeamQuick(gentity_t *ent, int team, qboolean doBegin)
 	if (g_gametype.integer == GT_SIEGE)
 	{
 		G_ValidateSiegeClassForTeam(ent, team);
+
+		// Starting the Siege round here makes the round active before the
+		// successful team move/ClientBegin spawn path completes.  This avoids the
+		// visible spawned-then-round-start delay when the first player joins an
+		// otherwise empty Siege match.
+		if ((team == TEAM_RED || team == TEAM_BLUE) &&
+			!gSiegeRoundBegun && !gSiegeRoundEnded)
+		{
+			SiegeStartRoundNow(ent->s.number);
+		}
 	}
 
 	ent->client->sess.sessionTeam = team;
@@ -885,6 +1352,24 @@ void SiegeRespawn(gentity_t *ent)
 {
 	gentity_t *tent;
 
+	if (!ent || !ent->client)
+	{
+		return;
+	}
+
+	// If Siege is configured to allow a player to join before the other team
+	// has members, begin the round immediately when the first real spawn is
+	// requested.  Do this here instead of waiting for SiegeCheckTimers() so the
+	// player does not enter a spawned-but-pre-round state for a frame or more.
+	if (g_gametype.integer == GT_SIEGE &&
+		ent && ent->client &&
+		!gSiegeRoundBegun && !gSiegeRoundEnded &&
+		(ent->client->sess.siegeDesiredTeam == TEAM_RED ||
+		 ent->client->sess.siegeDesiredTeam == TEAM_BLUE))
+	{
+		SiegeStartRoundNow(ent->s.number);
+	}
+
 	if (ent->client->sess.sessionTeam != ent->client->sess.siegeDesiredTeam)
 	{
 		SetTeamQuick(ent, ent->client->sess.siegeDesiredTeam, qtrue);
@@ -898,10 +1383,54 @@ void SiegeRespawn(gentity_t *ent)
 	}
 }
 
-void SiegeBeginRound(int entNum)
-{ //entNum is just used as something to fire targets from.
+static void SiegeInitRoundCountdowns(void)
+{
+	if (g_siegeTeamSwitch.integer &&
+		g_siegePersistant.beatingTime)
+	{
+		gImperialCountdown = level.time + g_siegePersistant.lastTime;
+		gRebelCountdown = level.time + g_siegePersistant.lastTime;
+	}
+	else
+	{
+		gImperialCountdown = level.time + imperial_time_limit;
+		gRebelCountdown = level.time + rebel_time_limit;
+	}
+}
+
+static void SiegeBeginRoundTasks(int entNum)
+{
 	char targname[1024];
 
+	//Now check if there's something to fire off at the round start, if so do it.
+	if (BG_SiegeGetPairedValue(siege_info, "roundbegin_target", targname))
+	{
+		if (targname[0])
+		{
+			G_UseTargets2(&g_entities[entNum], &g_entities[entNum], targname);
+		}
+	}
+
+	trap_SetConfigstring(CS_SIEGE_STATE, va("0|%i", level.time)); //we're ready to g0g0g0
+}
+
+void SiegeStartRoundNow(int entNum)
+{
+	if (g_gametype.integer != GT_SIEGE ||
+		gSiegeRoundBegun ||
+		gSiegeRoundEnded)
+	{
+		return;
+	}
+
+	gSiegeRoundBegun = qtrue;
+	gSiegeBeginTime = level.time;
+	SiegeInitRoundCountdowns();
+	SiegeBeginRoundTasks(entNum);
+}
+
+void SiegeBeginRound(int entNum)
+{ //entNum is just used as something to fire targets from.
 	if (!g_preroundState)
 	{ //if players are not ingame on round start then respawn them now
 		int i = 0;
@@ -938,16 +1467,7 @@ void SiegeBeginRound(int entNum)
 		}
 	}
 
-	//Now check if there's something to fire off at the round start, if so do it.
-	if (BG_SiegeGetPairedValue(siege_info, "roundbegin_target", targname))
-	{
-		if (targname[0])
-		{
-			G_UseTargets2(&g_entities[entNum], &g_entities[entNum], targname);
-		}
-	}
-
-	trap_SetConfigstring(CS_SIEGE_STATE, va("0|%i", level.time)); //we're ready to g0g0g0
+	SiegeBeginRoundTasks(entNum);
 }
 
 void SiegeCheckTimers(void)
@@ -1004,17 +1524,7 @@ void SiegeCheckTimers(void)
 			i++;
 		}
 
-		if (g_siegeTeamSwitch.integer &&
-			g_siegePersistant.beatingTime)
-		{
-			gImperialCountdown = level.time + g_siegePersistant.lastTime;
-			gRebelCountdown = level.time + g_siegePersistant.lastTime;
-		}
-		else
-		{
-			gImperialCountdown = level.time + imperial_time_limit;
-			gRebelCountdown = level.time + rebel_time_limit;
-		}
+		SiegeInitRoundCountdowns();
 	}
 
 	if (imperial_time_limit)
@@ -1039,10 +1549,10 @@ void SiegeCheckTimers(void)
 
 	if (!gSiegeRoundBegun)
 	{
-		if (!numTeam1 || !numTeam2)
-		{ //don't have people on both teams yet.
+		if (!numTeam1 && !numTeam2)
+		{ //don't have any joined players yet.
 			gSiegeBeginTime = level.time + SIEGE_ROUND_BEGIN_TIME;
-			trap_SetConfigstring(CS_SIEGE_STATE, "1"); //"waiting for players on both teams"
+			trap_SetConfigstring(CS_SIEGE_STATE, "1"); //"waiting for players"
 		}
 		else if (gSiegeBeginTime < level.time)
 		{ //mark the round as having begun

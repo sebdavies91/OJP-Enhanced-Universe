@@ -113,6 +113,7 @@ set(SDKGAMESOURCES
 	"${SRCDir}/game/g_weapon.c"
 
 	"${SRCDir}/game/NPC.c"
+	"${SRCDir}/game/NPC_AI_BobaFett.c"
 	"${SRCDir}/game/NPC_AI_Animal.c"
     "${SRCDir}/game/NPC_AI_AssassinDroid.c"
     "${SRCDir}/game/NPC_AI_Atst.c"

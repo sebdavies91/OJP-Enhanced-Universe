@@ -47,7 +47,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="..\..\ojpenhanced\jampgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\jampgamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_game.def"
@@ -122,12 +122,12 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="..\..\ojpenhanced\jampgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\jampgamex86.dll"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_game.def"
 				GenerateDebugInformation="TRUE"
-				ProgramDatabaseFile="..\..\ojpenhanced\jampgamex86.pdb"
+				ProgramDatabaseFile="..\..\openbattlefrontproject\jampgamex86.pdb"
 				GenerateMapFile="TRUE"
 				MapFileName=".\../Final/jampgamex86.map"
 				MapLines="TRUE"
@@ -194,7 +194,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="..\..\ojpenhanced\jampgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\jampgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_game.def"
@@ -262,7 +262,7 @@
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
 				AdditionalDependencies="winmm.lib"
-				OutputFile="..\..\ojpenhanced\jampgamex86.dll"
+				OutputFile="..\..\openbattlefrontproject\jampgamex86.dll"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
 				ModuleDefinitionFile=".\JK2_game.def"
@@ -508,7 +508,10 @@
 				RelativePath=".\g_weapon.c">
 			</File>
 			<File
-				RelativePath=".\NPC.c">
+				RelativePath=".\NPC.c"
+			/>
+			<File
+				RelativePath=".\NPC_AI_BobaFett.c">
 			</File>
 			<File
 				RelativePath="NPC_AI_Animal.c">
@@ -770,7 +773,7 @@
 				RelativePath=".\match.h">
 			</File>
 			<File
-				RelativePath="..\..\ojpenhanced\ui\jamp\menudef.h">
+				RelativePath="..\ui\jamp\menudef.h">
 			</File>
 			<File
 				RelativePath=".\npc_headers.h">

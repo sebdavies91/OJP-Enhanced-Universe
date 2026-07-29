@@ -1,4 +1,4 @@
-//----------------------------------------------------------------------------------------------
+﻿//----------------------------------------------------------------------------------------------
 //
 // MP SABER CREATION MENU - called from main menu at the the start of a new game, 
 //     and also when player is allowed to upgrade is style and choose a new saber
@@ -59,7 +59,7 @@
 
 
 //----------------------------------------------------------------------------------------------
-//	OJP MENU BACKGROUND
+//	OBP MENU BACKGROUND
 //----------------------------------------------------------------------------------------------
 
 
@@ -113,7 +113,7 @@
 			name				bgpic
 			style				WINDOW_STYLE_SHADER
 			rect				23 98 594 324
-			background			"ojp/menu/5"
+			background			"obp/menu/5"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -135,7 +135,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				115 -40 150 150
-			background			"ojp/menu/bluewire"
+			background			"obp/menu/bluewire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -149,7 +149,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				375 -40 150 150
-			background			"ojp/menu/redwire"
+			background			"obp/menu/redwire"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -161,7 +161,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				10 104 26 370
-			background			"ojp/menu/boltblue"
+			background			"obp/menu/boltblue"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -173,7 +173,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				604 104 26 370
-			background			"ojp/menu/boltred"
+			background			"obp/menu/boltred"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -186,7 +186,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				601 85 32 32
-			background			"ojp/menu/red_emitter"
+			background			"obp/menu/red_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -198,7 +198,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				7 85 32 32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -209,7 +209,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				601 450 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -221,7 +221,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				7 450 32 -32
-			background			"ojp/menu/blue_emitter"
+			background			"obp/menu/blue_emitter"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -233,7 +233,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 462 640 18
-			background			"ojp/menu/lowbar"
+			background			"obp/menu/lowbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -245,7 +245,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 85 640 18
-			background			"ojp/menu/topbar"
+			background			"obp/menu/topbar"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -257,7 +257,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				0 0 320 80
-			background			"ojp/menu/bluebeam"
+			background			"obp/menu/bluebeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -269,7 +269,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				320 1 320 72
-			background			"ojp/menu/redbeam"
+			background			"obp/menu/redbeam"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -293,7 +293,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/redspin"
+			background			"obp/menu/redspin"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -305,7 +305,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				-1.5 -5 80 80
-			background			"ojp/menu/lightside"
+			background			"obp/menu/lightside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -317,7 +317,7 @@
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				560 -5 80 80
-			background			"ojp/menu/darkside"
+			background			"obp/menu/darkside"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -326,11 +326,11 @@
 		
 		itemDef 
 		{
-			name				ojplogo
+			name				obplogo
 			group				none
 			style				WINDOW_STYLE_SHADER
 			rect				220 0 200 90
-			background			"ojp/menu/ojplogo"
+			background			"obp/menu/obplogo"
 			forecolor			1 1 1 1
 			visible				1
 			decoration
@@ -946,8 +946,8 @@
 		{
 			name				rgbsetupbutton
 			group				none
-			text				"@OJP_MENUS_RGBSABERS_SETUP_PROFILE"
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_DESC"
+			text				"@OBP_MENUS_RGBSABERS_SETUP_PROFILE"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_DESC"
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				500 300 100 24
@@ -999,7 +999,7 @@
 			name				rgbsetupapply
 			group				rgboptions
 			text				"@MENUS_APPLY"
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_APPLY_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_APPLY_DESC"
 			type				ITEM_TYPE_BUTTON
 			style				WINDOW_STYLE_EMPTY
 			rect				290 206 100 24
@@ -1066,7 +1066,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_RED1"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_RED1"
 			action
 			{ 
 				play			"sound/interface/button1.wav" ; 
@@ -1093,7 +1093,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_RED1_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_RED1_DESC"
 			visible 1 
 		}
 
@@ -1114,7 +1114,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN1"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN1"
 			action
 			{ 
 				play			"sound/interface/button1.wav" ; 
@@ -1141,7 +1141,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_GREEN1_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_GREEN1_DESC"
 			visible 1 
 		}
 
@@ -1162,7 +1162,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE1"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE1"
 			action
 			{ 
 				play			"sound/interface/button1.wav" ; 
@@ -1189,7 +1189,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_BLUE1_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_BLUE1_DESC"
 			visible 1 
 		}
 
@@ -1212,7 +1212,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_RED2"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_RED2"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			action
@@ -1241,7 +1241,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_RED2_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_RED2_DESC"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			visible 1 
@@ -1264,7 +1264,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN2"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_GREEN2"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			action
@@ -1293,7 +1293,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_GREEN2_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_GREEN2_DESC"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			visible 1 
@@ -1316,7 +1316,7 @@
 			forecolor			1 1 1 1
 			visible			0
 			// appearance_slot	1
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE2"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_SLIDER_BLUE2"
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
 			action
@@ -1345,7 +1345,7 @@
 			backcolor 0 0 0 0
 			border 1
 			bordercolor 0 0 0 0
-			descText			"@OJP_MENUS_RGBSABERS_SETUP_BLUE2_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_SETUP_BLUE2_DESC"
 			visible 1 
 			cvarTest			ui_saber_type
 			hideCvar			{ "single"; "staff" }
@@ -1359,7 +1359,7 @@
 		{
 			name				color_title
 			group				sabericons
-			text				"@OJP_MENUS_RGBSABERS_COLOR1"
+			text				"@OBP_MENUS_RGBSABERS_COLOR1"
 			descText			@MENUS_BLADE_COLOR_DESC
 			style				WINDOW_STYLE_EMPTY
 			rect				450 112 50 20
@@ -1445,7 +1445,7 @@
 			rect				554 115 24 24
 			background			"gfx/menus/saber_icon_pimp"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_PIMP_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_PIMP_DESC"
 			border				1
 			bordersize			1
 			bordercolor			.33 .33 .5 1
@@ -1476,7 +1476,7 @@
 			rect				581 115 24 24
 			background			"gfx/menus/saber_icon_rgb"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_RGB_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_RGB_DESC"
 			border				1
 			bordersize			1
 			bordercolor			.33 .33 .5 1
@@ -1725,7 +1725,7 @@
 		{
 			name				colorbut2
 			group				sabericons2
-			text				"@OJP_MENUS_RGBSABERS_COLOR2"
+			text				"@OBP_MENUS_RGBSABERS_COLOR2"
 			descText			@MENUS_COLOR2_DESC
 			//type				ITEM_TYPE_MULTI
 			style				WINDOW_STYLE_EMPTY
@@ -1818,7 +1818,7 @@
 			rect				554 165 24 24
 			background			"gfx/menus/saber_icon_pimp"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_PIMP_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_PIMP_DESC"
 			border				1
 			bordersize			1
 			bordercolor			.33 .33 .5 1
@@ -1851,7 +1851,7 @@
 			rect				581 165 24 24
 			background			"gfx/menus/saber_icon_rgb"
 			forecolor			.75 .75 .75 1
-			descText			"@OJP_MENUS_RGBSABERS_RGB_DESC"
+			descText			"@OBP_MENUS_RGBSABERS_RGB_DESC"
 			border				1
 			bordersize			1
 			bordercolor			.33 .33 .5 1

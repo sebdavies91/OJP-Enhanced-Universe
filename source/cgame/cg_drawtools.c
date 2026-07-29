@@ -210,7 +210,7 @@ Coordinates are at 640 by 480 virtual resolution
 */
 //[SVN]
 //rearraigned repository to make it easier to initially compile.
-#include "../../ojpenhanced/ui/jamp/menudef.h"
+#include "../ui/jamp/menudef.h"
 //#include "../../ui/menudef.h"	// for "ITEM_TEXTSTYLE_SHADOWED"
 //[/SVN]
 void CG_DrawStringExt( int x, int y, const char *string, const float *setColor, 
@@ -248,7 +248,7 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 				xx = x;
 				while (*s) {
 					if (Q_IsColorString(s)) {
-						s += 2;
+						s += Q_ColorStringLength( s );
 						continue;
 					}
 					CG_DrawChar(xx + 2, y + 2, charWidth, charHeight, *s);
@@ -264,11 +264,11 @@ void CG_DrawStringExt( int x, int y, const char *string, const float *setColor,
 			while (*s) {
 				if (Q_IsColorString(s)) {
 					if (!forceColor) {
-						memcpy(color, g_color_table[ColorIndex(*(s + 1))], sizeof(color));
+						Q_ColorStringColor( s, color );
 						color[3] = setColor[3];
 						trap_R_SetColor(color);
 					}
-					s += 2;
+					s += Q_ColorStringLength( s );
 					continue;
 				}
 				CG_DrawChar(xx, y, charWidth, charHeight, *s);
@@ -322,7 +322,7 @@ int CG_DrawStrlen( const char *str ) {
 
 	while ( *s ) {
 		if ( Q_IsColorString( s ) ) {
-			s += 2;
+			s += Q_ColorStringLength( s );
 		} else {
 			count++;
 			s++;

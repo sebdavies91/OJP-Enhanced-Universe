@@ -1,4 +1,4 @@
-#include "g_local.h"
+﻿#include "g_local.h"
 #include "bg_local.h"
 #include "w_saber.h"
 #include "ai_main.h"
@@ -2726,6 +2726,115 @@ int G_KnockawayForParry( int move )
 
 #define SABER_NONATTACK_DAMAGE 50
 
+static float WP_SaberStyleDamageScale(int saberStyle)
+{
+	switch (saberStyle)
+	{
+	case SS_FAST:
+		// SORESU: fastest/lightest form, weakest clean-hit payoff.
+		return 0.75f;
+	case SS_MEDIUM:
+		// SHII-CHO: balanced baseline.
+		return 1.00f;
+	case SS_STRONG:
+		// DJEM SO: slowest/heaviest form, strongest clean-hit payoff.
+		return 1.30f;
+	case SS_TAVION:
+		// MAKASHI: FAST/SORESU + MEDIUM/SHII-CHO hybrid damage.
+		return 0.875f;
+	case SS_DESANN:
+		// JUYO: MEDIUM/SHII-CHO + STRONG/DJEM SO hybrid damage.
+		return 1.15f;
+	case SS_DUAL:
+		// JAR_KAI: do not reduce per-blade damage; dual sabers keep dual-hit advantage.
+		return 1.00f;
+	case SS_STAFF:
+		// NIMAN: do not reduce per-blade damage; staff keeps dual-hit advantage.
+		return 1.00f;
+	default:
+		return 1.00f;
+	}
+}
+
+static float WP_SaberStyleDefenseCostScale(int defenderStyle, int attackerStyle, qboolean saberAttack)
+{
+	// Lower values mean the defender spends less DP to absorb/parry the hit.
+	switch (defenderStyle)
+	{
+	case SS_FAST:
+		// SORESU: best pure defense and blaster/saber economy, but weak offense elsewhere.
+		return 0.72f;
+	case SS_MEDIUM:
+		// SHII-CHO: broad, dependable fundamentals.
+		return 0.96f;
+	case SS_STRONG:
+		// DJEM SO: poorer passive defense, relies on committed counterattacks.
+		return 1.12f;
+	case SS_TAVION:
+		// MAKASHI: excellent in saber duels, less ideal versus bolts/explosives.
+		return saberAttack ? 0.82f : 1.08f;
+	case SS_DESANN:
+		// JUYO: offensive/high-risk form, weaker defensive stability.
+		return 1.15f;
+	case SS_DUAL:
+		// JAR_KAI: pressure and angular offense over stable blocking.
+		return saberAttack ? 1.04f : 1.10f;
+	case SS_STAFF:
+		// NIMAN: composed, balanced staff defense and crowd control.
+		return 0.88f;
+	default:
+		return 1.00f;
+	}
+}
+
+static float WP_SaberStyleParryCostScale(int defenderStyle, int attackerStyle)
+{
+	// Extra modifier only for clean parries.
+	switch (defenderStyle)
+	{
+	case SS_FAST:
+		return 0.70f;
+	case SS_TAVION:
+		return 0.76f;
+	case SS_STAFF:
+		return 0.84f;
+	case SS_MEDIUM:
+		return 0.92f;
+	case SS_STRONG:
+		return 0.96f;
+	case SS_DUAL:
+		return 1.02f;
+	case SS_DESANN:
+		return 1.08f;
+	default:
+		return 1.00f;
+	}
+}
+
+static int WP_SaberStyleViewLockTime(int saberStyle, int baseTime)
+{
+	// Defensive/precision forms recover from saber binds faster;
+	// power/aggression forms stay committed longer.
+	switch (saberStyle)
+	{
+	case SS_FAST:
+		return (int)(baseTime * 0.70f);
+	case SS_TAVION:
+		return (int)(baseTime * 0.82f);
+	case SS_MEDIUM:
+	case SS_STAFF:
+		return baseTime;
+	case SS_DUAL:
+		return (int)(baseTime * 1.05f);
+	case SS_DESANN:
+		return (int)(baseTime * 1.12f);
+	case SS_STRONG:
+		return (int)(baseTime * 1.25f);
+	default:
+		return baseTime;
+	}
+}
+
 //For strong attacks, we ramp damage based on the point in the attack animation
 GAME_INLINE int G_GetAttackDamage(gentity_t *self, int minDmg, int maxDmg, float multPoint)
 {
@@ -3322,8 +3431,8 @@ GAME_INLINE void TraceClear( trace_t *tr, vec3_t end )
 
 
 //[BugFix26]
-qboolean OJP_SaberIsOff( gentity_t *self, int saberNum );
-qboolean OJP_BladeIsOff(gentity_t *self, int saberNum, int bladeNum);
+qboolean OBP_SaberIsOff( gentity_t *self, int saberNum );
+qboolean OBP_BladeIsOff(gentity_t *self, int saberNum, int bladeNum);
 //[/BugFix26]
 //check for collision of 2 blades -rww
 GAME_INLINE qboolean G_SaberCollide(gentity_t *atk, gentity_t *def, vec3_t atkStart, 
@@ -3364,7 +3473,7 @@ GAME_INLINE qboolean G_SaberCollide(gentity_t *atk, gentity_t *def, vec3_t atkSt
 		j = 0;
 
 		//[BugFix26]
-		if( OJP_SaberIsOff(def, i) )
+		if( OBP_SaberIsOff(def, i) )
 		{//saber is off and can't be used.
 			i++;
 			continue;
@@ -3384,7 +3493,7 @@ GAME_INLINE qboolean G_SaberCollide(gentity_t *atk, gentity_t *def, vec3_t atkSt
 				blade = &def->client->saber[i].blade[j];
 
 				//[BugFix26]
-				if(OJP_BladeIsOff(def, i, j))
+				if(OBP_BladeIsOff(def, i, j))
 				{//this particular blade is turned off.
 					j++;
 					continue;
@@ -3469,25 +3578,32 @@ int BasicSaberBlockCost(int attackerStyle)
 	switch(attackerStyle)
 	{
 	case SS_DUAL:
-		return 15;
+		// JAR_KAI: fast dual pressure, still full damage per blade.
+		return 16;
 		break;
 	case SS_STAFF:
+		// NIMAN: balanced staff pressure, still full damage per blade.
 		return 15;
 		break;
 	case SS_TAVION:
-		return 13;
+		// MAKASHI: FAST/SORESU + MEDIUM/SHII-CHO hybrid block pressure.
+		return 12;
 		break;
 	case SS_FAST:
-		return 10;
+		// SORESU: lightest incoming attack pressure.
+		return 9;
 		break;
 	case SS_MEDIUM:
+		// SHII-CHO: balanced incoming attack pressure.
 		return 15;
 		break;
 	case SS_DESANN:
-		return 18;
+		// JUYO: MEDIUM/SHII-CHO + STRONG/DJEM SO hybrid block pressure.
+		return 19;
 		break;
 	case SS_STRONG:
-		return 20;
+		// DJEM SO: heaviest incoming attack pressure.
+		return 22;
 		break;
 	default:
 		G_Printf("Unknown Style type %i in BasicSaberBlockCost()\n", attackerStyle);
@@ -3499,20 +3615,24 @@ int BasicSaberBlockCost(int attackerStyle)
 
 qboolean /*GAME_INLINE*/ WalkCheck( gentity_t * self );
 qboolean G_BlockIsParry( gentity_t *self, gentity_t *attacker, vec3_t hitLoc );
-int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
+int OBP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 {//returns the DP cost to block this attack for this attacker/defender combo.
 	float saberBlockCost = 0;
 
 	//===========================
 	// Determine Base Block Cost
 	//===========================
+	if (!defender || !defender->client)
+	{
+		return 0;
+	}
 
 	if(!attacker	//don't have attacker
 		|| !attacker->client	//attacker isn't a NPC/player
 		|| attacker->client->ps.weapon != WP_SABER ) //or the player that is attacking isn't using a saber
 	{//standard bolt block!
 			//[BlasterDP]
-		if(attacker->activator)
+		if(attacker && attacker->activator)
 		{
 			if(attacker->activator->s.weapon == WP_BRYAR_PISTOL)
 			{
@@ -4127,14 +4247,8 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 	{//attacker is a player so he must have just hit you with a saber blow.
 		if(G_BlockIsParry(defender, attacker, hitLoc))
 		{//parried this attack, cost is less
-			if(defender->client->ps.fd.saberAnimLevel == SS_FAST)
-			{//blue parries cheaper
-				saberBlockCost = (saberBlockCost/3.25);
-			}
-			else
-			{
-				saberBlockCost = (saberBlockCost/3);
-			}
+			saberBlockCost = (saberBlockCost/3);
+			saberBlockCost *= WP_SaberStyleParryCostScale(defender->client->ps.fd.saberAnimLevel, attacker->client->ps.fd.saberAnimLevel);
 		}
 
 		if(!InFront(attacker->client->ps.origin, defender->client->ps.origin, defender->client->ps.viewangles, -.7f))
@@ -4221,14 +4335,26 @@ int OJP_SaberBlockCost(gentity_t *defender, gentity_t *attacker, vec3_t hitLoc)
 		saberBlockCost *= 2;
 	}
 
+	if(defender && defender->client)
+	{
+		qboolean saberAttack = (attacker && attacker->client && attacker->client->ps.weapon == WP_SABER);
+		int attackerStyle = saberAttack ? attacker->client->ps.fd.saberAnimLevel : SS_NONE;
+		saberBlockCost *= WP_SaberStyleDefenseCostScale(defender->client->ps.fd.saberAnimLevel, attackerStyle, saberAttack);
+	}
+
+	if(saberBlockCost < 1.0f)
+	{
+		saberBlockCost = 1.0f;
+	}
+
 	return (int) saberBlockCost;
 }
 
 
-qboolean OJP_UsingDualSaberAsPrimary(playerState_t *ps);
+qboolean OBP_UsingDualSaberAsPrimary(playerState_t *ps);
 extern qboolean BG_SuperBreakWinAnim( int anim );
 extern qboolean BG_SaberInNonIdleDamageMove(playerState_t *ps, int AnimIndex);
-int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum)
+int OBP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, vec3_t point, int rSaberNum, int rBladeNum)
 {//similar to WP_SaberCanBlock but without the same sorts of restrictions.
 	vec3_t bodyMin, bodyMax, closestBodyPoint, dirToBody, saberMoveDir;
 //	float distance = VectorDistance(atk->r.currentOrigin,self->r.currentOrigin);
@@ -4287,7 +4413,7 @@ int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, 
 
 	if (!self->client->ps.saberEntityNum || self->client->ps.saberInFlight)
 	{//our saber is currently dropped or in flight.
-		if(!OJP_UsingDualSaberAsPrimary(&self->client->ps))
+		if(!OBP_UsingDualSaberAsPrimary(&self->client->ps))
 		{//don't have a saber to block with
 			return 0;
 		}
@@ -4372,7 +4498,7 @@ int OJP_SaberCanBlock(gentity_t *self, gentity_t *atk, qboolean checkBBoxBlock, 
 	}
 
 	//check to see if we have the Dodge to do this.
-	if(self->client->ps.stats[STAT_DODGE] < OJP_SaberBlockCost(self, atk, point))
+	if(self->client->ps.stats[STAT_DODGE] < OBP_SaberBlockCost(self, atk, point))
 	{
 		return 0;
 	}
@@ -4611,7 +4737,7 @@ int G_RealTrace(gentity_t *attacker, trace_t *tr, vec3_t start, vec3_t mins,
 
 		if (currentEnt->inuse && currentEnt->client)
 		{//initial trace hit a humanoid
-			if(attacker && OJP_SaberCanBlock(currentEnt, attacker, qtrue, tr->endpos, rSaberNum, rBladeNum))
+			if(attacker && OBP_SaberCanBlock(currentEnt, attacker, qtrue, tr->endpos, rSaberNum, rBladeNum))
 			{//hit victim is willing to bbox block with their jedi saber abilities.  Can only do this if we have data on the attacker.
 				if(!VectorCompare(start, currentStart))
 				{//didn't do trace with original start point.  Recalculate the real fraction before we do our comparision.
@@ -5909,7 +6035,7 @@ void WP_SaberBounceSound( gentity_t *ent, int saberNum, int bladeNum )
 //triggering a broken parry, doing actual damage, etc. are done for the saber. It doesn't resemble the SP
 //version very much, but functionality is (hopefully) about the same.
 //This is a large function. I feel sort of bad inlining it. But it does get called tons of times per frame.
-//[SaberSys] moved this prototype up for ojp_SaberCanBlock
+//[SaberSys] moved this prototype up for obp_SaberCanBlock
 /*
 qboolean BG_SuperBreakWinAnim( int anim );
 */
@@ -5920,13 +6046,13 @@ GAME_INLINE void G_SetViewLockDebounce( gentity_t *self )
 {
 	if(!WalkCheck(self))
 	{//running pauses you longer
-		self->client->viewLockTime = level.time + 500;
+		self->client->viewLockTime = level.time + WP_SaberStyleViewLockTime(self->client->ps.fd.saberAnimLevel, 500);
 	}
 	else if( PM_SaberInParry(G_GetParryForBlock(self->client->ps.saberBlocked)) //normal block (not a parry)
 		|| (!PM_SaberInKnockaway(self->client->ps.saberMove) //didn't parry
 		&& self->client->ps.stats[STAT_DODGE] < self->client->ps.stats[STAT_MAX_DODGE]*.50) )
 	{//normal block or attacked with less than %50 DP
-		self->client->viewLockTime = level.time + 300;
+		self->client->viewLockTime = level.time + WP_SaberStyleViewLockTime(self->client->ps.fd.saberAnimLevel, 300);
 	}
 	else
 	{
@@ -6278,7 +6404,34 @@ extern int DetermineDisruptorCharge(gentity_t *ent);
 qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int hitLoc, int * dmg, int mod )
 {
 	int	dodgeAnim = -1;
-	int dpcost = BasicDodgeCosts[mod];
+	int dpcost;
+
+	if ( !self || !self->client || !dmg || mod < 0 || mod >= MOD_MAX )
+	{
+		return qfalse;
+	}
+
+	dpcost = BasicDodgeCosts[mod];
+
+	//[JediDodgeCost]
+	// Jedi-style dodge is not tied to holding a saber.  A Jedi should use the
+	// same DP cost model while defending with melee, blasters, or any other
+	// weapon equipped.  This keeps bolt/saber defense consistent with saber
+	// dodge/block costs instead of falling back to the generic body-dodge table.
+	if (self && self->client)
+	{
+		int jediDefenseCost = OBP_SaberBlockCost(self, shooter, dmgOrigin);
+
+		if (jediDefenseCost > 0)
+		{
+			dpcost = jediDefenseCost;
+		}
+		else if (mod == MOD_SABER)
+		{
+			dpcost = DODGE_SABERBLOCK;
+		}
+	}
+	//[/JediDodgeCost]
 
 	//saved copy of the original damage level.  This is used determine the kickback power for slashdamage dodges.
 	int savedDmg = *dmg; 
@@ -6289,7 +6442,7 @@ qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int h
 	//Don't do any visuals.
 	qboolean NoAction = qfalse;
 /*
-	if( !ojp_allowBodyDodge.integer )
+	if( !obp_allowBodyDodge.integer )
 	{//body dodges have been disabled.  
 		return qfalse;
 	}
@@ -6872,7 +7025,7 @@ qboolean G_DoDodge( gentity_t *self, gentity_t *shooter, vec3_t dmgOrigin, int h
 //[/DodgeSys]
 
 //[SaberSys]
-//racc - OJP Enhanced completely rewritten CheckSaberDamage function.  This is the heart of the saber system beast.
+//racc - Open Battlefront Project completely rewritten CheckSaberDamage function.  This is the heart of the saber system beast.
 extern qboolean BG_SaberInTransitionDamageMove( playerState_t *ps );
 extern qboolean BG_SaberInFullDamageMove( playerState_t *ps, int AnimIndex );
 extern qboolean BG_InSlowBounce(playerState_t *ps);
@@ -6990,6 +7143,7 @@ GAME_INLINE qboolean CheckSaberDamage(gentity_t *self, int rSaberNum, int rBlade
 	if (dmg > SABER_NONATTACK_DAMAGE)
 	{
 		dmg *= g_saberDamageScale.value;
+		dmg = ceil((float)dmg * WP_SaberStyleDamageScale(self->client->ps.fd.saberAnimLevel));
 
 		//see if this specific saber has a damagescale
 		if ( !WP_SaberBladeUseSecondBladeStyle( &self->client->saber[rSaberNum], rBladeNum )
@@ -7091,7 +7245,7 @@ GAME_INLINE qboolean CheckSaberDamage(gentity_t *self, int rSaberNum, int rBlade
 			return qfalse;
 		}
 
-		if(OJP_SaberCanBlock(&g_entities[tr.entityNum], self, qfalse, tr.endpos, -1, -1))
+		if(OBP_SaberCanBlock(&g_entities[tr.entityNum], self, qfalse, tr.endpos, -1, -1))
 		{//hit victim is able to block, block!
 			didHit = qfalse;
 			otherOwner = &g_entities[tr.entityNum];
@@ -7128,7 +7282,7 @@ GAME_INLINE qboolean CheckSaberDamage(gentity_t *self, int rSaberNum, int rBlade
 			return qfalse;
 		}
 
-		if(otherOwner->client->ps.saberInFlight && !OJP_UsingDualSaberAsPrimary(&otherOwner->client->ps))
+		if(otherOwner->client->ps.saberInFlight && !OBP_UsingDualSaberAsPrimary(&otherOwner->client->ps))
 		{//Hit a thrown saber, deactive it.
 			saberCheckKnockdown_Smashed(&g_entities[tr.entityNum], otherOwner, self, dmg);
 			otherOwner = NULL;
@@ -7312,7 +7466,7 @@ GAME_INLINE qboolean CheckSaberDamage(gentity_t *self, int rSaberNum, int rBlade
 		}
 	}
 
-	if(self->client->ps.saberInFlight && !OJP_UsingDualSaberAsPrimary(&self->client->ps))
+	if(self->client->ps.saberInFlight && !OBP_UsingDualSaberAsPrimary(&self->client->ps))
 	{//saber in flight and it has hit something.  deactivate it.
 		gentity_t *saberEnt = G_GetSaberEntSafe( self );
 		if ( saberEnt )
@@ -9916,7 +10070,9 @@ void thrownSaberTouch (gentity_t *saberent, gentity_t *other, trace_t *trace)
 	
 }
 
-#define SABER_MAX_THROW_DISTANCE 512
+#define SABER_THROW_DISTANCE_L1 256
+#define SABER_THROW_DISTANCE_L2 512
+#define SABER_THROW_DISTANCE_L3 1024
 extern void G_StopObjectMoving( gentity_t *object );
 void saberFirstThrown(gentity_t *saberent)
 {//racc - this is the think function for live thrown sabers.
@@ -10019,20 +10175,27 @@ void saberFirstThrown(gentity_t *saberent)
 	VectorSubtract(saberOwn->client->ps.origin, saberent->r.currentOrigin, vSub);
 	vLen = VectorLength(vSub);
 
-	if(vLen >= 300 && saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW] == FORCE_LEVEL_1)
 	{
-		thrownSaberBallistics(saberent, saberOwn, qfalse);
-		goto runMin;
-	}
+		float maxThrowDist = SABER_THROW_DISTANCE_L1;
 
-	if (vLen >= (SABER_MAX_THROW_DISTANCE*saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW]))
-	{//racc - saber has reached maximum throw range, start returning the saber.
-		//[SaberThrowSys]
-		//lost force concentration, switch the saber into ballistics mode.
-		thrownSaberBallistics(saberent, saberOwn, qfalse);
-		//thrownSaberTouch(saberent, saberent, NULL);
-		//[/SaberThrowSys]
-		goto runMin;
+		if (saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW] >= FORCE_LEVEL_3)
+		{
+			maxThrowDist = SABER_THROW_DISTANCE_L3;
+		}
+		else if (saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW] == FORCE_LEVEL_2)
+		{
+			maxThrowDist = SABER_THROW_DISTANCE_L2;
+		}
+
+		if (vLen >= maxThrowDist)
+		{//racc - saber has reached maximum throw range, start returning the saber.
+			//[SaberThrowSys]
+			//lost force concentration, switch the saber into ballistics mode.
+			thrownSaberBallistics(saberent, saberOwn, qfalse);
+			//thrownSaberTouch(saberent, saberent, NULL);
+			//[/SaberThrowSys]
+			goto runMin;
+		}
 	}
 
 	//[SaberThrowSys]
@@ -10092,9 +10255,9 @@ void saberFirstThrown(gentity_t *saberent)
 		VectorCopy(traceFrom, traceTo);
 		if(saberOwn->client->ps.fd.forcePowerLevel[FP_SABERTHROW] >= FORCE_LEVEL_3)
 		{
-			traceTo[0] += fwd[0]*2048;
-			traceTo[1] += fwd[1]*2048;
-			traceTo[2] += fwd[2]*2048;
+			traceTo[0] += fwd[0]*SABER_THROW_DISTANCE_L3;
+			traceTo[1] += fwd[1]*SABER_THROW_DISTANCE_L3;
+			traceTo[2] += fwd[2]*SABER_THROW_DISTANCE_L3;
 		}
 		else
 		{
@@ -10425,7 +10588,7 @@ static void G_TossTheMofo(gentity_t *ent, vec3_t tossDir, float tossStr)
 //[/KnockdownSys]
 
 //[DodgeSys]
-qboolean OJP_DodgeKick( gentity_t *self, gentity_t *pusher, const vec3_t pushDir )
+qboolean OBP_DodgeKick( gentity_t *self, gentity_t *pusher, const vec3_t pushDir )
 {//a function similar to the Jedi_StopKnockdown function, except it's only a fake backflip in this case.
 	vec3_t pLAngles, pLFwd;
 
@@ -10610,7 +10773,7 @@ static gentity_t *G_KickTrace( gentity_t *ent, vec3_t kickDir, float kickDist, v
 			}
 			//[/BugFix29]
 			//[DodgeSys]
-			if(OJP_DodgeKick(hitEnt, ent, kickDir))
+			if(OBP_DodgeKick(hitEnt, ent, kickDir))
 			{//but the lucky devil dodged it by backflipping
 				//toss them back a bit and make sure that the kicker gets the kill if the 
 				//player falls off a cliff or something.
@@ -11379,6 +11542,9 @@ void WP_SaberPositionUpdate( gentity_t *self, usercmd_t *ucmd )
 	//[/SaberSys]
 	int returnAfterUpdate = 0;
 	float animSpeedScale = 1.0f;
+	//[RageMeleeFix]
+	qboolean meleeTraceAnimUpdated = qfalse;
+	//[/RageMeleeFix]
 	int saberNum;
 	qboolean clientOverride;
 	gentity_t *vehEnt = NULL;
@@ -11532,6 +11698,18 @@ if (ucmd->buttons & BUTTON_THERMALTHROW)
 //[/SaberSys]
 
 	//[Melee]
+	// Punch/kick/grab traces use hand/foot bolts.  With Rage, animSpeedScale
+	// is 2, so tracing before the server Ghoul2 skeleton is advanced can skip
+	// the damage window.  Update first, keep Rage speed, and skip the final
+	// duplicate update later in this function.
+	if (BG_PunchAnim(self->client->ps.torsoAnim) ||
+		BG_KickingAnim(self->client->ps.legsAnim) ||
+		self->client->ps.torsoAnim == BOTH_KYLE_GRAB)
+	{
+		G_UpdateClientAnims(self, animSpeedScale);
+		meleeTraceAnimUpdated = qtrue;
+	}
+
 	//Punching damage/effects now handled by animation vs as an attack event
 	if( BG_PunchAnim(self->client->ps.torsoAnim) )
 	{
@@ -12471,6 +12649,33 @@ nextStep:
 					VectorMA( boltOrigin, self->client->saber[rSaberNum].blade[rBladeNum].lengthMax, self->client->saber[rSaberNum].blade[rBladeNum].muzzleDir, end );
 				}
 
+				//[WeapAccuracy]
+				// Saber hit traces also become less reliable as heat rises.
+				// This applies heat accuracy without modifying Force/mishap storage.
+				if (!self->client->ps.saberInFlight &&
+					self->client->ps.stats[STAT_HEAT] > 0 &&
+					(BG_SaberInAttack(self->client->ps.saberMove) ||
+					PM_SaberInTransition(self->client->ps.saberMove)))
+				{
+					vec3_t saberDir;
+					vec3_t saberAngs;
+					float slopFactor;
+
+					slopFactor = MISHAP_MAXINACCURACY * BG_HeatAccuracyScale(&self->client->ps);
+					slopFactor = Com_Clamp(0.0f, MISHAP_MAXINACCURACY, slopFactor);
+
+					if (slopFactor > 0.0f)
+					{
+						VectorSubtract(end, boltOrigin, saberDir);
+						vectoangles(saberDir, saberAngs);
+						saberAngs[PITCH] += flrand(-slopFactor, slopFactor);
+						saberAngs[YAW] += flrand(-slopFactor, slopFactor);
+						AngleVectors(saberAngs, saberDir, NULL, NULL);
+						VectorMA(boltOrigin, self->client->saber[rSaberNum].blade[rBladeNum].lengthMax, saberDir, end);
+					}
+				}
+				//[/WeapAccuracy]
+
 				self->client->saber[rSaberNum].blade[rBladeNum].storageTime = level.time;
 
 				//[SaberSys]
@@ -12759,7 +12964,10 @@ finalUpdate:
 		return;
 	}
 
-	G_UpdateClientAnims(self, animSpeedScale);
+	if (!meleeTraceAnimUpdated)
+	{
+		G_UpdateClientAnims(self, animSpeedScale);
+	}
 }
 
 int WP_MissileBlockForBlock( int saberBlock )
@@ -13748,7 +13956,7 @@ qboolean G_InAttackParry(gentity_t *self)
 
 
 //[BugFix26]
-qboolean OJP_SaberIsOff( gentity_t *self, int saberNum )
+qboolean OBP_SaberIsOff( gentity_t *self, int saberNum )
 {//this function checks to see if a given saber is off.  This function doesn't check to see if this player actually has
 	//that saber.  We only have this function to account for the weird special case for dual sabers where one saber has 
 	//been dropped.
@@ -13792,14 +14000,14 @@ qboolean OJP_SaberIsOff( gentity_t *self, int saberNum )
 		return qtrue;
 		break;
 	default:
-		G_Printf("Unknown saberHolstered value %i in OJP_SaberIsOff\n", self->client->ps.saberHolstered);
+		G_Printf("Unknown saberHolstered value %i in OBP_SaberIsOff\n", self->client->ps.saberHolstered);
 		return qtrue;
 		break;
 	};
 }
 
 
-qboolean OJP_BladeIsOff(gentity_t *self, int saberNum, int bladeNum)
+qboolean OBP_BladeIsOff(gentity_t *self, int saberNum, int bladeNum)
 {//checks to see if a given saber blade is supposed to be off.  This function does not check to see if the 
 	//saber or saber blade actually exists.
 
@@ -13807,7 +14015,7 @@ qboolean OJP_BladeIsOff(gentity_t *self, int saberNum, int bladeNum)
 
 	if(saberNum > 0)
 	{//secondary sabers are all on/all off.
-		if(OJP_SaberIsOff(self, saberNum))
+		if(OBP_SaberIsOff(self, saberNum))
 		{//blades are all off
 			return qtrue;
 		}
@@ -13819,7 +14027,7 @@ qboolean OJP_BladeIsOff(gentity_t *self, int saberNum, int bladeNum)
 	else
 	{//primary blade
 		//based on number of blades on saber
-		if(OJP_SaberIsOff(self, saberNum)) //This function accounts for the weird saber throw situations.
+		if(OBP_SaberIsOff(self, saberNum)) //This function accounts for the weird saber throw situations.
 		{//saber is off, all blades are off
 			return qtrue;
 		}
@@ -13839,7 +14047,7 @@ qboolean OJP_BladeIsOff(gentity_t *self, int saberNum, int bladeNum)
 //[/BugFix26]
 
 
-qboolean OJP_UsingDualSaberAsPrimary(playerState_t *ps)
+qboolean OBP_UsingDualSaberAsPrimary(playerState_t *ps)
 {//indicates that the player is in the very special case of using their dual saber
 	//as their primary saber when their primary saber is dropped.
 	if(ps->fd.saberAnimLevel == SS_DUAL 

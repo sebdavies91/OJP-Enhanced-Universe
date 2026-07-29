@@ -60,10 +60,11 @@
   g_vehicleTurret.c
   g_weapon.c
   NPC.c
+  NPC_AI_BobaFett.c
   NPC_AI_Animal.c
-  NPC_AI_AssassinDroid.c
   Generating Code...
   Compiling...
+  NPC_AI_AssassinDroid.c
   NPC_AI_Atst.c
   NPC_AI_Civilian.c
   NPC_AI_Default.c
@@ -83,9 +84,9 @@
   NPC_AI_Tusken.c
   NPC_AI_HazardTrooper.c
   NPC_AI_SaberDroid.c
-  NPC_AI_Sand_creature.c
   Generating Code...
   Compiling...
+  NPC_AI_Sand_creature.c
   NPC_AI_Seeker.c
   NPC_AI_Sentry.c
   NPC_AI_Sniper.c
@@ -105,9 +106,9 @@
   NPC_utils.c
   NPC_Vehicle.c
   q_math.c
-  q_shared.c
   Generating Code...
   Compiling...
+  q_shared.c
   SpeederNPC.c
   tri_coll_test.c
   w_force.c
@@ -115,4 +116,4 @@
   WalkerNPC.c
   Generating Code...
      Creating library .\../Debug/jampgamex86.lib and object .\../Debug/jampgamex86.exp
-  JK2_game.vcxproj -> E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy (III)\GameData\ojpenhanced\jampgamex86.dll
+  JK2_game.vcxproj -> E:\Program Files (x86)\LucasArts\Star Wars Jedi Knight Jedi Academy Code\GameData\openbattlefrontproject\jampgamex86.dll

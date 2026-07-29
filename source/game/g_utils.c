@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // g_utils.c -- misc utility functions for game module
 
@@ -43,11 +43,26 @@ const char *BuildShaderStateConfig(void) {
 	static char	buff[MAX_STRING_CHARS*4];
 	char out[(MAX_QPATH * 2) + 5];
 	int i;
-  
-	memset(buff, 0, MAX_STRING_CHARS);
+	size_t buffLen = 0;
+
+	memset(buff, 0, sizeof(buff));
 	for (i = 0; i < remapCount; i++) {
-		Com_sprintf(out, (MAX_QPATH * 2) + 5, "%s=%s:%5.2f@", remappedShaders[i].oldShader, remappedShaders[i].newShader, remappedShaders[i].timeOffset);
+		size_t outLen;
+
+		Com_sprintf(out, sizeof(out), "%s=%s:%5.2f@",
+			remappedShaders[i].oldShader,
+			remappedShaders[i].newShader,
+			remappedShaders[i].timeOffset);
+		out[sizeof(out) - 1] = '\0';
+		outLen = strlen(out);
+
+		if (buffLen + outLen >= sizeof(buff))
+		{
+			break;
+		}
+
 		Q_strcat( buff, sizeof( buff ), out);
+		buffLen += outLen;
 	}
 	return buff;
 }
@@ -143,8 +158,96 @@ int G_SoundIndex( const char *name ) {
 	return G_FindConfigstringIndex (name, CS_SOUNDS, MAX_SOUNDS, qtrue);
 }
 
+
+/*
+=================
+G_SoundSetExists
+
+JA/MP can load JK2 single-player BSPs that reference ambient soundSets not
+present in the active sound/sound.txt.  Do not publish those missing names into
+CS_AMBIENT_SET, because the client ambient parser treats missing precache
+entries as fatal during loading.
+=================
+*/
+static qboolean G_SoundSetExists( const char *name )
+{
+	static char		*soundText = NULL;
+	static int		soundTextLoaded = 0;
+	fileHandle_t	f;
+	int				len;
+	const char		*p;
+	char			*token;
+
+	if ( !name || !name[0] )
+	{
+		return qfalse;
+	}
+
+	if ( !soundTextLoaded )
+	{
+		soundTextLoaded = 1;
+
+		len = trap_FS_FOpenFile( "sound/sound.txt", &f, FS_READ );
+		if ( !f || len <= 0 )
+		{
+			if ( f )
+			{
+				trap_FS_FCloseFile( f );
+			}
+
+			// Preserve original behavior if sound.txt cannot be inspected.
+			return qtrue;
+		}
+
+		soundText = (char *)G_Alloc( len + 1 );
+		if ( !soundText )
+		{
+			trap_FS_FCloseFile( f );
+			return qtrue;
+		}
+
+		trap_FS_Read( soundText, len, f );
+		soundText[len] = '\0';
+		trap_FS_FCloseFile( f );
+	}
+
+	if ( !soundText )
+	{
+		return qtrue;
+	}
+
+	p = soundText;
+	while ( 1 )
+	{
+		token = COM_ParseExt( &p, qtrue );
+		if ( !token || !token[0] )
+		{
+			break;
+		}
+
+		if ( !Q_stricmp( token, "generalSet" ) ||
+			 !Q_stricmp( token, "localSet" ) ||
+			 !Q_stricmp( token, "bmodelSet" ) )
+		{
+			token = COM_ParseExt( &p, qtrue );
+			if ( token && token[0] && !Q_stricmp( token, name ) )
+			{
+				return qtrue;
+			}
+		}
+	}
+
+	return qfalse;
+}
+
 int G_SoundSetIndex(const char *name)
 {
+	if ( !G_SoundSetExists( name ) )
+	{
+		G_Printf( S_COLOR_YELLOW "WARNING: skipping missing ambient soundSet '%s'\n", name ? name : "<NULL>" );
+		return 0;
+	}
+
 	return G_FindConfigstringIndex (name, CS_AMBIENT_SET, MAX_AMBIENT_SETS, qtrue);
 }
 
@@ -1079,6 +1182,16 @@ void G_FreeEntity( gentity_t *ed ) {
 
 	if (ed->s.eType == ET_NPC && ed->m_pVehicle)
 	{ //tell the "vehicle pool" that this one is now free
+		// Make sure no rider keeps a stale m_iVehicleNum after a vehicle is removed.
+		// Some vehicle alt-fire/death paths can schedule the vehicle for removal while
+		// a dead rider/corpse still points at it, which later trips NPC corpse cleanup.
+		if ( ed->m_pVehicle->m_pVehicleInfo
+			&& ed->m_pVehicle->m_pVehicleInfo->Inhabited
+			&& ed->m_pVehicle->m_pVehicleInfo->EjectAll
+			&& ed->m_pVehicle->m_pVehicleInfo->Inhabited( ed->m_pVehicle ) )
+		{
+			ed->m_pVehicle->m_pVehicleInfo->EjectAll( ed->m_pVehicle );
+		}
 		G_FreeVehicleObject(ed->m_pVehicle);
 	}
 
@@ -1397,14 +1510,14 @@ gentity_t *G_PlayEffectID(const int fxID, vec3_t org, vec3_t ang)
 G_PlayBoltedEffect
 =============
 */
-extern qboolean OJP_AllPlayersHaveClientPlugin(void);
+extern qboolean OBP_AllPlayersHaveClientPlugin(void);
 gentity_t *G_PlayBoltedEffect( int fxID, gentity_t *owner, const char *bolt )
 {	//send request to client to play an effect bolted to a bolt on a ghoul2 entity
 	//trap_FX_PlayBoltedEffectID doesn't take inputs for angle or lifetime however :(
 	gentity_t	*te = NULL;
 
-	if(OJP_AllPlayersHaveClientPlugin())
-	{//only transmit this effect if all players are running the OJP client.  If we send this and they don't have the client,
+	if(OBP_AllPlayersHaveClientPlugin())
+	{//only transmit this effect if all players are running the OBP client.  If we send this and they don't have the client,
 		//they will drop due to a "unknown event" error.
 		te = G_TempEntity( owner->r.currentOrigin, EV_PLAY_EFFECT_BOLTED );
 
@@ -2341,7 +2454,7 @@ void GetAnglesForDirection( const vec3_t p1, const vec3_t p2, vec3_t out )
 //[AdminSys]
 void TextWrapCenterPrint(char orgtext[CENTERPRINT_MAXSTRING], char output[CENTERPRINT_MAXSTRING])
 {//this function auto text wraps a centersay message so that it will display correctly on clients that aren't 
-	//running OJP.  Clients running OJP do this text wrapping on the client side.
+	//running OBP.  Clients running OBP do this text wrapping on the client side.
 	//scan thru print text and add new lines where needed.
 	int orgIndex, outputIndex, charCounter;
 

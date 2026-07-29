@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug(Final)|Win32">
@@ -21,6 +21,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{2DDA2041-6A68-4754-B342-14039CC91695}</ProjectGuid>
     <RootNamespace>ui</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'" Label="Configuration">
@@ -69,16 +70,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <_ProjectFileVersion>10.0.30319.1</_ProjectFileVersion>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">.\../Final/ui\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Final|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">.\../Debug/ui\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">..\..\openbattlefrontproject\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\../Release/ui\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</LinkIncremental>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\ojpenhanced\</OutDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">..\..\openbattlefrontproject</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">.\../Debug/ui\</IntDir>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">true</LinkIncremental>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug(Final)|Win32'">uix86</TargetName>
@@ -110,6 +111,7 @@
       <ObjectFileName>.\../Final/ui/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Final/ui/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
     </ClCompile>
     <ResourceCompile>
@@ -119,7 +121,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>../../ojpenhanced/uix86.dll</OutputFile>
+      <OutputFile>../../openbattlefrontproject/uix86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -155,8 +157,9 @@
       <ProgramDataBaseFileName>.\../Debug/ui/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_Debug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -165,7 +168,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\uix86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\uix86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <GenerateDebugInformation>DebugFull</GenerateDebugInformation>
@@ -201,6 +204,7 @@
       <ObjectFileName>.\../Release/ui/</ObjectFileName>
       <ProgramDataBaseFileName>.\../Release/ui/</ProgramDataBaseFileName>
       <WarningLevel>Level4</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
@@ -211,7 +215,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\uix86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\uix86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -246,8 +250,9 @@
       <ProgramDataBaseFileName>.\../Debug/ui/</ProgramDataBaseFileName>
       <BrowseInformation>true</BrowseInformation>
       <WarningLevel>Level3</WarningLevel>
+      <DisableSpecificWarnings>4459;4457;4456;4211;4210;4206;4205;4189;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <SuppressStartupBanner>true</SuppressStartupBanner>
-      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <ResourceCompile>
       <PreprocessorDefinitions>_Debug;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -256,7 +261,7 @@
     <Link>
       <AdditionalOptions>/MACHINE:I386 %(AdditionalOptions)</AdditionalOptions>
       <AdditionalDependencies>odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>..\..\ojpenhanced\uix86.dll</OutputFile>
+      <OutputFile>..\..\openbattlefrontproject\uix86.dll</OutputFile>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <ModuleDefinitionFile>.\ui.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -299,7 +304,7 @@
     <ClInclude Include="..\qcommon\disablewarnings.h" />
     <ClInclude Include="..\qcommon\game_version.h" />
     <ClInclude Include="keycodes.h" />
-    <ClInclude Include="..\..\ojpenhanced\ui\jamp\menudef.h" />
+    <ClInclude Include="jamp\menudef.h" />
     <ClInclude Include="..\game\q_shared.h" />
     <ClInclude Include="..\qcommon\qfiles.h" />
     <ClInclude Include="..\game\surfaceflags.h" />

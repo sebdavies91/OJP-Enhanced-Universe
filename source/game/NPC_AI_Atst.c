@@ -154,6 +154,29 @@ static void ATST_GetMuzzle( int bolt, vec3_t out )
 	}
 }
 
+/*
+============================
+ATST_GetCentralCannonMuzzle
+
+The drivable AT-ST in MP effectively fires its main weapon from a central,
+body-facing walker muzzle instead of from the side/head attachments. For NPCs
+we emulate that with a stable point near the front-center of the cockpit so the
+main blaster bolts visually come from the central cannon and always travel in
+body-facing direction.
+============================
+*/
+static void ATST_GetCentralCannonMuzzle( vec3_t out )
+{
+	vec3_t head, fwd, right, up;
+
+	CalcEntitySpot( NPC, SPOT_HEAD, head );
+	AngleVectors( NPC->r.currentAngles, fwd, right, up );
+
+	VectorCopy( head, out );
+	VectorMA( out, 40.0f, fwd, out );
+	VectorMA( out, -14.0f, up, out );
+}
+
 static void ATST_GetFireDir( const vec3_t start, vec3_t dirOut )
 {
 	vec3_t target;
@@ -165,7 +188,7 @@ static void ATST_GetFireDir( const vec3_t start, vec3_t dirOut )
 	else
 	{
 		vec3_t fwd;
-		AngleVectors( NPC->client->ps.viewangles, fwd, NULL, NULL );
+		AngleVectors( NPC->r.currentAngles, fwd, NULL, NULL );
 		VectorMA( start, 1024.0f, fwd, target );
 	}
 
@@ -190,17 +213,12 @@ static qboolean ATST_FacingEnemyForFire( float maxYawErrorDeg )
     VectorSubtract( targetSpot, selfSpot, dir );
     vectoangles( dir, ang );
 
-    yawErr = AngleDelta( AngleNormalize360( ang[YAW] ), ( NPC->client ? NPC->client->ps.viewangles[YAW] : NPC->r.currentAngles[YAW] ) );
+    yawErr = AngleDelta( AngleNormalize360( ang[YAW] ), NPC->r.currentAngles[YAW] );
     return ( fabs( yawErr ) <= maxYawErrorDeg );
 }
 
 static void ATST_FireEnergyNoSplash( int bolt, int damage, int velocity )
 {
-	if ( bolt < 0 )
-	{
-		return;
-	}
-
 	vec3_t start, dir;
 	ATST_GetMuzzle( bolt, start );
 	ATST_GetFireDir( start, dir );
@@ -209,11 +227,6 @@ static void ATST_FireEnergyNoSplash( int bolt, int damage, int velocity )
 
 static void ATST_FireRocket( int bolt, int damage, int velocity, int splashDmg, int splashRadius )
 {
-	if ( bolt < 0 )
-	{
-		return;
-	}
-
 	gentity_t *missile;
 	vec3_t start, dir;
 
@@ -235,6 +248,23 @@ static void ATST_FireRocket( int bolt, int damage, int velocity, int splashDmg, 
 	missile->splashDamage = splashDmg;
 	missile->splashRadius = splashRadius;
 	missile->bounceCount = 0;
+}
+
+static void ATST_FireMainBurst( int damage, int velocity )
+{
+	vec3_t start, dir, right;
+	vec3_t shotStart;
+
+	ATST_GetCentralCannonMuzzle( start );
+	ATST_GetFireDir( start, dir );
+	AngleVectors( NPC->r.currentAngles, NULL, right, NULL );
+
+	/* Fire a tight 2-bolt burst from the central cannon so it feels like the
+	 * vehicle blaster stream, while still clearly originating from the front-center. */
+	VectorMA( start, -3.0f, right, shotStart );
+	WP_FireTurretMissile( NPC, shotStart, dir, qfalse, damage, velocity, MOD_TURBLAST, NULL );
+	VectorMA( start, 3.0f, right, shotStart );
+	WP_FireTurretMissile( NPC, shotStart, dir, qfalse, damage, velocity, MOD_TURBLAST, NULL );
 }
 
 //-----------------------------------------------------------------
@@ -333,27 +363,18 @@ ATST_Hunt
 */
 void ATST_Hunt( qboolean visible, qboolean advance )
 {
-	// Minimal, MP-safe hunt: use standard nav movement only.
-	navInfo_t info;
-	int blockedFor;
+	if ( !NPC || !NPCInfo )
+	{
+		return;
+	}
+
+	ATST_LockUpperToLower();
+
 	if ( NPCInfo->goalEntity == NULL )
 	{
 		NPCInfo->goalEntity = NPC->enemy;
-
-
-	// While hunting, keep the cockpit/head tracking the target.
-	if ( NPC->enemy && NPC->client )
-	{
-		NPC->client->renderInfo.headYawRangeLeft   = 45;
-		NPC->client->renderInfo.headYawRangeRight  = 45;
-		NPC->client->renderInfo.headPitchRangeUp   = 25;
-		NPC->client->renderInfo.headPitchRangeDown = 25;
-
-		NPC_SetLookTarget( NPC, NPC->enemy->s.number, level.time + 200 );
 	}
 
-	// Turn the walker body toward the enemy while moving so we don't end up
-	// chasing sideways with the head twisted.
 	if ( NPC->enemy )
 	{
 		vec3_t selfSpot, targetSpot, dir, ang;
@@ -364,61 +385,9 @@ void ATST_Hunt( qboolean visible, qboolean advance )
 		NPCInfo->desiredYaw = AngleNormalize360( ang[YAW] );
 		NPCInfo->desiredPitch = 0.0f;
 	}
-	}
 
 	NPCInfo->combatMove = qtrue;
 	NPC_MoveToGoal( qtrue );
-
-	// AT-STs are large and frequently get hung up on door lips, narrow corners,
-	// and small props. The generic steering system will mark them blocked, but
-	// walkers cannot fly/jump to resolve it, so we apply a conservative unstick.
-	//
-	// This is intentionally simple: a short reverse + yaw bias away from the
-	// blocker. It does not change weapons/saber logic and only runs when blocked.
-	memset( &info, 0, sizeof( info ) );
-	NAV_GetLastMove( &info );
-
-	blockedFor = 0;
-	if ( ( NPCInfo->aiFlags & NPCAI_BLOCKED ) && NPCInfo->blockedDebounceTime )
-	{
-		blockedFor = level.time - NPCInfo->blockedDebounceTime;
-	}
-
-	if ( ( info.flags & ( NIF_BLOCKED | NIF_COLLISION ) ) || blockedFor > 1000 )
-	{
-		// Don't try to walk through the enemy.
-		if ( info.blocker == NPC->enemy )
-		{
-			ucmd.forwardmove = 0;
-			ucmd.rightmove = 0;
-			return;
-		}
-
-		// Start a short unstick window.
-		if ( TIMER_Done( NPC, "atstUnstick" ) )
-		{
-			// Store a stable turn direction in localState: +1 or -1.
-			NPCInfo->localState = ( Q_irand( 0, 1 ) ? 1 : -1 );
-			TIMER_Set( NPC, "atstUnstick", Q_irand( 700, 1100 ) );
-			TIMER_Set( NPC, "atstUnstickBack", Q_irand( 250, 400 ) );
-		}
-
-		// Back up briefly to clear door lips/corners, then drive forward again.
-		if ( !TIMER_Done( NPC, "atstUnstickBack" ) )
-		{
-			ucmd.forwardmove = -127;
-		}
-		else
-		{
-			ucmd.forwardmove = 127;
-		}
-		ucmd.rightmove = 0;
-
-		// Apply a small yaw bias to arc around the obstruction.
-		NPCInfo->desiredPitch = 0.0f;
-		NPCInfo->desiredYaw = AngleNormalize360( ( NPC->client ? NPC->client->ps.viewangles[YAW] : NPC->r.currentAngles[YAW] ) + ( (float)NPCInfo->localState * 35.0f ) );
-	}
-	
 	NPC_UpdateAngles( qtrue, qtrue );
 }
 
@@ -429,46 +398,20 @@ ATST_Ranged
 */
 void ATST_Ranged( qboolean visible, qboolean advance, qboolean altAttack, qboolean useMainGuns )
 {
-	if ( TIMER_Done( NPC, "atkDelay" ) && visible )
-	{
-		// Don't fire until we're facing the enemy; prevents shots/FX looking like
-		// they come out of the side while turning.
-		if ( !ATST_FacingEnemyForFire( 10.0f ) )
-		{
-			return;
-		}
-		// AT-ST weapon timing (kept similar to SP broad cadence)
-		TIMER_Set( NPC, "atkDelay", Q_irand( 500, 1500 ) );
+	qboolean canFire = qfalse;
 
+	ATST_LockUpperToLower();
+
+	if ( visible )
+	{
+		canFire = ATST_FacingEnemyForFire( 12.0f );
+	}
+
+	if ( TIMER_Done( NPC, "atkDelay" ) && visible && canFire )
+	{
+		TIMER_Set( NPC, "atkDelay", Q_irand( 500, 1500 ) );
 		ATST_EnsureBolts();
 
-	// While engaged, keep the cockpit/head looking at the target.
-	// Keep the allowed head twist modest so the body will turn to follow,
-	// and we won't shoot far off to the side.
-	if ( NPC->enemy && NPC->client )
-	{
-		NPC->client->renderInfo.headYawRangeLeft   = 45;
-		NPC->client->renderInfo.headYawRangeRight  = 45;
-		NPC->client->renderInfo.headPitchRangeUp   = 25;
-		NPC->client->renderInfo.headPitchRangeDown = 25;
-
-		NPC->client->renderInfo.torsoYawRangeLeft   = 0;
-		NPC->client->renderInfo.torsoYawRangeRight  = 0;
-		NPC->client->renderInfo.torsoPitchRangeUp   = 0;
-		NPC->client->renderInfo.torsoPitchRangeDown = 0;
-
-		NPC_SetLookTarget( NPC, NPC->enemy->s.number, level.time + 200 );
-	}
-
-	// Ensure the walker can actually turn to face the target in MP.
-	if ( NPCInfo->stats.yawSpeed < 60 )
-	{
-		NPCInfo->stats.yawSpeed = 60;
-	}
-
-
-
-		// Drive animations/buttons, but actual projectiles are spawned directly from bolts.
 		if ( altAttack )
 		{
 			ucmd.buttons |= (BUTTON_ATTACK|BUTTON_ALT_ATTACK);
@@ -480,37 +423,18 @@ void ATST_Ranged( qboolean visible, qboolean advance, qboolean altAttack, qboole
 
 		if ( useMainGuns )
 		{
-				if ( !NPC || !NPC->client )
-				{
-					return;
-				}
-
-			// Front guns alternate left/right.
-			int bolt = ((level.time/150 + NPC->s.number) & 1) ? NPC->client->renderInfo.handLBolt : NPC->client->renderInfo.handRBolt;
-			ATST_FireEnergyNoSplash( bolt, ATST_MAIN_DAMAGE, ATST_MAIN_VEL );
+			ATST_FireMainBurst( ATST_MAIN_DAMAGE, ATST_MAIN_VEL );
 		}
 		else
 		{
-			// Rocket launcher: *flash4
 			ATST_FireRocket( (int)NPCInfo->genericBolt2, ATST_SIDE_ALT_DAMAGE, ATST_SIDE_ALT_NPC_VELOCITY,
-							ATST_SIDE_ALT_SPLASH_DAMAGE, ATST_SIDE_ALT_SPLASH_RADIUS );
+						ATST_SIDE_ALT_SPLASH_DAMAGE, ATST_SIDE_ALT_SPLASH_RADIUS );
 		}
 	}
 
 	if ( NPCInfo->scriptFlags & SCF_CHASE_ENEMIES )
 	{
-		// SP calls Hunt unconditionally, but in MP corridors this causes walkers to
-		// compress and look dumb. If we already have a clear shot and are within
-		// our minimum distance, hold position briefly and keep firing instead of
-		// continuously pushing forward.
-		if ( !visible || advance )
-		{
-			ATST_Hunt( visible, advance );
-		}
-		else if ( TIMER_Done( NPC, "atstHold" ) )
-		{
-			TIMER_Set( NPC, "atstHold", Q_irand( 300, 600 ) );
-		}
+		ATST_Hunt( visible, advance );
 	}
 }
 
@@ -552,24 +476,20 @@ void ATST_Attack( void )
 		return;
 	}
 
-/*
-SP-inspired outcome (careful):
-Face the enemy using head->head yaw, but DO NOT artificially boost turn rate or
-force immediate angle snaps. Those can make the cockpit/head outturn the legs
-while a player circles the AT-ST.
-*/
-if ( NPC->enemy )
-{
-    vec3_t selfHead, target, dir, ang;
-    CalcEntitySpot( NPC, SPOT_HEAD, selfHead );
-    CalcEntitySpot( NPC->enemy, SPOT_HEAD, target );
-    VectorSubtract( target, selfHead, dir );
-    vectoangles( dir, ang );
-    NPCInfo->desiredYaw   = AngleNormalize360( ang[YAW] );
-    NPCInfo->desiredPitch = 0.0f; // keep walker level
-}
+	ATST_LockUpperToLower();
 
-NPC_UpdateAngles( qtrue, qtrue );
+	if ( NPC->enemy )
+	{
+		vec3_t selfOrigin, target, dir, ang;
+		CalcEntitySpot( NPC, SPOT_ORIGIN, selfOrigin );
+		CalcEntitySpot( NPC->enemy, SPOT_HEAD, target );
+		VectorSubtract( target, selfOrigin, dir );
+		vectoangles( dir, ang );
+		NPCInfo->desiredYaw = AngleNormalize360( ang[YAW] );
+		NPCInfo->desiredPitch = 0.0f;
+	}
+
+	NPC_UpdateAngles( qtrue, qtrue );
 
 	// Keep the AT-ST out of the normal player weapon pipeline.
 	NPC_ChangeWeapon( WP_NONE );

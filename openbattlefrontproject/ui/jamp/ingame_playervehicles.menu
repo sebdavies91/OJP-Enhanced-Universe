@@ -1,0 +1,1574 @@
+//[NewMenus]
+//-----------------------------------
+// vehicles Skills
+//-----------------------------------
+//
+// This menu works the same as the ingame_playervehicles.menu.
+//
+
+{
+	menuDef 
+	{
+		name						"ingame_playervehicles"
+		visible						1
+		fullscreen					0
+//		outOfBoundsClick									// this closes the window if it gets a click out of the rectangle
+		rect						120 45 570 400
+		focusColor			0.82 0.84 0.88 1
+		style						1
+		border						1
+		descX						320
+		descY					421
+		descScale					1
+		descColor			0.82 0.84 0.88 1
+		descAlignment				ITEM_ALIGN_CENTER		
+		onOpen  
+		{ 
+			uiScript setForce "none"
+		}
+		onClose 
+		{ 
+			uiScript setForce "none"
+		//	open			ingame_player 
+		}
+		onEsc
+		{
+			close ingame_playervehicles ;
+		}
+		
+//------------------------------------------------------------------------------------------------
+// vehicles
+//------------------------------------------------------------------------------------------------
+
+		// vehicles Title
+		itemDef
+		{
+			name 				vehiclestitle
+			style				WINDOW_STYLE_FILLED
+			text				"Choose your vehicle"
+			rect			8 6 508 21
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			254
+			textaligny			-2
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0.1 0.1 0.1 0.5
+			font				3
+			textscale			1
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+		}
+		
+		itemDef
+		{
+			name				descbackground
+			style				0
+			rect				5 390 520 20
+			backcolor			0.1 0.1 0.1 0.5
+			forecolor			0.82 0.84 0.88 1
+			border				0
+			visible				1
+		}
+		
+		// Force points remaining
+		itemDef 
+		{
+			name				siderank
+			group				"playersettingforcegroup"
+			style				WINDOW_STYLE_EMPTY	
+			text				@MENUS_POINTS_REMAINING
+			ownerdraw			UI_FORCE_POINTS
+			rect				180 45 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			0
+			textaligny			0
+			font				2
+			textscale			0.7
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				1 
+			decoration
+		}
+			
+	
+	////////////////////////////////////////////////////////////////////////////////
+	// The Vehicles
+	////////////////////////////////////////////////////////////////////////////////
+		
+	// Force Ranks title		
+		itemDef 
+		{
+			name				forceranktitle
+			group				"playersettingforcegroup"
+			style				0	
+			text				"Vehicles"
+			rect				180 75 0 0
+			textalign			ITEM_ALIGN_RIGHT		
+			textalignx			0
+			textaligny			0
+						forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		   	1 
+			visible				1 
+			decoration
+		}
+
+		itemDef 
+		{
+			name				forceranktitle2
+			group				"playersettingforcegroup"
+			style				0	
+			text				@MENUS_1_2_3
+			rect				130 75 0 0
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			0
+						forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			font				4
+			textscale		    1
+			visible				1 
+			decoration
+		}
+		
+
+		// VehicleMount title
+		itemDef 
+		{
+			name					setsk_VEHICLEMOUNT
+			group					gunpowers
+			style					0	
+			text					"Vehicle Mount:"
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_VEHICLEMOUNT_labelblink
+			group					gunpowers
+			style					0	
+			text					"Vehicle Mount:"
+			rect					180 90 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+		
+		// VehicleMount assign
+		itemDef 
+		{
+			name					setsk_VEHICLEMOUNT
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_VEHICLEMOUNT
+			rect					80 90 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Vehicle Mount"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_VEHICLEMOUNT_blink
+				show			setsk_VEHICLEMOUNT_labelblink
+				setitemcolor		setsk_VEHICLEMOUNT	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_VEHICLEMOUNT_blink
+				hide			setsk_VEHICLEMOUNT_labelblink
+				setitemcolor		setsk_VEHICLEMOUNT	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_VEHICLEMOUNT_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_VEHICLEMOUNT
+			rect				80 90 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+	
+			// Light Vehicle A title
+		itemDef 
+		{
+			name					setsk_LIGHTVEHICLEA
+			group					gunpowers
+			style					0	
+			text					"74-Z / Tauntaun / Swoop:"
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_LIGHTVEHICLEA_labelblink
+			group					gunpowers
+			style					0	
+			text					"74-Z / Tauntaun / Swoop:"
+			rect					180 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Light Vehicle A assign
+		itemDef 
+		{
+			name					setsk_LIGHTVEHICLEA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_LIGHTVEHICLEA
+			rect					80 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Aratech 74-Z Speeder Bike / Hoth Tauntaun / Zephyr Swoop Speeder Bike"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_LIGHTVEHICLEA_blink
+				show			setsk_LIGHTVEHICLEA_labelblink
+				setitemcolor		setsk_LIGHTVEHICLEA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_LIGHTVEHICLEA_blink
+				hide			setsk_LIGHTVEHICLEA_labelblink
+				setitemcolor		setsk_LIGHTVEHICLEA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_LIGHTVEHICLEA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_LIGHTVEHICLEA
+			rect				80 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		
+		// Medium Vehicle A title
+		itemDef 
+		{
+			name					setsk_MEDIUMVEHICLEA
+			group					gunpowers
+			style					0	
+			text					"AT-ST / LandS. / Rancor:"
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_MEDIUMVEHICLEA_labelblink
+			group					gunpowers
+			style					0	
+			text					"AT-ST / LandS. / Rancor:"
+			rect					180 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Medium Vehicle A assign
+		itemDef 
+		{
+			name					setsk_MEDIUMVEHICLEA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_MEDIUMVEHICLEA
+			rect					80 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Kuat AT-ST Walker / SoroSuub X-34 LandSpeeder / Dathomir Rancor"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_MEDIUMVEHICLEA_blink
+				show			setsk_MEDIUMVEHICLEA_labelblink
+				setitemcolor		setsk_MEDIUMVEHICLEA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_MEDIUMVEHICLEA_blink
+				hide			setsk_MEDIUMVEHICLEA_labelblink
+				setitemcolor		setsk_MEDIUMVEHICLEA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_MEDIUMVEHICLEA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_MEDIUMVEHICLEA
+			rect				80 120 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+	
+		// Heavy Vehicle A title
+		itemDef 
+		{
+			name					setsk_HEAVYVEHICLEA
+			group					gunpowers
+			style					0	
+			text					"AT-AT / SnowS / Skiff:"
+			rect					180 135 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_HEAVYVEHICLEA_labelblink
+			group					gunpowers
+			style					0	
+			text					"AT-AT / SnowS / Skiff:"
+			rect					180 135 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Heavy Vehicle A assign
+		itemDef 
+		{
+			name					setsk_HEAVYVEHICLEA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_HEAVYVEHICLEA
+			rect					80 135 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Kuat AT-AT Walker / Incom T-47 SnowSpeeder / Pirate Skiff"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_HEAVYVEHICLEA_blink
+				show			setsk_HEAVYVEHICLEA_labelblink
+				setitemcolor		setsk_HEAVYVEHICLEA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_HEAVYVEHICLEA_blink
+				hide			setsk_HEAVYVEHICLEA_labelblink
+				setitemcolor		setsk_HEAVYVEHICLEA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_HEAVYVEHICLEA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_HEAVYVEHICLEA
+			rect				80 135 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		
+		// Fighter Ship A title
+		itemDef 
+		{
+			name					setsk_FIGHTERSHIPA
+			group					gunpowers
+			style					0	
+			text					"TIE Fight / X-Wing / TIE Inter:"
+			rect					180 150 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_FIGHTERSHIPA_labelblink
+			group					gunpowers
+			style					0	
+			text					"TIE Fight / X-Wing / TIE Inter:"
+			rect					180 150 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Fighter Ship A assign
+		itemDef 
+		{
+			name					setsk_FIGHTERSHIPA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_FIGHTERSHIPA
+			rect					80 150 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Sienar TIE Fighter / Incom T-65 X-Wing Fighter / Sienar TIE Interceptor"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_FIGHTERSHIPA_blink
+				show			setsk_FIGHTERSHIPA_labelblink
+				setitemcolor		setsk_FIGHTERSHIPA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_FIGHTERSHIPA_blink
+				hide			setsk_FIGHTERSHIPA_labelblink
+				setitemcolor		setsk_FIGHTERSHIPA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_FIGHTERSHIPA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_FIGHTERSHIPA
+			rect				80 150 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		// Bomber Ship A title
+		itemDef 
+		{
+			name					setsk_BOMBERSHIPA
+			group					gunpowers
+			style					0	
+			text					"TIE Bomb / Y-Wing / A-Wing:"
+			rect					180 165 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_BOMBERSHIPA_labelblink
+			group					gunpowers
+			style					0	
+			text					"TIE Bomb / Y-Wing / A-Wing:"
+			rect					180 165 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Bomber Ship A assign
+		itemDef 
+		{
+			name					setsk_BOMBERSHIPA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_BOMBERSHIPA
+			rect					80 165 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Sienar TIE Bomber / Koensayr BLT Y-Wing Bomber / Kuat A-Wing Fighter"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_BOMBERSHIPA_blink
+				show			setsk_BOMBERSHIPA_labelblink
+				setitemcolor		setsk_BOMBERSHIPA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_BOMBERSHIPA_blink
+				hide			setsk_BOMBERSHIPA_labelblink
+				setitemcolor		setsk_BOMBERSHIPA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_BOMBERSHIPA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_BOMBERSHIPA
+			rect				80 165 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+		// Transport Ship A title
+		itemDef 
+		{
+			name					setsk_TRANSPORTSHIPA
+			group					gunpowers
+			style					0	
+			text					"T-4A / YT-1300 / Firespray-31:"
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_TRANSPORTSHIPA_labelblink
+			group					gunpowers
+			style					0	
+			text					"T-4A / YT-1300 / Firespray-31:"
+			rect					180 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Transport Ship A assign
+		itemDef 
+		{
+			name					setsk_TRANSPORTSHIPA
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_TRANSPORTSHIPA
+			rect					80 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Sienar Laambda T-4A Shuttle / Corellian YT-1300 Freighter / Kuat Firespray-31N Patrol"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_TRANSPORTSHIPA_blink
+				show			setsk_TRANSPORTSHIPA_labelblink
+				setitemcolor		setsk_TRANSPORTSHIPA	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_TRANSPORTSHIPA_blink
+				hide			setsk_TRANSPORTSHIPA_labelblink
+				setitemcolor		setsk_TRANSPORTSHIPA	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_TRANSPORTSHIPA_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_TRANSPORTSHIPA
+			rect				80 180 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+					
+	
+			// Light Vehicle B title
+		itemDef 
+		{
+			name					setsk_LIGHTVEHICLEB
+			group					gunpowers
+			style					0	
+			text					"STAP / Eopie / FC-20:"
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_LIGHTVEHICLEB_labelblink
+			group					gunpowers
+			style					0	
+			text					"STAP / Eopie / FC-20:"
+			rect					430 105 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Light Vehicle B assign
+		itemDef 
+		{
+			name					setsk_LIGHTVEHICLEB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_LIGHTVEHICLEB
+			rect					330 105 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Baktoid STAP Speeder Bike / Naboo Eopie / Razalon FC-20 Speeder Bike"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_LIGHTVEHICLEB_blink
+				show			setsk_LIGHTVEHICLEB_labelblink
+				setitemcolor		setsk_LIGHTVEHICLEB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_LIGHTVEHICLEB_blink
+				hide			setsk_LIGHTVEHICLEB_labelblink
+				setitemcolor		setsk_LIGHTVEHICLEB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_LIGHTVEHICLEB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_LIGHTVEHICLEB
+			rect				330 105 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		
+		// Medium Vehicle B title
+		itemDef 
+		{
+			name					setsk_MEDIUMVEHICLEB
+			group					gunpowers
+			style					0	
+			text					"AAT / AT-PT / Bantha:"
+			rect					430 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_MEDIUMVEHICLEB_labelblink
+			group					gunpowers
+			style					0	
+			text					"AAT / AT-PT / Bantha:"
+			rect					430 120 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Medium Vehicle B assign
+		itemDef 
+		{
+			name					setsk_MEDIUMVEHICLEB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_MEDIUMVEHICLEB
+			rect					330 120 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Baktoid AAT Tank / Kuat AT-PT Walker / Tatooine Bantha"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_MEDIUMVEHICLEB_blink
+				show			setsk_MEDIUMVEHICLEB_labelblink
+				setitemcolor		setsk_MEDIUMVEHICLEB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_MEDIUMVEHICLEB_blink
+				hide			setsk_MEDIUMVEHICLEB_labelblink
+				setitemcolor		setsk_MEDIUMVEHICLEB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_MEDIUMVEHICLEB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_MEDIUMVEHICLEB
+			rect				330 120 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+	
+		// Heavy Vehicle B title
+		itemDef 
+		{
+			name					setsk_HEAVYVEHICLEB
+			group					gunpowers
+			style					0	
+			text					"Hailfire / AT-TE / N-1:"
+			rect					430 135 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_HEAVYVEHICLEB_labelblink
+			group					gunpowers
+			style					0	
+			text					"Hailfire / AT-TE / N-1:"
+			rect					430 135 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Heavy Vehicle B assign
+		itemDef 
+		{
+			name					setsk_HEAVYVEHICLEB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_HEAVYVEHICLEB
+			rect					330 135 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Baktoid IG-227 Hailfire Droid / Kuat AT-TE Walker / TheedCorps N-1 Starfighter"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_HEAVYVEHICLEB_blink
+				show			setsk_HEAVYVEHICLEB_labelblink
+				setitemcolor		setsk_HEAVYVEHICLEB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_HEAVYVEHICLEB_blink
+				hide			setsk_HEAVYVEHICLEB_labelblink
+				setitemcolor		setsk_HEAVYVEHICLEB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_HEAVYVEHICLEB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_HEAVYVEHICLEB
+			rect				330 135 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		
+		// Fighter Ship B title
+		itemDef 
+		{
+			name					setsk_FIGHTERSHIPB
+			group					gunpowers
+			style					0	
+			text					"Vulture / ARC-170 / Tri-Fight:"
+			rect					430 150 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_FIGHTERSHIPB_labelblink
+			group					gunpowers
+			style					0	
+			text					"Vulture / ARC-170 / Tri-Fight:"
+			rect					430 150 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Fighter Ship B assign
+		itemDef 
+		{
+			name					setsk_FIGHTERSHIPB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_FIGHTERSHIPB
+			rect					330 150 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Haor Chall Vulture Fighter / Incom ARC-170 Fighter / Colicoid Droid Tri-fighter"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_FIGHTERSHIPB_blink
+				show			setsk_FIGHTERSHIPB_labelblink
+				setitemcolor		setsk_FIGHTERSHIPB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_FIGHTERSHIPB_blink
+				hide			setsk_FIGHTERSHIPB_labelblink
+				setitemcolor		setsk_FIGHTERSHIPB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_FIGHTERSHIPB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_FIGHTERSHIPB
+			rect				330 150 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+		
+		// Bomber Ship B title
+		itemDef 
+		{
+			name					setsk_BOMBERSHIPB
+			group					gunpowers
+			style					0	
+			text					"24SB / LAAT / V-Wing:"
+			rect					430 165 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_BOMBERSHIPB_labelblink
+			group					gunpowers
+			style					0	
+			text					"24SB / LAAT / V-Wing:"
+			rect					430 165 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Bomber Ship B assign
+		itemDef 
+		{
+			name					setsk_BOMBERSHIPB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_BOMBERSHIPB
+			rect					330 165 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Belbullab 24SB Bomber / Rothana LAAT Gunship / Walex Blissex V-Wing Fighter"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_BOMBERSHIPB_blink
+				show			setsk_BOMBERSHIPB_labelblink
+				setitemcolor		setsk_BOMBERSHIPB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_BOMBERSHIPB_blink
+				hide			setsk_BOMBERSHIPB_labelblink
+				setitemcolor		setsk_BOMBERSHIPB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_BOMBERSHIPB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_BOMBERSHIPB
+			rect				330 165 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+
+		// Transport Ship B title
+		itemDef 
+		{
+			name					setsk_TRANSPORTSHIPB
+			group					gunpowers
+			style					0	
+			text					"STHPD / Ravensclaw / ST-70:"
+			rect					430 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible					1 
+			decoration
+		}
+		itemDef 
+		{
+			name					setsk_TRANSPORTSHIPB_labelblink
+			group					gunpowers
+			style					0	
+			text					"STHPD / Ravensclaw / ST-70:"
+			rect					430 180 110 15
+			textalign				ITEM_ALIGN_RIGHT												
+			textalignx				0
+			textaligny				0
+			font					4
+			textscale				1
+			textstyle			1
+					forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			visible			0
+			decoration
+		}
+			
+	
+		// Transport Ship B assign
+		itemDef 
+		{
+			name					setsk_TRANSPORTSHIPB
+			group					gunpowers
+			style					0	
+			ownerdraw				UI_FORCE_RANK_TRANSPORTSHIPB
+			rect					330 180 175 15
+			textalign				ITEM_ALIGN_RIGHT		
+			textalignx				115
+			textaligny				-5
+			textscale				.25        
+				forecolor			0.82 0.84 0.88 1
+			outlinecolor			.5 .5 .5 .5
+			backcolor				0 0 0 0
+			border					0
+			bordercolor				.33 .33 .33 1
+			descText				"Haor Chall STHPD Shuttle / Koensayr Ravensclaw Courier / Mandal Motors ST-70 Shuttle"
+			visible					1 
+			mouseEnter
+			{
+				
+			}
+
+			action 
+			{ 
+				play				"sound/interface/button1.mp3" ;
+				
+			}
+
+			mouseenter 
+			{ 
+				show			setsk_TRANSPORTSHIPB_blink
+				show			setsk_TRANSPORTSHIPB_labelblink
+				setitemcolor		setsk_TRANSPORTSHIPB	forecolor 0.82 0.84 0.88 1 ;
+			}
+			mouseexit 
+			{ 
+				hide			setsk_TRANSPORTSHIPB_blink
+				hide			setsk_TRANSPORTSHIPB_labelblink
+				setitemcolor		setsk_TRANSPORTSHIPB	forecolor 0.82 0.84 0.88 1 ;
+			}
+		}
+
+		itemDef 
+		{
+			name				setsk_TRANSPORTSHIPB_blink
+			group				gunpowers
+			style				0
+			ownerdraw			UI_FORCE_RANK_TRANSPORTSHIPB
+			rect				330 180 175 15
+			textalign			ITEM_ALIGN_RIGHT
+			textalignx			115
+			textaligny			-5
+			textscale			.25
+			textstyle			1
+			forecolor			0.82 0.84 0.88 1
+			outlinecolor		.5 .5 .5 .5
+			backcolor			0 0 0 0
+			border				0
+			bordercolor			.33 .33 .33 1
+			visible				0
+			decoration
+		}
+
+		
+	}
+}	
+//[/NewMenus]

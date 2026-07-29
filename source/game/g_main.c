@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 
 #include "g_local.h"
@@ -64,11 +64,11 @@ vmCvar_t	g_allowNPC;
 vmCvar_t	g_allowROQ;
 //[/ROQFILES]
 //[LastManStanding]
-vmCvar_t	ojp_lms;
-vmCvar_t	ojp_lmslives;
+vmCvar_t	obp_lms;
+vmCvar_t	obp_lmslives;
 //[Coop]
-vmCvar_t	ojp_liveExp;
-vmCvar_t	ojp_dodgemulti;
+vmCvar_t	obp_liveExp;
+vmCvar_t	obp_dodgemulti;
 //[/Coop]
 //[/LastManStanding]
 
@@ -148,6 +148,7 @@ vmCvar_t	g_mishapRegenTime;
 //[/SaberSys]
 
 vmCvar_t	g_spawnInvulnerability;
+vmCvar_t	g_spawnProtectionTime;
 vmCvar_t	g_forcePowerDisable;
 vmCvar_t	g_weaponDisable;
 vmCvar_t	g_itemDisable;
@@ -184,6 +185,7 @@ vmCvar_t	g_knockback;
 vmCvar_t	g_quadfactor;
 vmCvar_t	g_forcerespawn;
 vmCvar_t	g_siegeRespawn;
+vmCvar_t	g_siegeRespawnWaveTime;
 vmCvar_t	g_inactivity;
 vmCvar_t	g_debugMove;
 #ifndef FINAL_BUILD
@@ -194,6 +196,52 @@ vmCvar_t	g_debugviewlock;
 //[/SaberSys]
 #endif
 vmCvar_t	g_debugAlloc;
+vmCvar_t	g_debugAutoJoin;
+vmCvar_t	g_debugSiegeJoin;
+vmCvar_t	g_siegeBotClassBalance;
+vmCvar_t	g_siegeBotObjectiveAI;
+vmCvar_t	g_siegeObjectiveHints;
+vmCvar_t	g_siegeObjectiveHintInterval;
+vmCvar_t	g_siegeClassObjectiveHints;
+vmCvar_t	g_debugSiegeObjectives;
+vmCvar_t	g_ctfBotRoles;
+vmCvar_t	g_ctfBotCarrierAI;
+vmCvar_t	g_ctfBotReturnFlagPriority;
+vmCvar_t	g_ctfBotEscortAI;
+vmCvar_t	g_ctfAssistScoring;
+vmCvar_t	g_ctfEscortAssistRadius;
+vmCvar_t	g_ctfSpawnObjectiveAware;
+vmCvar_t	g_ctfStalemateTimer;
+vmCvar_t	g_ctfStalemateHintInterval;
+vmCvar_t	g_ctyBotRoles;
+vmCvar_t	g_ctyBotCarrierAI;
+vmCvar_t	g_ctyBotReturnPriority;
+vmCvar_t	g_ctyBotEscortAI;
+vmCvar_t	g_ctyAssistScoring;
+vmCvar_t	g_ctyEscortAssistRadius;
+vmCvar_t	g_ctySpawnObjectiveAware;
+vmCvar_t	g_ctyYsalamiriFeedback;
+vmCvar_t	g_debugCTYBotRoles;
+vmCvar_t	g_debugCTFBotRoles;
+vmCvar_t	g_teamBotRoles;
+vmCvar_t	g_teamBalanceMoveBotsFirst;
+vmCvar_t	g_teamSpawnFairness;
+vmCvar_t	g_ffaSpawnFairness;
+vmCvar_t	g_holocronSpawnFairness;
+vmCvar_t	g_holocronBotPriority;
+vmCvar_t	g_holocronMaxHeld;
+vmCvar_t	g_holocronDropOnDamage;
+vmCvar_t	g_holocronDropChance;
+vmCvar_t	g_holocronHints;
+vmCvar_t	g_holocronPlayerSpawnFairness;
+vmCvar_t	g_jediMasterBotAI;
+vmCvar_t	g_jediMasterAntiCamp;
+vmCvar_t	g_jediMasterHints;
+vmCvar_t	g_botTargetDiversity;
+vmCvar_t	g_debugTeamBotRoles;
+vmCvar_t	g_debugDuelQueue;
+vmCvar_t	g_debugPowerDuelQueue;
+vmCvar_t	g_duelQueueMode;
 vmCvar_t	g_debugServerSkel;
 vmCvar_t	g_weaponRespawn;
 vmCvar_t	g_weaponTeamRespawn;
@@ -218,7 +266,7 @@ vmCvar_t	g_AllowMapVote;
 vmCvar_t	g_AllowKickVote;
 
 //[ChatSpamProtection]
-vmCvar_t	ojp_chatProtectTime;
+vmCvar_t	obp_chatProtectTime;
 //[/ChatSpamProtection]
 //[/AdminSys]
 vmCvar_t	g_teamAutoJoin;
@@ -323,9 +371,9 @@ vmCvar_t	bot_thinklevel;
 vmCvar_t		g_showDuelHealths;
 
 //[CoOp]
-vmCvar_t		ojp_skipcutscenes;
-vmCvar_t		ojp_spmodel;
-vmCvar_t		ojp_spmodelrgb;
+vmCvar_t		obp_skipcutscenes;
+vmCvar_t		obp_spmodel;
+vmCvar_t		obp_spmodelrgb;
 //[/CoOp]
 
 //[AotCAI]
@@ -337,12 +385,12 @@ vmCvar_t		g_corpseRemovalTime;
 //[/NOBODYQUE]
 
 //[ExpandedMOTD]
-vmCvar_t		ojp_clientMOTD;
-vmCvar_t		ojp_MOTD;
+vmCvar_t		obp_clientMOTD;
+vmCvar_t		obp_MOTD;
 //[/ExpandedMOTD]
 
 //[DodgeSys]
-vmCvar_t		ojp_allowBodyDodge;
+vmCvar_t		obp_allowBodyDodge;
 //[/DodgeSys]
 
 //[DuelSys]
@@ -372,12 +420,12 @@ vmCvar_t	mapURL;
 //[/MapURLs]
 
 //[FFARespawnTimer]
-vmCvar_t		ojp_ffaRespawnTimer;
+vmCvar_t		obp_ffaRespawnTimer;
 //[/FFARespawnTimer]
 
-vmCvar_t		ojp_truebalance;//[TrueBalance]
+vmCvar_t		obp_truebalance;//[TrueBalance]
 
-vmCvar_t	ojp_modelscaleEnabled;//[ModelScale]
+vmCvar_t	obp_modelscaleEnabled;//[ModelScale]
 
 //SERENITY
 vmCvar_t		m_nerf;
@@ -433,11 +481,11 @@ static cvarTable_t		gameCvarTable[] = {
 	//[/ROQFILES]
 
 	//[LastManStanding]
-	{ &ojp_lms,"ojp_lastmanstanding","0", CVAR_LATCH,0,qfalse},
-	{ &ojp_lmslives,"ojp_lmslives","1", CVAR_LATCH,0,qfalse},
+	{ &obp_lms,"obp_lastmanstanding","0", CVAR_LATCH,0,qfalse},
+	{ &obp_lmslives,"obp_lmslives","1", CVAR_LATCH,0,qfalse},
 	//[Coop]
-	{ &ojp_liveExp, "ojp_liveexp","5",CVAR_LATCH,0,qfalse},
-	{ &ojp_dodgemulti, "ojp_dodgemulti","10.0",CVAR_LATCH,0,qfalse},
+	{ &obp_liveExp, "obp_liveexp","5",CVAR_LATCH,0,qfalse},
+	{ &obp_dodgemulti, "obp_dodgemulti","10.0",CVAR_LATCH,0,qfalse},
 	//[/Coop]
 	//[/LastManStanding]
 
@@ -525,7 +573,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_mishapRegenTime, "g_mishapRegenTime", "100", CVAR_ARCHIVE, 0, qtrue  },
 	//[/SaberSys]
 
-	{ &g_spawnInvulnerability, "g_spawnInvulnerability", "3000", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_spawnInvulnerability, "g_spawnInvulnerability", "0", CVAR_ARCHIVE, 0, qtrue  },
+	{ &g_spawnProtectionTime, "g_spawnProtectionTime", "0", CVAR_ARCHIVE, 0, qtrue  },
 
 	{ &g_forcePowerDisable, "g_forcePowerDisable", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
 	{ &g_weaponDisable, "g_weaponDisable", "0", CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_LATCH, 0, qtrue  },
@@ -559,6 +608,7 @@ static cvarTable_t		gameCvarTable[] = {
 
 	{ &g_teamAutoJoin, "g_teamAutoJoin", "0", CVAR_ARCHIVE  },
 	{ &g_teamForceBalance, "g_teamForceBalance", "0", CVAR_ARCHIVE  },
+	{ &g_teamBalanceMoveBotsFirst, "g_teamBalanceMoveBotsFirst", "1", CVAR_ARCHIVE, 0, qtrue },
 
 	{ &g_warmup, "g_warmup", "20", CVAR_ARCHIVE, 0, qtrue  },
 	//[FIXWARMUP]
@@ -598,7 +648,8 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_weaponTeamRespawn, "g_weaponTeamRespawn", "5", 0, 0, qtrue },
 	{ &g_adaptRespawn, "g_adaptrespawn", "1", 0, 0, qtrue  },		// Make weapons respawn faster with a lot of players.
 	{ &g_forcerespawn, "g_forcerespawn", "60", 0, 0, qtrue },		// One minute force respawn.  Give a player enough time to reallocate force.
-	{ &g_siegeRespawn, "g_siegeRespawn", "20", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue }, //siege respawn wave time
+	{ &g_siegeRespawn, "g_siegeRespawn", "20", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue }, // legacy siege respawn wave time
+	{ &g_siegeRespawnWaveTime, "g_siegeRespawnWaveTime", "0", CVAR_SERVERINFO | CVAR_ARCHIVE, 0, qtrue }, // optional override; 0 uses g_siegeRespawn
 	{ &g_inactivity, "g_inactivity", "0", 0, 0, qtrue },
 	{ &g_debugMove, "g_debugMove", "0", 0, 0, qfalse },
 #ifndef FINAL_BUILD
@@ -608,6 +659,51 @@ static cvarTable_t		gameCvarTable[] = {
 	//[/SaberSys]
 #endif
 	{ &g_debugAlloc, "g_debugAlloc", "0", 0, 0, qfalse },
+	{ &g_debugAutoJoin, "g_debugAutoJoin", "0", 0, 0, qfalse },
+	{ &g_debugSiegeJoin, "g_debugSiegeJoin", "0", 0, 0, qfalse },
+	{ &g_siegeBotClassBalance, "g_siegeBotClassBalance", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_siegeBotObjectiveAI, "g_siegeBotObjectiveAI", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_siegeObjectiveHints, "g_siegeObjectiveHints", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_siegeObjectiveHintInterval, "g_siegeObjectiveHintInterval", "90", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_siegeClassObjectiveHints, "g_siegeClassObjectiveHints", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_debugSiegeObjectives, "g_debugSiegeObjectives", "0", 0, 0, qfalse },
+	{ &g_ctfBotRoles, "g_ctfBotRoles", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfBotCarrierAI, "g_ctfBotCarrierAI", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfBotReturnFlagPriority, "g_ctfBotReturnFlagPriority", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfBotEscortAI, "g_ctfBotEscortAI", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfAssistScoring, "g_ctfAssistScoring", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfEscortAssistRadius, "g_ctfEscortAssistRadius", "512", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfSpawnObjectiveAware, "g_ctfSpawnObjectiveAware", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfStalemateTimer, "g_ctfStalemateTimer", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctfStalemateHintInterval, "g_ctfStalemateHintInterval", "30", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctyBotRoles, "g_ctyBotRoles", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctyBotCarrierAI, "g_ctyBotCarrierAI", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctyBotReturnPriority, "g_ctyBotReturnPriority", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctyBotEscortAI, "g_ctyBotEscortAI", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctyAssistScoring, "g_ctyAssistScoring", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctyEscortAssistRadius, "g_ctyEscortAssistRadius", "512", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctySpawnObjectiveAware, "g_ctySpawnObjectiveAware", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ctyYsalamiriFeedback, "g_ctyYsalamiriFeedback", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_debugCTYBotRoles, "g_debugCTYBotRoles", "0", 0, 0, qfalse },
+	{ &g_debugCTFBotRoles, "g_debugCTFBotRoles", "0", 0, 0, qfalse },
+	{ &g_teamBotRoles, "g_teamBotRoles", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_teamSpawnFairness, "g_teamSpawnFairness", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_ffaSpawnFairness, "g_ffaSpawnFairness", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_holocronSpawnFairness, "g_holocronSpawnFairness", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_holocronBotPriority, "g_holocronBotPriority", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_holocronMaxHeld, "g_holocronMaxHeld", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_holocronDropOnDamage, "g_holocronDropOnDamage", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_holocronDropChance, "g_holocronDropChance", "25", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_holocronHints, "g_holocronHints", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_holocronPlayerSpawnFairness, "g_holocronPlayerSpawnFairness", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_jediMasterBotAI, "g_jediMasterBotAI", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_jediMasterAntiCamp, "g_jediMasterAntiCamp", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_jediMasterHints, "g_jediMasterHints", "0", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_botTargetDiversity, "g_botTargetDiversity", "1", CVAR_ARCHIVE, 0, qtrue },
+	{ &g_debugTeamBotRoles, "g_debugTeamBotRoles", "0", 0, 0, qfalse },
+	{ &g_debugDuelQueue, "g_debugDuelQueue", "0", 0, 0, qfalse },
+	{ &g_debugPowerDuelQueue, "g_debugPowerDuelQueue", "0", 0, 0, qfalse },
+	{ &g_duelQueueMode, "g_duelQueueMode", "1", CVAR_ARCHIVE, 0, qtrue },
 	{ &g_debugServerSkel, "g_debugServerSkel", "0", CVAR_CHEAT, 0, qfalse },
 	{ &g_motd, "g_motd", "", 0, 0, qfalse },
 	{ &g_blood, "com_blood", "1", 0, 0, qfalse },
@@ -624,7 +720,7 @@ static cvarTable_t		gameCvarTable[] = {
 	{ &g_AllowKickVote, "g_AllowKickVote", "1", CVAR_ARCHIVE, 0, qfalse },
 
 	//[ChatSpamProtection]
-	{ &ojp_chatProtectTime, "ojp_chatProtectTime", "1000", CVAR_ARCHIVE, 0, qfalse },
+	{ &obp_chatProtectTime, "obp_chatProtectTime", "1000", CVAR_ARCHIVE, 0, qfalse },
 	//[/ChatSpamProtection]
 	//[/AdminSys]
 
@@ -788,9 +884,9 @@ static cvarTable_t		gameCvarTable[] = {
 	//[/mapURLs]
 
 	//[CoOp]
-	{ &ojp_skipcutscenes, "ojp_skipcutscenes", "0", CVAR_SERVERINFO|CVAR_ARCHIVE, 0, qtrue },
-	{ &ojp_spmodel, "ojp_spmodel", "jan", CVAR_ARCHIVE, 0, qtrue },
-	{ &ojp_spmodelrgb, "ojp_spmodelrgb", "255 255 255", CVAR_ARCHIVE, 0, qtrue },
+	{ &obp_skipcutscenes, "obp_skipcutscenes", "0", CVAR_SERVERINFO|CVAR_ARCHIVE, 0, qtrue },
+	{ &obp_spmodel, "obp_spmodel", "jan", CVAR_ARCHIVE, 0, qtrue },
+	{ &obp_spmodelrgb, "obp_spmodelrgb", "255 255 255", CVAR_ARCHIVE, 0, qtrue },
 	//[/CoOp]
 
 	//[AotCAI]
@@ -807,24 +903,24 @@ static cvarTable_t		gameCvarTable[] = {
 
 	//[ExpandedMOTD]
 	//This message of the day is printed in the center of a player's screen when they first join a server if they 
-	//have the appropriate version of OJP running.
-	{ &ojp_clientMOTD, "ojp_clientMOTD", "", CVAR_ARCHIVE, 0, qfalse },
+	//have the appropriate version of OBP running.
+	{ &obp_clientMOTD, "obp_clientMOTD", "", CVAR_ARCHIVE, 0, qfalse },
 	//This message of the day is printed in the center of a player's screen when they first join a server if they AREN'T
-	//running the right version of OJP.
-	{ &ojp_MOTD, "ojp_MOTD", "Welcome to Open Jedi Project Enhanced Universe!!!", CVAR_ARCHIVE, 0, qfalse },
+	//running the right version of OBP.
+	{ &obp_MOTD, "obp_MOTD", "Welcome to Open Battlefront Project!!!", CVAR_ARCHIVE, 0, qfalse },
 	//[/ExpandedMOTD]	
 
 	//[DodgeSys]
 	//toggles the use of Body Dodges, which are matrix-like moves that make the players 
 	//evade damage in exchange for DP.
-	{ &ojp_allowBodyDodge, "ojp_allowBodyDodge", "1", CVAR_SERVERINFO|CVAR_ARCHIVE, 0, qtrue },
+	{ &obp_allowBodyDodge, "obp_allowBodyDodge", "1", CVAR_SERVERINFO|CVAR_ARCHIVE, 0, qtrue },
 	//[/DodgeSys]
 	//[FFARespawnTimer]
-	{ &ojp_ffaRespawnTimer, "ojp_ffaRespawnTimer","0",CVAR_ARCHIVE,0,qtrue},
+	{ &obp_ffaRespawnTimer, "obp_ffaRespawnTimer","0",CVAR_ARCHIVE,0,qtrue},
 	//[/FFARespawnTimer]
-	{ &ojp_truebalance, "ojp_trueBalance","0",CVAR_ARCHIVE|CVAR_LATCH,0,qtrue},  //[TrueBalance]
+	{ &obp_truebalance, "obp_trueBalance","0",CVAR_ARCHIVE|CVAR_LATCH,0,qtrue},  //[TrueBalance]
 
-	{ &ojp_modelscaleEnabled, "ojp_modelscaleenabled","1", CVAR_ARCHIVE ,0,qtrue},//[ModelScale]
+	{ &obp_modelscaleEnabled, "obp_modelscaleenabled","1", CVAR_ARCHIVE ,0,qtrue},//[ModelScale]
 	{ &m_nerf, "nerf", "0", CVAR_INTERNAL | CVAR_SERVERINFO, 0 , qtrue },
 	{ &m_grapple, "grapple", "0", CVAR_INTERNAL | CVAR_SERVERINFO, 0 , qtrue },
 	
@@ -1715,6 +1811,121 @@ PLAYER COUNTING / SCORE SORTING
 ========================================================================
 */
 
+
+/*
+=====================
+G_ShouldAutoQueueClient
+
+Auto-join disabled should only protect human players from being pulled out of
+free spectator state just because they connected. Bots may still be used to
+fill Duel/Power Duel slots, and humans who explicitly pressed Join Game are
+queued by SetTeam() as TEAM_SPECTATOR + SPECTATOR_NOT.
+=====================
+*/
+static qboolean G_ShouldAutoQueueClient( int clientNum, qboolean powerDuel )
+{
+	gclient_t *client = &level.clients[clientNum];
+	qboolean isBot = (g_entities[clientNum].r.svFlags & SVF_BOT) ? qtrue : qfalse;
+
+	if ( client->pers.connected != CON_CONNECTED ) {
+		return qfalse;
+	}
+	if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
+		return qfalse;
+	}
+	if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD ||
+		client->sess.spectatorClient < 0 ) {
+		return qfalse;
+	}
+
+	if ( !g_teamAutoJoin.integer && !isBot &&
+		client->sess.spectatorState != SPECTATOR_NOT ) {
+		if ( (powerDuel && g_debugPowerDuelQueue.integer) ||
+			(!powerDuel && g_debugDuelQueue.integer) ||
+			g_debugAutoJoin.integer ) {
+			G_Printf( "%s queue: keeping human %i as free spectator because g_teamAutoJoin is 0\n",
+				powerDuel ? "PowerDuel" : "Duel", clientNum );
+		}
+		return qfalse;
+	}
+
+	return qtrue;
+}
+
+static int G_DuelRoundsPlayed( gclient_t *client )
+{
+	return client->sess.wins + client->sess.losses;
+}
+
+/*
+=====================
+G_DuelQueueCandidateIsBetter
+
+g_duelQueueMode:
+0 = classic spectatorTime queue
+1 = fewest rounds fought, then spectatorTime (default)
+2 = humans before bots, then fewest rounds, then spectatorTime
+3 = random among equally least-used candidates
+=====================
+*/
+static qboolean G_DuelQueueCandidateIsBetter( int candidateNum, gclient_t *bestClient )
+{
+	gclient_t *candidate = &level.clients[candidateNum];
+	int mode = g_duelQueueMode.integer;
+
+	if ( !bestClient ) {
+		return qtrue;
+	}
+
+	if ( mode == 2 ) {
+		qboolean candidateBot = (g_entities[candidateNum].r.svFlags & SVF_BOT) ? qtrue : qfalse;
+		int bestNum = bestClient - level.clients;
+		qboolean bestBot = (g_entities[bestNum].r.svFlags & SVF_BOT) ? qtrue : qfalse;
+
+		if ( candidateBot != bestBot ) {
+			return bestBot ? qtrue : qfalse;
+		}
+	}
+
+	if ( mode >= 1 ) {
+		int candidateRounds = G_DuelRoundsPlayed( candidate );
+		int bestRounds = G_DuelRoundsPlayed( bestClient );
+
+		if ( candidateRounds != bestRounds ) {
+			return candidateRounds < bestRounds;
+		}
+
+		if ( mode == 3 ) {
+			return Q_irand( 0, 1 ) ? qtrue : qfalse;
+		}
+	}
+
+	return candidate->sess.spectatorTime < bestClient->sess.spectatorTime;
+}
+
+static void G_DebugDuelQueuePick( qboolean powerDuel, const char *reason, int clientNum, int duelTeam )
+{
+	if ( (powerDuel && !g_debugPowerDuelQueue.integer) ||
+		(!powerDuel && !g_debugDuelQueue.integer) ) {
+		return;
+	}
+
+	if ( clientNum < 0 ) {
+		G_Printf( "%s queue: no candidate for %s\n", powerDuel ? "PowerDuel" : "Duel", reason );
+		return;
+	}
+
+	G_Printf( "%s queue: selected client %i for %s%s%s, rounds=%i, spectatorTime=%i\n",
+		powerDuel ? "PowerDuel" : "Duel",
+		clientNum,
+		reason,
+		powerDuel ? " team=" : "",
+		(powerDuel && duelTeam == DUELTEAM_LONE) ? "LONE" :
+			((powerDuel && duelTeam == DUELTEAM_DOUBLE) ? "DOUBLE" : ""),
+		G_DuelRoundsPlayed( &level.clients[clientNum] ),
+		level.clients[clientNum].sess.spectatorTime );
+}
+
 /*
 =============
 AddTournamentPlayer
@@ -1727,6 +1938,7 @@ void AddTournamentPlayer( void ) {
 	int			i;
 	gclient_t	*client;
 	gclient_t	*nextInLine;
+	int			nextClientNum;
 
 	if ( level.numPlayingClients >= 2 ) {
 		return;
@@ -1738,38 +1950,46 @@ void AddTournamentPlayer( void ) {
 //	}
 
 	nextInLine = NULL;
+	nextClientNum = -1;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		client = &level.clients[i];
-		if ( client->pers.connected != CON_CONNECTED ) {
+
+		if ( !G_ShouldAutoQueueClient( i, qfalse ) ) {
 			continue;
 		}
 		if (!g_allowHighPingDuelist.integer && client->ps.ping >= 999)
 		{ //don't add people who are lagging out if cvar is not set to allow it.
 			continue;
 		}
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
-			continue;
-		}
-		// never select the dedicated follow or scoreboard clients
-		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD || 
-			client->sess.spectatorClient < 0  ) {
-			continue;
-		}
 
-		if ( !nextInLine || client->sess.spectatorTime < nextInLine->sess.spectatorTime ) {
+		// Fair Duel rotation is controlled by g_duelQueueMode, but still uses
+		// spectatorTime as the final stable tie-breaker.  This keeps bots able
+		// to start bot-only Duel rounds while humans with g_teamAutoJoin 0 only
+		// enter after pressing Join Game.
+		if ( G_DuelQueueCandidateIsBetter( i, nextInLine ) ) {
 			nextInLine = client;
+			nextClientNum = i;
 		}
 	}
 
 	if ( !nextInLine ) {
+		G_DebugDuelQueuePick( qfalse, "open Duel slot", -1, DUELTEAM_FREE );
 		return;
 	}
 
 	level.warmupTime = -1;
 
+	G_DebugDuelQueuePick( qfalse, "open Duel slot", nextClientNum, DUELTEAM_FREE );
+
+	// Clear stale private-duel state before promoting a client into the public
+	// Duel tournament slot.  Private duel flags can make bot AI reject the
+	// current tournament opponent.
+	nextInLine->ps.duelInProgress = qfalse;
+	nextInLine->ps.duelIndex = ENTITYNUM_NONE;
+
 	// set them to free-for-all team
-	SetTeam( &g_entities[ nextInLine - level.clients ], "f" );
+	SetTeam( &g_entities[ nextClientNum ], "f" );
 }
 
 /*
@@ -1791,6 +2011,10 @@ void RemoveTournamentLoser( void ) {
 	if ( level.clients[ clientNum ].pers.connected != CON_CONNECTED ) {
 		return;
 	}
+
+	// Clear stale private-duel state before moving the loser back to queue.
+	level.clients[ clientNum ].ps.duelInProgress = qfalse;
+	level.clients[ clientNum ].ps.duelIndex = ENTITYNUM_NONE;
 
 	// make them a spectator
 	SetTeam( &g_entities[ clientNum ], "s" );
@@ -1830,13 +2054,13 @@ void AddPowerDuelPlayers( void )
 	int			nonspecDoubles = 0;
 	gclient_t	*client;
 	gclient_t	*nextInLine;
+	int			nextClientNum;
+	int			desiredDuelTeam;
 
 	if ( level.numPlayingClients >= 3 )
 	{
 		return;
 	}
-
-	nextInLine = NULL;
 
 	G_PowerDuelCount(&nonspecLoners, &nonspecDoubles, qfalse);
 	if (nonspecLoners >= 1 && nonspecDoubles >= 2)
@@ -1844,59 +2068,76 @@ void AddPowerDuelPlayers( void )
 		return;
 	}
 
-	//Could be written faster, but it's not enough to care I suppose.
-	G_PowerDuelCount(&loners, &doubles, qtrue);
+	// Fill only the currently missing active Power Duel slots.  Do not assign
+	// DUELTEAM_LONE/DUELTEAM_DOUBLE to clients who are still merely waiting as
+	// spectators; queued spectators should remain TEAM_SPECTATOR + DUELTEAM_FREE
+	// until they are actually selected to enter an active slot.
+	loners = nonspecLoners;
+	doubles = nonspecDoubles;
+	desiredDuelTeam = DUELTEAM_FREE;
 
-	if (loners < 1 || doubles < 2)
-	{ //don't bother trying to spawn anyone yet if the balance is not even set up between spectators
+	if ( loners < 1 )
+	{
+		desiredDuelTeam = DUELTEAM_LONE;
+	}
+	else if ( doubles < 2 )
+	{
+		desiredDuelTeam = DUELTEAM_DOUBLE;
+	}
+	else
+	{
 		return;
 	}
 
-	//Count again, with only in-game clients in mind.
-	loners = nonspecLoners;
-	doubles = nonspecDoubles;
-//	G_PowerDuelCount(&loners, &doubles, qfalse);
+	nextInLine = NULL;
+	nextClientNum = -1;
 
 	for ( i = 0 ; i < level.maxclients ; i++ ) {
 		client = &level.clients[i];
-		if ( client->pers.connected != CON_CONNECTED ) {
-			continue;
-		}
-		if ( client->sess.sessionTeam != TEAM_SPECTATOR ) {
-			continue;
-		}
-		if (client->sess.duelTeam == DUELTEAM_FREE)
-		{
-			continue;
-		}
-		if (client->sess.duelTeam == DUELTEAM_LONE && loners >= 1)
-		{
-			continue;
-		}
-		if (client->sess.duelTeam == DUELTEAM_DOUBLE && doubles >= 2)
-		{
+
+		if ( !G_ShouldAutoQueueClient( i, qtrue ) ) {
 			continue;
 		}
 
-		// never select the dedicated follow or scoreboard clients
-		if ( client->sess.spectatorState == SPECTATOR_SCOREBOARD || 
-			client->sess.spectatorClient < 0  ) {
+		// A clean queued spectator has DUELTEAM_FREE and may be selected for
+		// whichever side is currently missing.  If a client already has a
+		// duelTeam from an explicit /duelteam command, only use them when that
+		// matching side is the missing side.
+		if ( client->sess.duelTeam != DUELTEAM_FREE &&
+			client->sess.duelTeam != desiredDuelTeam ) {
 			continue;
 		}
 
-		if ( !nextInLine || client->sess.spectatorTime < nextInLine->sess.spectatorTime ) {
+		// Fair Power Duel rotation uses the same configurable rule as Duel, but
+		// applies it to the currently missing side/team slot.
+		if ( G_DuelQueueCandidateIsBetter( i, nextInLine ) ) {
 			nextInLine = client;
+			nextClientNum = i;
 		}
 	}
 
 	if ( !nextInLine ) {
+		G_DebugDuelQueuePick( qtrue,
+			desiredDuelTeam == DUELTEAM_LONE ? "missing lone slot" : "missing double slot",
+			-1, desiredDuelTeam );
 		return;
 	}
 
 	level.warmupTime = -1;
 
+	G_DebugDuelQueuePick( qtrue,
+		desiredDuelTeam == DUELTEAM_LONE ? "missing lone slot" : "missing double slot",
+		nextClientNum, desiredDuelTeam );
+
+	// Assign the Power Duel side only now, when the client is actually being
+	// promoted out of spectator into an active slot.  Everyone else remains a
+	// normal queued spectator with DUELTEAM_FREE and no Power Duel overhead icon.
+	nextInLine->sess.duelTeam = desiredDuelTeam;
+	nextInLine->ps.duelInProgress = qfalse;
+	nextInLine->ps.duelIndex = ENTITYNUM_NONE;
+
 	// set them to free-for-all team
-	SetTeam( &g_entities[ nextInLine - level.clients ], "f" );
+	SetTeam( &g_entities[ nextClientNum ], "f" );
 
 	//Call recursively until everyone is in
 	AddPowerDuelPlayers();
@@ -1983,10 +2224,14 @@ void RemoveDuelDrawLoser(void)
 
 	if (clFailure != 2)
 	{
+		level.clients[ level.sortedClients[clFailure] ].ps.duelInProgress = qfalse;
+		level.clients[ level.sortedClients[clFailure] ].ps.duelIndex = ENTITYNUM_NONE;
 		SetTeam( &g_entities[ level.sortedClients[clFailure] ], "s" );
 	}
 	else
 	{ //we could be more elegant about this, but oh well.
+		level.clients[ level.sortedClients[1] ].ps.duelInProgress = qfalse;
+		level.clients[ level.sortedClients[1] ].ps.duelIndex = ENTITYNUM_NONE;
 		SetTeam( &g_entities[ level.sortedClients[1] ], "s" );
 	}
 }
@@ -2383,6 +2628,15 @@ void CalculateRanks( void ) {
 	}
 
 	// see if it is time to end the level
+	if (g_gametype.integer == GT_CTF)
+	{
+		G_CTFStalemateHintsThink();
+	}
+	else if (g_gametype.integer == GT_CTY)
+	{
+		G_CTYYsalamiriFeedbackThink();
+	}
+
 	CheckExitRules();
 
 	// if we are at the intermission or in multi-frag Duel game mode, send the new info to everyone
@@ -3111,7 +3365,7 @@ void CheckLMS()
 {
 	int i;
 	if (!LMSReset //not already reseting
-		&& ojp_lms.integer > 0 && BG_IsLMSGametype(g_gametype.integer) 
+		&& obp_lms.integer > 0 && BG_IsLMSGametype(g_gametype.integer) 
 		&& LMS_EnoughPlayers())
 	{//check to see if there's only one LAST MAN STANDING!
 		int		counts[TEAM_NUM_TEAMS];
@@ -3152,7 +3406,7 @@ void CheckLMS()
 		for ( i = 0; i < level.numNonSpectatorClients; i ++ )
 		{
 			gentity_t *ent = &g_entities[level.sortedClients[i]];
-			ent->lives = (ojp_lmslives.integer >= 1) ? ojp_lmslives.integer : 1;
+			ent->lives = (obp_lmslives.integer >= 1) ? obp_lmslives.integer : 1;
 			if(ent->health <= 0 || ent->client->tempSpectate > level.time)
 			{
 				respawn(ent);
@@ -3605,7 +3859,9 @@ void CheckTournament( void ) {
 
 	if ( g_gametype.integer == GT_DUEL )
 	{
-		// pull in a spectator if needed
+		// Keep the normal Duel tournament queue running.  AddTournamentPlayer()
+		// itself skips human spectators when g_teamAutoJoin is disabled, but
+		// still allows bots to fill Duel slots.
 		if ( level.numPlayingClients < 2 && !level.intermissiontime && !level.intermissionQueued ) {
 			AddTournamentPlayer();
 
@@ -3804,7 +4060,16 @@ void CheckTournament( void ) {
 			counts[TEAM_BLUE] = TeamCount( -1, TEAM_BLUE );
 			counts[TEAM_RED] = TeamCount( -1, TEAM_RED );
 
-			if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
+			if (g_gametype.integer == GT_SIEGE)
+			{
+				// Siege may be started/tested with only one occupied side.
+				// Team balancing is still handled by g_teamForceBalance when
+				// players actually choose teams.
+				if (counts[TEAM_RED] < 1 && counts[TEAM_BLUE] < 1) {
+					notEnough = qtrue;
+				}
+			}
+			else if (counts[TEAM_RED] < 1 || counts[TEAM_BLUE] < 1) {
 				notEnough = qtrue;
 			}
 		} else if ( level.numPlayingClients < 2 ) {
@@ -4346,7 +4611,60 @@ extern void Jedi_Decloak( gentity_t *self );
 qboolean G_PointInBounds( vec3_t point, vec3_t mins, vec3_t maxs );
 
 int g_siegeRespawnCheck = 0;
-int ojp_ffaRespawnTimerCheck =0;//[FFARespawnTimer]
+int obp_ffaRespawnTimerCheck =0;//[FFARespawnTimer]
+
+int G_SiegeRespawnWaveInterval(void)
+{
+	int seconds;
+
+	if (g_gametype.integer != GT_SIEGE)
+	{
+		return 0;
+	}
+
+	// New cvar is an override only. Keep g_siegeRespawn compatibility when it is 0.
+	seconds = g_siegeRespawnWaveTime.integer;
+	if (seconds <= 0)
+	{
+		seconds = g_siegeRespawn.integer;
+	}
+
+	if (seconds <= 0)
+	{
+		return 0;
+	}
+
+	if (seconds < 1)
+	{
+		seconds = 1;
+	}
+	else if (seconds > 120)
+	{
+		seconds = 120;
+	}
+
+	return seconds * 1000;
+}
+
+int G_SiegeRespawnWaveMarkerTime(void)
+{
+	int waveTime = G_SiegeRespawnWaveInterval();
+	int markerTime;
+
+	if (!waveTime)
+	{
+		return 0;
+	}
+
+	// Keep the temporary spectator marker alive for at least two waves.
+	markerTime = waveTime * 2;
+	if (markerTime < 20000)
+	{
+		markerTime = 20000;
+	}
+
+	return markerTime;
+}
 
 //[AREAPORTALFIX]
 void SetMoverState( gentity_t *ent, moverState_t moverState, int time );
@@ -4381,7 +4699,7 @@ void G_RunFrame( int levelTime ) {
 	// eventually crashing due to temp allocator tail drift.
 
 	if (g_gametype.integer == GT_SIEGE &&
-		g_siegeRespawn.integer &&
+		G_SiegeRespawnWaveInterval() &&
 		g_siegeRespawnCheck < level.time)
 	{ //check for a respawn wave
 		int i = 0;
@@ -4400,14 +4718,19 @@ void G_RunFrame( int levelTime ) {
 			i++;
 		}
 
-		g_siegeRespawnCheck = level.time + g_siegeRespawn.integer * 1000;
+		g_siegeRespawnCheck = level.time + G_SiegeRespawnWaveInterval();
+	}
+
+	if (g_gametype.integer == GT_SIEGE)
+	{
+		G_SiegeObjectiveHintsThink();
 	}
 
 	//[FFARespawnTimer]
 	if ((g_gametype.integer == GT_FFA || g_gametype.integer == GT_TEAM
 		|| g_gametype.integer == GT_CTF) &&
-		ojp_ffaRespawnTimer.integer &&
-		ojp_ffaRespawnTimerCheck < level.time)
+		obp_ffaRespawnTimer.integer &&
+		obp_ffaRespawnTimerCheck < level.time)
 	{
 		int i = 0;
 		gentity_t *clEnt;
@@ -4425,7 +4748,7 @@ void G_RunFrame( int levelTime ) {
 			i++;
 		}
 
-		ojp_ffaRespawnTimerCheck = level.time + 15000;
+		obp_ffaRespawnTimerCheck = level.time + 15000;
 	}
 	//[/FFARespawnTimer]
 
@@ -4862,8 +5185,11 @@ void G_RunFrame( int levelTime ) {
 			}
 			else if (ent->client->ps.jetpackFuel < 100 && (ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_FLAMETHROWER)))
 			{	
+				if (ent->client->jetPackDebRecharge < level.time)
+				{
 					ent->client->ps.jetpackFuel++;
-					ent->client->jetPackDebRecharge = level.time + JETPACK_REFUEL_RATE;	
+					ent->client->jetPackDebRecharge = level.time + JETPACK_REFUEL_RATE;
+				}	
 			}
 			}
 
@@ -4948,8 +5274,11 @@ void G_RunFrame( int levelTime ) {
 			}
 			else if (ent->client->ps.cloakFuel < 100 && (ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_CLOAK) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_ELECTROSHOCKER) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_SPHERESHIELD) || ent->client->ps.stats[STAT_HOLDABLE_ITEMS] & (1 << HI_OVERLOAD)))
 			{	
+				if (ent->client->cloakDebRecharge < level.time)
+				{
 					ent->client->ps.cloakFuel++;
-					ent->client->cloakDebRecharge = level.time + CLOAK_REFUEL_RATE;		
+					ent->client->cloakDebRecharge = level.time + CLOAK_REFUEL_RATE;
+				}		
 			}
 			}
 
@@ -5154,3 +5483,10 @@ const char *G_GetStringEdString(char *refSection, char *refName)
 	Com_sprintf(text, sizeof(text), "@@@%s", refName);
 	return text;
 }
+
+qboolean G_UsingSPMapProgression( void )
+{
+	return level.spMapProgression;
+}
+
+

@@ -222,7 +222,7 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	{	0,	10,	10,	10	},	//SK_BACTA			//bacta medikits skill
 	{	0,	5,	8,	10	},	//SK_FLAMETHROWER	//flamethrower skill
 	{	0,	3,  6,  10	},	//SK_BOWCASTER,		//bowcaster skill
-	{	0,	10,	0,	0	},	//SK_FORCEFIELD,	//forcefield skill
+	{	0,	10,	10,	10	},	//SK_FORCEFIELD,	//forcefield skill
 	{	0,	4,	8,	10	},	//SK_CLOAK,		//cloaking device skill
 	{	0,	5,	8,	10	},	//SK_SEEKER,		//seeker droid skill
 	{	0,  5,	8,	10	},	//SK_SENTRY,		//sentry gun skill
@@ -243,7 +243,7 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	{	0,	8,	8,	10	},	//SK_CONCUSSION	
 	{	0,	1,	5,	10	},	//SK_OLD
 	{	0,	5,	8,	10	},	//SK_EWEB
-	{	0,	10,	0,	0	},	//SK_BINOCULARS
+	{	0,	5,	8,	10	},	//SK_BINOCULARS
 	{	0,	1,	5,	10	},	//SK_WRIST,		//rocket launcher skill
 	{	0,	10,	10,	10	},	//SK_HEALTH,		//health skill
 	{	0,	10,	10,	10	},	//SK_SHIELDS,		//shield skill
@@ -255,7 +255,7 @@ int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS] = //0 == neutral
 	{	0,	1, 1,	 1	 },//SK_SQUADTEAMA
 	{	0,	1, 1,	 1	 },//SK_SQUADTEAMB	
 	{	0,	1,	1,	1	},	//SK_SQUADTEAMC 	
-	{	0,	10, 0,	 0	 },//SK_VEHICLEMOUNT
+	{	0,	10,	10,	10	},	//SK_VEHICLEMOUNT
 	{	0,	1, 1,	 1	 },//SK_LIGHTVEHICLEA,
 	{	0,	1, 1,	 1	 },//SK_MEDIUMVEHICLEA,
 	{	0,	1, 1,	 1	 },//SK_HEAVYVEHICLEA,
@@ -1535,9 +1535,9 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 							qboolean stillHaveForce = qfalse;
 							for(counter = 0; counter < NUM_TOTAL_SKILLS; counter++)
 							{
-								if(counter != FP_SEE && final_Powers[counter] && // 74145: Only count force powers and saber skills
-									(counter < NUM_FORCE_POWERS ||
-										(counter >= NUM_FORCE_POWERS+SK_BLUESTYLE && counter <= NUM_FORCE_POWERS+SK_STAFFSTYLE)))													   
+								if(counter != FP_SEE && final_Powers[counter] && // 74145: Only count real Force powers here.
+									(counter < NUM_FORCE_POWERS &&
+									 counter != FP_SABER_OFFENSE))
 								{
 									stillHaveForce = qtrue;
 									break;
@@ -1673,17 +1673,16 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 	}
 
 	//[ExpSys]
-	//Made Force Seeing Level 1 a pre-req to taking any additional force powers, except in the case of free sabers.
+	//Made Force Seeing Level 1 a pre-req to taking real Force powers; saber offense/styles are physical saber training.
 	if (final_Powers[FP_SEE] < 1)
-	{//can't use force powers if the player isn't Force Sensitive
+	{//can't use real Force powers if the player isn't Force Sensitive
 		for(i = 0; i < NUM_FORCE_POWERS; i++)
 		{
-			//don't need to worry about FP_SEE since it's already zero.
-			if(freeSaber 
-				&& (i == FP_SABER_OFFENSE 
-					|| i == FP_SABER_DEFENSE 
-					|| i == FP_SABERTHROW) )
-			{//free saber overrides the Force Sensitive requirement. 
+			// FP_SABER_OFFENSE is physical saber training, not Force sensitivity.
+			// FP_SABER_DEFENSE and FP_SABERTHROW still require FP_SEE because
+			// defense relies on dodge/precognition behavior and throw spends Force power.
+			if (i == FP_SABER_OFFENSE)
+			{
 				continue;
 			}
 			else
@@ -1692,12 +1691,9 @@ qboolean BG_LegalizedForcePowers(char *powerOut, int maxRank, qboolean freeSaber
 			}
 		}
 		//[StanceSelection]
-		final_Powers[NUM_FORCE_POWERS+SK_BLUESTYLE]=0;
-		final_Powers[NUM_FORCE_POWERS+SK_REDSTYLE]=0;
-		final_Powers[NUM_FORCE_POWERS+SK_PURPLESTYLE]=0;
-		final_Powers[NUM_FORCE_POWERS+SK_GREENSTYLE]=0;
-		final_Powers[NUM_FORCE_POWERS+SK_DUALSTYLE]=0;
-		final_Powers[NUM_FORCE_POWERS+SK_STAFFSTYLE]=0;
+		// Saber styles are physical saber training and do not require FP_SEE.
+		// Keep SK_BLUESTYLE, SK_REDSTYLE, SK_PURPLESTYLE, SK_GREENSTYLE,
+		// SK_DUALSTYLE and SK_STAFFSTYLE as selected.
 		
 		final_Powers[NUM_FORCE_POWERS+SK_PUSHA]=0;
 		final_Powers[NUM_FORCE_POWERS+SK_PULLA]=0;	
@@ -3792,6 +3788,8 @@ char *eventnames[] = {
 	"EV_FORCE_DEATHFIELDED",
 	"EV_FORCE_DEATHSIGHTED",
 	"EV_FORCE_BLINDED",
+	"EV_FORCE_CONFUSED",
+	"EV_FORCE_CORRUPTED",
 	"EV_BURNED",
 	"EV_FROZEN",
 	"EV_SHOCKED",

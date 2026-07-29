@@ -58,10 +58,10 @@ int		c_pmove = 0;
 
 float forceSpeedLevels[4] = 
 {
-	1, //rank 0?
-	1.75,
-	3.50,
-	7.00
+	1.0f,
+	1.75f,
+	3.0f,
+	5.0f
 };
 
 int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] = 
@@ -152,12 +152,703 @@ int forcePowerNeeded[NUM_FORCE_POWER_LEVELS][NUM_FORCE_POWERS] =
 	}
 };
 
+//[OverheatSys]
+float BG_HeatAccuracyScale(const playerState_t *ps)
+{
+	float heatFrac;
+	float denom;
+
+	if (!ps)
+	{
+		return 0.0f;
+	}
+
+	if (ps->stats[STAT_HEAT] <= HEAT_INACCURACY_START)
+	{
+		return 0.0f;
+	}
+
+	denom = (float)(HEAT_MAX - HEAT_INACCURACY_START);
+	if (denom <= 0.0f)
+	{
+		return 0.0f;
+	}
+
+	heatFrac = (ps->stats[STAT_HEAT] - HEAT_INACCURACY_START) / denom;
+	heatFrac = Com_Clamp(0.0f, 1.0f, heatFrac);
+
+	/*
+	Low heat should not make accurate weapons, especially the disruptor, feel
+	random.  Use a quadratic ramp so accuracy only begins degrading once the
+	player is actually hot, while max heat still reaches full spread.
+	*/
+	return heatFrac * heatFrac;
+}
+
+void BG_HeatCooldown(playerState_t *ps, int msec, int serverTime)
+{
+	int ticks;
+	int drop;
+
+	if (!ps || msec <= 0)
+	{
+		return;
+	}
+
+	if (ps->stats[STAT_HEAT] <= 0)
+	{
+		ps->stats[STAT_HEAT] = 0;
+		return;
+	}
+
+	/*
+	Heat should cool at the same basic speed that Force power regenerates:
+	one point per regen tick.  The default g_forceRegenTime is 100ms, so
+	HEAT_COOLDOWN_MSEC is also 100ms and both idle/busy cooldown amounts
+	are 1.  This prevents heat from instantly snapping back to 0 while still
+	keeping the code deterministic for prediction.
+	*/
+	ticks = (serverTime / HEAT_COOLDOWN_MSEC) - ((serverTime - msec) / HEAT_COOLDOWN_MSEC);
+	if (ticks <= 0)
+	{
+		return;
+	}
+
+	drop = ticks * ((ps->weaponTime > 0) ? HEAT_COOLDOWN_BUSY : HEAT_COOLDOWN_IDLE);
+
+	ps->stats[STAT_HEAT] -= drop;
+	if (ps->stats[STAT_HEAT] < 0)
+	{
+		ps->stats[STAT_HEAT] = 0;
+	}
+
+}
+
+static qboolean BG_HeatProductionSuppressed(const playerState_t *ps)
+{
+	if (!ps)
+	{
+		return qfalse;
+	}
+
+	/*
+	Rage and Valor are both represented by FP_RAGE variants.  While either
+	variant is active, and while Overload is active, attacks should not create
+	new heat.  Do not clear existing heat here; cooldown still handles that
+	normally and consistently in prediction.
+	*/
+	if (ps->fd.forcePowersActive & (1 << FP_RAGE))
+	{
+		return qtrue;
+	}
+
+	if (ps->powerups[PW_OVERLOADED])
+	{
+		return qtrue;
+	}
+
+	return qfalse;
+}
+
+static int BG_ReduceHeatCost(int cost)
+{
+	if (cost <= 0)
+	{
+		return 0;
+	}
+
+	/*
+	General heat production reduction.  Keep the calculation deterministic for
+	shared bg prediction, but make all attack heat less punishing before the
+	standard min/max clamp is applied.
+	*/
+	return (cost + 1) / 2;
+}
+
+
+static int BG_HeatWeaponOptionMask(int eFlags)
+{
+	int mask = 0;
+
+	if (eFlags & EF_WP_OPTION_2)
+	{
+		mask |= 1;
+	}
+	if (eFlags & EF_WP_OPTION_3)
+	{
+		mask |= 2;
+	}
+	if (eFlags & EF_WP_OPTION_4)
+	{
+		mask |= 4;
+	}
+
+	return mask;
+}
+
+static qboolean BG_HeatHasWeaponOptions(int mask, int optionA, int optionB)
+{
+	int bitA = 0;
+	int bitB = 0;
+
+	switch (optionA)
+	{
+	case 2:
+		bitA = 1;
+		break;
+	case 3:
+		bitA = 2;
+		break;
+	case 4:
+		bitA = 4;
+		break;
+	default:
+		break;
+	}
+
+	if (!optionB)
+	{
+		return (bitA && (mask & bitA)) ? qtrue : qfalse;
+	}
+
+	switch (optionB)
+	{
+	case 2:
+		bitB = 1;
+		break;
+	case 3:
+		bitB = 2;
+		break;
+	case 4:
+		bitB = 4;
+		break;
+	default:
+		break;
+	}
+
+	return (bitA && bitB && (mask & bitA) && (mask & bitB)) ? qtrue : qfalse;
+}
+
+static int BG_HeatNominalDamageForWeaponFire(const playerState_t *ps, qboolean altFire)
+{
+	int mask;
+
+	if (!ps)
+	{
+		return 0;
+	}
+
+	mask = BG_HeatWeaponOptionMask(ps->eFlags);
+
+	/*
+	Keep these nominal damage values matched to the WP_Fire* branches in
+	g_weapon.c.  This shared bg helper cannot see server-only skillLevel or exact
+	charge-time damage, so it uses the unskilled/base projectile damage and the
+	maximum nominal value for simple charged DP shots.
+
+	For explosive projectile modes, direct + splash damage are added because both
+	are part of the damage that fire mode can cause.  For beam/hitscan alt modes
+	that do not create splash damage, only direct damage is used.
+	*/
+	switch (ps->weapon)
+	{
+	case WP_STUN_BATON:
+		return 20;
+
+	case WP_MELEE:
+		return 10;
+
+	case WP_SABER:
+		/* Normal saber swings use BG_HeatCostForSaberMove().  This is only a
+		fallback for saber kicks/grapples routed through weapon heat. */
+		return 10;
+
+	case WP_BRYAR_PISTOL:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return altFire ? 15 : 50;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			/* Option 5 alt is a three-round burst: 20 nominal damage per round. */
+			return altFire ? 20 : 50;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return 40;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return 30;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return altFire ? 15 : 70;
+		}
+		return altFire ? 15 : 80;
+
+	case WP_BRYAR_OLD:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return altFire ? 450 : 26;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return altFire ? 75 : 50;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			/* Option 4 alt is a three-round burst: 13 nominal damage per round. */
+			return altFire ? 13 : 40;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return 40;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return altFire ? 15 : 60;
+		}
+		return altFire ? 15 : 80;
+
+	case WP_BLASTER:
+		/* Blaster dispatch routes alt-fire through the same subtype primary. */
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return 35;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return 75;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return 55;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return 25;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return 65;
+		}
+		return 45;
+
+	case WP_DISRUPTOR:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return altFire ? 400 : 200;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return altFire ? 350 : 175;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return altFire ? 200 : 100;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			/* Dispatch forces alt-fire through WP_FireDisruptor3(..., qfalse). */
+			return 75;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			/* Dispatch forces alt-fire through WP_FireDisruptor2(..., qfalse). */
+			return 125;
+		}
+		return altFire ? 300 : 150;
+
+	case WP_BOWCASTER:
+		if (altFire)
+		{
+			/* WP_FireWeapon() returns without firing for bowcaster alt-fire. */
+			return 0;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return 48;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return 105;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return 80;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return 96;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return 60;
+		}
+		return 120;
+
+	case WP_REPEATER:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return 30;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return altFire ? 300 : 20;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return altFire ? 45 : 35;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return altFire ? 150 : 15;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return 25;
+		}
+		return altFire ? 250 : 10;
+
+	case WP_DEMP2:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return altFire ? 10 : 5;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return altFire ? 10 : 5;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return altFire ? 10 : 5;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return 37;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return altFire ? 10 : 5;
+		}
+		return altFire ? 25 : 50;
+
+	case WP_FLECHETTE:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return altFire ? 580 : 60;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return altFire ? 33 : 16;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return altFire ? 380 : 35;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return 40;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return altFire ? 180 : 90;
+		}
+		return altFire ? 300 : 25;
+
+	case WP_ROCKET_LAUNCHER:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return 250;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return 250;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return 350;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return 550;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return 350;
+		}
+		return 450;
+
+	case WP_THERMAL:
+		return 450;
+
+	case WP_TRIP_MINE:
+		return 450;
+
+	case WP_DET_PACK:
+		return 450;
+
+	case WP_CONCUSSION:
+		if (BG_HeatHasWeaponOptions(mask, 2, 4))
+		{
+			return altFire ? 9 : 6;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 3))
+		{
+			return altFire ? 12 : 8;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 4, 0))
+		{
+			return altFire ? 600 : 350;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 3, 0))
+		{
+			return altFire ? 75 : 200;
+		}
+		if (BG_HeatHasWeaponOptions(mask, 2, 0))
+		{
+			return altFire ? 600 : 550;
+		}
+		return altFire ? 450 : 450;
+
+	case WP_EMPLACED_GUN:
+	case WP_TURRET:
+		return 45;
+
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+static int BG_HeatDefaultPrimaryDamageForWeapon(int weapon)
+{
+	switch (weapon)
+	{
+	case WP_STUN_BATON:
+		return 20;
+	case WP_MELEE:
+		return 10;
+	case WP_SABER:
+		return 10;
+	case WP_BRYAR_PISTOL:
+	case WP_BRYAR_OLD:
+		return 80;
+	case WP_BLASTER:
+	case WP_EMPLACED_GUN:
+	case WP_TURRET:
+		return 45;
+	case WP_DISRUPTOR:
+		return 150;
+	case WP_BOWCASTER:
+		return 120;
+	case WP_REPEATER:
+		return 10;
+	case WP_DEMP2:
+		return 50;
+	case WP_FLECHETTE:
+		return 25;
+	case WP_ROCKET_LAUNCHER:
+	case WP_THERMAL:
+	case WP_TRIP_MINE:
+	case WP_DET_PACK:
+	case WP_CONCUSSION:
+		return 450;
+	default:
+		break;
+	}
+
+	return 0;
+}
+
+static int BG_ScaleHeatCostForWeaponDamage(const playerState_t *ps, int cost, qboolean altFire)
+{
+	int primaryDamage;
+	int modeDamage;
+
+	if (!ps || cost <= 0)
+	{
+		return 0;
+	}
+
+	modeDamage = BG_HeatNominalDamageForWeaponFire(ps, altFire);
+	primaryDamage = BG_HeatDefaultPrimaryDamageForWeapon(ps->weapon);
+
+	if (modeDamage <= 0)
+	{
+		return 0;
+	}
+	if (primaryDamage <= 0)
+	{
+		return cost;
+	}
+
+	/*
+	Sub-weapon variants are selected by EF_WP_OPTION_* flags.  Scale the base
+	heat budget by the selected subtype's nominal damage so lower-damage variants
+	produce less heat and stronger variants produce more heat.  Round to nearest
+	integer before the existing global heat reduction/min/max clamp.
+	*/
+	return (cost * modeDamage + (primaryDamage / 2)) / primaryDamage;
+}
+
+qboolean BG_HeatCanSpend(const playerState_t *ps, int cost)
+{
+	if (!ps)
+	{
+		return qfalse;
+	}
+
+	if (BG_HeatProductionSuppressed(ps))
+	{
+		return qtrue;
+	}
+
+	if (cost <= 0)
+	{
+		return qtrue;
+	}
+
+	return (ps->stats[STAT_HEAT] + cost <= HEAT_MAX);
+}
+
+void BG_AddHeat(playerState_t *ps, int amount)
+{
+	if (!ps || amount <= 0)
+	{
+		return;
+	}
+
+	if (BG_HeatProductionSuppressed(ps))
+	{
+		return;
+	}
+
+	ps->stats[STAT_HEAT] += amount;
+	if (ps->stats[STAT_HEAT] > HEAT_MAX)
+	{
+		ps->stats[STAT_HEAT] = HEAT_MAX;
+	}
+
+}
+
+int BG_HeatCostForWeapon(const playerState_t *ps, int addTime, qboolean altFire)
+{
+	int cost;
+
+	if (!ps)
+	{
+		return 0;
+	}
+
+	if (BG_HeatProductionSuppressed(ps))
+	{
+		return 0;
+	}
+
+	if (ps->weapon == WP_NONE)
+	{
+		return 0;
+	}
+
+	/*
+	Use the weapon's primary cadence as the base heat budget, then scale the
+	selected fire/sub-fire mode by its damage relative to the weapon's default
+	primary damage.  This keeps EF_WP_OPTION_* sub-weapons proportional without
+	making alt-fire inherently hotter.
+	*/
+	addTime = weaponData[ps->weapon].fireTime;
+	if (addTime < 1)
+	{
+		addTime = altFire ? weaponData[ps->weapon].altFireTime : weaponData[ps->weapon].fireTime;
+	}
+	if (addTime < 1)
+	{
+		addTime = 100;
+	}
+
+	cost = addTime / 85;
+
+	if (ps->weapon == WP_SABER)
+	{
+		/* Normal saber swings use BG_HeatCostForSaberMove().  This fallback lets
+		saber kicks/grapples/special weapon-routed actions generate some heat. */
+		cost = 4;
+	}
+	else if (ps->weapon == WP_MELEE)
+	{
+		/* Punches/kicks/grapples are physical attacks and should build heat too. */
+		cost = 9;
+	}
+	else if (ps->weapon == WP_ROCKET_LAUNCHER || ps->weapon == WP_CONCUSSION || ps->weapon == WP_DEMP2)
+	{
+		cost += 6;
+	}
+	else if (ps->weapon == WP_REPEATER || ps->weapon == WP_BLASTER)
+	{
+		cost += 2;
+	}
+
+	cost = BG_ScaleHeatCostForWeaponDamage(ps, cost, altFire);
+	cost = BG_ReduceHeatCost(cost);
+
+	if (cost < HEAT_WEAPON_COST_MIN)
+	{
+		cost = HEAT_WEAPON_COST_MIN;
+	}
+	if (cost > HEAT_WEAPON_COST_MAX)
+	{
+		cost = HEAT_WEAPON_COST_MAX;
+	}
+
+	return cost;
+}
+
+int BG_HeatCostForSaberMove(const playerState_t *ps, int fatigueCost)
+{
+	int cost;
+
+	if (!ps || fatigueCost <= 0)
+	{
+		return 0;
+	}
+
+	if (BG_HeatProductionSuppressed(ps))
+	{
+		return 0;
+	}
+
+	cost = fatigueCost * HEAT_SABER_COST_SCALE;
+
+	if (ps->fd.saberAnimLevel == SS_DUAL || ps->fd.saberAnimLevel == SS_STAFF)
+	{
+		cost += 2;
+	}
+	// Rage/Valor heat suppression is handled before calculating the cost.
+	cost = BG_ReduceHeatCost(cost);
+
+	if (cost < HEAT_WEAPON_COST_MIN)
+	{
+		cost = HEAT_WEAPON_COST_MIN;
+	}
+	if (cost > HEAT_WEAPON_COST_MAX)
+	{
+		cost = HEAT_WEAPON_COST_MAX;
+	}
+
+	return cost;
+}
+//[/OverheatSys]
+
+
 float forceJumpHeight[NUM_FORCE_POWER_LEVELS] = 
 {
-	128,//normal jump (+stepheight+crouchdiff = 66) 
-	256,//(+stepheight+crouchdiff = 130) -- 96 was 150
-	768,//(+stepheight+crouchdiff = 226) -- 192 was 350
-	3072//(+stepheight+crouchdiff = 418)  -- 384	was 550
+	128,  // normal jump
+	256,  // Force Jump level 1
+	768,  // Force Jump level 2
+	3072  // Force Jump level 3
 };
 
 float forceJumpStrength[NUM_FORCE_POWER_LEVELS] = 
@@ -2767,7 +3458,8 @@ static qboolean PM_CheckJump( void )
 			else if(pm->cmd.upmove > 0 && pm->ps->velocity[2] < -10 )
 			{//can't keep jumping, turn on jetpack?
 #ifdef QAGAME
-				if(g_entities[pm->ps->clientNum].client && pm->ps->stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK) 
+				if(g_entities[pm->ps->clientNum].client && pm->ps->stats[STAT_HOLDABLE_ITEMS] & (1 << HI_JETPACK)
+					&& g_entities[pm->ps->clientNum].client->skillLevel[SK_JETPACK] >= FORCE_LEVEL_1
 					&& !g_entities[pm->ps->clientNum].client->jetPackOn)
 				{
 					ItemUse_Jetpack(&g_entities[pm->ps->clientNum]);
@@ -3467,12 +4159,15 @@ static qboolean PM_CheckJump( void )
 	}
 
 	//[FatigueSys]
-	if( pm->ps->fd.forcePower < FATIGUE_JUMP )
-	{//too tired to jump
+	// Normal level-0 jumps must remain available to non-Force users even when
+	// their Force pool is empty.  Force Jump levels 1+ still require Force
+	// points, but a jump must not add HEAT/fatigue; active Force Jump already
+	// drains Force through the FP_LEVITATION handling above.
+	if ( pm->ps->fd.forcePowerLevel[FP_LEVITATION] > FORCE_LEVEL_0
+		&& pm->ps->fd.forcePower < FATIGUE_JUMP )
+	{//not enough Force to use Force Jump
 		return qfalse;
 	}
-							
-	BG_AddFatigue(pm->ps, FATIGUE_JUMP);
 	//[/FatigueSys]
 
 	if ( pm->cmd.upmove > 0 )
@@ -7464,6 +8159,20 @@ void BG_ClearRocketLock( playerState_t *ps )
 	}
 }
 
+#ifdef QAGAME
+static void PM_SetDualGunFlagForWeapon( int weapon )
+{
+	if (pm->ps->clientNum < 0 || pm->ps->clientNum >= MAX_CLIENTS)
+	{
+		pm->ps->eFlags &= ~EF_DUAL_WEAPONS;
+		return;
+	}
+
+	G_SetDualGunEFlagForWeapon(g_entities[pm->ps->clientNum].client, weapon);
+}
+
+#endif
+
 /*
 ===============
 PM_BeginWeaponChange
@@ -7995,27 +8704,9 @@ void PM_FinishWeaponChange( void ) {
 	}
 	
 
-	pm->ps->eFlags &= ~EF_DUAL_WEAPONS;
-	
-	if(weapon == WP_BRYAR_PISTOL 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL] >= FORCE_LEVEL_3)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_DUAL_WEAPONS;
-	}
-	else if(weapon == WP_BRYAR_OLD 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD] >= FORCE_LEVEL_3)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_DUAL_WEAPONS;
-	}
-	else if(weapon == WP_STUN_BATON 
-		&& g_entities[pm->ps->clientNum].client->skillLevel[SK_WRIST] >= FORCE_LEVEL_3)
-	{//Changed weaps, add dual weaps
-		pm->ps->eFlags |= EF_DUAL_WEAPONS;
-	}
-	else
-	{
-	pm->ps->eFlags &= ~EF_DUAL_WEAPONS;		
-	}
+	//[DualGunsToggle]
+	PM_SetDualGunFlagForWeapon(weapon);
+	//[/DualGunsToggle]
 	
 	
 	pm->ps->eFlags2 &= ~EF2_NOALTFIRE;
@@ -8293,6 +8984,203 @@ void PM_RocketLock( float lockDist, qboolean vehicleLock )
 		pm->ps->rocketLockTime = -1;
 	}
 }
+
+#define PM_BURST_ROUNDS			3
+#define PM_BURST_INTERVAL			200
+#define PM_BRYAR_PISTOL2_BURST_RECOVERY	700
+#define PM_BRYAR_PISTOL5_BURST_RECOVERY	600
+#define PM_BRYAR_OLD4_BURST_RECOVERY		600
+#define PM_BRYAR_OLD2_BURST_RECOVERY		700
+#define PM_BLASTER2_ALT_BURST_RECOVERY	430
+#define PM_BLASTER2_FIRE_BURST_RECOVERY	650
+#define PM_BLASTER5_ALT_BURST_RECOVERY	500
+#define PM_BLASTER5_FIRE_BURST_RECOVERY	750
+
+/*
+Burst progress is stored in weaponChargeSubtractTime because these exact
+fire modes do not charge.  Unlike weaponChargeTime, this field is not copied
+to entityState.constantLight, so it cannot corrupt muzzle lights.
+
+   0: first round / idle
+  -2: first round fired; two rounds remain
+  -1: second round fired; one round remains
+
+Every round still requires the active fire button to be physically held.
+Releasing it at any point resets the state immediately and cancels the
+unfinished burst.  After the third round, the state returns to zero; if the
+button remains held, a new burst begins after the longer recovery delay.
+*/
+#define PM_BURST_TWO_REMAINING	(-2)
+#define PM_BURST_ONE_REMAINING	(-1)
+
+static int PM_GetWeaponOptionFlags(void)
+{
+	return pm->ps->eFlags & (EF_WP_OPTION_2|EF_WP_OPTION_3|EF_WP_OPTION_4);
+}
+
+static qboolean PM_IsBurstAltWeapon(void)
+{
+	const int weaponOptions = PM_GetWeaponOptionFlags();
+
+	if(pm->ps->weapon == WP_BRYAR_PISTOL)
+	{
+		return (weaponOptions == EF_WP_OPTION_2 ||
+			weaponOptions == (EF_WP_OPTION_2|EF_WP_OPTION_3));
+	}
+
+	if(pm->ps->weapon == WP_BRYAR_OLD)
+	{
+		return (weaponOptions == EF_WP_OPTION_2 ||
+			weaponOptions == EF_WP_OPTION_4);
+	}
+
+	if(pm->ps->weapon == WP_BLASTER)
+	{
+		return (weaponOptions == EF_WP_OPTION_2 ||
+			weaponOptions == (EF_WP_OPTION_2|EF_WP_OPTION_3));
+	}
+
+	return qfalse;
+}
+
+static qboolean PM_IsBurstPrimaryWeapon(void)
+{
+	const int weaponOptions = PM_GetWeaponOptionFlags();
+
+	/* Blaster variants 2 and 5 use the same three-round burst for primary
+	   and alternate fire.  Their primary recovery remains longer. */
+	return (pm->ps->weapon == WP_BLASTER &&
+		(weaponOptions == EF_WP_OPTION_2 ||
+		 weaponOptions == (EF_WP_OPTION_2|EF_WP_OPTION_3)));
+}
+
+static qboolean PM_IsActiveBurstMode(void)
+{
+	/* The existing firing code gives alternate fire priority when both
+	   buttons are held, so use the same priority here. */
+	if(pm->cmd.buttons & BUTTON_ALT_ATTACK)
+	{
+		return PM_IsBurstAltWeapon();
+	}
+
+	if(pm->cmd.buttons & BUTTON_ATTACK)
+	{
+		return PM_IsBurstPrimaryWeapon();
+	}
+
+	return qfalse;
+}
+
+static qboolean PM_IsBurstState(int state)
+{
+	return (state == PM_BURST_TWO_REMAINING ||
+		state == PM_BURST_ONE_REMAINING);
+}
+
+static int PM_BurstRoundsRemaining(void)
+{
+	const int state = pm->ps->weaponChargeSubtractTime;
+
+	if(state == PM_BURST_TWO_REMAINING)
+	{
+		return 2;
+	}
+
+	if(state == PM_BURST_ONE_REMAINING)
+	{
+		return 1;
+	}
+
+	return 0;
+}
+
+static void PM_CancelBurst(void)
+{
+	if(PM_IsBurstState(pm->ps->weaponChargeSubtractTime))
+	{
+		pm->ps->weaponChargeSubtractTime = 0;
+	}
+}
+
+static void PM_UpdateBurstInputState(void)
+{
+	if(!PM_IsActiveBurstMode())
+	{
+		/* Button-up, a non-burst fire mode, or a weapon change cancels any
+		   rounds that have not yet been fired.  Preserve real charge timers. */
+		PM_CancelBurst();
+		return;
+	}
+
+	if(!PM_IsBurstState(pm->ps->weaponChargeSubtractTime) &&
+		pm->ps->weaponChargeSubtractTime != 0)
+	{
+		/* Do not inherit a stale charge timestamp after changing variants. */
+		pm->ps->weaponChargeSubtractTime = 0;
+	}
+}
+
+static int PM_BurstDelay(qboolean altFire)
+{
+	const int weaponOptions = PM_GetWeaponOptionFlags();
+
+	/* First-to-second and second-to-third are short; third-to-first is long. */
+	if(PM_BurstRoundsRemaining() != 1)
+	{
+		return PM_BURST_INTERVAL;
+	}
+
+	if(pm->ps->weapon == WP_BRYAR_PISTOL &&
+		weaponOptions == (EF_WP_OPTION_2|EF_WP_OPTION_3))
+	{
+		return PM_BRYAR_PISTOL5_BURST_RECOVERY;
+	}
+
+	if(pm->ps->weapon == WP_BRYAR_PISTOL)
+	{
+		return PM_BRYAR_PISTOL2_BURST_RECOVERY;
+	}
+
+	if(pm->ps->weapon == WP_BRYAR_OLD)
+	{
+		if(weaponOptions == EF_WP_OPTION_4)
+		{
+			return PM_BRYAR_OLD4_BURST_RECOVERY;
+		}
+
+		return PM_BRYAR_OLD2_BURST_RECOVERY;
+	}
+
+	if(weaponOptions == (EF_WP_OPTION_2|EF_WP_OPTION_3))
+	{
+		return altFire ? PM_BLASTER5_ALT_BURST_RECOVERY :
+			PM_BLASTER5_FIRE_BURST_RECOVERY;
+	}
+
+	return altFire ? PM_BLASTER2_ALT_BURST_RECOVERY :
+		PM_BLASTER2_FIRE_BURST_RECOVERY;
+}
+
+static void PM_AdvanceBurstState(void)
+{
+	int *state = &pm->ps->weaponChargeSubtractTime;
+
+	if(*state == PM_BURST_TWO_REMAINING)
+	{
+		*state = PM_BURST_ONE_REMAINING;
+	}
+	else if(*state == PM_BURST_ONE_REMAINING)
+	{
+		/* Third round fired. Holding starts a new burst after recovery. */
+		*state = 0;
+	}
+	else
+	{
+		/* First round fired: two rounds remain while the trigger stays down. */
+		*state = PM_BURST_TWO_REMAINING;
+	}
+}
+
 //---------------------------------------
 static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh )
 //---------------------------------------
@@ -8333,115 +9221,30 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 		{
 		//------------------
 		case WP_BRYAR_PISTOL:
-			// alt-fire charges the weapon
-			//if ( pm->gametype == GT_SIEGE )
-			if (1)
+			if(pm->cmd.buttons & BUTTON_ALT_ATTACK)
 			{
-				if (pm->ps->eFlags2 & EF2_NOALTFIRE && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-					#ifdef QAGAME
-										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
-					#else
-										)
-					#endif*/
+				const int weaponOptions = PM_GetWeaponOptionFlags();
+
+				if(pm->ps->eFlags2 & EF2_NOALTFIRE)
 				{
 					charging = qfalse;
 					altFire = qfalse;
 				}
-				//[PistolLevel3]
-
-				//[PistolLevel3]
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-					#ifdef QAGAME
-										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
-					#else
-										)
-					#endif*/
+				else
 				{
-					charging = qtrue;
 					altFire = qtrue;
-				}
-				//[PistolLevel3]
 
-				//[PistolLevel3]
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
-					#ifdef QAGAME
-										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
-					#else
-										)
-					#endif*/
-				{
-					charging = qfalse;
-					altFire = qtrue;
+					Exact option mapping:
+					base = charged
+					2    = three-round burst
+					3/4  = unchanged fully automatic
+					5    = three-round burst
+					6    = original charged mode
+					*/
+					charging = (weaponOptions == 0 ||
+						weaponOptions == (EF_WP_OPTION_2|EF_WP_OPTION_4));
 				}
-				//[PistolLevel3]
-
-				//[PistolLevel3]
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-					#ifdef QAGAME
-										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
-					#else
-										)
-					#endif*/
-				{
-					charging = qfalse;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-
-				//[PistolLevel3]
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-					#ifdef QAGAME
-										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
-					#else
-										)
-					#endif*/
-				{
-					charging = qfalse;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-
-				//[PistolLevel3]
-
-
-				
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-					#ifdef QAGAME
-										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
-					#else
-										)
-					#endif*/
-				{
-					charging = qtrue;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-
-				//[PistolLevel3]
-				else if (pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-					#ifdef QAGAME
-										&& g_entities[pm->ps->clientNum].client->skillLevel[SK_PISTOL])
-					#else
-										)
-					#endif*/
-				{
-					charging = qtrue;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-
-				//[PistolLevel3]
 			}
 			break;
 
@@ -8467,103 +9270,26 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 			break;
 
 		case WP_BRYAR_OLD:
-					 
-			if (1)
+			if(pm->cmd.buttons & BUTTON_ALT_ATTACK)
 			{
-				if (pm->ps->eFlags2 & EF2_NOALTFIRE && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-			#ifdef QAGAME
-								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
-			#else
-								)
-			#endif*/
+				const int weaponOptions = PM_GetWeaponOptionFlags();
+
+				if(pm->ps->eFlags2 & EF2_NOALTFIRE)
 				{
 					charging = qfalse;
 					altFire = qfalse;
 				}
-				//[PistolLevel3]
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-			#ifdef QAGAME
-								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
-			#else
-								)
-			#endif*/
+				else
 				{
-					charging = qfalse;
 					altFire = qtrue;
-				}
-				//[PistolLevel3]
 
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
 					/*
-			#ifdef QAGAME
-								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
-			#else
-								)
-			#endif*/
-				{
-					charging = qfalse;
-					altFire = qtrue;
+					The base Bryar Old remains charged.  Every EF_WP_OPTION
+					variant remains non-charged; variants 2 and 4 are
+					three-round bursts controlled below.
+					*/
+					charging = (weaponOptions == 0);
 				}
-				//[PistolLevel3]
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_4 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-			#ifdef QAGAME
-								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
-			#else
-								)
-			#endif*/
-				{
-					charging = qfalse;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-				
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_3 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-			#ifdef QAGAME
-								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
-			#else
-								)
-			#endif*/
-				{
-					charging = qfalse;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-
-
-				else if (pm->ps->eFlags & EF_WP_OPTION_2 && pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-			#ifdef QAGAME
-								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
-			#else
-								)
-			#endif*/
-				{
-					charging = qtrue;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-
-
-				else if (pm->cmd.buttons & BUTTON_ALT_ATTACK)
-					/*
-			#ifdef QAGAME
-								&& g_entities[pm->ps->clientNum].client->skillLevel[SK_OLD]>=FORCE_LEVEL_2)
-			#else
-								)
-			#endif*/
-				{
-					charging = qtrue;
-					altFire = qtrue;
-				}
-				//[PistolLevel3]
-
 			}
 			break;
 		
@@ -8970,7 +9696,17 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				// charge isn't started, so do it now
 				pm->ps->weaponstate = WEAPON_CHARGING_ALT;
 				pm->ps->weaponChargeTime = pm->cmd.serverTime;
-				pm->ps->weaponChargeSubtractTime = pm->cmd.serverTime + weaponData[pm->ps->weapon].altChargeSubTime;
+				if ( vehicleRocketLock )
+				{
+					// Vehicle homing weapons use vehicle weapon data, not pm->ps->weapon.
+					// Some vehicles legitimately run pmove with WP_NONE, so do not
+					// index weaponData[] for the charge subtract timer here.
+					pm->ps->weaponChargeSubtractTime = pm->cmd.serverTime;
+				}
+				else
+				{
+					pm->ps->weaponChargeSubtractTime = pm->cmd.serverTime + weaponData[pm->ps->weapon].altChargeSubTime;
+				}
 
 #ifdef _DEBUG
 				//[MiscCodeTweaks]
@@ -8978,8 +9714,11 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				//Com_Printf("Starting charge\n");
 				//[/MiscCodeTweaks]
 #endif
-				assert(pm->ps->weapon > WP_NONE);
-				BG_AddPredictableEventToPlayerstate(EV_WEAPON_CHARGE_ALT, pm->ps->weapon, pm->ps);
+				if ( !vehicleRocketLock )
+				{
+					assert(pm->ps->weapon > WP_NONE);
+					BG_AddPredictableEventToPlayerstate(EV_WEAPON_CHARGE_ALT, pm->ps->weapon, pm->ps);
+				}
 			}
 
 			if ( vehicleRocketLock )
@@ -9012,7 +9751,17 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				// charge isn't started, so do it now
 				pm->ps->weaponstate = WEAPON_CHARGING;
 				pm->ps->weaponChargeTime = pm->cmd.serverTime;
-				pm->ps->weaponChargeSubtractTime = pm->cmd.serverTime + weaponData[pm->ps->weapon].chargeSubTime;
+				if ( vehicleRocketLock )
+				{
+					// Vehicle homing weapons use vehicle weapon data, not pm->ps->weapon.
+					// Some vehicles legitimately run pmove with WP_NONE, so do not
+					// index weaponData[] for the charge subtract timer here.
+					pm->ps->weaponChargeSubtractTime = pm->cmd.serverTime;
+				}
+				else
+				{
+					pm->ps->weaponChargeSubtractTime = pm->cmd.serverTime + weaponData[pm->ps->weapon].chargeSubTime;
+				}
 
 #ifdef _DEBUG
 				//[MiscCodeTweaks]
@@ -9020,7 +9769,10 @@ static qboolean PM_DoChargedWeapons( qboolean vehicleRocketLock, bgEntity_t *veh
 				//Com_Printf("Starting charge\n");
 				//[/MiscCodeTweaks]
 #endif
-				BG_AddPredictableEventToPlayerstate(EV_WEAPON_CHARGE, pm->ps->weapon, pm->ps);
+				if ( !vehicleRocketLock )
+				{
+					BG_AddPredictableEventToPlayerstate(EV_WEAPON_CHARGE, pm->ps->weapon, pm->ps);
+				}
 			}
 
 			if ( vehicleRocketLock )
@@ -9236,6 +9988,18 @@ int PM_ItemUsable(playerState_t *ps, int forcedUse)
 		PM_AddEventWithParm(EV_ITEMUSEFAIL, SHIELD_NOROOM);
 		return 0;
 	case HI_JETPACK: //check for stuff here?
+		if (ps->eFlags & EF_JETPACK_ACTIVE)
+		{
+			return 1;
+		}
+		if (ps->jetpackFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1;
 	case HI_SQUADTEAM:
 		return 1;
@@ -9244,6 +10008,18 @@ int PM_ItemUsable(playerState_t *ps, int forcedUse)
 	case HI_EWEB:
 		return 1;
 	case HI_CLOAK: //check for stuff here?
+		if (ps->powerups[PW_CLOAKED])
+		{
+			return 1;
+		}
+		if (ps->cloakFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1;
 	//[Flamethrower]
 	case HI_FLAMETHROWER: //check for stuff here?
@@ -9276,8 +10052,32 @@ int PM_ItemUsable(playerState_t *ps, int forcedUse)
 		}
 	//[/Electroshocker]
 	case HI_SPHERESHIELD: //check for stuff here?
+		if (ps->powerups[PW_SPHERESHIELDED])
+		{
+			return 1;
+		}
+		if (ps->cloakFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1;
 	case HI_OVERLOAD: //check for stuff here?
+		if (ps->powerups[PW_OVERLOADED])
+		{
+			return 1;
+		}
+		if (ps->cloakFuel < 5)
+		{
+			return 0;
+		}
+		if (BG_InGrappleMove(ps->torsoAnim))
+		{
+			return 0;
+		}
 		return 1;
 	case HI_GRAPPLE:
 		return 1; 			
@@ -9566,6 +10366,20 @@ void PM_DoPunch(void)
 
 	if (pm->ps->torsoAnim == desTAnim)
 	{
+		//[RageMeleeFix]
+		// Rage should speed melee punches up, but the previous code only
+		// sped the server Ghoul2 animation update.  Keep the predicted
+		// gameplay timers in sync so punches actually complete cleanly.
+		if (pm->ps->fd.forcePowersActive & (1 << FP_RAGE))
+		{
+			pm->ps->torsoTimer /= 2;
+			if (pm->ps->torsoTimer < 100)
+			{
+				pm->ps->torsoTimer = 100;
+			}
+		}
+		//[/RageMeleeFix]
+
 		pm->ps->weaponTime = pm->ps->torsoTimer;
 	}
 }
@@ -9595,6 +10409,8 @@ static void PM_Weapon( void )
 	bgEntity_t *veh = NULL;
 	qboolean vehicleRocketLock = qfalse;
 	int weap = pm->ps->weapon;
+	/* Process the physical trigger before any early return or forced round. */
+	PM_UpdateBurstInputState();
 
 #ifdef QAGAME
 	if (pm->ps->clientNum >= MAX_CLIENTS &&
@@ -9613,25 +10429,12 @@ static void PM_Weapon( void )
 	}
 #endif
 
-	//if ( (pm->cmd.buttons & BUTTON_SABERTHROW) || ((pm->cmd.buttons & BUTTON_FORCEPOWER) && pm->ps->fd.forcePowerSelected == FP_SABERTHROW) )
-	//if ( (pm->cmd.buttons & BUTTON_ALT_ATTACK) )
-	if(weap != WP_SABER && ((pm->cmd.buttons & BUTTON_SABERTHROW) || ((pm->cmd.buttons & BUTTON_FORCEPOWER) && pm->ps->fd.forcePowerSelected == FP_SABERTHROW)))
-	{
-#ifdef QAGAME
-		gentity_t*ent=&g_entities[pm->ps->clientNum];
-		if(ent->client->skillLevel[SK_FLAMETHROWER] >= FORCE_LEVEL_1)
-		{
-			ItemUse_FlameThrower(ent);	
-		}
-#endif
-
-#ifdef QAGAME
-		if(ent->client->skillLevel[SK_ELECTROSHOCKER] >= FORCE_LEVEL_1)
-		{
-			ItemUse_Electroshocker(ent);	
-		}
-#endif  
-	}
+	//[DualGunsToggle]
+	// Do not use BUTTON_SABERTHROW to toggle dual guns.  Bots can generate
+	// saberthrow intent from combat logic, and mapping it here made dual-gun
+	// bots drop back to one gun.  Dual-capable guns are toggled from the
+	// saber-style generic command in Cmd_SaberAttackCycle_f instead.
+	//[/DualGunsToggle]
 
 	if (!pm->ps->emplacedIndex &&
 		pm->ps->weapon == WP_EMPLACED_GUN)
@@ -10700,6 +11503,10 @@ static void PM_Weapon( void )
 				&&pm->ps->m_iVehicleNum)
 			{//riding a vehicle, the vehicle will tell me my rocketlock stuff...
 			}
+			else if (pm->cmd.upmove < 0 &&
+				pm->ps->rocketLockIndex != ENTITYNUM_NONE)
+			{//preserve server-set backpack rocket lock while crouch is held
+			}
 			else
 			{
 				pm->ps->rocketLockIndex = ENTITYNUM_NONE;
@@ -10722,6 +11529,20 @@ static void PM_Weapon( void )
 		pm->ps->weaponstate = WEAPON_READY;
 		return;
 	}
+
+	//[OverheatSys]
+	// For guns, heat is a real resource.  Do not use weaponTime as heat;
+	// weaponTime only remains the normal attack delay/animation timer.
+	if (pm->ps->weapon != WP_SABER &&
+		pm->ps->stats[STAT_HEAT] >= HEAT_ATTACK_LOCKOUT)
+	{
+		PM_AddEvent( EV_NOAMMO );
+		pm->ps->weaponTime += 250;
+		pm->ps->weaponstate = WEAPON_READY;
+		PM_CancelBurst();
+		return;
+	}
+	//[/OverheatSys]
 
 	if (pm->ps->weapon == WP_EMPLACED_GUN)
 	{
@@ -10782,7 +11603,7 @@ static void PM_Weapon( void )
 
 	if (pm->ps->weapon == WP_DISRUPTOR &&
 		(pm->cmd.buttons & BUTTON_ALT_ATTACK) &&
-		pm->ps->zoomMode == 2)
+		(pm->ps->zoomMode == 2 || pm->ps->zoomMode == 3))
 	{ //can't use disruptor secondary while zoomed binoculars
 		return;
 	}
@@ -10884,6 +11705,9 @@ static void PM_Weapon( void )
 				{
 					if (TryGrapple((gentity_t *)pm_entSelf))
 					{
+						//[OverheatSys]
+						BG_AddHeat(pm->ps, BG_HeatCostForWeapon(pm->ps, 650, qtrue));
+						//[/OverheatSys]
 						return;
 					}
 				}
@@ -10902,7 +11726,13 @@ static void PM_Weapon( void )
 			{ //kicks
 				//[MELEE]
 				//converted to a unified function
-				if(!PM_DoKick())
+				if(PM_DoKick())
+				{
+					//[OverheatSys]
+					BG_AddHeat(pm->ps, BG_HeatCostForWeapon(pm->ps, 500, qtrue));
+					//[/OverheatSys]
+				}
+				else
 				{//if got here then no move to do so put torso into leg idle or whatever
 					if (pm->ps->torsoAnim != pm->ps->legsAnim)
 					{
@@ -10990,6 +11820,9 @@ static void PM_Weapon( void )
 				//[Melee]
 				//turned this code into a function
 				PM_DoPunch();
+				//[OverheatSys]
+				BG_AddHeat(pm->ps, BG_HeatCostForWeapon(pm->ps, 350, qfalse));
+				//[/OverheatSys]
 				return;
 
 				/*
@@ -11899,6 +12732,13 @@ static void PM_Weapon( void )
 */
 	}
 
+	/* Keep burst cadence identical in QAGAME and CGAME prediction. */
+	if(PM_IsActiveBurstMode())
+	{
+		addTime = PM_BurstDelay(
+			(pm->cmd.buttons & BUTTON_ALT_ATTACK) ? qtrue : qfalse);
+	}
+
 	/*
 	if ( pm->ps->powerups[PW_HASTE] ) {
 		addTime /= 1.3;
@@ -11950,6 +12790,18 @@ static void PM_Weapon( void )
 			}
 	}
 #endif
+	//[OverheatSys]
+	if (pm->ps->weapon != WP_SABER)
+	{
+		BG_AddHeat(pm->ps, BG_HeatCostForWeapon(pm->ps, addTime, (pm->cmd.buttons & BUTTON_ALT_ATTACK) ? qtrue : qfalse));
+	}
+	//[/OverheatSys]
+
+	if(PM_IsActiveBurstMode())
+	{
+		PM_AdvanceBurstState();
+	}
+
 	pm->ps->weaponTime += addTime;
 }
 
@@ -15626,6 +16478,10 @@ void PmoveSingle (pmove_t *pmove) {
 	VectorCopy (pm->ps->velocity, pml.previous_velocity);
 
 	pml.frametime = pml.msec * 0.001;
+
+	//[OverheatSys]
+	BG_HeatCooldown(pm->ps, pml.msec, pm->cmd.serverTime);
+	//[/OverheatSys]
 
 	if (pm->ps->clientNum >= MAX_CLIENTS &&
 		pm_entSelf &&

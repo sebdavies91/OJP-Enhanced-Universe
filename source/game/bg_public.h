@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 // bg_public.h -- definitions shared by both the server game and client game modules
 
@@ -25,10 +25,10 @@ typedef enum {
 #define	GAME_VERSION		"basejka-1"
 
 //[ClientPlugInDetect]
-//This is the current keyword used to denote the current OJP Basic and Enhanced client plugins.  
+//This is the current keyword used to denote the current OBP Basic and Enhanced client plugins.  
 //These values should be changed whenever something is changed that would make the new clients 
-//incompatiable with previous versions of OJP Basic or Enhanced (on individual basis).
-#define CURRENT_OJPENHANCED_CLIENTVERSION		"OJP Enhanced Universe"
+//incompatiable with previous versions of OBP Basic or Enhanced (on individual basis).
+#define CURRENT_OPENBATTLEFRONTPROJECT_CLIENTVERSION		"Open Battlefront Project"
 //[/ClientPlugInDetect]
 #define DEFAULT_SABER			"Kyle"
 #define DEFAULT_SABER_STAFF		"dual_1"
@@ -145,6 +145,28 @@ typedef enum {
 #define MISHAPLEVEL_LIGHT		25
 #define MISHAPLEVEL_NONE		0
 //[/SaberSys]
+
+//[OverheatSys]
+// Attack heat is a real playerState stat now.  It is intentionally separate
+// from weaponTime: weaponTime is an animation/fire lockout timer, while
+// STAT_HEAT is the gameplay resource shown by the HUD.
+#define HEAT_MAX				100
+#define HEAT_COOLDOWN_MSEC		100	// match default g_forceRegenTime: one point per 100ms
+#define HEAT_COOLDOWN_IDLE		1	// heat removed per cooldown tick while idle
+#define HEAT_COOLDOWN_BUSY		1	// same cooldown rate while weaponTime is active; no fast snap-to-zero
+#define HEAT_WEAPON_COST_MIN		1
+#define HEAT_WEAPON_COST_MAX		12
+#define HEAT_SABER_COST_SCALE	4
+#define HEAT_ATTACK_LOCKOUT		HEAT_MAX
+#define HEAT_INACCURACY_START	50	// below this heat, weapons stay perfectly accurate
+
+void BG_HeatCooldown(playerState_t *ps, int msec, int serverTime);
+qboolean BG_HeatCanSpend(const playerState_t *ps, int cost);
+void BG_AddHeat(playerState_t *ps, int amount);
+float BG_HeatAccuracyScale(const playerState_t *ps);
+int BG_HeatCostForWeapon(const playerState_t *ps, int addTime, qboolean altFire);
+int BG_HeatCostForSaberMove(const playerState_t *ps, int fatigueCost);
+//[/OverheatSys]
 
 //[WeaponSys]
 #define MISHAP_MAXINACCURACY	1  //maximum possible offset angle for weapon accuracy. 
@@ -574,6 +596,7 @@ extern int bgForcePowerCost[NUM_TOTAL_SKILLS][NUM_FORCE_POWER_LEVELS];
 #define PMF_JUMPING     	65536	//SERENITY
 #define PMF_SLOW_MO_FALL    131072	//SERENITY
 #define PMF_TIME_NOFRICTION	262144	//SERENITY						
+#define PMF_ALT_ATTACK_HELD	524288	// semi-auto alternate-fire trigger latch
 
 #define	PMF_ALL_TIMES	(PMF_TIME_WATERJUMP|PMF_TIME_LAND|PMF_TIME_KNOCKBACK)
 
@@ -710,7 +733,10 @@ typedef enum {
 	//STAT_MAX_HEALTH					// health / armor limit, changable by handicap
 	//[/DodgeSys]
 	STAT_AMMOPOOL,//[Reload]
-	STAT_MAX_ARMOR		
+	STAT_MAX_ARMOR,
+	//[OverheatSys]
+	STAT_HEAT				// attack heat / overheat meter, 0..HEAT_MAX
+	//[/OverheatSys]
 } statIndex_t;
 
 
@@ -1166,6 +1192,8 @@ typedef enum {
 	EV_FORCE_JUDGEMENT,	
 	EV_FORCE_DEATHFIELDED,
 	EV_FORCE_DEATHSIGHTED,	
+	EV_FORCE_CONFUSED,
+	EV_FORCE_CORRUPTED,
 	EV_FORCE_BLINDED,	
 	EV_BURNED,
 	EV_FROZEN,

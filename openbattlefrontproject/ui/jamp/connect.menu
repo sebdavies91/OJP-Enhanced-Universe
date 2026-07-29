@@ -1,0 +1,27 @@
+{
+
+menuDef {
+    	name "Connect"
+      	rect 0 0 640 480
+    	fullScreen MENU_FALSE
+    	visible MENU_FALSE
+      	style WINDOW_STYLE_SHADER
+		descX				320
+		descY					421
+		descScale			1
+		descColor				0.82 0.84 0.88 1
+		descAlignment			ITEM_ALIGN_CENTER
+
+
+	itemDef 
+	{
+		name				miniFrame
+		rect				0 0 640 480
+		style				WINDOW_STYLE_SHADER
+		background			"menu/art/unknownmap_mp"
+		visible				1
+		decoration
+	}
+  }
+
+}

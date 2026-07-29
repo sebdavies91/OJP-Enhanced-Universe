@@ -1,4 +1,4 @@
-// Copyright (C) 1999-2000 Id Software, Inc.
+﻿// Copyright (C) 1999-2000 Id Software, Inc.
 //
 #ifndef __CG_LOCAL_H__
 #define __CG_LOCAL_H__
@@ -481,6 +481,17 @@ typedef struct centity_s {
 	int				bolt3;
 	int				bolt4;
 
+	/*
+	 * OBP: keep looping/rapid Force power sound throttles separate.
+	 * A shared timer makes only the first active Force sound play when powers
+	 * are combined in the same frame, for example Lightning+Drain or
+	 * Judgement+Sever.
+	 */
+	int				forceDrainSoundTime;
+	int				forceSeverSoundTime;
+	int				forceLightningSoundTime;
+	int				forceJudgementSoundTime;
+
 	float			bodyHeight;
 
 	int				torsoBolt;
@@ -504,10 +515,28 @@ typedef struct centity_s {
 	int				trickAlphaTime;
 
 	int				teamPowerEffectTime;
-	qboolean		teamPowerType; //0 drain, 1 sever, 2 lightning, 3 judgement, 4 deathfield, 5 deathsight, 6 stasis, 7 insanity, 8 blinding
+	int				teamPowerType; //0 drain, 1 sever, 2 lightning, 3 judgement, 4 deathfield, 5 deathsight, 6 stasis, 7 insanity, 8 blinding, 9 confusion, 10 corruption
+	/*
+	 * OBP: per-effect victim Force FX timers.  The old single
+	 * teamPowerEffectTime/teamPowerType pair is preserved for compatibility,
+	 * but it can only represent one active victim effect.  These timers allow
+	 * combinations such as Lightning+Drain, Judgement+Sever, Confusion+Drain,
+	 * etc. to be visible at the same time instead of the latest event replacing
+	 * the previous one.
+	 */
+	int				teamPowerEffectTimes[11];
 	
 	int				itemPowerEffectTime;
-	qboolean		itemPowerType; //0 flame, 1 ice, 2 shock, 3 sound, 4 flash 
+	int				itemPowerType; //0 flame, 1 ice, 2 shock, 3 sound, 4 flash
+	/*
+	 * OBP: per-effect item FX timers.  The legacy single
+	 * itemPowerEffectTime/itemPowerType pair is preserved for compatibility,
+	 * but it can only represent one active item effect.  These timers allow
+	 * item effects such as burn+freeze, burn+shock, shock+flash, etc. to be
+	 * visible at the same time instead of the latest event replacing the
+	 * previous one.
+	 */
+	int				itemPowerEffectTimes[5];
 	
 	qboolean		isRagging;
 	qboolean		ownerRagging;
@@ -1359,6 +1388,8 @@ typedef struct {
 	qhandle_t	teamBlueShader;
 
 	qhandle_t	powerDuelAllyShader;
+	qhandle_t	powerDuelLoneShader;
+	qhandle_t	powerDuelDoubleShader;
 
 	qhandle_t	balloonShader;
 	qhandle_t	vchatShader;
@@ -1747,12 +1778,15 @@ typedef struct
 	
 	//[Electroshocker]
 	fxHandle_t electroshocker;
+	fxHandle_t electroshockerWide;
 	//[/Electroshocker]
 	//[Lasersupport]
 	fxHandle_t lasersupport;
+	fxHandle_t lasersupportWide;
 	//[/Lasersupport]
 	//[Orbitalstrike]
 	fxHandle_t orbitalstrike;
+	fxHandle_t orbitalstrikeWide;
 	//[/Orbitalstrike]
 	
 	
@@ -1769,7 +1803,12 @@ typedef struct
 	fxHandle_t forceHealed;
 	fxHandle_t forceRegenerated;
 	fxHandle_t forceExplode;
+	fxHandle_t forcePushBlur;
+	fxHandle_t forceConfusion;
+	fxHandle_t forceCorruption;
 	fxHandle_t forceDestruction;
+	fxHandle_t forceDestructionShot;
+	fxHandle_t forceDestructionExplosion;
 	fxHandle_t forceBlinding;
 	//TURRET
 	fxHandle_t turretShotEffect;
@@ -2110,7 +2149,7 @@ extern	vmCvar_t		cg_hudFiles;
 extern	vmCvar_t		cg_smoothClients;
 
 //[MELEE]
-extern	vmCvar_t		ojp_sabermelee;
+extern	vmCvar_t		obp_sabermelee;
 //[/MELEE]
 
 extern	vmCvar_t		pmove_fixed;
@@ -2157,7 +2196,7 @@ extern vmCvar_t	rgb_saber1;
 extern vmCvar_t	rgb_saber2;
 extern vmCvar_t	rgb_script1;
 extern vmCvar_t	rgb_script2;
-extern vmCvar_t ojp_teamrgbsabers;
+extern vmCvar_t obp_teamrgbsabers;
 //[/RGBSabers]
 
 //[SFXSabers]
@@ -2169,11 +2208,11 @@ extern vmCvar_t cg_MovieSaberType;
 //[/Movie Sabers]
 
 //[VisualWeapons]
-extern vmCvar_t	ojp_holsteredweapons;
-extern vmCvar_t	ojp_holsterdebug;
-extern vmCvar_t	ojp_holsterdebug_boneindex;
-extern vmCvar_t	ojp_holsterdebug_posoffset;
-extern vmCvar_t	ojp_holsterdebug_angoffset;
+extern vmCvar_t	obp_holsteredweapons;
+extern vmCvar_t	obp_holsterdebug;
+extern vmCvar_t	obp_holsterdebug_boneindex;
+extern vmCvar_t	obp_holsterdebug_posoffset;
+extern vmCvar_t	obp_holsterdebug_angoffset;
 //[/VisualWeapons]
 
 //
@@ -2999,6 +3038,7 @@ void CG_InitG2Weapons(void);
 void CG_ShutDownG2Weapons(void);
 void CG_CopyG2WeaponInstance(centity_t *cent, int weaponNum, void *toGhoul2);
 void *CG_G2WeaponInstance(centity_t *cent, int weapon);
+void *CG_G2WeaponInstance2(centity_t *cent, int weapon);
 void CG_CheckPlayerG2Weapons(playerState_t *ps, centity_t *cent);
 
 void CG_SetSiegeTimerCvar( int msec );

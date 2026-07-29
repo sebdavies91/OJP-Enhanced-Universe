@@ -10,6 +10,7 @@ extern void Boba_FlyStart( gentity_t *ent );
 extern void Boba_FlyStop( gentity_t *ent );
 extern qboolean NPC_CheckEnemyExt( qboolean checkAlerts );
 extern gentity_t *FindClosestPlayer( vec3_t position, int enemyTeam );
+extern qboolean G_ValidEnemy( gentity_t *self, gentity_t *enemy );
 
 
 
@@ -28,6 +29,11 @@ static void RT_TakeOff( void )
 
 	// SP inspiration: rocket troopers will commit to flight when engaged.
 	// In MP, enemy may not be set yet, so allow an alert-based acquire.
+	if ( NPC->enemy && !G_ValidEnemy( NPC, NPC->enemy ) )
+	{
+		G_ClearEnemy( NPC );
+	}
+
 	if ( !NPC->enemy )
 	{
 		NPC_CheckEnemyExt( qtrue );
@@ -35,7 +41,11 @@ static void RT_TakeOff( void )
 		// immediately. Use the same helper many MP AIs use.
 		if ( !NPC->enemy && NPC->client )
 		{
-			NPC->enemy = FindClosestPlayer( NPC->r.currentOrigin, NPC->client->enemyTeam );
+			gentity_t *closestPlayer = FindClosestPlayer( NPC->r.currentOrigin, NPC->client->enemyTeam );
+			if ( closestPlayer && G_ValidEnemy( NPC, closestPlayer ) )
+			{
+				NPC->enemy = closestPlayer;
+			}
 		}
 		if ( !NPC->enemy )
 		{
@@ -68,12 +78,21 @@ static void RT_JetpackMove( void )
 		return;
 	}
 
+	if ( NPC->enemy && !G_ValidEnemy( NPC, NPC->enemy ) )
+	{
+		G_ClearEnemy( NPC );
+	}
+
 	if ( !NPC->enemy )
 	{
 		NPC_CheckEnemyExt( qtrue );
 		if ( !NPC->enemy && NPC->client )
 		{
-			NPC->enemy = FindClosestPlayer( NPC->r.currentOrigin, NPC->client->enemyTeam );
+			gentity_t *closestPlayer = FindClosestPlayer( NPC->r.currentOrigin, NPC->client->enemyTeam );
+			if ( closestPlayer && G_ValidEnemy( NPC, closestPlayer ) )
+			{
+				NPC->enemy = closestPlayer;
+			}
 		}
 		if ( !NPC->enemy )
 		{

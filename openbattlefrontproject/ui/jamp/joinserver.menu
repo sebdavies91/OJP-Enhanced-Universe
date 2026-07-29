@@ -1,0 +1,1773 @@
+//----------------------------------------------------------------------------------------------
+// Join a Server
+//	Allows user to view a list of available servers and choose which one to join.
+//
+//----------------------------------------------------------------------------------------------
+{
+	menuDef 
+	{
+		name					"joinserver"
+		visible					0
+		fullscreen				1
+		rect					0 0 640 480
+		outOfBoundsClick	
+		focusColor			0.82 0.84 0.88 1
+		descX				320
+		descY				421
+		descScale			1
+		descColor			0.82 0.84 0.88 1
+		descAlignment			ITEM_ALIGN_CENTER
+
+		onOpen 
+		{ 
+			uiScript			UpdateFilter
+		}
+
+		onESC 
+		{ 
+				
+				close			joinserver 
+				open			multiplayermenu 
+		}
+
+			
+		
+		//----------------------------------------------------------------------------------------------
+		//
+		//	MENU BACKGROUND
+		//
+		//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				really_background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				156 154 320 240
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 640 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				0 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				background_text_b
+			group				none
+			style				WINDOW_STYLE_FILLED
+			rect				480 0 160 480
+			backcolor			0 0 0 1
+			visible				1
+			decoration
+		}	
+
+		itemDef
+		{
+			name				bgpic
+			style				WINDOW_STYLE_SHADER
+			rect				0 127 640 314
+			background			"obp/menu/mygeeto"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemDef
+		{
+			name				mainbackground
+			style				WINDOW_STYLE_FILLED
+			rect				0 127 640 314
+			backcolor			0 0 0 0.8
+			visible				1
+			decoration
+		}
+
+	
+
+
+		itemdef
+		{
+			name				lowbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 428 640 18
+			background			"obp/menu/lowbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 85 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+		itemdef
+		{
+			name				topbar2
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				0 114 640 18
+			background			"obp/menu/topbar"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+
+		itemDef 
+		{
+			name				obplogo
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				220 0 200 90
+			background			"obp/menu/obplogo"
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration
+		}
+
+
+
+
+//----------------------------------------------------------------------------------------------
+//
+//	TOP MENU BUTTONS
+//
+//----------------------------------------------------------------------------------------------
+
+
+		itemDef 
+		{
+			name				quickserver_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			4 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				quickserver_button
+			group				toprow
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect			4 100 124 24
+			text				@MENUS_SOLO_GAME
+			descText			@MENUS_QUICKSTART_DESC
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{  
+				show			quickserver_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			quickserver_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			All ; 
+				open quickgame
+			}
+		}
+
+		itemDef 
+		{
+			name				startserver_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			173 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				startserver_button
+			group				toprow
+			text				"CREATE GAME"
+			descText			"Create Your Own Game"
+			style				WINDOW_STYLE_EMPTY
+			type				ITEM_TYPE_BUTTON
+			rect			173 100 124 24
+			textaligny			0
+			font				3
+			textscale			0.85
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{  
+				show			startserver_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			startserver_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+			
+				close			All ; 
+				open createserver 
+			}
+		}
+
+
+		itemDef 
+		{
+			name				joinserver_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			343 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef {
+			name				joinserver_button
+			group				toprow
+			text				@MENUS_JOIN_SERVER_CAPS
+			descText			"Join a server"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			343 100 124 24
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible				1			 
+			mouseEnter 
+			{  
+				show			joinserver_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			joinserver_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ;
+			
+				close			All ; 
+				open			joinserver 
+			}
+		}
+
+
+		itemDef 
+		{
+			name				startdemo_button_glow
+			group				topbut
+			style				WINDOW_STYLE_SHADER
+			rect			512 100 124 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef {
+			name				startdemo_button
+			group				toprow
+			text				"@MENUS_DEMOS"
+			descText			"Play a Demo"
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			512 100 124 24
+			font				3
+			textscale			0.85
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			0
+			textalignx			62
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible				1			 
+			mouseEnter 
+			{  
+				show			startdemo_button_glow 
+			}
+			mouseExit 
+			{ 
+				hide			startdemo_button_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+			
+				close			All ; 
+				open			demo 
+			}
+		}
+
+
+
+
+
+
+//----------------------------------------------------------------------------------------------
+// GENERAL RULES
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				Servertype
+			group				none
+			text				"SERVER TYPE"
+      			rect				55 130 150 20
+			font				3
+			textscale			0.58
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			75
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+		}
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+////jOIN SERVER BUTTONS
+//////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////
+
+		itemDef
+		{
+			name				serverbuttonswindow
+			group				joinserverbuttons
+			style				WINDOW_STYLE_FILLED
+			backcolor			0.1 0.1 0.1 0.5
+			rect				55 150 150 260
+			border				1
+			bordercolor			0.7 .7 .7 .8
+			visible				1
+
+			decoration
+		}
+
+
+		// GET NEW LIST
+		itemDef
+		{
+			name				getnewlist_button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 151 80 16
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				getnewlist_button
+			group				joinserverbuttons
+			text				@MENUS_GET_NEW_LIST
+			descText			@MENUS_GET_UPDATED_SERVER_LIST
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_FILLED
+			forecolor			0.82 0.84 0.88 1
+			rect				60 151 80 16
+			font				4
+			textalign			ITEM_ALIGN_LEFT
+			textalignx			0
+			textaligny			0
+			textscale			1
+			visible 			1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	60 151 80 16
+				show			getnewlist_button_glow
+			}
+			mouseExit 
+			{ 
+				hide			getnewlist_button_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		RefreshServers 
+			}	  	  
+	  	  
+		}	
+
+
+		// REFRESH LIST
+		itemDef
+		{
+			name				refreshFilter_button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 172 80 16
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				refreshFilter_button
+			group				joinserverbuttons
+			text				@MENUS_REFRESH_LIST
+			descText			@MENUS_REFRESH_LIST_DESC
+			textscale			1
+			style				WINDOW_STYLE_FILLED
+			type				ITEM_TYPE_BUTTON
+			font				4
+			rect				60 172 80 16
+			textalign			ITEM_ALIGN_LEFT
+			textalignx			0
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	60 172 80 16
+				show			refreshFilter_button_glow
+			}
+			mouseExit 
+			{ 
+				hide			refreshFilter_button_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+			//	uiScript		RefreshFilter 
+				uiScript		RefreshServers 
+			}	  	  
+  	  
+		}
+
+
+//----------------------------------------------------------------------------------------------
+//	Selectors
+//----------------------------------------------------------------------------------------------	
+
+	
+		// Source selector
+		itemDef
+		{
+			name				netsource_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 193 80 16
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				netsource
+			group				joinserverbuttons
+			style				0	
+			//text			@MENUS_SOURCE
+			descText			@MENUS_CHOOSE_SOURCE_OF_SERVERS
+			ownerdraw			UI_NETSOURCE
+			rect				60 193 80 16
+			font				4
+			textscale			1
+			textalignx			0
+			textaligny			0
+			textalign			ITEM_ALIGN_LEFT
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				setitemrect		button_glow	60 193 140 18
+				show			netsource_glow
+			}
+			mouseExit 
+			{ 
+				hide			netsource_glow
+			}
+			action 
+			{ 
+				
+			}
+	  	  
+		}
+
+		// Filter selector
+		itemDef
+		{
+			name				netfilter_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 214 80 16
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				netfilter
+			style				0	
+			group				joinserverbuttons
+			//text			@MENUS_GAME
+			descText			@MENUS_SET_FILTER_FOR_SPECIFIC
+			ownerdraw			UI_NETFILTER
+			rect				60 214 80 16
+			font				4
+			textscale			1
+			textalignx			0
+			textaligny			0
+			textalign			ITEM_ALIGN_LEFT
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				setitemrect		button_glow	60 214 140 18
+				show			netfilter_glow
+			}
+			mouseExit 
+			{ 
+				hide			netfilter_glow
+			}
+			action 
+			{ 
+				
+			}
+  	  
+		}
+
+		// Game type selector
+		itemDef
+		{
+			name				gametypefilter_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 235 80 16
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				gametypefilter
+			group				joinserverbuttons
+			style				0	
+			text				@MENUS_GAME_TYPE
+			descText			@MENUS_FILTER_FOR_SPECIFIC_GAME
+			ownerdraw			UI_JOINGAMETYPE
+			rect				60 235 80 16
+			font				4
+			textscale			1
+			textalignx			0
+			textaligny			0
+			textalign			ITEM_ALIGN_LEFT
+			textstyle			3
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				setitemrect		button_glow	60 235 140 18
+				show			gametypefilter_glow
+			}
+			mouseExit 
+			{ 
+				hide			gametypefilter_glow
+			}
+			action 
+			{ 
+				
+			}
+	  	  
+		}
+
+
+		// view empty selector
+		itemDef
+		{
+			name				viewEmpty_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 256 140 18
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				viewEmpty
+			group				joinserverbuttons
+			type				ITEM_TYPE_YESNO
+			text				@MENUS_VIEW_EMPTY
+			descText			@MENUS_INCLUDE_EMPTY_SERVERS
+			cvar				"ui_browserShowEmpty"
+			font				4
+			textscale			1
+			rect				60 256 140 18
+			textalignx			0
+			textaligny			0
+			textalign			ITEM_ALIGN_LEFT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				setitemrect		button_glow	60 256 140 18
+				show			viewEmpty_glow
+			}
+			mouseExit 
+			{ 
+				hide			viewEmpty_glow
+			}
+			action 
+			{ 
+				
+				uiScript		RefreshServers  
+			}
+	  	  
+		}
+
+		// View Full selector
+		itemDef
+		{
+			name				viewFull_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 277 80 16
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				viewFull
+			group				joinserverbuttons
+			type				11
+			text				@MENUS_VIEW_FULL
+			descText			@MENUS_INCLUDE_FULL_SERVERS
+			cvar				"ui_browserShowFull"
+			font				4
+			textscale			1
+			rect				60 277 80 16
+			textalignx			0
+			textaligny			0
+			textalign			ITEM_ALIGN_LEFT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				setitemrect		button_glow	60 277 140 18
+				show			viewFull_glow
+			}
+			mouseExit 
+			{ 
+				hide			viewFull_glow
+			}
+			action 
+			{ 
+				
+				uiScript		RefreshServers  
+			}
+  	  
+		}
+
+		// Data Rate selector
+		itemDef
+		{
+			name				datarate_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				60 298 140 18
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				datarate
+			group				joinserverbuttons
+	            	type				ITEM_TYPE_MULTI
+			text				@MENUS_DATA_RATE
+			descText			@MENUS_DATA_RATE_DESC
+			cvar				"rate"
+            		cvarFloatList 
+			{ 
+				"@MENUS_56K" 4000 
+				"@MENUS_ISDN" 5000 
+				"@MENUS_LAN/CABLE" 25000  
+			}
+			textscale			1
+			rect				60 298 140 18
+			font				4
+			textalignx			0
+			textaligny			0
+			textalign			ITEM_ALIGN_LEFT
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{ 
+				setitemrect		button_glow	60 298 140 18
+				show			datarate_glow
+			}
+			mouseExit 
+			{ 
+				hide			datarate_glow
+			}
+			action 
+			{ 
+				
+		        	uiScript		update ui_setRate
+			}
+	  	  
+		}
+
+//----------------------------------------------------------------------------------------------
+//	COLUMN HEADINGS/SORT TABS	
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				server
+			group				grpTabs
+			text				@MENUS_SERVER_NAME
+			descText			@MENUS_SORT_BY_SERVER_NAME
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				205 130 125 26
+			font				3
+			textscale			0.58
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			62
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+			
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	205 130 125 26 ;
+			}
+
+			mouseExit
+			{
+				hide			button_glow ;
+			}
+action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		ServerSort 0
+			}
+}
+
+
+		itemDef 
+		{
+			name				map
+			group				grpTabs
+			type				ITEM_TYPE_BUTTON
+			text				@MENUS_MAP_NAME_1
+			descText			@MENUS_SORT_BY_MAP_NAME
+			style				WINDOW_STYLE_EMPTY
+			rect				330 130 95 26
+			font				3
+			textscale			0.58
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			47
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+			
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	330 130 95 26 ;
+			}
+
+			mouseExit
+			{
+				hide			button_glow ;
+			}
+action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		ServerSort 1
+			}
+	  	  
+		}
+
+		itemDef 
+		{
+			name				Players
+			group				grpTabs
+			text				@MENUS_PLYRS
+			descText			@MENUS_SORT_BY_NUMBER_OF_PLAYERS
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			background			"gfx/menus/menu_blendbox3"	// Frame around button
+			rect				425 130 60 26
+			font				3
+			textscale			0.58
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			30
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+			
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	425 130 60 26 ;
+			}
+
+			mouseExit
+			{
+				hide			button_glow ;
+			}
+action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		ServerSort 2
+			}
+
+		}
+
+		itemDef 
+		{
+			name				Type
+			group				grpTabs
+			text				@MENUS_SORT_TYPE
+			descText			@MENUS_SORT_BY_GAME_TYPE
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			background			"gfx/menus/menu_blendbox3"	// Frame around button
+			rect				485 130 55 26
+			font				3
+			textscale			0.58
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			27
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+			
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	485 130 55 26 ;
+			}
+
+			mouseExit
+			{
+				hide			button_glow ;
+			}
+action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		ServerSort 3
+			}
+		}
+
+
+		itemDef 
+		{
+			name				Ping
+			group				grpTabs
+			text				@MENUS_PING
+			descText			@MENUS_SORT_BY_PING_TIME
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			background			"gfx/menus/menu_blendbox3"	// Frame around button
+			rect				540 130 45 26
+			font				3
+			textscale			0.58
+			textalign			ITEM_ALIGN_CENTER		
+			textalignx			22
+			textaligny			0 	
+			forecolor			0.82 0.84 0.88 1
+      			visible				1 
+      			decoration 
+			
+			mouseEnter
+			{
+				show			button_glow ;
+				setitemrect		button_glow	540 130 45 26 ;
+			}
+
+			mouseExit
+			{
+				hide			button_glow ;
+			}
+action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		ServerSort 4
+			}
+		}
+
+//----------------------------------------------------------------------------------------------
+//	HORIZONTAL SEPARATORS
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons		
+			rect				205 150 380 15
+			style				WINDOW_STYLE_FILLED
+			border				0
+			backcolor			0.2 0.2 0.2 0.3
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 165 380 15
+			style				WINDOW_STYLE_FILLED
+			border				0
+			backcolor			0.45 0.45 0.45 0.3
+			visible				1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 180 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 195 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 210 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 225 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 240 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 255 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 270 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 285 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 300 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 315 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 330 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 345 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			1
+			decoration
+		}
+		
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 360 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 375 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			1
+			decoration
+		}	
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 390 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.2 0.2 0.2 0.3
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				horizontalseparators
+			group				joinserverbuttons
+			rect				205 405 380 15
+			style				WINDOW_STYLE_FILLED
+			border			0
+			backcolor			0.45 0.45 0.45 0.3
+			visible			0
+			decoration
+		}		
+//----------------------------------------------------------------------------------------------
+//	COLUMN LINES
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				serverColumn
+			group				grpColumn
+			rect				205 150 125 260
+			style				WINDOW_STYLE_FILLED
+			border			1
+			backcolor			0 0 0 0
+			bordersize			1
+			bordercolor			0.7 0.7 0.7 1
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				mapColumn
+			group				grpColumn
+			rect				330 150 95 260
+			style				WINDOW_STYLE_FILLED
+			border			1
+			backcolor			0 0 0 0
+			bordersize			1
+			bordercolor			0.7 0.7 0.7 1
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				playerColumn
+			group				grpColumn
+			rect				425 150 60 260
+			style				WINDOW_STYLE_FILLED
+			border			1
+			backcolor			0 0 0 0
+			bordersize			1
+			bordercolor			0.7 0.7 0.7 1
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				typeColumn
+			group				grpColumn
+			rect				485 150 55 260
+			style				WINDOW_STYLE_FILLED
+			border			1
+			backcolor			0 0 0 0
+			bordersize			1
+			bordercolor			0.7 0.7 0.7 1
+			visible			1
+			decoration
+		}
+
+		itemDef 
+		{
+			name				pingColumn
+			group				grpColumn
+			rect				540 150 45 260
+			style				WINDOW_STYLE_FILLED
+			border			1
+			backcolor			0 0 0 0
+			bordersize			1
+			bordercolor			0.7 0.7 0.7 1
+			visible			1
+			decoration
+		}
+
+//----------------------------------------------------------------------------------------------
+//	SERVER LIST WINDOW
+//----------------------------------------------------------------------------------------------
+		itemDef 
+		{
+			name				serverlist
+			rect				205 150 380 260
+			group				joinserverbuttons
+			type				ITEM_TYPE_LISTBOX
+			style				WINDOW_STYLE_FILLED
+			elementwidth			122
+			elementheight			13
+			font				4
+			textscale			.7
+			textaligny			1
+			elementtype			LISTBOX_TEXT
+			feeder				FEEDER_SERVERS
+			border				1
+			bordercolor			0.7 0.7 0.7 1		//Color of border
+			forecolor			0.82 0.84 0.88 1
+			backcolor			0 0 0 0.6		//Background color of listbox
+			outlinecolor			0.9 0.9 .9 .25			//Highlight when item is selected.
+			visible				1
+			columns				5 2 40 120   130 40 90  225 5 55  285 20 50  340 20 40
+
+			doubleClick 
+			{ 
+
+				uiScript		checkpassword
+			//	uiScript		JoinServer 
+			//	close			joinserver
+				//open		forcealloc 
+			}
+		}
+		// DATE AND TIME	
+		itemDef 
+		{
+			name				refreshdate
+			group				joinserverbuttons
+			ownerdraw			UI_SERVERREFRESHDATE
+			font				4
+			textscale			1
+			rect				60 388 140 20
+			textalign			ITEM_ALIGN_LEFT
+			textalignx			0		
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			decoration 
+		}
+
+//----------------------------------------------------------------------------------------------
+// ADDITIONAL SCREENS BUTTONS
+//----------------------------------------------------------------------------------------------
+
+		// PASSWORD
+		itemDef
+		{
+			name				passwordText_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				55 414 94 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				passwordText
+			text				@MENUS_PASSWORD
+			group				joinserverbuttons
+			descText			@MENUS_INPUT_PASSWORD
+			type				ITEM_TYPE_BUTTON
+			font				3
+			textscale			0.55
+			style				WINDOW_STYLE_FILLED
+			rect				55 414 94 24
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			47
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	55 414 94 24
+				show			passwordText_glow
+			}
+			mouseExit 
+			{ 
+				hide			passwordText_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				open			password_popmenu 
+			}
+
+		}
+
+		// NEW FAVORITE
+		itemDef
+		{
+			name				createFavoriteText_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				163 414 105 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				createFavoriteText
+			text				@MENUS_NEW_FAVORITE
+			group				joinserverbuttons
+			descText			@MENUS_ENTER_IP_ADDRESS_OF_FAVORITE
+			type				ITEM_TYPE_BUTTON
+			font				3
+			textscale			0.50
+			style				WINDOW_STYLE_FILLED
+			rect				163 414 105 24
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			52
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	163 414 105 24
+				show			createFavoriteText_glow
+			}
+			mouseExit 
+			{ 
+				hide			createFavoriteText_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				open			createfavorite_popmenu 
+			}
+
+		}
+
+		// ADD/DELETE FAVORITE
+		itemDef
+		{
+			name				addFavorite_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				282 414 105 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				addFavorite
+			text				@MENUS_ADD_FAVORITE
+			group				joinserverbuttons
+			descText			@MENUS_ADD_SELECTED_SERVER_TO
+			type				ITEM_TYPE_BUTTON
+			font				3
+			textscale			0.50
+			style				WINDOW_STYLE_FILLED
+			ownerdrawFlag			UI_SHOW_NOTFAVORITESERVERS
+			rect				282 414 105 24
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			52
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	282 414 105 24
+				show			addFavorite_glow
+			}
+			mouseExit 
+			{ 
+				hide			addFavorite_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		addFavorite 
+			}
+
+		}
+
+		itemDef
+		{
+			name				delfavorite_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				282 414 105 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				delfavorite
+			group				joinserverbuttons
+			text				@MENUS_DEL_FAVORITE
+			descText			@MENUS_DELETE_SELECTED_SERVER
+			type				ITEM_TYPE_BUTTON
+			font				3
+			textscale			0.50
+			style				WINDOW_STYLE_FILLED
+			ownerdrawFlag			UI_SHOW_FAVORITESERVERS
+			rect				282 414 105 24
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			52
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	282 414 105 24
+				show			delfavorite_glow
+			}
+			mouseExit 
+			{ 
+				hide			delfavorite_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		DeleteFavorite
+				uiScript		UpdateFilter 
+			}
+
+		}
+
+		// SERVER INFO
+		itemDef
+		{
+			name				serverinfoText_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				401 414 78 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				serverinfoText
+			group				joinserverbuttons
+			text				@MENUS_GET_SERVER_INFO
+			descText			@MENUS_DISPLAY_SERVER_INFORMATION
+			type				ITEM_TYPE_BUTTON
+			font				3
+			textscale			0.50
+			style				WINDOW_STYLE_FILLED
+			rect				401 414 78 24
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			39
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	401 414 78 24
+				show			serverinfoText_glow
+			}
+			mouseExit 
+			{ 
+				hide			serverinfoText_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				open			serverinfo_popmenu 
+			}
+
+		}
+
+		// FIND PLAYER
+		itemDef
+		{
+			name				findplayerText_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				492 414 93 24
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				findplayerText
+			group				joinserverbuttons
+			text				@MENUS_FIND_PLAYER
+			descText			@MENUS_SEARCH_CURRENT_SERVER
+			type				ITEM_TYPE_BUTTON
+			font				3
+			textscale			0.50
+			style				WINDOW_STYLE_FILLED
+			rect				492 414 93 24
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			46
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	492 414 93 24
+				show			findplayerText_glow
+			}
+			mouseExit 
+			{ 
+				hide			findplayerText_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				open			findplayer_popmenu 
+				hide			findPlayerButton
+			}
+
+		}
+
+//----------------------------------------------------------------------------------------------
+// VERY BOTTOM ROW BUTTONS
+//----------------------------------------------------------------------------------------------
+
+		// JOIN BUTTON
+		itemDef
+		{
+			name				join_button_glow
+			group				none
+			style				WINDOW_STYLE_SHADER
+			rect				512 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				join_button
+			group				joinserverbuttons
+			text				@MENUS_JOIN
+			descText			@MENUS_JOIN_CHOSEN_SERVER
+			type				ITEM_TYPE_BUTTON
+			font				3
+			textscale			0.9
+			textstyle			0
+			style				WINDOW_STYLE_FILLED
+			rect				512 445 124 32
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			62
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1 
+
+			mouseEnter 
+			{
+				show			button_glow  
+				setitemrect		button_glow	512 445 124 32
+				show			join_button_glow
+			}
+			mouseExit 
+			{ 
+				hide			join_button_glow
+			}
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				uiScript		checkpassword
+			//	uiScript		JoinServer
+			//	close			joinserver 
+			}
+
+		}
+
+
+
+//----------------------------------------------------------------------------------------------
+//	OTHER MAIN MENU BUTTONS
+//----------------------------------------------------------------------------------------------
+		// Credits hidden button
+		itemDef 
+		{
+			name				creditsbutton
+			group				othermain
+//			text				@CREDITS
+			descText			@MENUS_SHOW_GAME_CREDITS
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect				200 144 256 256
+			font				2
+			textscale			1
+			textaligny			0
+			textalign			ITEM_ALIGN_CENTER
+			textalignx			46
+			backcolor			0 0 0 0
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+
+			mouseEnter
+			{ 
+			}		
+			mouseExit
+			{
+			}		
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			all ; 
+				open			creditsMenu 
+			}
+		}
+
+		itemDef 
+		{
+			name				button_glow
+			style				WINDOW_STYLE_SHADER
+			rect				512 445 124 32
+			background			"gfx/menus/menu_blendbox2"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		// EXIT button in lower left corner
+		itemDef 
+		{
+			name				exitgamebutton_glow
+			group				mods
+			style				WINDOW_STYLE_SHADER
+			rect			4 445 124 32
+			background			"gfx/menus/menu_buttonback"
+			forecolor			0.82 0.84 0.88 1
+			visible				0
+			decoration
+		}
+
+		itemDef 
+		{
+			name				exitgamebutton
+			group				exit
+			text				@MENUS_BACK
+			descText			@MENUS_BACK_2_PROFILE
+			type				ITEM_TYPE_BUTTON
+			style				WINDOW_STYLE_EMPTY
+			rect			4 445 124 32
+			font				3
+			textscale			0.9
+			textalign			ITEM_ALIGN_CENTER
+			textstyle			3
+			textalignx			62
+			textaligny			0
+			forecolor			0.82 0.84 0.88 1
+			visible				1
+
+			mouseEnter 
+			{  
+				show			exitgamebutton_glow 
+			}
+			mouseExit 
+			{ 
+				hide			exitgamebutton_glow 
+			}	  	  
+			action 
+			{
+				play				"sound/interface/button1.mp3" ; 
+				
+				close			joinserver 
+				open			multiplayermenu 
+			}
+		}
+	}
+}
+
+
+
+
+
+
+
+

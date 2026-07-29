@@ -19,11 +19,11 @@ void CG_RegisterWeapon( int weaponNum) {
 	vec3_t			mins, maxs;
 	int				i;
 
-	weaponInfo = &cg_weapons[weaponNum];
-
-	if ( weaponNum == 0 ) {
+	if ( weaponNum <= WP_NONE || weaponNum >= MAX_WEAPONS ) {
 		return;
 	}
+
+	weaponInfo = &cg_weapons[weaponNum];
 
 	if ( weaponInfo->registered ) {
 		return;

@@ -1248,7 +1248,7 @@ static int CG_CalcFov( void ) {
 			}
 		}
 
-		if (cg.predictedPlayerState.zoomMode == 2)
+		if (cg.predictedPlayerState.zoomMode == 2 || cg.predictedPlayerState.zoomMode == 3)
 		{ //binoculars
 			if (zoomFov > 40.0f)
 			{

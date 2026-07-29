@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.10)
+﻿cmake_minimum_required(VERSION 3.10)
 
 # For checks in subdirectories
 set(InSDK TRUE)
@@ -6,7 +6,7 @@ set(InSDK TRUE)
 # Project & Versioning
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(ProjectName "OJP" CACHE STRING "Project Name")
+set(ProjectName "OBP" CACHE STRING "Project Name")
 project(${ProjectName})
 
 # Languages
